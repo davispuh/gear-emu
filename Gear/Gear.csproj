@@ -1,0 +1,238 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{5EF70FF0-0422-4B3B-9A11-D0035D9EBC17}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Gear</RootNamespace>
+    <AssemblyName>Gear</AssemblyName>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationVersion>1.2.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="EmulationCore\ClockSource.cs" />
+    <Compile Include="EmulationCore\Cog.cs" />
+    <Compile Include="EmulationCore\InstructionDisassembler.cs" />
+    <Compile Include="EmulationCore\FreqGenerator.cs" />
+    <Compile Include="EmulationCore\InterpretedCog.cs" />
+    <Compile Include="EmulationCore\NativeCog.cs" />
+    <Compile Include="EmulationCore\PLL.cs" />
+    <Compile Include="EmulationCore\PLLGroup.cs" />
+    <Compile Include="EmulationCore\Propeller.cs" />
+    <Compile Include="EmulationCore\SystemXtal.cs" />
+    <Compile Include="EmulationCore\VideoGenerator.cs" />
+    <Compile Include="GUI\AboutGear.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\AboutGear.Designer.cs">
+      <DependentUpon>AboutGear.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\BitView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\BitView.Designer.cs">
+      <DependentUpon>BitView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\CogView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\CogView.Designer.cs">
+      <DependentUpon>CogView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\CollapsibleSplitter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI\Emulator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Emulator.Designer.cs">
+      <DependentUpon>Emulator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\FloatedWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\FloatedWindow.Designer.cs">
+      <DependentUpon>FloatedWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\GearDesktop.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\GearDesktop.Designer.cs">
+      <DependentUpon>GearDesktop.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\HubView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\HubView.Designer.cs">
+      <DependentUpon>HubView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\LogicProbe\LogicAnalog.cs" />
+    <Compile Include="GUI\LogicProbe\LogicDigital.cs" />
+    <Compile Include="GUI\LogicProbe\LogicRow.cs" />
+    <Compile Include="GUI\LogicProbe\LogicView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\LogicProbe\LogicView.Designer.cs">
+      <DependentUpon>LogicView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\MemoryView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\MemoryView.Designer.cs">
+      <DependentUpon>MemoryView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\PluginEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\PluginEditor.Designer.cs">
+      <DependentUpon>PluginEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\RingMeter.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\RingMeter.Designer.cs">
+      <DependentUpon>RingMeter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\SpinView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PluginSupport\PluginBase.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PluginSupport\ModuleLoader.cs" />
+    <Compile Include="GearProgram.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="GUI\AboutGear.resx">
+      <DependentUpon>AboutGear.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\CogView.resx">
+      <DependentUpon>CogView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Resources\StartupROM.bin" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="GUI\CollapsibleSplitter.bmp" />
+    <EmbeddedResource Include="GUI\Emulator.resx">
+      <DependentUpon>Emulator.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\FloatedWindow.resx">
+      <DependentUpon>FloatedWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\GearDesktop.resx">
+      <DependentUpon>GearDesktop.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\HubView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>HubView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\LogicProbe\LogicView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>LogicView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\MemoryView.resx">
+      <DependentUpon>MemoryView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\PluginEditor.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>PluginEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\SpinView.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>SpinView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

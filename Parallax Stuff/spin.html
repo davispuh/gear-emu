@@ -1,0 +1,575 @@
+<html>
+	<head>
+		<title>Propeller SPIN Interpreter ByteCode Format</title>
+	</head>
+
+	<body>		
+		<table width=75%>
+		<tr><td width=64px>&nbsp;</td></tr>
+
+		<tr><td colspan=2><H1>Propeller SPIN Interpreter ByteCode Format</H1></td></tr>
+		<tr><td></td><td>
+<pre>
+The SPIN virtual machine is a stack based interpreter.  
+Everything operates on pushing and poping values from a large buffer of LONG values.
+
+Note that the byte-order explicitly changes during bytecode execution, else where everything is intel ordered.
+
+<b>Information discovered by Bryon Vandiver, if you use this, please throw him some props.</b>
+Thanks to Rokicki for the Object header VAR block offset tip
+</pre>
+		</td>
+		<tr><td colspan=2><br><h2>File Architecture</H2></td></tr>
+		<tr><td></td><td>
+		<table border=1 cellpadding=2>
+			<tr>
+				<td>Header</td>
+			</tr>
+			<tr>
+				<td>Object Information</td>
+			</tr>
+			<tr>
+				<td>Variable Block (zeroed)</td>
+			</tr>
+			<tr>
+				<td>Termination Code 0xFFFFF9FF, 0xFFFFF9FF</td>
+			</tr>
+			<tr>
+				<td>Unallocated Space / Stack (Truncated from binary)</td>
+			</tr>
+		</table>
+		</td></tr>
+
+		<tr><td colspan=2><br><h2>Header Format</H2></td></tr>
+		<tr><td></td><td>
+		<table border=1 cellpadding=2>
+			<tr>
+				<td><b>Name / Function</b></td>
+				<td><b>Size</b></td>
+			</tr>
+			<tr>
+				<td>System Frequency</td>
+				<td>LONG</td>
+			</tr>
+			<tr>
+				<td>Clock Mode</td>
+				<td>BYTE</td>
+			</tr>
+			<tr>
+				<td>Intel-Hex Checksum</td>
+				<td>BYTE</td>
+			</tr>
+			<tr>
+				<td>Root Object Location</td>
+				<td>HALF</td>
+			</tr>
+			<tr>
+				<td>Variable Block Offset</td>
+				<td>HALF</td>
+			</tr>
+			<tr>
+				<td>Start of function call frame (local arguements)</td>
+				<td>HALF</td>
+			</tr>
+			<tr>
+				<td>Entry Point Function</td>
+				<td>HALF</td>
+			</tr>
+			<tr>
+				<td>Start of Stack</td>
+				<td>HALF</td>
+			</tr>
+		</table>
+<pre>
+The call frame is relative to the return value, followed by the arguements, then locals.
+The two terminating values are the return points (var, obj, local, pc), packed as words.
+
+abort is most likely an internal flag.
+</pre>
+		</td></tr>
+
+		<tr><td colspan=2><br><h2>Checksum Format</h2></td></tr>
+		<tr><td></td><td>
+<pre>
+The checksum is a intel-hex LIKE format that covers data the 
+
+The checksum is calculated by summing the complement of every byte of ram.
+The system assumes that the termination code is there (which is essentially just +20 to 
+the checksum counter) and that the var block and unused space is null. If the result is
+zero, than the checksum is valid.
+
+Note that .binary files do NOT include the termination codes.  You will have to 
+dd those yourself, although their position is unimportant.
+</pre>
+		</td></tr>
+
+		<tr><td colspan=2><br><h2>Object Block Format</H2></td></tr>
+		<tr><td></td><td>
+		<table cellpadding=2 border=1>
+			<tr>
+				<td><b>Name / Function</b></td>
+				<td><b>Size</b></td>
+			</tr>
+			<tr>
+				<td>Size of object block (bytes)</td>
+				<td>LONG</td>
+			</tr>
+			<tr>
+				<td>Number of functions + 1</td>
+				<td>BYTE</td>
+			</tr>
+			<tr>
+				<td>Number of objects</td>
+				<td>BYTE</td>
+			</tr>
+			<tr>
+				<td colspan=2><center> ... For each function ... </center></td>
+			</tr>
+			<tr>
+				<td>Function Entry (Relative to start of object block)</td>
+				<td>WORD</td>
+			</tr>
+			<tr>
+				<td>Stack allocation in bytes (arguements, local variables, not return)</td>
+				<td>WORD</td>
+			</tr>
+			<tr>
+				<td colspan=2><center> ... For each function ... </center></td>
+			</tr>
+			<tr>
+				<td>Child Object Location (relative to start of object block)</td>
+				<td>WORD</td>
+			</tr>
+			<tr>
+				<td>Variable Block Offset (relative to parent object's var block)</td>
+				<td>WORD</td>
+			</tr>
+			<tr>
+				<td colspan=2><center> ... After Object Header ... </center></td>
+			</tr>			
+			<tr>
+				<td>DAT Block</td>
+			</tr>
+			<tr>
+				<td>Function Bytecodes and Local DATs</td>
+			</tr>
+			<tr>
+				<td>4 Byte Align</td>
+			</tr>
+		</table>
+		</td></tr>
+
+		<tr><td colspan=2><br><h2>Function Format</H2></td></tr>
+		<tr><td></td><td>
+		<table cellpadding=2 border=1>
+			<tr>
+				<td>Instruction Opcodes</td>
+			</tr>
+			<tr>
+				<td>Function specific DAT chunk (made by STRING)</td>
+			</tr>
+		</table>
+		</td></tr>
+
+		<tr><td colspan=2><br><h2>Operation Codes</H2></td></tr>
+		<tr><td></td><td>
+		<table cellpadding=2 border=1>
+			<tr><td><b>Operation Code</b></td><td><b>Operation Function</b></td><td><b>Immediate</b></td></tr>
+			<tr><td>0</td><td>FRAME_CALL_RETURN</td></tr>
+			<tr><td>1</td><td>FRAME_CALL_NORETURN</td></tr>
+			<tr><td>2</td><td>FRAME_CALL_ABORT_RETURN</td></tr>
+			<tr><td>3</td><td>FRAME_CALL_ABORT_NORETURN</td></tr>
+			<tr><td>4</td><td>BRANCH</td><td>Packed Relative Jump</td></tr>
+			<tr><td>5</td><td>CALL</td><td>Function Number</td></tr>
+			<tr><td>6</td><td>OBJCALL</td><td>Object Number, Function Number (2 bytes)</td></tr>
+			<tr><td>7</td><td>OBJCALL_INDEXED</td><td>Object Number (base), Function Number (2 bytes)</td></tr>
+			<tr><td>8</td><td>LOOP_START</td><td>Packed Relative Jump</td></tr>
+			<tr><td>9</td><td>LOOP_CONTINUE</td><td>Packed Relative Jump</td></tr>
+			<tr><td>a</td><td>JUMP_IF_FALSE</td><td>Packed Relative Jump</td></tr>
+			<tr><td>b</td><td>JUMP_IF_TRUE</td><td>Packed Relative Jump</td></tr>
+			<tr><td>c</td><td>JUMP_FROM_STACK</td></tr>
+			<tr><td>d</td><td>COMPARE_CASE</td><td>Packed Relative Jump</td></tr>
+			<tr><td>e</td><td>COMPARE_CASE_RANGE</td><td>Packed Relative Jump</td></tr>
+			<tr><td>f</td><td>LOOK_ABORT</td></tr>
+			<tr><td>10</td><td>LOOKUP_COMPARE</td></tr>
+			<tr><td>11</td><td>LOODOWN_COMPARE</td></tr>
+			<tr><td>12</td><td>LOOKUPRANGE_COMPARE</td></tr>
+			<tr><td>13</td><td>LOOKDOWNRANGE_COMPARE</td></tr>
+			<tr><td>14</td><td>QUIT</td></tr>
+			<tr><td>15</td><td>MARK_INTERPRETED</td></tr>
+			<tr><td>16</td><td>STRSIZE</td></tr>
+			<tr><td>17</td><td>STRCOMP</td></tr>
+			<tr><td>18</td><td>BYTEFILL</td></tr>
+			<tr><td>19</td><td>WORDFILL</td></tr>
+			<tr><td>1a</td><td>LONGFILL</td></tr>
+			<tr><td>1b</td><td>WAITPEQ</td></tr>
+			<tr><td>1c</td><td>BYTEMOVE</td></tr>
+			<tr><td>1d</td><td>WORDMOVE</td></tr>
+			<tr><td>1e</td><td>LONGMOVE</td></tr>
+			<tr><td>1f</td><td>WAITPNE</td></tr>
+			<tr><td>20</td><td>CLKSET</td></tr>
+			<tr><td>21</td><td>COGSTOP</td></tr>
+			<tr><td>22</td><td>LOCKRET</td></tr>
+			<tr><td>23</td><td>WAITCNT</td></tr>
+			<tr><td>24</td><td>READ_INDEXED_SPR</td></tr>
+			<tr><td>25</td><td>WRITE_INDEXED_SPR</td></tr>
+			<tr><td>26</td><td>EFFECT_INDEXED_SPR</td><td>Inplace Operation Code</td></tr>
+			<tr><td>27</td><td>WAITVID</td></tr>
+			<tr><td>28</td><td>COGINIT_RETURNS</td></tr>
+			<tr><td>29</td><td>LOCKNEW_RETURNS</td></tr>
+			<tr><td>2a</td><td>LOCKSET_RETURNS</td></tr>
+			<tr><td>2b</td><td>LOCKCLR_RETURNS</td></tr>
+			<tr><td>2c</td><td>COGINIT</td></tr>
+			<tr><td>2d</td><td>LOCKNEW</td></tr>
+			<tr><td>2e</td><td>LOCKSET</td></tr>
+			<tr><td>2f</td><td>LOCKCLR</td></tr>
+			<tr><td>30</td><td>ABORT</td></tr>
+			<tr><td>31</td><td>ABORT_WITH_RETURN</td></tr>
+			<tr><td>32</td><td>RETURN</td></tr>
+			<tr><td>33</td><td>POP_RETURN</td></tr>
+			<tr><td>34</td><td>PUSH_NEG1</td></tr>
+			<tr><td>35</td><td>PUSH_0</td></tr>
+			<tr><td>36</td><td>PUSH_1</td></tr>
+			<tr><td>37</td><td>PUSH_PACKED_LIT</td><td>Packed Literal</td></tr>
+			<tr><td>38</td><td>PUSH_BYTE_LIT</td><td>BYTE</td></tr>
+			<tr><td>39</td><td>PUSH_WORD_LIT</td><td>Motorola Ordered WORD</td></tr>
+			<tr><td>3a</td><td>PUSH_MID_LIT</td><td>Motorola Ordered 3-byte Number</td></tr>
+			<tr><td>3b</td><td>PUSH_LONG_LIT</td><td>Motorola Ordered LONG</td></tr>
+			<tr><td>3c</td><td><b>Unknown</b></td></tr>
+			<tr><td>3d</td><td>INDEXED_MEM_OP</td><td>Cog Memory Op-code</td></tr>
+			<tr><td>3e</td><td>RANGED_MEM_OP</td><td>Cog Memory Op-code</td</tr>
+			<tr><td>3f</td><td>MEMORY_OP</td><td>Cog Memory Op-code</td></tr>
+			<tr><td>40</td><td>PUSH_VARMEM_LONG_0</td></tr>
+			<tr><td>41</td><td>POP_VARMEM_LONG_0</td></tr>
+			<tr><td>42</td><td>EFFECT_VARMEM_LONG_0</td><td>Inplace Operation Code</td></tr>
+			<tr><td>43</td><td>REFERENCE_VARMEM_LONG_0</td></tr>
+			<tr><td>44</td><td>PUSH_VARMEM_LONG_1</td></tr>
+			<tr><td>45</td><td>POP_VARMEM_LONG_1</td></tr>
+			<tr><td>46</td><td>EFFECT_VARMEM_LONG_1</td><td>Inplace Operation Code</td></tr>
+			<tr><td>47</td><td>REFERENCE_VARMEM_LONG_1</td></tr>
+			<tr><td>48</td><td>PUSH_VARMEM_LONG_2</td></tr>
+			<tr><td>49</td><td>POP_VARMEM_LONG_2</td></tr>
+			<tr><td>4a</td><td>EFFECT_VARMEM_LONG_2</td><td>Inplace Operation Code</td></tr>
+			<tr><td>4b</td><td>REFERENCE_VARMEM_LONG_2</td></tr>
+			<tr><td>4c</td><td>PUSH_VARMEM_LONG_3</td></tr>
+			<tr><td>4d</td><td>POP_VARMEM_LONG_3</td></tr>
+			<tr><td>4e</td><td>EFFECT_VARMEM_LONG_3</td><td>Inplace Operation Code</td></tr>
+			<tr><td>4f</td><td>REFERENCE_VARMEM_LONG_3</td></tr>
+			<tr><td>50</td><td>PUSH_VARMEM_LONG_4</td></tr>
+			<tr><td>51</td><td>POP_VARMEM_LONG_4</td></tr>
+			<tr><td>52</td><td>EFFECT_VARMEM_LONG_4</td><td>Inplace Operation Code</td></tr>
+			<tr><td>53</td><td>REFERENCE_VARMEM_LONG_4</td></tr>
+			<tr><td>54</td><td>PUSH_VARMEM_LONG_5</td></tr>
+			<tr><td>55</td><td>POP_VARMEM_LONG_5</td></tr>
+			<tr><td>56</td><td>EFFECT_VARMEM_LONG_5</td><td>Inplace Operation Code</td></tr>
+			<tr><td>57</td><td>REFERENCE_VARMEM_LONG_5</td></tr>
+			<tr><td>58</td><td>PUSH_VARMEM_LONG_6</td></tr>
+			<tr><td>59</td><td>POP_VARMEM_LONG_6</td></tr>
+			<tr><td>5a</td><td>EFFECT_VARMEM_LONG_6</td><td>Inplace Operation Code</td></tr>
+			<tr><td>5b</td><td>REFERENCE_VARMEM_LONG_6</td></tr>
+			<tr><td>5c</td><td>PUSH_VARMEM_LONG_7</td></tr>
+			<tr><td>5d</td><td>POP_VARMEM_LONG_7</td></tr>
+			<tr><td>5e</td><td>EFFECT_VARMEM_LONG_7</td><td>Inplace Operation Code</td></tr>
+			<tr><td>5f</td><td>REFERENCE_VARMEM_LONG_7</td></tr>
+			<tr><td>60</td><td>PUSH_LOCALMEM_LONG_0</td></tr>
+			<tr><td>61</td><td>POP_LOCALMEM_LONG_0</td></tr>
+			<tr><td>62</td><td>EFFECT_LOCALMEM_LONG_0</td><td>Inplace Operation Code</td></tr>
+			<tr><td>63</td><td>REFERENCE_LOCALMEM_LONG_0</td></tr>
+			<tr><td>64</td><td>PUSH_LOCALMEM_LONG_1</td></tr>
+			<tr><td>65</td><td>POP_LOCALMEM_LONG_1</td></tr>
+			<tr><td>66</td><td>EFFECT_LOCALMEM_LONG_1</td><td>Inplace Operation Code</td></tr>
+			<tr><td>67</td><td>REFERENCE_LOCALMEM_LONG_1</td></tr>
+			<tr><td>68</td><td>PUSH_LOCALMEM_LONG_2</td></tr>
+			<tr><td>69</td><td>POP_LOCALMEM_LONG_2</td></tr>
+			<tr><td>6a</td><td>EFFECT_LOCALMEM_LONG_2</td><td>Inplace Operation Code</td></tr>
+			<tr><td>6b</td><td>REFERENCE_LOCALMEM_LONG_2</td></tr>
+			<tr><td>6c</td><td>PUSH_LOCALMEM_LONG_3</td></tr>
+			<tr><td>6d</td><td>POP_LOCALMEM_LONG_3</td></tr>
+			<tr><td>6e</td><td>EFFECT_LOCALMEM_LONG_3</td><td>Inplace Operation Code</td></tr>
+			<tr><td>6f</td><td>REFERENCE_LOCALMEM_LONG_3</td></tr>
+			<tr><td>70</td><td>PUSH_LOCALMEM_LONG_4</td></tr>
+			<tr><td>71</td><td>POP_LOCALMEM_LONG_4</td></tr>
+			<tr><td>72</td><td>EFFECT_LOCALMEM_LONG_4</td><td>Inplace Operation Code</td></tr>
+			<tr><td>73</td><td>REFERENCE_LOCALMEM_LONG_4</td></tr>
+			<tr><td>74</td><td>PUSH_LOCALMEM_LONG_5</td></tr>
+			<tr><td>75</td><td>POP_LOCALMEM_LONG_5</td></tr>
+			<tr><td>76</td><td>EFFECT_LOCALMEM_LONG_5</td><td>Inplace Operation Code</td></tr>
+			<tr><td>77</td><td>REFERENCE_LOCALMEM_LONG_5</td></tr>
+			<tr><td>78</td><td>PUSH_LOCALMEM_LONG_6</td></tr>
+			<tr><td>79</td><td>POP_LOCALMEM_LONG_6</td></tr>
+			<tr><td>7a</td><td>EFFECT_LOCALMEM_LONG_6</td><td>Inplace Operation Code</td></tr>
+			<tr><td>7b</td><td>REFERENCE_LOCALMEM_LONG_6</td></tr>
+			<tr><td>7c</td><td>PUSH_LOCALMEM_LONG_7</td></tr>
+			<tr><td>7d</td><td>POP_LOCALMEM_LONG_7</td></tr>
+			<tr><td>7e</td><td>EFFECT_LOCALMEM_LONG_7</td><td>Inplace Operation Code</td></tr>
+			<tr><td>7f</td><td>REFERENCE_LOCALMEM_LONG_7</td></tr>
+			<tr><td>80</td><td>PUSH_MAINMEM_BYTE</td></tr>
+			<tr><td>81</td><td>POP_MAINMEM_BYTE</td></tr>
+			<tr><td>82</td><td>EFFECT_MAINMEM_BYTE</td><td>Inplace Operation Code</td></tr>
+			<tr><td>83</td><td>REFERENCE_MAINMEM_BYTE</td></tr>
+			<tr><td>84</td><td>PUSH_OBJECTMEM_BYTE</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>85</td><td>POP_OBJECTMEM_BYTE</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>86</td><td>EFFECT_OBJECTMEM_BYTE</td><td>Unsigned Packed Offset then Inplace Operation Code</td></tr>
+			<tr><td>87</td><td>REFERENCE_OBJECTMEM_BYTE</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>88</td><td>PUSH_VARIABLEMEM_BYTE</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>89</td><td>POP_VARIABLEMEM_BYTE</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>8a</td><td>EFFECT_VARIABLEMEM_BYTE</td><td>Unsigned Packed Offset then Inplace Operation Code</td></tr>
+			<tr><td>8b</td><td>REFERENCE_VARIABLEMEM_BYTE</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>8c</td><td>PUSH_INDEXED_LOCALMEM_BYTE</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>8d</td><td>POP_INDEXED_LOCALMEM_BYTE</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>8e</td><td>EFFECT_INDEXED_LOCALMEM_BYTE</td><td>Unsigned Packed Offset then Inplace Operation Code</td></tr>
+			<tr><td>8f</td><td>REFERENCE_INDEXED_LOCALMEM_BYTE</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>90</td><td>PUSH_INDEXED_MAINMEM_BYTE</td></tr>
+			<tr><td>91</td><td>POP_INDEXED_MAINMEM_BYTE</td></tr>
+			<tr><td>92</td><td>EFFECT_INDEXED_MAINMEM_BYTE</td><td>Inplace Operation Code</td></tr>
+			<tr><td>93</td><td>REFERENCE_INDEXED_MAINMEM_BYTE</td></tr>
+			<tr><td>94</td><td>PUSH_INDEXED_OBJECTMEM_BYTE</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>95</td><td>POP_INDEXED_OBJECTMEM_BYTE</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>96</td><td>EFFECT_INDEXED_OBJECTMEM_BYTE</td><td>Unsigned Packed Offset then Inplace Operation Code</td></tr>
+			<tr><td>97</td><td>REFERENCE_INDEXED_OBJECTMEM_BYTE</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>98</td><td>PUSH_INDEXED_VARIABLEMEM_BYTE</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>99</td><td>POP_INDEXED_VARIABLEMEM_BYTE</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>9a</td><td>EFFECT_INDEXED_VARIABLEMEM_BYTE</td><td>Unsigned Packed Offset then Inplace Operation Code</td></tr>
+			<tr><td>9b</td><td>REFERENCE_INDEXED_VARIABLEMEM_BYTE</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>9c</td><td>PUSH_INDEXED_LOCALMEM_BYTE</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>9d</td><td>POP_INDEXED_LOCALMEM_BYTE</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>9e</td><td>EFFECT_INDEXED_LOCALMEM_BYTE</td><td>Unsigned Packed Offset then Inplace Operation Code</td></tr>
+			<tr><td>9f</td><td>REFERENCE_INDEXED_LOCALMEM_BYTE</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>a0</td><td>PUSH_MAINMEM_WORD</td></tr>
+			<tr><td>a1</td><td>POP_MAINMEM_WORD</td></tr>
+			<tr><td>a2</td><td>EFFECT_MAINMEM_WORD</td><td>Inplace Operation Code</td></tr>
+			<tr><td>a3</td><td>REFERENCE_MAINMEM_WORD</td></tr>
+			<tr><td>a4</td><td>PUSH_OBJECTMEM_WORD</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>a5</td><td>POP_OBJECTMEM_WORD</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>a6</td><td>EFFECT_OBJECTMEM_WORD</td><td>Unsigned Packed Offset then Inplace Operation Code</td></tr>
+			<tr><td>a7</td><td>REFERENCE_OBJECTMEM_WORD</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>a8</td><td>PUSH_VARIABLEMEM_WORD</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>a9</td><td>POP_VARIABLEMEM_WORD</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>aa</td><td>EFFECT_VARIABLEMEM_WORD</td><td>Unsigned Packed Offset then Inplace Operation Code</td></tr>
+			<tr><td>ab</td><td>REFERENCE_VARIABLEMEM_WORD</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>ac</td><td>PUSH_LOCALMEM_WORD</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>ad</td><td>POP_LOCALMEM_WORD</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>ae</td><td>EFFECT_LOCALMEM_WORD</td><td>Unsigned Packed Offset then Inplace Operation Code</td></tr>
+			<tr><td>af</td><td>REFERENCE_LOCALMEM_WORD</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>b0</td><td>PUSH_INDEXED_MAINMEM_WORD</td></tr>
+			<tr><td>b1</td><td>POP_INDEXED_MAINMEM_WORD</td></tr>
+			<tr><td>b2</td><td>EFFECT_INDEXED_MAINMEM_WORD</td><td>Inplace Operation Code</td></tr>
+			<tr><td>b3</td><td>REFERENCE_INDEXED_MAINMEM_WORD</td></tr>
+			<tr><td>b4</td><td>PUSH_INDEXED_OBJECTMEM_WORD</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>b5</td><td>POP_INDEXED_OBJECTMEM_WORD</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>b6</td><td>EFFECT_INDEXED_OBJECTMEM_WORD</td><td>Unsigned Packed Offset then Inplace Operation Code</td></tr>
+			<tr><td>b7</td><td>REFERENCE_INDEXED_OBJECTMEM_WORD</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>b8</td><td>PUSH_INDEXED_VARIABLEMEM_WORD</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>b9</td><td>POP_INDEXED_VARIABLEMEM_WORD</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>ba</td><td>EFFECT_INDEXED_VARIABLEMEM_WORD</td><td>Unsigned Packed Offset then Inplace Operation Code</td></tr>
+			<tr><td>bb</td><td>REFERENCE_INDEXED_VARIABLEMEM_WORD</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>bc</td><td>PUSH_INDEXED_LOCALMEM_WORD</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>bd</td><td>POP_INDEXED_LOCALMEM_WORD</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>be</td><td>EFFECT_INDEXED_LOCALMEM_WORD</td><td>Unsigned Packed Offset then Inplace Operation Code</td></tr>
+			<tr><td>bf</td><td>REFERENCE_INDEXED_LOCALMEM_WORD</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>c0</td><td>PUSH_MAINMEM_LONG</td></tr>
+			<tr><td>c1</td><td>POP_MAINMEM_LONG</td></tr>
+			<tr><td>c2</td><td>EFFECT_MAINMEM_LONG</td><td>Inplace Operation Code</td></tr>
+			<tr><td>c3</td><td>REFERENCE_MAINMEM_LONG</td></tr>
+			<tr><td>c4</td><td>PUSH_OBJECTMEM_LONG</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>c5</td><td>POP_OBJECTMEM_LONG</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>c6</td><td>EFFECT_OBJECTMEM_LONG</td><td>Unsigned Packed Offset then Inplace Operation Code</td></tr>
+			<tr><td>c7</td><td>REFERENCE_OBJECTMEM_LONG</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>c8</td><td>PUSH_VARIABLEMEM_LONG</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>c9</td><td>POP_VARIABLEMEM_LONG</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>ca</td><td>EFFECT_VARIABLEMEM_LONG</td><td>Unsigned Packed Offset then Inplace Operation Code</td></tr>
+			<tr><td>cb</td><td>REFERENCE_VARIABLEMEM_LONG</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>cc</td><td>PUSH_LOCALMEM_LONG</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>cd</td><td>POP_LOCALMEM_LONG</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>ce</td><td>EFFECT_LOCALMEM_LONG</td><td>Unsigned Packed Offset then Inplace Operation Code</td></tr>
+			<tr><td>cf</td><td>REFERENCE_LOCALMEM_LONG</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>d0</td><td>PUSH_INDEXED_MAINMEM_LONG</td></tr>
+			<tr><td>d1</td><td>POP_INDEXED_MAINMEM_LONG</td></tr>
+			<tr><td>d2</td><td>EFFECT_INDEXED_MAINMEM_LONG</td><td>Inplace Operation Code</td></tr>
+			<tr><td>d3</td><td>REFERENCE_INDEXED_MAINMEM_LONG</td></tr>
+			<tr><td>d4</td><td>PUSH_INDEXED_OBJECTMEM_LONG</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>d5</td><td>POP_INDEXED_OBJECTMEM_LONG</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>d6</td><td>EFFECT_INDEXED_OBJECTMEM_LONG</td><td>Unsigned Packed Offset then Inplace Operation Code</td></tr>
+			<tr><td>d7</td><td>REFERENCE_INDEXED_OBJECTMEM_LONG</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>d8</td><td>PUSH_INDEXED_VARIABLEMEM_LONG</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>d9</td><td>POP_INDEXED_VARIABLEMEM_LONG</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>da</td><td>EFFECT_INDEXED_VARIABLEMEM_LONG</td><td>Unsigned Packed Offset then Inplace Operation Code</td></tr>
+			<tr><td>db</td><td>REFERENCE_INDEXED_VARIABLEMEM_LONG</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>dc</td><td>PUSH_INDEXED_LOCALMEM_LONG</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>dd</td><td>POP_INDEXED_LOCALMEM_LONG</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>de</td><td>EFFECT_INDEXED_LOCALMEM_LONG</td><td>Unsigned Packed Offset then Inplace Operation Code</td></tr>
+			<tr><td>df</td><td>REFERENCE_INDEXED_LOCALMEM_LONG</td><td>Unsigned Packed Offset</td></tr>
+			<tr><td>e0</td><td>ROTATE_RIGHT</td></tr>
+			<tr><td>e1</td><td>ROTATE_LEFT</td></tr>
+			<tr><td>e2</td><td>SHIFT_RIGHT</td></tr>
+			<tr><td>e3</td><td>SHIFT_LEFT</td></tr>
+			<tr><td>e4</td><td>LIMIT_MIN</td></tr>
+			<tr><td>e5</td><td>LIMIT_MAX</td></tr>
+			<tr><td>e6</td><td>NEGATE</td></tr>
+			<tr><td>e7</td><td>COMPLEMENT</td></tr>
+			<tr><td>e8</td><td>BIT_AND</td></tr>
+			<tr><td>e9</td><td>ABSOLUTE_VALUE</td></tr>
+			<tr><td>ea</td><td>BIT_OR</td></tr>
+			<tr><td>eb</td><td>BIT_XOR</td></tr>
+			<tr><td>ec</td><td>ADD</td></tr>
+			<tr><td>ed</td><td>SUBTRACT</td></tr>
+			<tr><td>ee</td><td>ARITH_SHIFT_RIGHT</td></tr>
+			<tr><td>ef</td><td>BIT_REVERSE</td></tr>
+			<tr><td>f0</td><td>LOGICAL_AND</td></tr>
+			<tr><td>f1</td><td>ENCODE</td></tr>
+			<tr><td>f2</td><td>LOGICAL_OR</td></tr>
+			<tr><td>f3</td><td>DECODE</td></tr>
+			<tr><td>f4</td><td>MULTIPLY</td></tr>
+			<tr><td>f5</td><td>MULTIPLY_HI</td></tr>
+			<tr><td>f6</td><td>DIVIDE</td></tr>
+			<tr><td>f7</td><td>MODULO</td></tr>
+			<tr><td>f8</td><td>SQUARE_ROOT</td></tr>
+			<tr><td>f9</td><td>LESS</td></tr>
+			<tr><td>fa</td><td>GREATER</td></tr>
+			<tr><td>fb</td><td>NOT_EQUAL</td></tr>
+			<tr><td>fc</td><td>EQUAL</td></tr>
+			<tr><td>fd</td><td>LESS_EQUAL</td></tr>
+			<tr><td>fe</td><td>GREATER_EQUAL</td></tr>
+			<tr><td>ff</td><td>LOGICAL_NOT</td></tr>
+		</table>
+		</td></tr>
+
+		<tr><td colspan=2><br><H2>Packed Offset Format</H2></td></tr>
+
+		<tr><td></td><td>
+<pre>
+Packed offsets are stored as either a byte or a word.  You load a byte.
+
+If the byte is less than 0x80 (the MSB is clear), 
+if it's a relative (signed) value, than you would sign extend from
+This gives you an effecive 7bit address.
+
+If the MSB is set, Than the last byte loaded is shifted left by 8, mask out the MSB, and
+add the next byte
+</pre>
+		<table cellpadding=3>
+			<tr><td><b>Examples&nbsp;&nbsp;&nbsp;&nbsp;</b></td><td>0x00</td><td>0</td></tr>
+			<tr><td></td><td>0x3F</td><td>63</td></tr>
+			<tr><td></td><td>0x7F</td><td>-1</td></tr>
+			<tr><td></td><td>0x81 0x00</td><td>256</td></tr>
+			<tr><td></td><td>0xFF 0x00</td><td>-256</td></tr>
+		</table>
+		</td></tr>
+
+		<tr><td colspan=2><br><h2>Packed Literal Format</h2></td></tr>
+		<tr><td></td><td>
+<pre>
+Packed literals are commonly used binary masks and similar.
+
+Note that only half of the packed literal values are known.
+
+Essential Format of a packed literal:
+		
+2 << ( packed_lit & 0x1F )
+		
+if bit 5 is set, than you subtract one from result
+if bit 6 is set, than you complement the result (after subtraction if nessessary)
+</pre>
+		</td></tr>
+
+		<tr><td colspan=2><br><h2>Cog Memory Operations</H2></td></tr>
+		<tr><td></td><td>
+<pre>
+This is a shifted code that operates on the last 32 longs in COG memory (I/O, CLK, etc)
+Only one of the memory longs is used, and it's done exclusively by the COGINIT( cog, spin_funct, stack )
+It appears to load a value, and it's purpose is yet undetermined.
+
+The operation is stored in the 3 most significant bits of the code, and the register addresses is stored in the
+lower 5 bits.
+</pre>
+
+		<H3>Codes</H3>
+		<table cellpadding=3 border=1>
+			<tr>
+				<td><b>Code</b></td><td><b>Function</b></td><td><b>Notes</b></td>
+			</tr>
+			<tr>
+				<td>0x00</td><td><b>Unknown</b></td>
+			</tr>
+			<tr>
+				<td>0x20</td><td><b>Unknown</b></td>
+			</tr>
+			<tr>
+				<td>0x40</td><td><b>Unknown</b></td>
+			</tr>
+			<tr>
+				<td>0x60</td><td><b>Unknown</b></td>
+			</tr>
+			<tr>
+				<td>0x80</td><td>PUSH</td>
+			</tr>
+			<tr>
+				<td>0xA0</td><td>POP</td>
+			</tr>
+			<tr>
+				<td>0xC0</td><td>EFFECT</td><td>Followed by an inplace op</td>
+			</tr>
+			<tr>
+				<td>0xE0</td><td><b>Unknown</b></td>
+			</tr>
+		</table>
+		</td></tr>
+
+		<tr><td colspan=2><br><h2>Inplace Operations</H2></td></tr>
+		<tr><td></td><td>
+<pre>
+Inplace operations are any operations that immediately effect the memory of whatever is being pushed 
+on to the stack.  The result of this may or may not remain on the stack.
+
+For example, if you did i++ (and lets just assume I is the first arguement of a function), the result
+would be something like EFFECT_LOCALMEM_LONG_0 POP POST_INCREMENT
+
+That means that long is post incremented, and the result is 'poped' off the stack.
+
+The MSB of the inplace operation determins if the result is to remain on the stack.  If the MSB is set
+it is pushed to the stack, otherwise, the result is discarded (after the memory operation is performed)
+
+The lower 7 bits determine what operation is to be performed.  That gives a total of 128 possible operations.
+
+Most of this space is left unfilled, most likely for future expansion.
+</pre>		
+		<H3>Inplace Operation Codes</H3>
+		<table cellpadding=3 border=1>
+			<tr><td></td><td>+0</td><td>+1</td><td>+2</td><td>+3</td></tr>
+			<tr><td>0</td> <td>COPY</td> <td></td> <td>REPEAT_COMPARE (followed by packed signed offset)</td> <td></td> </tr>
+			<tr><td>4</td> <td></td> <td></td> <td>REPEAT_COMPARE_STEP (followed by packed signed offset)</td> <td></td> </tr>
+			<tr><td>8</td> <td>FORWARD_RANDOM</td> <td></td> <td></td> <td></td> </tr>
+			<tr><td>C</td> <td>REVERSE_RANDOM</td> <td></td> <td></td> <td></td> </tr>
+			<tr><td>10</td> <td>EXTEND_8</td> <td></td> <td></td> <td></td> </tr>
+			<tr><td>14</td> <td>EXTEND_16</td> <td></td> <td></td> <td></td> </tr>
+			<tr><td>18</td> <td>BIT_CLEAR</td> <td></td> <td></td> <td></td> </tr>
+			<tr><td>1C</td> <td>BIT_SET</td> <td></td> <td></td> <td></td> </tr>
+			<tr><td>20</td> <td>PRE_INCREMENT_BITS</td> <td></td> <td>PRE_INCREMENT_BYTE</td> <td></td> </tr>
+			<tr><td>24</td> <td>PRE_INCREMENT_WORD</td> <td></td> <td>PRE_INCREMENT_LONG</td> <td></td> </tr>
+			<tr><td>28</td> <td>POST_INCREMENT_BITS</td> <td></td> <td>POST_INCREMENT_BYTE</td> <td></td> </tr>
+			<tr><td>2C</td> <td>POST_INCREMENT_WORD</td> <td></td> <td>POST_INCREMENT_LONG</td> <td></td> </tr>
+			<tr><td>30</td> <td>PRE_DECREMENT_BITS</td> <td></td> <td>PRE_DECREMENT_BYTE</td> <td></td> </tr>
+			<tr><td>34</td> <td>PRE_DECREMENT_WORD</td> <td></td> <td>PRE_DECREMENT_LONG</td> <td></td> </tr>
+			<tr><td>38</td> <td>POST_DECREMENT_BITS</td> <td></td> <td>POST_DECREMENT_BYTE</td> <td></td> </tr>
+			<tr><td>3C</td> <td>POST_DECREMENT_WORD</td> <td></td> <td>POST_DECREMENT_LONG</td> <td></td> </tr>
+			<tr><td>40</td> <td>ROTATE_RIGHT</td> <td>ROTATE_LEFT</td> <td>SHIFT_RIGHT</td> <td>SHIFT_LEFT</td> </tr>
+			<tr><td>44</td> <td>MINIMUM</td> <td>MAXIMUM</td> <td>NEGATE</td> <td>COMPLEMENT</td> </tr>
+			<tr><td>48</td> <td>BIT_AND</td> <td>ABSOLUTE_VALUE</td> <td>BIT_OR</td> <td>BIT_XOR</td> </tr>
+			<tr><td>4C</td> <td>ADD</td> <td>SUBTRACT</td> <td>ARITH_SHIFT_RIGHT</td> <td>BIT_REVERSE</td> </tr>
+			<tr><td>50</td> <td>LOGICAL_AND</td> <td>ENCODE</td> <td>LOGICAL_OR</td> <td>DECODE</td> </tr>
+			<tr><td>54</td> <td>MULTIPLY</td> <td>MULTIPLY_HI</td> <td>DIVIDE</td> <td>MODULO</td> </tr>
+			<tr><td>58</td> <td>SQUARE_ROOT</td> <td>LESS</td> <td>GREATER</td> <td>NOT_EQUAL</td> </tr>
+			<tr><td>5C</td> <td>EQUAL</td> <td>LESS_EQUAL</td> <td>GREATER_EQUAL</td> <td>NOT</td> </tr>
+			<tr><td>60</td> <td></td> <td></td> <td></td> <td></td> </tr>
+			<tr><td>64</td> <td></td> <td></td> <td></td> <td></td> </tr>
+			<tr><td>68</td> <td></td> <td></td> <td></td> <td></td> </tr>
+			<tr><td>6C</td> <td></td> <td></td> <td></td> <td></td> </tr>
+			<tr><td>70</td> <td></td> <td></td> <td></td> <td></td> </tr>
+			<tr><td>74</td> <td></td> <td></td> <td></td> <td></td> </tr>
+			<tr><td>78</td> <td></td> <td></td> <td></td> <td></td> </tr>
+			<tr><td>7C</td> <td></td> <td></td> <td></td> <td></td> </tr>
+		</table>
+		</td></tr>
+		</table>
+	</body>
+</html>

@@ -1,0 +1,1 @@
+"c:\Program Files\Mono-1.2.2.1\bin\gmcs" -r:System.dll -r:System.Data.dll -r:System.Design.dll -r:System.Drawing.dll -r:System.Windows.Forms.dll -r:System.Xml.dll Gear\*.cs Gear\EmulationCore\*.cs Gear\PluginSupport\*.cs Gear\Properties\*.cs Gear\GUI\*.cs 
