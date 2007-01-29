@@ -1,0 +1,39 @@
+<plugin>
+  <instance class="PinNoise" />
+  <code>using Gear.EmulationCore;
+using Gear.PluginSupport;
+
+class PinNoise : PluginBase
+{
+	private Propeller Chip;
+	private bool Drive;
+	private bool Clock;
+
+	public override string Title
+	{
+		get
+		{
+			return "Pin Noise";
+		}
+	}
+
+	public override void PresentChip(Propeller host)
+	{
+		Chip = host;
+		Chip.NotifyOnPins(this);
+		Chip.NotifyOnClock(this);
+	}
+
+	public override void OnPinChange(double time, PinState[] pins)
+	{
+		Drive = !Drive;
+		Chip.DrivePin(3,false,Drive);
+	}
+
+	public override void OnClock( double time )
+	{
+		Clock = !Clock;
+		Chip.DrivePin(2,false,Clock);
+	}
+}</code>
+</plugin>

@@ -648,4 +648,4 @@ def Disassemble(fn):
     finally:
         f.close()
 
-Disassemble("(Ch3-Ex10)-Blinker2.binary")
+Disassemble("testing.binary")

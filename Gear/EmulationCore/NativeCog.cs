@@ -1076,7 +1076,7 @@ namespace Gear.EmulationCore
 
             DataResult = (uint)result;
             ZeroResult = Zero && (DataResult == 0);
-            CarryResult = (DataResult & 0x100000000) != 0;
+            CarryResult = (result & 0x100000000) != 0;
         }
 
         private void InstructionADDS()
@@ -1130,7 +1130,7 @@ namespace Gear.EmulationCore
 
             DataResult = (uint)result;
             ZeroResult = Zero && (DataResult == 0);
-            CarryResult = (DataResult & 0x100000000) != 0;
+            CarryResult = (result & 0x100000000) != 0;
         }
 
         private void InstructionSUBS()
