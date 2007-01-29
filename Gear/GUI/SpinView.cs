@@ -151,6 +151,7 @@ namespace Gear.GUI
                 return;
 
             Graphics g = Graphics.FromImage((Image)BackBuffer);
+            ASCIIEncoding ascii = new ASCIIEncoding();
 
             g.Clear(SystemColors.Control);
 
@@ -166,8 +167,13 @@ namespace Gear.GUI
                 {
                     byte data = Host.ReadByte((uint)y);
                     g.FillRectangle(Colorize[y], new Rectangle(dx, dy, s.Width, s.Height));
-                    g.DrawString(String.Format("{0:X2}", data),
-                        MonoSpace, SystemBrushes.ControlText, dx, dy);
+
+                    if( data > 32 && data < 127 )
+                        g.DrawString(ascii.GetString( new byte[] {data} ),
+                            MonoSpace, SystemBrushes.ControlText, dx, dy);
+                    else
+                        g.DrawString(String.Format("{0:X2}", data),
+                            MonoSpace, SystemBrushes.ControlText, dx, dy);
                 }
             }
 
