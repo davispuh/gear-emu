@@ -617,12 +617,15 @@ namespace Gear.EmulationCore
 
         public ushort ReadWord(uint address)
         {
+            //address &= 0xFFFFFFFE;
             return (ushort)(Memory[(address++) & 0xFFFF]
                 | (Memory[(address++) & 0xFFFF] << 8));
         }
 
         public uint ReadLong(uint address)
         {
+            //address &= 0xFFFFFFFC;
+
             return (uint)Memory[(address++) & 0xFFFF]
                 | (uint)(Memory[(address++) & 0xFFFF] << 8)
                 | (uint)(Memory[(address++) & 0xFFFF] << 16)
@@ -638,12 +641,14 @@ namespace Gear.EmulationCore
 
         public void WriteWord(uint address, uint value)
         {
+            //address &= 0xFFFFFFFE;
             WriteByte(address++, (byte)value);
             WriteByte(address++, (byte)(value >> 8));
         }
 
         public void WriteLong(uint address, uint value)
         {
+            //address &= 0xFFFFFFFC;
             WriteByte(address++, (byte)value);
             WriteByte(address++, (byte)(value >> 8));
             WriteByte(address++, (byte)(value >> 16));

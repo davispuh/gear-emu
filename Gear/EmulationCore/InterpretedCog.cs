@@ -105,7 +105,7 @@ namespace Gear.EmulationCore
             State = CogRunState.BOOT_INTERPRETER;
             StateCount = INTERPRETER_BOOT_TIME;
 
-            uint InitFrame = this[(int)CogSpecialAddress.PAR];
+            uint InitFrame = Hub.ReadLong(this[(int)CogSpecialAddress.PAR]);
 
             this[(int)CogSpecialAddress.COGID] = Hub.CogID(this);
 
@@ -174,7 +174,7 @@ namespace Gear.EmulationCore
                 // SPIN instructions take longer than 14 cycles to execute.
                 // Otherwise there is the possibility that the value could be clobbered.
 
-                uint BootParam = StackFrame -= 4;
+                uint BootParam = PopStack();
                 uint EntryPoint = PopStack();
                 CogID = PopStack();
 

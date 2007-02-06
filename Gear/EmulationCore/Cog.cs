@@ -31,7 +31,6 @@ namespace Gear.EmulationCore
     {
         STATE_EXECUTE,          // Waiting for instruction to finish executing
 
-        WAIT_LOAD_PARAM,        // Cog is loading it's PARAMeter
         WAIT_LOAD_PROGRAM,      // Cog is loading program memory
         WAIT_CYCLES,            // Cog is executing an instruction, and waiting an alloted ammount of cycles
         WAIT_PREWAIT,           // Waits for an allotted number of cycles before changing to a new state
@@ -130,14 +129,14 @@ namespace Gear.EmulationCore
         protected PLLGroup PhaseLockedLoop;
 
         public Cog(Propeller host,
-            uint programAddress, uint paramAddress, uint frequency,
+            uint programAddress, uint param, uint frequency,
             PLLGroup pll)
         {
             Hub = host;
 
             Memory = new uint[0x200];     // 512 bytes of memory
             ProgramAddress = programAddress;
-            ParamAddress = paramAddress;
+            ParamAddress = param;
 
             FreqA = new FreqGenerator(host, pll, true);
             FreqB = new FreqGenerator(host, pll, false);
@@ -150,7 +149,9 @@ namespace Gear.EmulationCore
             PC = 0;
 
             // We are in boot time load
-            State = CogRunState.WAIT_LOAD_PARAM;
+            Memory[(int)CogSpecialAddress.PAR] = param;
+            State = CogRunState.WAIT_LOAD_PROGRAM;
+            StateCount = 0;
 
             // Clear the special purpose registers
             for (int i = (int)CogSpecialAddress.CNT; i <= 0x1FF; i++)
@@ -246,8 +247,6 @@ namespace Gear.EmulationCore
                     case CogRunState.WAIT_PREWAIT:
                     case CogRunState.WAIT_CYCLES:
                         return "Running instruction";
-                    case CogRunState.WAIT_LOAD_PARAM:
-                        return "Loading Parameter";
                     case CogRunState.WAIT_LOAD_PROGRAM:
                         return "Loading Program";
                     case CogRunState.WAIT_CNT:
@@ -353,11 +352,6 @@ namespace Gear.EmulationCore
         {
             switch (State)
             {
-                case CogRunState.WAIT_LOAD_PARAM:
-                    Memory[(int)CogSpecialAddress.PAR] = Hub.ReadLong(ParamAddress);
-                    State = CogRunState.WAIT_LOAD_PROGRAM;
-                    StateCount = 0;
-                    break;
                 case CogRunState.WAIT_LOAD_PROGRAM:
                     Memory[StateCount++] = Hub.ReadLong(ProgramAddress);
                     ProgramAddress += 4;

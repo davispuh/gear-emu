@@ -125,8 +125,12 @@ namespace Gear.GUI.LogicProbe
                 previousX = nextX;
                 previousY = nextY;
 
-                index[seekindex]++;
-
+                for (int i = 0; i < index.Length; i++)
+                {
+                    if (Channels[i].GetTime(index[i]) == time)
+                        index[i]++;
+                }
+                
                 if (Channels[seekindex].Overflow(index[seekindex]))
                     break;
             } while (nextX > left);

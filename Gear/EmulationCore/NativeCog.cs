@@ -167,7 +167,7 @@ namespace Gear.EmulationCore
             switch (State)
             {
                 case CogRunState.HUB_HUBOP:
-                    DataResult = Hub.HubOp(this, DestinationValue, SourceValue, ref CarryResult);
+                    DataResult = Hub.HubOp(this, SourceValue, DestinationValue, ref CarryResult);
                     WriteBackResult();
                     return;
                 case CogRunState.HUB_RDBYTE:
@@ -187,13 +187,13 @@ namespace Gear.EmulationCore
                 case CogRunState.HUB_RDWORD:
                     if (WriteResult)
                     {
-                        DataResult = Hub.ReadWord(SourceValue);
+                        DataResult = Hub.ReadWord(SourceValue & 0xFFFFFFFE);
                         ZeroResult = DataResult == 0;
                         // TODO: Find Carry
                     }
                     else
                     {
-                        Hub.WriteWord(SourceValue, DestinationValue);
+                        Hub.WriteWord(SourceValue & 0xFFFFFFFE, DestinationValue);
                         // TODO: Find Zero and Carry
                     }
                     WriteBackResult();
@@ -201,13 +201,13 @@ namespace Gear.EmulationCore
                 case CogRunState.HUB_RDLONG:
                     if (WriteResult)
                     {
-                        DataResult = Hub.ReadLong(SourceValue);
+                        DataResult = Hub.ReadLong(SourceValue & 0xFFFFFFFC);
                         ZeroResult = DataResult == 0;
                         // TODO: Find Carry
                     }
                     else
                     {
-                        Hub.WriteLong(SourceValue, DestinationValue);
+                        Hub.WriteLong(SourceValue, DestinationValue & 0xFFFFFFFC);
                         // TODO: Find Zero and Carry
                     }
                     WriteBackResult();
