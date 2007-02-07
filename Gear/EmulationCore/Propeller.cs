@@ -465,17 +465,17 @@ namespace Gear.EmulationCore
             // Pushes the 3 primary offsets (local offset, var offset, and object offset)
             // Stack -1 is the boot parameter
 
-            uint InitFrame = ReadWord(0xA);
+            uint InitFrame = ReadWord(10);
 
             WriteWord(InitFrame - 8, ReadWord(6));  // Object
             WriteWord(InitFrame - 6, ReadWord(8));  // Var
-            WriteWord(InitFrame - 4, ReadWord(10)); // Local
+            WriteWord(InitFrame - 4, ReadWord(12)); // Local
             WriteWord(InitFrame - 2, ReadWord(14)); // Stack
             
             // Boot parameter is Inital PC in the lo word, and the stack frame in the hi word
             ClockSources[0] = new PLLGroup();
 
-            Cogs[0] = new InterpretedCog(this, 0x0A, CoreFreq, (PLLGroup)ClockSources[0] );
+            Cogs[0] = new InterpretedCog(this, InitFrame, CoreFreq, (PLLGroup)ClockSources[0]);
         }
 
         public void Stop(int cog)
@@ -617,14 +617,14 @@ namespace Gear.EmulationCore
 
         public ushort ReadWord(uint address)
         {
-            //address &= 0xFFFFFFFE;
+            address &= 0xFFFFFFFE;
             return (ushort)(Memory[(address++) & 0xFFFF]
                 | (Memory[(address++) & 0xFFFF] << 8));
         }
 
         public uint ReadLong(uint address)
         {
-            //address &= 0xFFFFFFFC;
+            address &= 0xFFFFFFFC;
 
             return (uint)Memory[(address++) & 0xFFFF]
                 | (uint)(Memory[(address++) & 0xFFFF] << 8)
@@ -641,14 +641,14 @@ namespace Gear.EmulationCore
 
         public void WriteWord(uint address, uint value)
         {
-            //address &= 0xFFFFFFFE;
+            address &= 0xFFFFFFFE;
             WriteByte(address++, (byte)value);
             WriteByte(address++, (byte)(value >> 8));
         }
 
         public void WriteLong(uint address, uint value)
         {
-            //address &= 0xFFFFFFFC;
+            address &= 0xFFFFFFFC;
             WriteByte(address++, (byte)value);
             WriteByte(address++, (byte)(value >> 8));
             WriteByte(address++, (byte)(value >> 16));

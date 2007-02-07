@@ -105,17 +105,17 @@ namespace Gear.EmulationCore
             State = CogRunState.BOOT_INTERPRETER;
             StateCount = INTERPRETER_BOOT_TIME;
 
-            uint InitFrame = Hub.ReadLong(this[(int)CogSpecialAddress.PAR]);
+            uint InitFrame = this[(int)CogSpecialAddress.PAR];
 
             this[(int)CogSpecialAddress.COGID] = Hub.CogID(this);
 
-            PC = InitFrame >> 16;
             InitFrame &= 0xFFFF;
 
             ObjectFrame = Hub.ReadWord(InitFrame - 8);
             VariableFrame = Hub.ReadWord(InitFrame - 6);
-            LocalFrame = Hub.ReadWord(InitFrame - 4) - (uint)4;
+            PC = Hub.ReadWord(InitFrame - 4);
             StackFrame = Hub.ReadWord(InitFrame - 2) - (uint)4;
+            LocalFrame = InitFrame - (uint)4;
 
             // Clear CogID
             this[(int)CogSpecialAddress.INITCOGID] = InitFrame - 4;
@@ -149,19 +149,15 @@ namespace Gear.EmulationCore
 
                 Hub.WriteWord(StackPointer - 8, ObjectFrame);               // Object Memory (Same object)
                 Hub.WriteWord(StackPointer - 6, VariableFrame);             // Variable Memory (Same variables)
-                Hub.WriteWord(StackPointer - 4, StackPointer);              // Local Memory
+                Hub.WriteWord(StackPointer - 4, FunctionOffset);            // PC
                 Hub.WriteWord(StackPointer - 2, FunctStack + (uint)4);      // Stack Pointer
 
                 // Preinitialize boot function
                 for (uint i = 0; i < FunctionArgs * 4; i += 4, ArguementStack -= 4)
                     Hub.WriteLong(ArguementStack, PopStack());
 
-                // Write our boot parameter to the program's stack
-                Hub.WriteLong(FunctStack, (FunctionOffset << 16) | StackPointer);
-
                 // Setup cog boot op-codes
-                code = ((0xF004 & 0xFFFC) << 2) |
-                       ((FunctStack & 0xFFFC) << 16);
+                code = ((0xF004 & 0xFFFC) << 2) | (StackPointer << 16);
 
                 // Find which cog we will be booting
                 CogID = Hub.ReadLong(this[(int)CogSpecialAddress.INITCOGID] - 4);

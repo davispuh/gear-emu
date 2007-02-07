@@ -159,7 +159,10 @@ namespace Gear.EmulationCore
             State = CogRunState.STATE_EXECUTE;
             Carry = false;
             Zero = false;
+
             PC = 0;
+            // Prefetch first instruction
+            Operation = ReadLong(0);
         }
 
         public override void HubAccessable()
@@ -187,13 +190,13 @@ namespace Gear.EmulationCore
                 case CogRunState.HUB_RDWORD:
                     if (WriteResult)
                     {
-                        DataResult = Hub.ReadWord(SourceValue & 0xFFFFFFFE);
+                        DataResult = Hub.ReadWord(SourceValue);
                         ZeroResult = DataResult == 0;
                         // TODO: Find Carry
                     }
                     else
                     {
-                        Hub.WriteWord(SourceValue & 0xFFFFFFFE, DestinationValue);
+                        Hub.WriteWord(SourceValue, DestinationValue);
                         // TODO: Find Zero and Carry
                     }
                     WriteBackResult();
@@ -201,13 +204,13 @@ namespace Gear.EmulationCore
                 case CogRunState.HUB_RDLONG:
                     if (WriteResult)
                     {
-                        DataResult = Hub.ReadLong(SourceValue & 0xFFFFFFFC);
+                        DataResult = Hub.ReadLong(SourceValue);
                         ZeroResult = DataResult == 0;
                         // TODO: Find Carry
                     }
                     else
                     {
-                        Hub.WriteLong(SourceValue, DestinationValue & 0xFFFFFFFC);
+                        Hub.WriteLong(SourceValue, DestinationValue);
                         // TODO: Find Zero and Carry
                     }
                     WriteBackResult();
@@ -290,7 +293,8 @@ namespace Gear.EmulationCore
                     return;
             }
 
-            Operation = ReadLong(PC);
+            PC = (PC + 1) & 0x1FF;
+
             InstructionCode = (CogInstructionCodes)(Operation & 0xFC000000);
             ConditionCode = (CogConditionCodes)((Operation & 0x003C0000) >> 18);
 
@@ -307,10 +311,9 @@ namespace Gear.EmulationCore
             Destination = (Operation >> 9) & 0x1FF;
             DestinationValue = ReadLong(Destination);
 
-            PC = (PC + 1) & 0x1FF;
-
             if (ConditionCompare(ConditionCode, Zero, Carry))
             {
+                Operation = ReadLong(PC);
                 State = CogRunState.WAIT_PREWAIT;
                 NextState = CogRunState.STATE_EXECUTE;
                 StateCount = 4;
@@ -649,6 +652,10 @@ namespace Gear.EmulationCore
                     StateCount = 4;
                     break;
             }
+
+            // Prefetch instruction
+            Operation = ReadLong(PC);
+
         }
 
         private void InstructionRCR()
