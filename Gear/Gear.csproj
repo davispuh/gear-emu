@@ -136,6 +136,9 @@
     <Compile Include="GUI\SpinView.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="GUI\Television.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="PluginSupport\PluginBase.cs">
       <SubType>UserControl</SubType>
     </Compile>
