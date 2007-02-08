@@ -20,8 +20,6 @@ namespace Gear.GUI
         private int PixelError;
         private Bitmap Picture;
 
-        private double LowPassGray;
-        private double RoundedChroma;
         private double[] BackLog;
         private int BackLogIndex;
 
@@ -49,8 +47,7 @@ namespace Gear.GUI
                         
             LastTime = 0;
             RasterX = RasterY = 0;
-            LowPassGray = 0;
-            BackLog = new double[9];
+            BackLog = new double[16];
             BackLogIndex = 0;
         }
 
@@ -107,6 +104,10 @@ namespace Gear.GUI
 
         }
 
+        double prior;
+        double chroma;
+        double baseChroma;
+
         public override void OnPinChange(double time, PinState[] pins)
         {
             double delta = time - LastTime;
@@ -124,15 +125,23 @@ namespace Gear.GUI
                 
                 while (samples-- > 0)
                 {
-                    const double ratioLowPass = SampleTime / (ColorCarrier/2 + SampleTime);
-                    LowPassGray = luma * ratioLowPass + LowPassGray * (1 - ratioLowPass);
-
-                    const double ratioRoundSquare = SampleTime / (RoundSquare + SampleTime);
-                    RoundedChroma = luma * ratioRoundSquare + RoundedChroma * (1 - ratioRoundSquare);
-
-                    BackLog[BackLogIndex++] = RoundedChroma;
+                    BackLog[BackLogIndex++] = luma;
                     if (BackLogIndex >= BackLog.Length)
                         BackLogIndex = 0;
+
+                    if( prior < luma )
+                    {
+                        double linePulse = (time - SyncTime) / SampleTime;
+
+                        if (linePulse < 303+144)
+                            baseChroma = time;
+
+                        // Find out aproximately how much of a difference there is from the base phase
+                        chroma = (time - baseChroma) / ColorCarrier + 0.75;
+                        // Round it down
+                        chroma = 1.0 - chroma + (int)chroma;
+                    }
+                    prior = luma;
 
                     if (PixelError-- > 0)
                     {
@@ -142,6 +151,7 @@ namespace Gear.GUI
 
                     double minAmp = 8;
                     double maxAmp = -1;
+                    double amplitude   = 0;
 
                     for (int i = 0; i < BackLog.Length; i++)
                     {
@@ -149,33 +159,22 @@ namespace Gear.GUI
                             minAmp = BackLog[i];
                         if (maxAmp < BackLog[i])
                             maxAmp = BackLog[i];
+                        amplitude += BackLog[i];
                     }                    
 
+                    amplitude /= BackLog.Length;
                     double saturation = (maxAmp - minAmp);
-                    double difference = 1.0;
-                    double chroma = 0;
 
-                    for (int i = 0; i < BackLog.Length; i++)
-                    {
-                        double idxDifference = Math.Abs( BackLog[i] - saturation / 2 );
-
-                        if (idxDifference < difference)
-                        {
-                            chroma = i / 16.0;
-                            difference = idxDifference;
-                        }
-                    }                    
-                    
                     if (RasterX < Picture.Width)
                     {
                         // Proper color screen
                         Picture.SetPixel(RasterX++, RasterY, 
                             HSVtoRGB(
-                                0.0,//chroma,
+                                chroma,
                                 // Limit by current gray output
-                                saturation,
+                                saturation * ((0.5 - Math.Abs(0.5 - amplitude)) * 2 * 0.8 + 0.2),
                                 // Overcharge the black level
-                                LowPassGray * 0.90 + 0.10 )
+                                amplitude)
                             );
                     }
                 }
@@ -216,7 +215,7 @@ namespace Gear.GUI
                     // Vertical sync pulse
                     else if( RasterY > 100 )
                     {
-                        RasterY = MidRaster ? 1 : 0;
+                        RasterY = MidRaster ? 0 : 1;
                         MidRaster = !MidRaster;
                     }
 
