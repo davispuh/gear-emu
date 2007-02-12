@@ -8,222 +8,219 @@ using System.Drawing;
 using Gear.PluginSupport;
 using Gear.EmulationCore;
 
-    class Television : PluginBase
+class Television : PluginBase
+{
+    const double ColorCarrier = 1.0 / 3579545.0;
+    const double SampleTime = ColorCarrier / 16.0;  // Ammmount of time for 1/16th of a color phase
+    const double RoundSquare = ColorCarrier / 64.0;
+    const int PixelPitch = 4;                       // Horizontal resolution divide
+
+    private double LastTime;
+    private double SampleError;
+    private int PixelError;
+    private Bitmap Picture;
+
+    private double[] BackLog;
+    private int BackLogIndex;
+
+    private double SyncTime;
+    private bool MidRaster;
+
+    private int Voltage;
+
+    private int RasterX;
+    private int RasterY;
+
+    private bool Syncing;
+
+
+    public override string Title
     {
-        const double ColorCarrier = 1.0 / 3579545.0;
-        const double SampleTime = ColorCarrier / 4.0;  // Ammmount of time for 1/8th of a color phase
-
-        private double LastTime;
-        private double SampleError;
-        private Bitmap Picture;
-
-        private double LowPassGray;
-        private double SyncTime;
-        private bool MidRaster;
-
-        private double ColorBurstSync;
-        private double OutputHue;        
-        private double LowEdgeColor;
-        private double HighEdgeColor;
-        private double PreviousLevel;
-        private int Voltage;
-
-        private double HighEdgeForceLatch;
-        private double LowEdgeForceLatch;
-
-        private int RasterX, RasterY;
-
-        private bool Syncing;
-
-        public override string Title
+        get
         {
-            get
+            return "Television";
+        }
+    }
+    
+    public Television()
+    {
+        Picture = new Bitmap(910, 600, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+                    
+        LastTime = 0;
+        RasterX = RasterY = 0;
+        BackLog = new double[10];
+        BackLogIndex = 0;
+    }
+
+    protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
+    {
+        e.Graphics.DrawImage(Picture, 0, 0);
+    }
+
+    public override void Repaint(bool force) 
+    {
+        CreateGraphics().DrawImage(Picture, 0, 0); 
+    }
+
+    public override void PresentChip(Propeller host)
+    {
+        host.NotifyOnPins(this);            
+    }
+
+    private Color HSVtoRGB( double h, double s, double v )
+    {
+        int i;
+        double f, p, q, t;
+
+        v *= 255;
+
+        if( s == 0 ) {
+            return Color.FromArgb( (int)v,(int)v,(int)v );
+        }
+
+        h *= 5.0;
+        while (h &lt; 0.0)
+            h += 5;
+
+        i = (int)h;
+        f = h - i;			// factorial part of h
+        p = v * ( 1 - s );
+        q = v * ( 1 - s * f );
+        t = v * ( 1 - s * ( 1 - f ) );
+
+        switch( i ) {
+	        case 0:
+                return Color.FromArgb((int)v, (int)t, (int)p);
+	        case 1:
+                return Color.FromArgb((int)q, (int)v, (int)p);
+	        case 2:
+                return Color.FromArgb((int)p, (int)v, (int)t);
+	        case 3:
+                return Color.FromArgb((int)p, (int)q, (int)v);
+	        case 4:
+                return Color.FromArgb((int)t, (int)p, (int)v);
+	        default:		// case 5:
+                return Color.FromArgb((int)v, (int)p, (int)q);
+        }
+
+    }
+
+    double prior;
+    double chroma;
+    double baseChroma;
+
+    public override void OnPinChange(double time, PinState[] pins)
+    {
+        double delta = time - LastTime;
+        LastTime = time;
+
+        // Run lowpass on signal to get the current gray level
+        //if (!Syncing)
+        {
+            double luma = (Voltage / 7.0);
+
+            // Find the number of samples to display (with taking error into account
+            SampleError += delta / SampleTime;
+            int samples = (int)SampleError;
+            SampleError -= samples;
+            
+            while (samples-- &gt; 0)
             {
-                return "Television";
+                BackLog[BackLogIndex++] = luma;
+                if (BackLogIndex &gt;= BackLog.Length)
+                    BackLogIndex = 0;
+
+                if( prior &gt; luma )
+                {
+                    double linePulse = (time - SyncTime) / SampleTime;
+
+                    if (linePulse &lt; 447)
+                        baseChroma = time;
+
+                    // Find out aproximately how much of a difference there is from the base phase
+                    chroma = (time - baseChroma) / ColorCarrier + 0.75;
+                    // Round it down, and color correct
+                    chroma = 1.0 - (chroma - (int)chroma);
+                }
+                prior = luma;
+
+                double minAmp = 8;
+                double maxAmp = -1;
+
+                for (int i = 0; i &lt; BackLog.Length; i++)
+                {
+                    if (minAmp &gt; BackLog[i])
+                        minAmp = BackLog[i];
+                    if (maxAmp &lt; BackLog[i])
+                        maxAmp = BackLog[i];
+                }
+
+                double amplitude = (maxAmp + minAmp) / 2;
+                double saturation = (maxAmp - minAmp);
+
+                if (++PixelError &lt; PixelPitch)
+                    continue;
+                PixelError = 0;
+
+                if (RasterX &lt; Picture.Width)
+                {
+                    // Proper color screen
+                    Picture.SetPixel(RasterX++, RasterY, 
+                        HSVtoRGB(
+                            chroma,
+                            saturation,
+                            amplitude)
+                        );
+                }
             }
         }
-        
-        public Television()
+
+        Voltage =
+            ((pins[12] == PinState.OUTPUT_HI) ? 1 : 0) +
+            ((pins[13] == PinState.OUTPUT_HI) ? 2 : 0) +
+            ((pins[14] == PinState.OUTPUT_HI) ? 4 : 0);
+
+        if (Voltage == 0)
         {
-            Picture = new Bitmap(910, 600, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-                        
-            LastTime = 0;
-            RasterX = RasterY = 0;
-            LowPassGray = 0;
-        }
-
-        protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
-        {
-            e.Graphics.DrawImage(Picture, 0, 0);
-        }
-
-        public override void Repaint(bool force) 
-        {
-            CreateGraphics().DrawImage(Picture, 0, 0); 
-        }
-
-        public override void PresentChip(Propeller host)
-        {
-            host.NotifyOnPins(this);            
-        }
-
-        private Color HSVtoRGB( double h, double s, double v )
-        {
-	        int i;
-	        double f, p, q, t;
-
-            v *= 255;
-
-	        if( s == 0 ) {
-                return Color.FromArgb( (int)v,(int)v,(int)v );
-	        }
-
-	        h *= 5;
-            i = (int)h;
-            f = h - i;			// factorial part of h
-	        p = v * ( 1 - s );
-	        q = v * ( 1 - s * f );
-	        t = v * ( 1 - s * ( 1 - f ) );
-
-	        switch( i ) {
-		        case 0:
-                    return Color.FromArgb((int)v, (int)t, (int)p);
-		        case 1:
-                    return Color.FromArgb((int)q, (int)v, (int)p);
-		        case 2:
-                    return Color.FromArgb((int)p, (int)v, (int)t);
-		        case 3:
-                    return Color.FromArgb((int)p, (int)q, (int)v);
-		        case 4:
-                    return Color.FromArgb((int)t, (int)p, (int)v);
-		        default:		// case 5:
-                    return Color.FromArgb((int)v, (int)p, (int)q);
-	        }
-
-        }
-
-        public override void OnPinChange(double time, PinState[] pins)
-        {
-            double delta = time - LastTime;
-            LastTime = time;
-
-            // Lowpass the signal to get the LUMA value
-            double ratio = delta / (SampleTime*3);
-            double luma  = (Voltage / 7.0);
-            if (ratio &lt; 1)
-                LowPassGray = luma * ratio + LowPassGray * (1 - ratio);
-            else
-                LowPassGray = luma;
-
             if (!Syncing)
             {
-                // Find the number of samples to display (with taking error into account
-                SampleError += delta / SampleTime;
-                int samples = (int)SampleError;
-                SampleError -= samples;
-
-                if ((HighEdgeForceLatch -= delta) &lt; 0)
-                {
-                    HighEdgeColor = luma;
-                    HighEdgeForceLatch = ColorCarrier;
-                }
-                if ((LowEdgeForceLatch -= delta) &lt; 0)
-                {
-                    LowEdgeColor = luma;
-                    LowEdgeForceLatch = ColorCarrier;
-                }
-
-                if (PreviousLevel != luma)
-                {
-                    if (luma &lt; LowEdgeColor)
-                        LowEdgeColor = luma;
-                    if (luma &gt; HighEdgeColor)
-                        HighEdgeColor = luma;
-
-                    if (PreviousLevel &lt; luma)
-                    {
-                        HighEdgeColor = luma;
-                        HighEdgeForceLatch = ColorCarrier;
-                    }
-                    else
-                    {
-                        if ((time - SyncTime) / SampleTime &lt; 112)
-                        {
-                            ColorBurstSync = time;
-                        }
-                        else
-                        {
-                            LowEdgeColor = luma;
-                            LowEdgeForceLatch = ColorCarrier;
-
-                            OutputHue = (time - ColorBurstSync) / ColorCarrier + 0.75;
-                            OutputHue = 1.0 - (OutputHue - (int)OutputHue);
-                        }
-                    }
-
-                    PreviousLevel = luma;
-                }
-
-                while (samples-- &gt; 0)
-                {
-                    if (RasterX &lt; Picture.Width)
-                    {
-                        // Proper color screen
-                        Picture.SetPixel(RasterX++, RasterY, 
-                            HSVtoRGB(
-                                OutputHue,
-                                // Limit by current gray output
-                                (HighEdgeColor - LowEdgeColor) * (Math.Abs(0.5 - LowPassGray) * 0.3 + 0.7),
-                                // Overcharge the black level
-                                LowPassGray * 0.90 + 0.10 )
-                            );
-                    }
-                }
+                SyncTime = time;
+                Syncing = true;
             }
 
-            Voltage =
-                ((pins[12] == PinState.OUTPUT_HI) ? 1 : 0) +
-                ((pins[13] == PinState.OUTPUT_HI) ? 2 : 0) +
-                ((pins[14] == PinState.OUTPUT_HI) ? 4 : 0);
-
-            if (Voltage == 0)
+            return;
+        }
+        else
+        {
+            if (Syncing)
             {
-                if (!Syncing)
+                double syncClocks = (time - SyncTime) / SampleTime;
+
+                // We found a HSYNC pulse
+                if (syncClocks &lt; 300)
                 {
-                    SyncTime = time;
-                    Syncing = true;
+                    // Increment our display counters
+                    RasterX = 0;
+                    RasterY += 2;
+
+                    // Fix horizontal error
+                    SampleError = 0;
+                    PixelError = 0;                        
+
+                    if (RasterY &gt;= Picture.Height)
+                        RasterY = 0;
+                }
+                // Vertical sync pulse
+                else if( RasterY &gt; 100 )
+                {
+                    RasterY = MidRaster ? 0 : 1;
+                    MidRaster = !MidRaster;
                 }
 
-                return;
-            }
-            else
-            {
-                if (Syncing)
-                {
-                    double syncClocks = (time - SyncTime) / SampleTime;
-
-                    // We found a HSYNC pulse
-                    if (syncClocks &lt; 75)
-                    {
-                        RasterX = 0;
-                        SampleError = 0;
-
-                        RasterY += 2;
-
-                        if (RasterY &gt;= Picture.Height)
-                            RasterY = 0;
-                    }
-                    // Vertical sync pulse
-                    else if( RasterY &gt; 100 )
-                    {
-                        RasterY = MidRaster ? 1 : 0;
-                        MidRaster = !MidRaster;
-                    }
-
-                    Syncing = false;
-                }
+                Syncing = false;
             }
         }
     }
+}
 </code>
 </plugin>
