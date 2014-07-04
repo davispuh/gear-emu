@@ -27,28 +27,28 @@ using System.Text;
 
 namespace Gear.EmulationCore
 {
-  public enum CogRunState
-  {
-    STATE_EXECUTE,          // Waiting for instruction to finish executing
+    public enum CogRunState
+    {
+        STATE_EXECUTE,          // Waiting for instruction to finish executing
 
-    WAIT_LOAD_PROGRAM,      // Cog is loading program memory
-    WAIT_CYCLES,            // Cog is executing an instruction, and waiting an alloted ammount of cycles
-    WAIT_PREWAIT,           // Waits for an allotted number of cycles before changing to a new state
+        WAIT_LOAD_PROGRAM,      // Cog is loading program memory
+        WAIT_CYCLES,            // Cog is executing an instruction, and waiting an alloted ammount of cycles
+        WAIT_PREWAIT,           // Waits for an allotted number of cycles before changing to a new state
 
-    BOOT_INTERPRETER,       // Interpreter is booting up
-    WAIT_INTERPRETER,       // Interpreter is executing an instruction
-    EXEC_INTERPRETER,       // Interpreter is fetching instruction
+        BOOT_INTERPRETER,       // Interpreter is booting up
+        WAIT_INTERPRETER,       // Interpreter is executing an instruction
+        EXEC_INTERPRETER,       // Interpreter is fetching instruction
 
-    WAIT_PEQ,               // Waits for pins to match
-    WAIT_PNE,               // Waits for pins to NOT match
-    WAIT_CNT,               // Waits for count
-    WAIT_VID,               // Waits for video
+        WAIT_PEQ,               // Waits for pins to match
+        WAIT_PNE,               // Waits for pins to NOT match
+        WAIT_CNT,               // Waits for count
+        WAIT_VID,               // Waits for video
 
-    HUB_RDBYTE,             // Waiting to read byte
-    HUB_RDWORD,             // Waiting to read word
-    HUB_RDLONG,             // Waiting to read uint
-    HUB_HUBOP,              // Waiting to perform hub operation
-  }
+        HUB_RDBYTE,             // Waiting to read byte
+        HUB_RDWORD,             // Waiting to read word
+        HUB_RDLONG,             // Waiting to read uint
+        HUB_HUBOP,              // Waiting to perform hub operation
+    }
 
     public enum CogSpecialAddress : uint
     {
@@ -170,7 +170,7 @@ namespace Gear.EmulationCore
 
         public ulong OUT
         {
-            get 
+            get
             {
                 return Memory[(int)CogSpecialAddress.OUTA] |
                     (Memory[(int)CogSpecialAddress.OUTB] << 32) |
@@ -182,7 +182,7 @@ namespace Gear.EmulationCore
 
         public uint OUTA
         {
-            get 
+            get
             {
                 return Memory[(int)CogSpecialAddress.OUTA] |
                     ((uint)FreqA.Output |
@@ -294,60 +294,46 @@ namespace Gear.EmulationCore
                 case CogConditionCodes.IF_NEVER:
                     break;
                 case CogConditionCodes.IF_NZ_AND_NC:
-                    if (!a && !b)
-                        return false;
+                    if (!a && !b) return false;
                     break;
                 case CogConditionCodes.IF_NC_AND_Z:
-                    if (a && !b)
-                        return false;
+                    if (a && !b) return false;
                     break;
                 case CogConditionCodes.IF_NC:
-                    if (!b)
-                        return false;
+                    if (!b) return false;
                     break;
                 case CogConditionCodes.IF_C_AND_NZ:
-                    if (!a && b)
-                        return false;
+                    if (!a && b) return false;
                     break;
                 case CogConditionCodes.IF_NZ:
-                    if (!a)
-                        return false;
+                    if (!a) return false;
                     break;
                 case CogConditionCodes.IF_C_NE_Z:
-                    if (a != b)
-                        return false;
+                    if (a != b) return false;
                     break;
                 case CogConditionCodes.IF_NC_OR_NZ:
-                    if (!a || !b)
-                        return false;
+                    if (!a || !b) return false;
                     break;
                 case CogConditionCodes.IF_C_AND_Z:
-                    if (a && b)
-                        return false;
+                    if (a && b) return false;
                     break;
                 case CogConditionCodes.IF_C_EQ_Z:
-                    if (a == b)
-                        return false;
+                    if (a == b) return false;
                     break;
                 case CogConditionCodes.IF_Z:
-                    if (a)
-                        return false;
+                    if (a) return false;
                     break;
                 case CogConditionCodes.IF_NC_OR_Z:
-                    if (a || !b)
-                        return false;
+                    if (a || !b) return false;
                     break;
                 case CogConditionCodes.IF_C:
-                    if (b)
-                        return false;
+                    if (b) return false;
                     break;
                 case CogConditionCodes.IF_C_OR_NZ:
-                    if (!a || b)
-                        return false;
+                    if (!a || b) return false;
                     break;
                 case CogConditionCodes.IF_Z_OR_C:
-                    if (a || b)
-                        return false;
+                    if (a || b) return false;
                     break;
                 case CogConditionCodes.IF_ALWAYS:
                     return false;
@@ -404,14 +390,14 @@ namespace Gear.EmulationCore
                 Hub.Step();
             }
             while (State != CogRunState.EXEC_INTERPRETER &&
-                State != CogRunState.STATE_EXECUTE && 
-                --i > 0);
-                
+                   State != CogRunState.STATE_EXECUTE &&
+                   --i > 0);
+
         }
 
         public uint ReadLong(uint address)
         {
-            switch( address & 0x1FF )
+            switch (address & 0x1FF)
             {
                 case 0x1F1:
                     return Hub.Counter;

@@ -30,7 +30,7 @@ namespace Gear.EmulationCore
     public enum CounterMode : uint
     {
         DISABLED,
-        
+
         PLL_INTERNAL,
         PLL_SINGLE_ENDED,
         PLL_DIFFERENTIAL,
@@ -93,7 +93,7 @@ namespace Gear.EmulationCore
 
                 PinAMask = (uint)1 << (int)(value & 0x3F);
                 PinBMask = (uint)1 << (int)((value >> 9) & 0x3F);
-                CtrMode = (CounterMode)((value & 0x7c000000)>>26);
+                CtrMode = (CounterMode)((value & 0x7c000000) >> 26);
 
                 // Setup PLL
                 switch (CtrMode)
@@ -132,7 +132,7 @@ namespace Gear.EmulationCore
                     case CounterMode.PLL_INTERNAL:
                     case CounterMode.PLL_SINGLE_ENDED:
                     case CounterMode.PLL_DIFFERENTIAL:
-                        
+
                         // This is a special dejitter function
                         // The edge-sensitive system resulted in unstable
                         // output frequencies
@@ -166,7 +166,7 @@ namespace Gear.EmulationCore
             }
         }
 
-        public FreqGenerator( Propeller host, PLLGroup phaseLockLoop, bool freqA )
+        public FreqGenerator(Propeller host, PLLGroup phaseLockLoop, bool freqA)
         {
             Host = host;
             OutA = false;
@@ -181,7 +181,7 @@ namespace Gear.EmulationCore
             PhaseLockLoop.SetBaseFrequency(clock);
         }
 
-        public void Tick( ulong pins )
+        public void Tick(ulong pins)
         {
             switch (CtrMode)
             {

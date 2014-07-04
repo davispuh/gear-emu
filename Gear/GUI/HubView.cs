@@ -52,8 +52,8 @@ namespace Gear.GUI
 
         public void DataChanged()
         {
-            if( m_Host == null )
-                return ;
+            if (m_Host == null)
+                return;
 
             pinDIR.Value = m_Host.DIR;
             pinIN.Value = m_Host.IN;

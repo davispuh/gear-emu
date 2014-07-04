@@ -43,7 +43,7 @@ namespace Gear.GUI
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Propeller Runtime Image (*.binary;*.eeprom)|*.binary;*.eeprom|All Files (*.*)|*.*";
-            openFileDialog.Title = "Open Propeller Binary..."; 
+            openFileDialog.Title = "Open Propeller Binary...";
             if (openFileDialog.ShowDialog(this) == DialogResult.OK)
             {
                 Emulator em = new Emulator(Path.GetFileName(openFileDialog.FileName));
@@ -92,7 +92,7 @@ namespace Gear.GUI
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AboutGear about = new AboutGear();
-            about.ShowDialog( this );
+            about.ShowDialog(this);
         }
 
         private void toolStripButton1_Click(object sender, EventArgs e)
@@ -100,7 +100,7 @@ namespace Gear.GUI
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Gear plug-in component (*.xml)|*.xml|All Files (*.*)|*.*";
             openFileDialog.Title = "Open Gear Plug-in...";
-            
+
             if (openFileDialog.ShowDialog(this) == DialogResult.OK)
             {
                 PluginEditor plugin = new PluginEditor();

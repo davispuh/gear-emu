@@ -58,7 +58,7 @@ namespace Gear.EmulationCore
         static private Dictionary<byte, string> BigEffectCodes;
         static private ArguementMode[] ArguementModes;
         static private string[] CogRegister;
-        
+
         static InstructionDisassembler()
         {
             Conditions = new string[] {
@@ -90,7 +90,7 @@ namespace Gear.EmulationCore
             InstReadHub = new string[] {
                 "RDBYTE ","RDWORD ","RDLONG "
             };
-            
+
             InstWriteHub = new string[] {
                 "WRBYTE ","WRWORD ","WRLONG "
             };
@@ -1060,18 +1060,26 @@ namespace Gear.EmulationCore
             string inst;
 
             if (Source >= 0x1f0)
-                SrcString = String.Format("{0}{1}", 
-                        ImmediateValue ? "#" : " ", 
+            {
+                SrcString = String.Format("{0}{1}",
+                        ImmediateValue ? "#" : " ",
                         CogRegister[Source - 0x1e0]);
+            }
             else
-                SrcString = String.Format("{0}${1:X3}", 
-                        ImmediateValue ? "#" : " ", 
+            {
+                SrcString = String.Format("{0}${1:X3}",
+                        ImmediateValue ? "#" : " ",
                         Source);
+            }
 
             if (Destination >= 0x1f0)
+            {
                 DestString = String.Format(" {0},", CogRegister[Destination - 0x1e0]);
+            }
             else
+            {
                 DestString = String.Format(" ${0:X3},", Destination);
+            }
 
             if (InstructionCode == 3)
             {
@@ -1081,43 +1089,56 @@ namespace Gear.EmulationCore
             else if (InstructionCode <= 3)
             {
                 ShowRdWr = false;
-                if (WriteResult)  // Write the result to cog memory
+                if (WriteResult)
+                {  // Write the result to cog memory
                     inst = InstReadHub[InstructionCode];
+                }
                 else
+                {
                     inst = InstWriteHub[InstructionCode];
+                }
             }
-            else if (InstructionCode == 0x17) 
+            else if (InstructionCode == 0x17)
             {
                 ShowRdWr = false;
                 inst = "JMPRET ";
                 if (!WriteResult)
                 {
-                  inst = "JMP    ";
-                  DestString = "";
-                  if (Source == 0)
-                  {
-                      SrcString = "";
-                      inst = "RET    ";
-                  }
+                    inst = "JMP    ";
+                    DestString = "";
+                    if (Source == 0)
+                    {
+                        SrcString = "";
+                        inst = "RET    ";
+                    }
                 }
                 else if (Destination != 0)
-                  inst = "CALL   ";
+                {
+                    inst = "CALL   ";
+                }
             }
             else
+            {
                 inst = Instructions[InstructionCode];
-            
-            instruction = String.Format("{0} {1}{2} {3}", new object[] 
-                { Conditions[ConditionCode],
+            }
+
+            instruction = String.Format("{0} {1}{2} {3}", new object[] {
+                Conditions[ConditionCode],
                 inst,
                 DestString,
-                SrcString });            
+                SrcString }
+            );
 
             if (ShowRdWr)
             {
                 if (WriteResult)
+                {
                     instruction += " WR";
+                }
                 else
+                {
                     instruction += " NR";
+                }
             }
             if (WriteZero)
                 instruction += " WZ";
@@ -1149,7 +1170,7 @@ namespace Gear.EmulationCore
         {
             ushort op = chip.ReadByte(address++);
 
-            if( (op & 0x80) == 0 )
+            if ((op & 0x80) == 0)
                 return (op & 0x7F);
 
             op &= 0x7F;
@@ -1177,13 +1198,21 @@ namespace Gear.EmulationCore
             op &= 0x7F;
 
             if (op == 0x02)
+            {
                 effect += String.Format("REPEAT_COMPARE {0}", GetSignedPackedOffset(chip, ref address));
+            }
             else if (op == 0x06)
+            {
                 effect += String.Format("REPEAT_COMPARE_STEP {0}", GetSignedPackedOffset(chip, ref address));
+            }
             else if (EffectCodes.ContainsKey(op))
+            {
                 effect += EffectCodes[op];
+            }
             else
+            {
                 effect += String.Format("UNKNOWN_EFFECT_{0:X}", op);
+            }
 
             return effect;
         }
@@ -1195,7 +1224,7 @@ namespace Gear.EmulationCore
             switch (op & 0xE0)
             {
                 case 0x00:
-                    return String.Format("UNKNOWN_0 {0}", CogRegister[op&0x1F]);
+                    return String.Format("UNKNOWN_0 {0}", CogRegister[op & 0x1F]);
                 case 0x20:
                     return String.Format("UNKNOWN_2 {0}", CogRegister[op & 0x1F]);
                 case 0x40:
@@ -1207,14 +1236,13 @@ namespace Gear.EmulationCore
                 case 0xA0:
                     return String.Format("POP {0}", CogRegister[op & 0x1F]);
                 case 0xC0:
-                    return String.Format("EFFECT {0} {1}", CogRegister[op & 0x1F], GetEffectCode(chip,ref address));
+                    return String.Format("EFFECT {0} {1}", CogRegister[op & 0x1F], GetEffectCode(chip, ref address));
                 default:
                     return String.Format("UNKNOWN_E {0}", CogRegister[op & 0x1F]);
             }
         }
 
-        public static string InterpreterText(Propeller chip, ref uint address, bool displayAsHexadecimal,
-                bool useShortOpcodes)
+        public static string InterpreterText(Propeller chip, ref uint address, bool displayAsHexadecimal, bool useShortOpcodes)
         {
             byte op = chip.ReadByte(address++);
             string format;
@@ -1232,11 +1260,11 @@ namespace Gear.EmulationCore
                 EffectCodes = BigEffectCodes;
                 InterpretedOps = BigInterpretedOps;
             }
-            
+
             switch (ArguementModes[op])
             {
                 case ArguementMode.UnsignedOffset:
-                        return String.Format(format, InterpretedOps[op], GetPackedOffset(chip, ref address));
+                    return String.Format(format, InterpretedOps[op], GetPackedOffset(chip, ref address));
                 case ArguementMode.UnsignedEffectedOffset:
                     {
                         int arg = GetPackedOffset(chip, ref address);
@@ -1244,7 +1272,7 @@ namespace Gear.EmulationCore
                         return String.Format(format, InterpretedOps[op], arg, GetEffectCode(chip, ref address));
                     }
                 case ArguementMode.Effect:
-                        return String.Format(format, InterpretedOps[op], GetEffectCode(chip, ref address));
+                    return String.Format(format, InterpretedOps[op], GetEffectCode(chip, ref address));
                 case ArguementMode.SignedOffset:
                     {
                         uint result = chip.ReadByte(address++);
@@ -1301,10 +1329,10 @@ namespace Gear.EmulationCore
                     {
                         byte obj = chip.ReadByte(address++);
                         byte funct = chip.ReadByte(address++);
-                        return String.Format("{0} {1}.{2}", InterpretedOps[op], obj, funct );
+                        return String.Format("{0} {1}.{2}", InterpretedOps[op], obj, funct);
                     }
                 case ArguementMode.MemoryOpCode:
-                        return String.Format("{0} {1}", InterpretedOps[op], GetMemoryOp(chip, ref address));
+                    return String.Format("{0} {1}", InterpretedOps[op], GetMemoryOp(chip, ref address));
             }
 
             return InterpretedOps[op];

@@ -71,7 +71,7 @@ namespace Gear.GUI
             Host = host;
         }
 
-        public override void Repaint( bool tick )
+        public override void Repaint(bool tick)
         {
             Graphics g = Graphics.FromImage((Image)BackBuffer);
             byte[] b = new byte[4];
@@ -81,14 +81,14 @@ namespace Gear.GUI
 
             for (int i = positionScrollBar.Value, p = 0; p < memoryPanel.Height && i < 0x10000; i += 4, p += MonoFont.Height)
             {
-                for( int bi = 0; bi < 4; bi++ )
-                    b[bi] = Host[i+bi];
+                for (int bi = 0; bi < 4; bi++)
+                    b[bi] = Host[i + bi];
 
                 ushort s1 = (ushort)(b[0] | (b[1] << 8));
                 ushort s2 = (ushort)(b[2] | (b[3] << 8));
 
                 int i1 = (int)(s1 | (s2 << 16));
-               
+
                 g.FillRectangle(SystemBrushes.Control, 0, p, memoryPanel.Width, p + MonoFont.Height);
                 g.DrawString(
                     String.Format("{0:X4}:  {1:X2} {2:X2} {3:X2} {4:X2}  :\t{5}\t{6}\t{7}\t{8}\t{9:d}",
@@ -100,7 +100,7 @@ namespace Gear.GUI
 
         private void PaintMemoryView(object sender, PaintEventArgs e)
         {
-            e.Graphics.DrawImageUnscaled(BackBuffer, 0, 0);   
+            e.Graphics.DrawImageUnscaled(BackBuffer, 0, 0);
         }
 
         private void SizeChange(object sender, EventArgs e)

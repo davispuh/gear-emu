@@ -77,7 +77,7 @@ namespace Gear.EmulationCore
             Feed(FixedMultiplier);
         }
 
-        public void Feed( double multiplier )
+        public void Feed(double multiplier)
         {
             FixedMultiplier = multiplier;
 
@@ -87,7 +87,7 @@ namespace Gear.EmulationCore
             if (targetFrequency > 120000000 || targetFrequency < 500000)
                 Disable();
             else
-                SetFrequency( targetFrequency * 2);
+                SetFrequency(targetFrequency * 2);
         }
 
         public void DrivePins(ulong pinA, ulong pinB)

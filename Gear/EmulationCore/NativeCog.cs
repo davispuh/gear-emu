@@ -29,66 +29,66 @@ namespace Gear.EmulationCore
 {
     public enum CogInstructionCodes : uint
     {
-        RWBYTE = 0x00000000,
-        RWWORD = 0x04000000,
-        RWLONG = 0x08000000,
-        HUBOP = 0x0C000000,
-        MUL = 0x10000000,
-        MULS = 0x14000000,
-        ENC = 0x18000000,
-        ONES = 0x1C000000,
-        ROR = 0x20000000,
-        ROL = 0x24000000,
-        SHR = 0x28000000,
-        SHL = 0x2C000000,
-        RCR = 0x30000000,
-        RCL = 0x34000000,
-        SAR = 0x38000000,
-        REV = 0x3C000000,
-        MINS = 0x40000000,
-        MAXS = 0x44000000,
-        MIN = 0x48000000,
-        MAX = 0x4C000000,
-        MOVS = 0x50000000,
-        MOVD = 0x54000000,
-        MOVI = 0x58000000,
-        JMPRET = 0x5C000000,
-        AND = 0x60000000,
-        ANDN = 0x64000000,
-        OR = 0x68000000,
-        XOR = 0x6C000000,
-        MUXC = 0x70000000,
-        MUXNC = 0x74000000,
-        MUXZ = 0x78000000,
-        MUXNZ = 0x7C000000,
-        ADD = 0x80000000,
-        SUB = 0x84000000,
-        ADDABS = 0x88000000,
-        SUBABS = 0x8C000000,
-        SUMC = 0x90000000,
-        SUMNC = 0x94000000,
-        SUMZ = 0x98000000,
-        SUMNZ = 0x9C000000,
-        MOV = 0xA0000000,
-        NEG = 0xA4000000,
-        ABS = 0xA8000000,
-        ABSNEG = 0xAC000000,
-        NEGC = 0xB0000000,
-        NEGNC = 0xB4000000,
-        NEGZ = 0xB8000000,
-        NEGNZ = 0xBC000000,
-        CMPS = 0xC0000000,
-        CMPSX = 0xC4000000,
-        ADDX = 0xC8000000,
-        SUBX = 0xCC000000,
-        ADDS = 0xD0000000,
-        SUBS = 0xD4000000,
-        ADDSX = 0xD8000000,
-        SUBSX = 0xDC000000,
-        CMPSUB = 0xE0000000,
-        DJNZ = 0xE4000000,
-        TJNZ = 0xE8000000,
-        TJZ = 0xEC000000,
+        RWBYTE  = 0x00000000,
+        RWWORD  = 0x04000000,
+        RWLONG  = 0x08000000,
+        HUBOP   = 0x0C000000,
+        MUL     = 0x10000000,
+        MULS    = 0x14000000,
+        ENC     = 0x18000000,
+        ONES    = 0x1C000000,
+        ROR     = 0x20000000,
+        ROL     = 0x24000000,
+        SHR     = 0x28000000,
+        SHL     = 0x2C000000,
+        RCR     = 0x30000000,
+        RCL     = 0x34000000,
+        SAR     = 0x38000000,
+        REV     = 0x3C000000,
+        MINS    = 0x40000000,
+        MAXS    = 0x44000000,
+        MIN     = 0x48000000,
+        MAX     = 0x4C000000,
+        MOVS    = 0x50000000,
+        MOVD    = 0x54000000,
+        MOVI    = 0x58000000,
+        JMPRET  = 0x5C000000,
+        AND     = 0x60000000,
+        ANDN    = 0x64000000,
+        OR      = 0x68000000,
+        XOR     = 0x6C000000,
+        MUXC    = 0x70000000,
+        MUXNC   = 0x74000000,
+        MUXZ    = 0x78000000,
+        MUXNZ   = 0x7C000000,
+        ADD     = 0x80000000,
+        SUB     = 0x84000000,
+        ADDABS  = 0x88000000,
+        SUBABS  = 0x8C000000,
+        SUMC    = 0x90000000,
+        SUMNC   = 0x94000000,
+        SUMZ    = 0x98000000,
+        SUMNZ   = 0x9C000000,
+        MOV     = 0xA0000000,
+        NEG     = 0xA4000000,
+        ABS     = 0xA8000000,
+        ABSNEG  = 0xAC000000,
+        NEGC    = 0xB0000000,
+        NEGNC   = 0xB4000000,
+        NEGZ    = 0xB8000000,
+        NEGNZ   = 0xBC000000,
+        CMPS    = 0xC0000000,
+        CMPSX   = 0xC4000000,
+        ADDX    = 0xC8000000,
+        SUBX    = 0xCC000000,
+        ADDS    = 0xD0000000,
+        SUBS    = 0xD4000000,
+        ADDSX   = 0xD8000000,
+        SUBSX   = 0xDC000000,
+        CMPSUB  = 0xE0000000,
+        DJNZ    = 0xE4000000,
+        TJNZ    = 0xE8000000,
+        TJZ     = 0xEC000000,
         WAITPEQ = 0xF0000000,
         WAITPNE = 0xF4000000,
         WAITCNT = 0xF8000000,
@@ -864,16 +864,16 @@ namespace Gear.EmulationCore
             int shift = 0;
 
             DataResult = 0;
-//            if (SourceValue < 32)
-//            {
+            // if (SourceValue < 32)
+            // {
                 for (int i = 31 - ((int)SourceValue & 31); i >= 0; i--)
                     DataResult |= ((DestinationValue >> i) & 1) << (shift++);
                 ZeroResult = DataResult == 0;
-//            }
-//            else
-//            {
-//                ZeroResult = true;
-//            }
+            // }
+            // else
+            // {
+            //    ZeroResult = true;
+            // }
             CarryResult = (DestinationValue & 1) != 0;
         }
 
@@ -1242,7 +1242,7 @@ namespace Gear.EmulationCore
             ZeroResult = Zero && (DataResult == 0);
             CarryResult = (DataResult & 0x80000000) == 0x80000000;
             if (((SourceValue ^ DestinationValue) & 0x80000000) != 0)
-              CarryResult = !CarryResult;
+                CarryResult = !CarryResult;
         }
 
         private void InstructionCMPSUB()
@@ -1250,7 +1250,7 @@ namespace Gear.EmulationCore
             if (DestinationValue >= SourceValue)
             {
                 DataResult = DestinationValue - SourceValue;
-				ZeroResult = (DataResult == 0);
+                ZeroResult = (DataResult == 0);
             }
             else
             {

@@ -113,7 +113,7 @@ namespace Gear.GUI
             this.openBinaryButton.Image = ((System.Drawing.Image)(resources.GetObject("openBinaryButton.Image")));
             this.openBinaryButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.openBinaryButton.Name = "openBinaryButton";
-            this.openBinaryButton.Size = new System.Drawing.Size(37, 22);
+            this.openBinaryButton.Size = new System.Drawing.Size(40, 22);
             this.openBinaryButton.Text = "Open";
             this.openBinaryButton.Click += new System.EventHandler(this.openBinary_Click);
             // 
@@ -122,7 +122,7 @@ namespace Gear.GUI
             this.reloadBinaryButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.reloadBinaryButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.reloadBinaryButton.Name = "reloadBinaryButton";
-            this.reloadBinaryButton.Size = new System.Drawing.Size(44, 22);
+            this.reloadBinaryButton.Size = new System.Drawing.Size(47, 22);
             this.reloadBinaryButton.Text = "Reload";
             this.reloadBinaryButton.Click += new System.EventHandler(this.reloadBinary_Click);
             // 
@@ -142,7 +142,7 @@ namespace Gear.GUI
             this.runEmulatorButton.Image = ((System.Drawing.Image)(resources.GetObject("runEmulatorButton.Image")));
             this.runEmulatorButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.runEmulatorButton.Name = "runEmulatorButton";
-            this.runEmulatorButton.Size = new System.Drawing.Size(30, 22);
+            this.runEmulatorButton.Size = new System.Drawing.Size(32, 22);
             this.runEmulatorButton.Text = "Run";
             this.runEmulatorButton.Click += new System.EventHandler(this.runEmulator_Click);
             // 
@@ -152,7 +152,7 @@ namespace Gear.GUI
             this.stopEmulatorButton.Image = ((System.Drawing.Image)(resources.GetObject("stopEmulatorButton.Image")));
             this.stopEmulatorButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.stopEmulatorButton.Name = "stopEmulatorButton";
-            this.stopEmulatorButton.Size = new System.Drawing.Size(33, 22);
+            this.stopEmulatorButton.Size = new System.Drawing.Size(35, 22);
             this.stopEmulatorButton.Text = "Stop";
             this.stopEmulatorButton.Click += new System.EventHandler(this.stopEmulator_Click);
             // 
@@ -162,7 +162,7 @@ namespace Gear.GUI
             this.stepInstructionButton.Image = ((System.Drawing.Image)(resources.GetObject("stepInstructionButton.Image")));
             this.stepInstructionButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.stepInstructionButton.Name = "stepInstructionButton";
-            this.stepInstructionButton.Size = new System.Drawing.Size(88, 22);
+            this.stepInstructionButton.Size = new System.Drawing.Size(94, 22);
             this.stepInstructionButton.Text = "Step Instruction";
             this.stepInstructionButton.Click += new System.EventHandler(this.stepInstruction_Click);
             // 
@@ -172,7 +172,7 @@ namespace Gear.GUI
             this.stepClockButton.Image = ((System.Drawing.Image)(resources.GetObject("stepClockButton.Image")));
             this.stepClockButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.stepClockButton.Name = "stepClockButton";
-            this.stepClockButton.Size = new System.Drawing.Size(61, 22);
+            this.stepClockButton.Size = new System.Drawing.Size(67, 22);
             this.stepClockButton.Text = "Step Clock";
             this.stepClockButton.Click += new System.EventHandler(this.stepEmulator_Click);
             // 
@@ -182,7 +182,7 @@ namespace Gear.GUI
             this.closeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.closeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.closeButton.Name = "closeButton";
-            this.closeButton.Size = new System.Drawing.Size(37, 22);
+            this.closeButton.Size = new System.Drawing.Size(40, 22);
             this.closeButton.Text = "Close";
             this.closeButton.Click += new System.EventHandler(this.closeActiveTab_Click);
             // 
@@ -193,7 +193,7 @@ namespace Gear.GUI
             this.unpinButton.Image = ((System.Drawing.Image)(resources.GetObject("unpinButton.Image")));
             this.unpinButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.unpinButton.Name = "unpinButton";
-            this.unpinButton.Size = new System.Drawing.Size(43, 22);
+            this.unpinButton.Size = new System.Drawing.Size(48, 22);
             this.unpinButton.Text = "Unsplit";
             this.unpinButton.Click += new System.EventHandler(this.unpinButton_Click);
             // 
@@ -204,7 +204,7 @@ namespace Gear.GUI
             this.pinButton.Image = ((System.Drawing.Image)(resources.GetObject("pinButton.Image")));
             this.pinButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.pinButton.Name = "pinButton";
-            this.pinButton.Size = new System.Drawing.Size(31, 22);
+            this.pinButton.Size = new System.Drawing.Size(34, 22);
             this.pinButton.Text = "Split";
             this.pinButton.Click += new System.EventHandler(this.pinActiveTab_Click);
             // 
@@ -215,7 +215,7 @@ namespace Gear.GUI
             this.floatButton.Image = ((System.Drawing.Image)(resources.GetObject("floatButton.Image")));
             this.floatButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.floatButton.Name = "floatButton";
-            this.floatButton.Size = new System.Drawing.Size(35, 22);
+            this.floatButton.Size = new System.Drawing.Size(37, 22);
             this.floatButton.Text = "Float";
             this.floatButton.Click += new System.EventHandler(this.floatActiveTab_Click);
             // 
@@ -225,7 +225,7 @@ namespace Gear.GUI
             this.openPluginButton.Image = ((System.Drawing.Image)(resources.GetObject("openPluginButton.Image")));
             this.openPluginButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.openPluginButton.Name = "openPluginButton";
-            this.openPluginButton.Size = new System.Drawing.Size(68, 22);
+            this.openPluginButton.Size = new System.Drawing.Size(77, 22);
             this.openPluginButton.Text = "Open Plugin";
             this.openPluginButton.Click += new System.EventHandler(this.OpenPlugin_Click);
             // 
@@ -306,6 +306,7 @@ namespace Gear.GUI
             this.controlBar.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
+
         }
         private System.Windows.Forms.ToolStripButton reloadBinaryButton;
         private System.Windows.Forms.ToolStripButton closeButton;

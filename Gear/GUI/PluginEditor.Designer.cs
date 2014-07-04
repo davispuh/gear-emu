@@ -83,7 +83,7 @@ namespace Gear.GUI
             // 
             classNameLable.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             classNameLable.Name = "classNameLable";
-            classNameLable.Size = new System.Drawing.Size(62, 22);
+            classNameLable.Size = new System.Drawing.Size(69, 22);
             classNameLable.Text = "Class Name";
             // 
             // toolStrip1
@@ -108,7 +108,7 @@ namespace Gear.GUI
             this.openButton.Image = ((System.Drawing.Image)(resources.GetObject("openButton.Image")));
             this.openButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.openButton.Name = "openButton";
-            this.openButton.Size = new System.Drawing.Size(37, 22);
+            this.openButton.Size = new System.Drawing.Size(40, 22);
             this.openButton.Text = "Open";
             this.openButton.Click += new System.EventHandler(this.OpenButton_Click);
             // 
@@ -128,7 +128,7 @@ namespace Gear.GUI
             this.saveAsButton.Image = ((System.Drawing.Image)(resources.GetObject("saveAsButton.Image")));
             this.saveAsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.saveAsButton.Name = "saveAsButton";
-            this.saveAsButton.Size = new System.Drawing.Size(58, 22);
+            this.saveAsButton.Size = new System.Drawing.Size(57, 22);
             this.saveAsButton.Text = "Save As..";
             this.saveAsButton.Click += new System.EventHandler(this.SaveAsButton_Click);
             // 
@@ -138,7 +138,7 @@ namespace Gear.GUI
             this.checkButton.Image = ((System.Drawing.Image)(resources.GetObject("checkButton.Image")));
             this.checkButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.checkButton.Name = "checkButton";
-            this.checkButton.Size = new System.Drawing.Size(40, 22);
+            this.checkButton.Size = new System.Drawing.Size(44, 22);
             this.checkButton.Text = "Check";
             this.checkButton.Click += new System.EventHandler(this.CheckSource_Click);
             // 
@@ -175,16 +175,16 @@ namespace Gear.GUI
             this.addReferenceButton,
             this.removeReferenceButton});
             this.toolStrip2.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
-            this.toolStrip2.Location = new System.Drawing.Point(0, 396);
+            this.toolStrip2.Location = new System.Drawing.Point(0, 394);
             this.toolStrip2.Name = "toolStrip2";
-            this.toolStrip2.Size = new System.Drawing.Size(200, 21);
+            this.toolStrip2.Size = new System.Drawing.Size(200, 23);
             this.toolStrip2.TabIndex = 0;
             this.toolStrip2.Text = "toolStrip2";
             // 
             // referenceName
             // 
             this.referenceName.Name = "referenceName";
-            this.referenceName.Size = new System.Drawing.Size(100, 21);
+            this.referenceName.Size = new System.Drawing.Size(100, 23);
             // 
             // addReferenceButton
             // 
@@ -192,7 +192,7 @@ namespace Gear.GUI
             this.addReferenceButton.Image = ((System.Drawing.Image)(resources.GetObject("addReferenceButton.Image")));
             this.addReferenceButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.addReferenceButton.Name = "addReferenceButton";
-            this.addReferenceButton.Size = new System.Drawing.Size(30, 17);
+            this.addReferenceButton.Size = new System.Drawing.Size(33, 19);
             this.addReferenceButton.Text = "Add";
             this.addReferenceButton.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
@@ -202,7 +202,7 @@ namespace Gear.GUI
             this.removeReferenceButton.Image = ((System.Drawing.Image)(resources.GetObject("removeReferenceButton.Image")));
             this.removeReferenceButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.removeReferenceButton.Name = "removeReferenceButton";
-            this.removeReferenceButton.Size = new System.Drawing.Size(50, 17);
+            this.removeReferenceButton.Size = new System.Drawing.Size(54, 19);
             this.removeReferenceButton.Text = "Remove";
             this.removeReferenceButton.Click += new System.EventHandler(this.RemoveButton_Click);
             // 

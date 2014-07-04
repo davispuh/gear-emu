@@ -62,7 +62,7 @@ namespace Gear.GUI.LogicProbe
             get { return "P" + PinNumber.ToString(); }
         }
 
-        public LogicDigital( int pin )
+        public LogicDigital(int pin)
         {
             Pins = new PinState[MAXIMUM_SAMPLES];
             Time = new double[MAXIMUM_SAMPLES];
@@ -75,12 +75,12 @@ namespace Gear.GUI.LogicProbe
         }
 
         public override void Click()
-        {           
+        {
         }
 
         public void Update(PinState pin, double time)
         {
-            if (Pins[(WritePointer - 1) & (MAXIMUM_SAMPLES-1)] == pin)
+            if (Pins[(WritePointer - 1) & (MAXIMUM_SAMPLES - 1)] == pin)
                 return;
 
             Pins[WritePointer] = pin;
@@ -161,7 +161,7 @@ namespace Gear.GUI.LogicProbe
 
                 g.DrawLine(color, previousX, nextY, nextX, nextY);
                 g.DrawLine(color, previousX, previousY, previousX, nextY);
-               
+
                 previousX = nextX;
                 previousY = nextY;
 

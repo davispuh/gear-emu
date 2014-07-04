@@ -292,8 +292,8 @@ namespace Gear.EmulationCore
                             if (op == 0x06 || op == 0x07)
                             {
                                 uint objectCode = (uint)(Hub.ReadByte(PC++) * 4) + ObjectFrame;
-                                
-                                if( op == 0x07 )
+
+                                if (op == 0x07)
                                     objectCode += PopStack() * 4;
 
                                 ObjectFrame += Hub.ReadWord(objectCode);

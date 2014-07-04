@@ -68,7 +68,7 @@ namespace Gear.GUI
 
                 while (tr.Read())
                 {
-                    if (tr.NodeType == XmlNodeType.Text && ReadText )
+                    if (tr.NodeType == XmlNodeType.Text && ReadText)
                     {
                         codeEditorView.Text = tr.Value;
                         ReadText = false;
@@ -186,7 +186,7 @@ namespace Gear.GUI
 
             if (openFileDialog.ShowDialog(this) == DialogResult.OK)
             {
-                OpenFile(openFileDialog.FileName,false);
+                OpenFile(openFileDialog.FileName, false);
             }
         }
 
@@ -227,8 +227,8 @@ namespace Gear.GUI
 
             ListViewItem lvi = errorListView.Items[index];
 
-            int line = Convert.ToInt32(lvi.SubItems[1].Text)-1;
-            int column = Convert.ToInt32(lvi.SubItems[2].Text)-1;
+            int line = Convert.ToInt32(lvi.SubItems[1].Text) - 1;
+            int column = Convert.ToInt32(lvi.SubItems[2].Text) - 1;
 
             int i = 0;
 

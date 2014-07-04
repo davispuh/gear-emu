@@ -72,7 +72,7 @@ namespace Gear.EmulationCore
         public override void AdvanceClock(double time)
         {
             if (Frequency <= 0)
-                return ;
+                return;
 
             ClockLeft -= time;
 

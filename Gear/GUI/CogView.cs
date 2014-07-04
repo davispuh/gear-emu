@@ -67,17 +67,17 @@ namespace Gear.GUI
 
         public CogView(int host)
         {
-		    HostID = host;
-		    
-		    InterpAddress = new uint[80];   //Allow for up to 80 lines of displayed interpreted text
-		    
-		    displayAsHexadecimal = false;
+            HostID = host;
+
+            InterpAddress = new uint[80];   //Allow for up to 80 lines of displayed interpreted text
+
+            displayAsHexadecimal = false;
             useShortOpcodes = true;
 
             MonoFont = new Font(FontFamily.GenericMonospace, 10);
             if (MonoFont == null)
                 MonoFont = this.Font;
-					  
+
             MonoFontBold = new Font(MonoFont, FontStyle.Bold);
 
             InitializeComponent();
@@ -111,9 +111,9 @@ namespace Gear.GUI
             carryFlagLable.Text = "Carry: " + (host.CarryFlag ? "True" : "False");
 
             String display;
-			uint topLine, bottomLine;
-			topLine = 5;
-			bottomLine = (uint)((ClientRectangle.Height / MonoFont.Height) - 5);
+            uint topLine, bottomLine;
+            topLine = 5;
+            bottomLine = (uint)((ClientRectangle.Height / MonoFont.Height) - 5);
 
             for (uint i = (uint)positionScroll.Value, y = 0, line = 1;
                 y < ClientRectangle.Height;
@@ -144,12 +144,12 @@ namespace Gear.GUI
                         mem);
                 }
 
-                if((uint)positionScroll.Value + line - 1 == host.BreakPoint)
+                if ((uint)positionScroll.Value + line - 1 == host.BreakPoint)
                     brush = System.Drawing.Brushes.Pink;
                 else if ((!followPCButton.Checked) || (line <= topLine) || (line >= bottomLine))
-				    brush = SystemBrushes.Control;
-				else
-				    brush = SystemBrushes.Window;
+                    brush = SystemBrushes.Control;
+                else
+                    brush = SystemBrushes.Window;
                 g.FillRectangle(brush, 0, y, assemblyPanel.Width, y + MonoFont.Height);
 
 
@@ -164,7 +164,7 @@ namespace Gear.GUI
         {
             Graphics g = Graphics.FromImage((Image)BackBuffer);
             Brush brush;
-            
+
             g.Clear(SystemColors.Control);
 
             String display;
@@ -183,8 +183,8 @@ namespace Gear.GUI
                     y < ClientRectangle.Height;
                     y += (uint)MonoFont.Height, i++)
                 {
-					if ((i > 0xFFFF) || (i < 0))
-					    continue;
+                    if ((i > 0xFFFF) || (i < 0))
+                        continue;
 
                     uint mem = host[(int)i];
 
@@ -194,9 +194,9 @@ namespace Gear.GUI
                         binary = "0" + binary;
 
                     display = String.Format("{0:X4}:  {1:X8}   {2}   ",
-                              i,  mem,  binary);
+                              i, mem, binary);
                     if (displayAsHexadecimal)
-                        display = display + String.Format("{0:X8}",mem);
+                        display = display + String.Format("{0:X8}", mem);
                     else
                         display = display + String.Format("{0}", mem);
 
@@ -224,7 +224,7 @@ namespace Gear.GUI
                     string inst = InstructionDisassembler.InterpreterText(Chip, ref i, displayAsHexadecimal, useShortOpcodes);
                     display = String.Format("{0:X4}: ", start);
                     InterpAddress[line] = start;
-                    
+
                     for (uint q = start; q < start + 4; q++)
                     {
                         if (q < i)
@@ -265,7 +265,7 @@ namespace Gear.GUI
                 DrawString(g, String.Format("Caller& = ${0:X4} {0}", Chip.ReadWord(host.Local - 8)));
                 DrawString(g, String.Format("          ${0:X4} {0}", Chip.ReadWord(host.Local - 6)));
                 DrawString(g, String.Format("          ${0:X4} {0}", Chip.ReadWord(host.Local - 4)));
-                DrawString(g, String.Format("Return& = ${0:X4}",     Chip.ReadWord(host.Local - 2)));
+                DrawString(g, String.Format("Return& = ${0:X4}", Chip.ReadWord(host.Local - 2)));
                 g.DrawLine(Pens.Black, assemblyPanel.Width - StackMargin, StringY, assemblyPanel.Width, StringY);
 
                 for (uint i = host.Local;
@@ -295,13 +295,13 @@ namespace Gear.GUI
 
             positionScroll.Minimum = 0;
 
-            if      (Host is InterpretedCog)  positionScroll.Maximum = 0xFFFF;
-            else if (Host is NativeCog)       positionScroll.Maximum = 0x200;
+            if (Host is InterpretedCog) positionScroll.Maximum = 0xFFFF;
+            else if (Host is NativeCog) positionScroll.Maximum = 0x200;
 
             positionScroll.LargeChange = 10;
-			positionScroll.SmallChange = 1;
-			
-			if (positionScroll.Maximum < positionScroll.Value)
+            positionScroll.SmallChange = 1;
+
+            if (positionScroll.Maximum < positionScroll.Value)
                 positionScroll.Value = positionScroll.Maximum;
 
             if (followPCButton.Checked)
@@ -322,8 +322,8 @@ namespace Gear.GUI
                     positionScroll.Value = (int)Host.ProgramCursor;
             }
 
-            if      (Host is NativeCog)       Repaint(tick, (NativeCog)Host);
-            else if (Host is InterpretedCog)  Repaint(tick, (InterpretedCog)Host);
+            if (Host is NativeCog) Repaint(tick, (NativeCog)Host);
+            else if (Host is InterpretedCog) Repaint(tick, (InterpretedCog)Host);
 
             programCounterLable.Text = "PC: " + String.Format("{0:X8}", Host.ProgramCursor);
             processorStateLable.Text = "CPU State: " + Host.CogState;
@@ -338,9 +338,9 @@ namespace Gear.GUI
 
         private void AssemblyView_Paint(object sender, PaintEventArgs e)
         {
-            assemblyPanel.CreateGraphics().DrawImageUnscaled(BackBuffer, 0, 0);            
+            assemblyPanel.CreateGraphics().DrawImageUnscaled(BackBuffer, 0, 0);
         }
-            
+
         private void AsmSized(object sender, EventArgs e)
         {
             if (assemblyPanel.Width > 0 && assemblyPanel.Height > 0)
@@ -352,10 +352,10 @@ namespace Gear.GUI
             Repaint(false);
         }
 
-		private void memoryViewButton_Click(object sender, EventArgs e)
-		{
-		    Repaint(false);
-		}
+        private void memoryViewButton_Click(object sender, EventArgs e)
+        {
+            Repaint(false);
+        }
 
         private void assemblyPanel_MouseDown(object sender, MouseEventArgs e)
         {
@@ -363,17 +363,17 @@ namespace Gear.GUI
             if ((e.Button & MouseButtons.Left) == MouseButtons.Left)
             {
                 //Make sure it's a valid breakpoint environment
-                if (Chip == null)  return;
+                if (Chip == null) return;
                 Cog Host = Chip.GetCog(HostID);
-                if (Host == null)  return;
+                if (Host == null) return;
                 //Find the line that was clicked on
                 bp = (assemblyPanel.PointToClient(MousePosition).Y / MonoFont.Height);
                 //What type of cog?
-                if      (Host is NativeCog)       bp += positionScroll.Value;
-                else if (Host is InterpretedCog)  bp = (int)InterpAddress[bp + 1];
+                if (Host is NativeCog) bp += positionScroll.Value;
+                else if (Host is InterpretedCog) bp = (int)InterpAddress[bp + 1];
                 //Toggle/move the breakpoint
-                if (bp == Host.BreakPoint)   Host.BreakPoint = -1;
-                else                         Host.BreakPoint = bp;
+                if (bp == Host.BreakPoint) Host.BreakPoint = -1;
+                else Host.BreakPoint = bp;
                 //Show the user what happened
                 Repaint(false);
             }
@@ -439,7 +439,7 @@ namespace Gear.GUI
             mem = host.ReadLong(line);
             toolTip1.SetToolTip(assemblyPanel, String.Format(
                     "${0:x3}= ${1:x8}, {1}\n${2:x3}= ${3:x8}, {3}",
-                    mem >> 9 & 0x1ff, host.ReadLong(mem >> 9 & 0x1ff), 
+                    mem >> 9 & 0x1ff, host.ReadLong(mem >> 9 & 0x1ff),
                     mem & 0x1ff, host.ReadLong(mem & 0x1ff)));
         }
 

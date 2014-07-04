@@ -37,14 +37,16 @@ namespace Gear.GUI
 
         public uint Value
         {
-            get { 
-                return m_RingPosition; 
+            get
+            {
+                return m_RingPosition;
             }
-            set {
+            set
+            {
                 uint old = m_RingPosition;
-                m_RingPosition = (value & 0xF); 
-                
-                if( old != m_RingPosition )
+                m_RingPosition = (value & 0xF);
+
+                if (old != m_RingPosition)
                     Invalidate();
             }
         }
@@ -81,28 +83,31 @@ namespace Gear.GUI
                 points[i + 0] = new Point(
                     (int)(-Math.Sin((i + TopShift + rotation) * Math.PI / 16.0) * OuterSize + BaseLocationX),
                     (int)(Math.Cos((i + TopShift + rotation) * Math.PI / 16.0) * OuterSize + BaseLocationY)
-                    );
+                );
                 points[i + 1] = new Point(
                     (int)(-Math.Sin((i + 1 + rotation) * Math.PI / 16.0) * InnerSize + BaseLocationX),
                     (int)(Math.Cos((i + 1 + rotation) * Math.PI / 16.0) * InnerSize + BaseLocationY)
-                    );
+                );
                 points[i + 2] = new Point(
                     (int)(-Math.Sin((i + 2 + rotation) * Math.PI / 16.0) * InnerSize + BaseLocationX),
                     (int)(Math.Cos((i + 2 + rotation) * Math.PI / 16.0) * InnerSize + BaseLocationY)
-                    );
+                );
                 points[i + 3] = new Point(
                     (int)(-Math.Sin((i + 3 - TopShift + rotation) * Math.PI / 16.0) * OuterSize + BaseLocationX),
                     (int)(Math.Cos((i + 3 - TopShift + rotation) * Math.PI / 16.0) * OuterSize + BaseLocationY)
-                    );
+                );
             }
 
             e.Graphics.FillPolygon(Brushes.White, points);
             e.Graphics.DrawPolygon(Pens.Black, points);
             e.Graphics.DrawEllipse(Pens.Black,
-                new Rectangle((int)(BaseLocationX - OuterSize / 5),
-                (int)(BaseLocationY - OuterSize / 5),
-                (int)(OuterSize / 2.5),
-                (int)(OuterSize / 2.5)));
+                new Rectangle(
+                    (int)(BaseLocationX - OuterSize / 5),
+                    (int)(BaseLocationY - OuterSize / 5),
+                    (int)(OuterSize / 2.5),
+                    (int)(OuterSize / 2.5)
+                )
+            );
 
             for (int i = 0; i < points.Length; i += 4)
             {

@@ -44,8 +44,8 @@ namespace Gear.GUI
         private List<Control> FloatControls;
 
         private Timer runTimer;
-        
-        public Emulator( string source )
+
+        public Emulator(string source)
         {
             Chip = new Propeller(this);
             Source = source;
@@ -63,12 +63,12 @@ namespace Gear.GUI
             AttachPlugin(new LogicProbe.LogicView());
             AttachPlugin(new SpinView());
             documentsTab.SelectedIndex = 0;
-            
+
             // TEMPORARY RUN FUNCTION
             runTimer = new Timer();
             runTimer.Interval = 10;
             runTimer.Tick += new EventHandler(RunEmulatorStep);
-            
+
             hubView.Host = Chip;
         }
 
@@ -92,7 +92,7 @@ namespace Gear.GUI
 
         private void RunEmulatorStep(object sender, EventArgs e)
         {
-            for( int i = 0; i < 1024; i++ )
+            for (int i = 0; i < 1024; i++)
                 if (!Chip.Step())
                 {
                     runTimer.Stop();
@@ -136,7 +136,7 @@ namespace Gear.GUI
         {
             XmlTextReader tr = new XmlTextReader(FileName);
             bool ReadText = false;
-            
+
             List<string> references = new List<string>();
             string instanceName = "";
             string code = "";
@@ -172,7 +172,7 @@ namespace Gear.GUI
                 if (bm == null)
                 {
                     PluginEditor pe = new PluginEditor();
-                    pe.OpenFile(FileName,true);
+                    pe.OpenFile(FileName, true);
                     pe.MdiParent = this.MdiParent;
                     pe.Show();
                 }
@@ -213,7 +213,7 @@ namespace Gear.GUI
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Propeller Runtime Image (*.binary;*.eeprom)|*.binary;*.eeprom|All Files (*.*)|*.*";
-            openFileDialog.Title = "Open Propeller Binary..."; 
+            openFileDialog.Title = "Open Propeller Binary...";
             openFileDialog.FileName = Source;
 
             if (openFileDialog.ShowDialog(this) == DialogResult.OK)
@@ -268,29 +268,29 @@ namespace Gear.GUI
         {
             TabPage tp = documentsTab.SelectedTab;
             PluginBase p = (PluginBase)tp.Controls[0];
-            
+
             if (p.IsClosable)
             {
-            	if (documentsTab.SelectedIndex > 0)
-            	{
-                   documentsTab.SelectedIndex = documentsTab.SelectedIndex - 1;
-            	}
-            	tp.Parent = null;
-        	}
+                if (documentsTab.SelectedIndex > 0)
+                {
+                    documentsTab.SelectedIndex = documentsTab.SelectedIndex - 1;
+                }
+                tp.Parent = null;
+            }
         }
-        
+
         private void floatActiveTab_Click(object sender, EventArgs e)
         {
             TabPage tp = documentsTab.SelectedTab;
             tp.Parent = null;
 
             FloatedWindow fw = new FloatedWindow(this);
-            
+
             Control c = tp.GetNextControl(null, true);
             c.Dock = DockStyle.Fill;
             c.Parent = fw;
             c.Text = tp.Text;
-            
+
             fw.MdiParent = this.MdiParent;
             fw.Show();
             fw.Text = tp.Text + ": " + Source;
@@ -300,7 +300,7 @@ namespace Gear.GUI
 
         private void pinActiveTab_Click(object sender, EventArgs e)
         {
-            Control oldPin = pinnedPanel.GetNextControl(null, true);            
+            Control oldPin = pinnedPanel.GetNextControl(null, true);
 
             TabPage tp = documentsTab.SelectedTab;
             tp.Parent = null;
@@ -331,7 +331,7 @@ namespace Gear.GUI
                 tp.Parent = documentsTab;
                 oldPin.Parent = tp;
 
-                if( !pinnedSplitter.IsCollapsed )
+                if (!pinnedSplitter.IsCollapsed)
                     pinnedSplitter.ToggleState();
             }
         }
@@ -348,9 +348,9 @@ namespace Gear.GUI
 
         private void stepInstruction_Click(object sender, EventArgs e)
         {
-            if( documentsTab.SelectedTab != null )
+            if (documentsTab.SelectedTab != null)
             {
-                Control c = documentsTab.SelectedTab.GetNextControl(null,true);
+                Control c = documentsTab.SelectedTab.GetNextControl(null, true);
 
                 if (c != null && c is CogView)
                 {
@@ -390,7 +390,7 @@ namespace Gear.GUI
             {
                 PluginBase b = ActiveControl as PluginBase;
                 if (b.AllowHotKeys != true)
-                  return;
+                    return;
             }
             if ((e.KeyChar == 's') | (e.KeyChar == 'S'))
             {

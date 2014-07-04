@@ -1,46 +1,48 @@
 <plugin>
   <instance class="PinNoise" />
-  <code>using Gear.EmulationCore;
-using Gear.PluginSupport;
+  <code>
+    using Gear.EmulationCore;
+    using Gear.PluginSupport;
 
-class PinNoise : PluginBase
-{
-  private Propeller Chip;
-  private int Drive;
-  private bool Clock;
-  private double last;
-
-  public override string Title
-  { 
-    get { return "Pin Noise"; } 
-  }
-
-  public override void PresentChip(Propeller host)
-  {
-    last = 0;
-    Chip = host;
-    Chip.NotifyOnPins(this);
-    Chip.NotifyOnClock(this);
-  }
-
-  public override void OnPinChange(double time, PinState[] pins)
-  {
-    Drive++;
-    if (Drive % 3 == 0)
+    class PinNoise : PluginBase
     {
-      // Chip.DrivePin(int pin_number, bool Floating, bool Hi)
-      Chip.DrivePin(3,false,(Drive &amp; 1) == 1);
-    }
-  }
+        private Propeller Chip;
+        private int Drive;
+        private bool Clock;
+        private double last;
 
-  public override void OnClock( double time )
-  {
-    if(time - last &gt;= 0.00001)
-    {
-      last += 0.00001;
-      Clock = !Clock;
-      Chip.DrivePin(2,false,Clock);
+        public override string Title
+        {
+            get { return &quot;Pin Noise&quot;; }
+        }
+
+        public override void PresentChip(Propeller host)
+        {
+            last = 0;
+            Chip = host;
+            Chip.NotifyOnPins(this);
+            Chip.NotifyOnClock(this);
+        }
+
+        public override void OnPinChange(double time, PinState[] pins)
+        {
+            Drive++;
+            if (Drive % 3 == 0)
+            {
+                // Chip.DrivePin(int pin_number, bool Floating, bool Hi)
+                Chip.DrivePin(3, false, (Drive &amp; 1) == 1);
+            }
+        }
+
+        public override void OnClock(double time)
+        {
+            if (time - last &gt;= 0.00001)
+            {
+                last += 0.00001;
+                Clock = !Clock;
+                Chip.DrivePin(2, false, Clock);
+            }
+        }
     }
-  }
-}</code>
+  </code>
 </plugin>

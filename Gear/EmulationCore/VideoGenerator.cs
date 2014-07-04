@@ -87,16 +87,16 @@ namespace Gear.EmulationCore
 
         public uint CFG
         {
-            get 
-            { 
-                return Config; 
+            get
+            {
+                return Config;
             }
             set
             {
                 Config = value;
 
                 // Detach from our old aural hook
-                if( Chip.GetPLL(AuralSub) != null )
+                if (Chip.GetPLL(AuralSub) != null)
                     Chip.GetPLL(AuralSub).RemoveHook(this);
 
                 VideoMode = (VMode)(Config & 0x60000000);
@@ -110,16 +110,16 @@ namespace Gear.EmulationCore
                 VPins = (Config & 0xFF) << VGroup;                  // Pins becomes a 64bit pin mask
 
                 // Attach to the new aural sub PLL
-                if( Chip.GetPLL(AuralSub) != null )
+                if (Chip.GetPLL(AuralSub) != null)
                     Chip.GetPLL(AuralSub).AttachHook(this);
             }
         }
 
         public uint SCL
         {
-            get 
-            { 
-                return Scale; 
+            get
+            {
+                return Scale;
             }
             set
             {
@@ -136,7 +136,7 @@ namespace Gear.EmulationCore
             get
             {
                 return (FrameClocks <= 0);
-            }               
+            }
         }
 
         public ulong Output
@@ -147,7 +147,7 @@ namespace Gear.EmulationCore
             }
         }
 
-        public VideoGenerator( Propeller chip )
+        public VideoGenerator(Propeller chip)
         {
             // Clear our phase accumulator
             PhaseAccumulator = 0;
@@ -159,7 +159,7 @@ namespace Gear.EmulationCore
 
         public void DetachAural()
         {
-            if( Chip.GetPLL(AuralSub) != null )
+            if (Chip.GetPLL(AuralSub) != null)
                 Chip.GetPLL(AuralSub).RemoveHook(this);
         }
 
@@ -168,7 +168,7 @@ namespace Gear.EmulationCore
             ColorLoad = colors;
             PixelLoad = pixels;
 
-            if( ScaleDirty )
+            if (ScaleDirty)
             {
                 PixelClockStart = (Scale >> 12) & 0xFF;
                 ScaleDirty = false;
@@ -190,7 +190,7 @@ namespace Gear.EmulationCore
             ulong broadcast = baseband;
 
             // Output Chroma
-            if((color & 0x08) != 0)
+            if ((color & 0x08) != 0)
             {
                 // We assume that the phase accumulator 4 LSBs are clear
                 ulong shiftedPhase = (PhaseAccumulator + color) & 0x80;
@@ -230,8 +230,8 @@ namespace Gear.EmulationCore
 
         private void UpdateCompositeOut()
         {
-            if( VideoMode != VMode.COMPOSITE_1 && VideoMode != VMode.COMPOSITE_2 )
-                return ;
+            if (VideoMode != VMode.COMPOSITE_1 && VideoMode != VMode.COMPOSITE_2)
+                return;
 
             OutputLoad = BasebandOut | (VHFCarrier ? BroadcastUp : BroadcastDown);
 
@@ -251,14 +251,14 @@ namespace Gear.EmulationCore
             UpdateCompositeOut();
         }
 
-        public void ColorTick( bool level )
+        public void ColorTick(bool level)
         {
             // Only tick color on rising edge
             if (level != true)
                 return;
 
             // Check to see if we are at the end of our frame clocks
-            if ( FrameClocks <= 0 )
+            if (FrameClocks <= 0)
                 return;
 
             FrameClocks--;
@@ -297,7 +297,7 @@ namespace Gear.EmulationCore
             {
                 case VMode.VGA_MODE:
                     OutputLoad = ShiftOut << VGroup;
-                    break ;
+                    break;
                 case VMode.COMPOSITE_1: // 0..3 Baseband 4..7 Broadcast
                     FillComposite(ShiftOut);
 

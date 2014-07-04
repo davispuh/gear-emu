@@ -118,27 +118,27 @@ namespace Gear.GUI
             ColorObject(Host.ReadWord(0x6), Host.ReadWord(0x8), root);
         }
 
-        private void ColorObject(uint objFrame, uint varFrame, TreeNode root )
+        private void ColorObject(uint objFrame, uint varFrame, TreeNode root)
         {
             uint i, addr, addrnext;
 
-            root = root.Nodes.Add(String.Format("Object {0:X}",objFrame));
+            root = root.Nodes.Add(String.Format("Object {0:X}", objFrame));
             root.Tag = (int)objFrame;
 
             root.Nodes.Add(String.Format("Variable Space {0:X4}", varFrame)).Tag = (int)varFrame;
             Colorize[varFrame] = Brushes.LightBlue;
 
             ushort size = Host.ReadWord(objFrame);
-            byte longs = Host.ReadByte(objFrame+2);
+            byte longs = Host.ReadByte(objFrame + 2);
             byte objects = Host.ReadByte(objFrame + 3);
 
-            for (i = 0; i < longs*4; i++)
+            for (i = 0; i < longs * 4; i++)
                 Colorize[i + objFrame] = Brushes.LightPink;
             for (; i < (longs + objects) * 4; i++)
                 Colorize[i + objFrame] = Brushes.LavenderBlush;
             for (; i < size; i++)
                 Colorize[i + objFrame] = Brushes.LightGreen;
-            
+
             addrnext = Host.ReadWord(1 * 4 + objFrame) + objFrame;
             for (i = 1; i < longs; i++)
             {
@@ -146,22 +146,21 @@ namespace Gear.GUI
                 addrnext = Host.ReadWord((i + 1) * 4 + objFrame) + objFrame;
                 if (i == longs - 1)
                 {
-                  addrnext = addr + 1;
-                  while (Colorize[addrnext] == Brushes.LightGreen)
-                    addrnext++;
+                    addrnext = addr + 1;
+                    while (Colorize[addrnext] == Brushes.LightGreen)
+                        addrnext++;
                 }
                 ColorFunction(addr, addrnext, root);
             }
 
             for (i = 0; i < objects; i++)
-                ColorObject(Host.ReadWord((longs + i) * 4 + objFrame) + objFrame, 
+                ColorObject(Host.ReadWord((longs + i) * 4 + objFrame) + objFrame,
                     Host.ReadWord((longs + i) * 4 + 2 + objFrame) + varFrame, root);
         }
 
         private void ColorFunction(uint functFrame, uint functFrameEnd, TreeNode root)
         {
-            root = root.Nodes.Add(String.Format("Function {0:X} ({1:d})", functFrame, 
-                    functFrameEnd - functFrame));
+            root = root.Nodes.Add(String.Format("Function {0:X} ({1:d})", functFrame, functFrameEnd - functFrame));
             root.Tag = (int)functFrame;
 
             Colorize[functFrame] = Brushes.Yellow;
@@ -180,28 +179,25 @@ namespace Gear.GUI
             Size s = TextRenderer.MeasureText("00", MonoSpace);
             Size a = TextRenderer.MeasureText("0000:", MonoSpace);
 
-            for (int y = scrollPosition.Value, dy = 0; 
-                y < 0x10000 && dy < hexView.ClientRectangle.Height; 
-                dy += s.Height)
+            for (int y = scrollPosition.Value, dy = 0; y < 0x10000 && dy < hexView.ClientRectangle.Height; dy += s.Height)
             {
                 // Draw the address
                 g.FillRectangle(Brushes.White, new Rectangle(0, dy, a.Width, s.Height));
-                g.DrawString(String.Format("{0:X4}:", y),
-                    MonoSpace, SystemBrushes.ControlText, 0, dy);
+                g.DrawString(String.Format("{0:X4}:", y), MonoSpace, SystemBrushes.ControlText, 0, dy);
                 // Draw the line of data
-                for (int x = 0, dx = a.Width;
-                    y < 0x10000 && x < 16; 
-                    x++, dx += s.Width, y++)
+                for (int x = 0, dx = a.Width; y < 0x10000 && x < 16; x++, dx += s.Width, y++)
                 {
                     byte data = Host.ReadByte((uint)y);
                     g.FillRectangle(Colorize[y], new Rectangle(dx, dy, s.Width, s.Height));
 
-                    //if( data > 32 && data < 127 )
-                    //    g.DrawString(ascii.GetString( new byte[] {data} ),
-                    //        MonoSpace, SystemBrushes.ControlText, dx, dy);
-                    //else
-                        g.DrawString(String.Format("{0:X2}", data),
-                            MonoSpace, SystemBrushes.ControlText, dx, dy);
+                    // if (data > 32 && data < 127)
+                    // {
+                    //    g.DrawString(ascii.GetString(new byte[] { data }), MonoSpace, SystemBrushes.ControlText, dx, dy);
+                    // }
+                    // else
+                    // {
+                        g.DrawString(String.Format("{0:X2}", data), MonoSpace, SystemBrushes.ControlText, dx, dy);
+                    // }
                 }
             }
 
@@ -303,7 +299,7 @@ namespace Gear.GUI
 
         private void OnPaint(object sender, PaintEventArgs e)
         {
-            e.Graphics.DrawImageUnscaled(BackBuffer, 0, 0);   
+            e.Graphics.DrawImageUnscaled(BackBuffer, 0, 0);
         }
 
         private void SelectChanged(object sender, TreeViewEventArgs e)
@@ -332,11 +328,16 @@ namespace Gear.GUI
         private void OnSize(object sender, EventArgs e)
         {
             if (hexView.Width > 0 && hexView.Height > 0)
+            {
                 BackBuffer = new Bitmap(
                     hexView.Width,
-                    hexView.Height);
+                    hexView.Height
+                );
+            }
             else
+            {
                 BackBuffer = new Bitmap(1, 1);
+            }
             Repaint(false);
         }
 

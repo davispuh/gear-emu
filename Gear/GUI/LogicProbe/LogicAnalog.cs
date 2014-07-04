@@ -36,14 +36,14 @@ namespace Gear.GUI.LogicProbe
 
         public override string Name
         {
-            get 
+            get
             {
                 string s = "[";
-                foreach( LogicDigital r in Channels )
+                foreach (LogicDigital r in Channels)
                 {
                     s += r.Name + ",\n";
                 }
-                return s.Substring(0,s.Length-2)+"]";
+                return s.Substring(0, s.Length - 2) + "]";
             }
         }
 
@@ -77,9 +77,9 @@ namespace Gear.GUI.LogicProbe
         {
         }
 
-        public override int Draw(System.Drawing.Graphics g, int top, 
+        public override int Draw(System.Drawing.Graphics g, int top,
             float left, float width,
-            double minTime, double scale)               
+            double minTime, double scale)
         {
             float height = Height * 3 / 4;
             float bottom = top + Height;
@@ -90,7 +90,7 @@ namespace Gear.GUI.LogicProbe
             float nextY;
             int[] index = new int[Channels.Length];
 
-            for( int i = 0; i < Channels.Length; i++ )
+            for (int i = 0; i < Channels.Length; i++)
                 index[i] = 0;
 
             do
@@ -113,7 +113,7 @@ namespace Gear.GUI.LogicProbe
                     if (Channels[i].GetState(index[i]) == PinState.OUTPUT_HI)
                         outputLevel += 1 << i;
 
-                nextY = bottom - height * (outputLevel+1) / (float)((1 << Channels.Length) + 2);
+                nextY = bottom - height * (outputLevel + 1) / (float)((1 << Channels.Length) + 2);
                 nextX = (float)((time - minTime) / scale) * width + left;
 
                 if (nextX < left)
@@ -130,7 +130,7 @@ namespace Gear.GUI.LogicProbe
                     if (Channels[i].GetTime(index[i]) == time)
                         index[i]++;
                 }
-                
+
                 if (Channels[seekindex].Overflow(index[seekindex]))
                     break;
             } while (nextX > left);

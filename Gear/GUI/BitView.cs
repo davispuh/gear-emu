@@ -87,7 +87,7 @@ namespace Gear.GUI
             }
         }
 
-        private void Redraw( Graphics g )
+        private void Redraw(Graphics g)
         {
             for (int i = 0; i < shown; i++)
             {

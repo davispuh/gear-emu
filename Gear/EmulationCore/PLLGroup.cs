@@ -100,7 +100,7 @@ namespace Gear.EmulationCore
 
         public void Feed(bool pllA, double multiplier)
         {
-            if( pllA)
+            if (pllA)
                 PllA.Feed(multiplier);
             else
                 PllB.Feed(multiplier);
@@ -121,8 +121,8 @@ namespace Gear.EmulationCore
             else
                 PllB.Disable();
         }
-        
-        public void SetFrequency(bool pllA,double frequency)
+
+        public void SetFrequency(bool pllA, double frequency)
         {
             if (pllA)
                 PllA.SetFrequency(frequency);

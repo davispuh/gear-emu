@@ -51,16 +51,16 @@ namespace Gear.PluginSupport
                 proc(e);
         }
 
-        static public PluginBase LoadModule( string code, string module, string[] references )
+        static public PluginBase LoadModule(string code, string module, string[] references)
         {
             CodeDomProvider provider = new Microsoft.CSharp.CSharpCodeProvider();
             CompilerParameters cp = new CompilerParameters();
-            
+
             cp.IncludeDebugInformation = false;
             cp.GenerateExecutable = false;
             cp.GenerateInMemory = true;
             cp.CompilerOptions = "/optimize";
-            
+
             cp.ReferencedAssemblies.Add(System.Windows.Forms.Application.ExecutablePath);
 
             cp.ReferencedAssemblies.Add("System.Windows.Forms.dll");
@@ -71,7 +71,7 @@ namespace Gear.PluginSupport
 
             foreach (string s in references)
                 cp.ReferencedAssemblies.Add(s);
-            
+
             CompilerResults results = provider.CompileAssemblyFromSource(cp, code);
 
             if (results.Errors.HasErrors)
@@ -80,7 +80,7 @@ namespace Gear.PluginSupport
                 return null;
             }
 
-            object target = results.CompiledAssembly.CreateInstance(module);            
+            object target = results.CompiledAssembly.CreateInstance(module);
 
             if (target == null)
             {
@@ -91,8 +91,8 @@ namespace Gear.PluginSupport
             }
             else if (!(target is PluginBase))
             {
-                CompilerError c = new CompilerError("", 0, 0, "CS0029", 
-                    "Cannot implicitly convert type '" + target.GetType().FullName + 
+                CompilerError c = new CompilerError("", 0, 0, "CS0029",
+                    "Cannot implicitly convert type '" + target.GetType().FullName +
                     "' to 'Gear.PluginSupport.BusModule'");
                 m_Errors = new CompilerErrorCollection(new CompilerError[] { c });
                 return null;

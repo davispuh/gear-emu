@@ -135,7 +135,7 @@ namespace Gear.GUI.LogicProbe
 
                 if (range > 0)
                 {
-                    minTime = range * (timeAdjustBar.Value + timeAdjustBar.LargeChange) / 
+                    minTime = range * (timeAdjustBar.Value + timeAdjustBar.LargeChange) /
                               timeAdjustBar.Maximum + minimum;
                     maxTime = minTime + TimeScale;
                 }
@@ -160,9 +160,9 @@ namespace Gear.GUI.LogicProbe
                 g.DrawLine(Pens.Gray, (float)markAt, 0, (float)markAt, waveView.ClientSize.Height);
                 markAt += (Marker / TimeScale) * (waveView.ClientSize.Width - 64);
             }
-            
+
             for (int i = viewOffset.Value, p = 0;
-                p < waveView.Height && i < Pins.Count; i++ )
+                p < waveView.Height && i < Pins.Count; i++)
             {
                 g.DrawString(Pins[i].Name, MonoFont, Brushes.Black, 8, p);
                 p += Pins[i].Draw(g, p,
@@ -182,7 +182,7 @@ namespace Gear.GUI.LogicProbe
                     waveView.Height);
             else
                 BackBuffer = new Bitmap(1, 1);
-            
+
             Repaint(true);
         }
 
@@ -212,7 +212,7 @@ namespace Gear.GUI.LogicProbe
                 Marker = Convert.ToDouble(tickMarkBox.Text);
             }
             catch (FormatException)
-            {                
+            {
                 tickMarkBox.Text = Marker.ToString();
             }
 
@@ -240,7 +240,7 @@ namespace Gear.GUI.LogicProbe
 
                 if (mouse.Y >= p)
                     continue;
-                
+
                 Pins[i].Click();
                 Repaint(true);
                 return;
@@ -262,7 +262,7 @@ namespace Gear.GUI.LogicProbe
                 p += Pins[i].Height;
 
                 if (mouse.Y >= p)
-                    continue ;
+                    continue;
 
                 Pins.RemoveAt(i);
                 Repaint(true);
@@ -281,16 +281,16 @@ namespace Gear.GUI.LogicProbe
                     {
                         string[] range = s.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
 
-                        if( range.Length < 2 )
+                        if (range.Length < 2)
                         {
-                            MessageBox.Show("Invalid range value");                            
+                            MessageBox.Show("Invalid range value");
                         }
 
                         int start = Convert.ToUInt16(range[0]);
-                        int end   = Convert.ToUInt16(range[1]);
-                        int step  = (start < end) ? 1 : -1;
+                        int end = Convert.ToUInt16(range[1]);
+                        int step = (start < end) ? 1 : -1;
 
-                        while( start != end )
+                        while (start != end)
                         {
                             Pins.Add(DigitalPins[start]);
                             start += step;
@@ -351,7 +351,7 @@ namespace Gear.GUI.LogicProbe
                     }
                     else
                     {
-                        pins.Add( DigitalPins[Convert.ToUInt16(numbers[i])] );
+                        pins.Add(DigitalPins[Convert.ToUInt16(numbers[i])]);
                     }
                 }
                 catch (FormatException)

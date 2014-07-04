@@ -38,8 +38,8 @@ using System.Runtime.InteropServices;
     "   benjie (Ben Levitt)\r\n" +
     "\r\n" +
     "Third Party Components: \r\n" +
-	"Windows Forms Collapsible Splitter Control for .Net\r\n" +
-	"(c)Copyright 2002-2003 NJF (furty74@yahoo.com). All rights reserved."
+    "Windows Forms Collapsible Splitter Control for .Net\r\n" +
+    "(c)Copyright 2002-2003 NJF (furty74@yahoo.com). All rights reserved."
     )]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("sublab research")]

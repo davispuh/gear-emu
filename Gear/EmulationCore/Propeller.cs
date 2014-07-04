@@ -92,11 +92,11 @@ namespace Gear.EmulationCore
         private uint CoreFreq;
         private byte ClockMode;
         private PinState[] PinStates;
-        
+
         private bool pinChange;
 
         private double Time;
-        
+
         private Emulator emulator;
 
         private List<PluginBase> TickHandlers;
@@ -171,10 +171,11 @@ namespace Gear.EmulationCore
 
         public byte this[int offset]
         {
-            get {
+            get
+            {
                 if (offset >= Memory.Length)
                     return 0x55;
-                return Memory[offset]; 
+                return Memory[offset];
             }
         }
 
@@ -185,7 +186,7 @@ namespace Gear.EmulationCore
                 uint direction = 0;
                 for (int i = 0; i < Cogs.Length; i++)
                 {
-                    if( Cogs[i] != null )
+                    if (Cogs[i] != null)
                         direction |= Cogs[i].DIRA;
                 }
                 return direction;
@@ -303,17 +304,18 @@ namespace Gear.EmulationCore
 
         public string Clock
         {
-            get {
+            get
+            {
                 string mode = "";
 
-                if ((ClockMode & 0x80)!=0)
+                if ((ClockMode & 0x80) != 0)
                     mode += "RESET+";
-                if ((ClockMode & 0x40)!=0)
+                if ((ClockMode & 0x40) != 0)
                     mode += "PLL+";
-                if ((ClockMode & 0x20)!=0)
-                    mode += OSCM[ (ClockMode & 0x18) >> 3 ];
+                if ((ClockMode & 0x20) != 0)
+                    mode += OSCM[(ClockMode & 0x18) >> 3];
 
-                return mode + CLKSEL[ClockMode & 0x7]; 
+                return mode + CLKSEL[ClockMode & 0x7];
             }
         }
 
@@ -347,10 +349,10 @@ namespace Gear.EmulationCore
 
             for (int i = 0; i < TOTAL_RAM; i++)
                 Memory[i] = 0;
-            
+
             program.CopyTo(Memory, 0);
             ResetMemory = new byte[Memory.Length];
-            Memory.CopyTo(ResetMemory,0);
+            Memory.CopyTo(ResetMemory, 0);
 
             CoreFreq = ReadLong(0);
             ClockMode = ReadByte(4);
@@ -367,7 +369,7 @@ namespace Gear.EmulationCore
             // Write termination code (just in case)
             uint address = (uint)ReadWord(0x0A) - 8;  // Load the end of the binary
             WriteLong(address, 0xFFFFF9FF);
-            WriteLong(address+4, 0xFFFFF9FF);
+            WriteLong(address + 4, 0xFFFFF9FF);
 
             Reset();
         }
@@ -390,7 +392,7 @@ namespace Gear.EmulationCore
 
         public void IncludePlugin(PluginBase mod)
         {
-            if( !(PlugIns.Contains(mod)) )
+            if (!(PlugIns.Contains(mod)))
                 PlugIns.Add(mod);
         }
 
@@ -399,10 +401,10 @@ namespace Gear.EmulationCore
             if (PlugIns.Contains(mod))
                 PlugIns.Remove(mod);
         }
-        
+
         public void NotifyOnClock(PluginBase mod)
         {
-            if( !(TickHandlers.Contains(mod)) )
+            if (!(TickHandlers.Contains(mod)))
                 TickHandlers.Add(mod);
         }
 
@@ -428,11 +430,11 @@ namespace Gear.EmulationCore
         {
             ClockMode = mode;
 
-            if( (mode & 0x80) != 0)
+            if ((mode & 0x80) != 0)
             {
                 Reset();
-                return ;
-            }            
+                return;
+            }
 
             switch (mode & 0x7)
             {
@@ -459,11 +461,11 @@ namespace Gear.EmulationCore
                     break;
                 case 7:
                     CoreFreq = ((mode & 0x40) != 0) ? XtalFreq * 16 : 0;
-                    break;                    
+                    break;
             }
 
             for (int i = 0; i < Cogs.Length; i++)
-                if( Cogs[i] != null )
+                if (Cogs[i] != null)
                     Cogs[i].SetClock(CoreFreq);
 
             CoreClockSource.SetFrequency(CoreFreq);
@@ -485,11 +487,11 @@ namespace Gear.EmulationCore
 
             foreach (PluginBase mod in PlugIns)
                 mod.OnReset();
-                
+
             PinChanged();
 
-            SetClockMode((byte)(ClockMode & 0x7F));           
-            
+            SetClockMode((byte)(ClockMode & 0x7F));
+
             // Start the runtime in interpreted mode (fake boot)
 
             // Pushes the 3 primary offsets (local offset, var offset, and object offset)
@@ -501,7 +503,7 @@ namespace Gear.EmulationCore
             WriteWord(InitFrame - 6, ReadWord(8));  // Var
             WriteWord(InitFrame - 4, ReadWord(12)); // Local
             WriteWord(InitFrame - 2, ReadWord(14)); // Stack
-            
+
             // Boot parameter is Inital PC in the lo word, and the stack frame in the hi word
             ClockSources[0] = new PLLGroup();
 
@@ -528,7 +530,7 @@ namespace Gear.EmulationCore
             int sourceTicked;
             bool cogResult;
             bool result = true;
-            
+
             do
             {
                 double minimumTime = CoreClockSource.TimeUntilClock;
@@ -585,7 +587,7 @@ namespace Gear.EmulationCore
                     Cogs[cog].HubAccessable();
             }
 
-            if (pins != IN || dir != DIR || pinChange) 
+            if (pins != IN || dir != DIR || pinChange)
                 PinChanged();
 
             pins = IN;
@@ -600,14 +602,14 @@ namespace Gear.EmulationCore
 
             if (pins != IN || dir != DIR || pinChange)
                 PinChanged();
-                
+
             return result;
         }
 
         public void PinChanged()
         {
             ulong pinsState = OUT;
-            
+
             pinChange = false;
 
             for (int i = 0; i < 64; i++)
@@ -622,7 +624,7 @@ namespace Gear.EmulationCore
                         PinStates[i] = PinState.INPUT_LO;
                 }
                 else
-                {                    
+                {
                     if (((pinsState >> i) & 1) != 0)
                         PinStates[i] = PinState.OUTPUT_HI;
                     else
@@ -647,8 +649,8 @@ namespace Gear.EmulationCore
                 PinHi |= mask;
             else
                 PinHi &= ~mask;
-                
-            pinChange = true;    
+
+            pinChange = true;
         }
 
         public byte ReadByte(uint address)
@@ -710,7 +712,7 @@ namespace Gear.EmulationCore
 
         public uint NewLock()
         {
-            for( uint i = 0; i < LocksAvailable.Length; i++ )
+            for (uint i = 0; i < LocksAvailable.Length; i++)
                 if (LocksAvailable[i])
                 {
                     LocksAvailable[i] = false;
@@ -761,7 +763,7 @@ namespace Gear.EmulationCore
 
                             if (cog >= Cogs.Length)
                             {
-                                carry = true;                                
+                                carry = true;
                                 return 0xFFFFFFFF;
                             }
                         }
@@ -774,8 +776,8 @@ namespace Gear.EmulationCore
 
                         ClockSources[cog] = (ClockSource)pll;
 
-                        if( progm == 0xF004 )
-                            Cogs[cog] = new InterpretedCog(this, param, CoreFreq, pll );
+                        if (progm == 0xF004)
+                            Cogs[cog] = new InterpretedCog(this, param, CoreFreq, pll);
                         else
                             Cogs[cog] = new NativeCog(this, progm, param, CoreFreq, pll);
 
@@ -815,7 +817,7 @@ namespace Gear.EmulationCore
                     LocksState[arguement & 7] = true;
                     // TODO: DETERMINE RESULT
                     return arguement;
-                default:                    
+                default:
                     // TODO: RAISE EXCEPTION
                     break;
             }
