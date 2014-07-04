@@ -2,6 +2,12 @@
 
 Read more about in [forum GEAR: Propeller Debugging Environment](http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment)
 
+## V09_06_05 (140) 5 June 2009
+
+* Many thanks to Ben Levitt for improving the behaviour of GEAR. (Reload Binary, Open to PlugIn, Close PlugIn)
+* Improvements in SerialIO plugin (Ben Levitt).
+
+
 ## V09_05_12 (50) 11 May 2009
 
 * Fixed memory references of the form `LONG[ &MyVar ][ 2 ]`, this case was being emulated as `LONG[ 2 ][ &MyVar ]`.
