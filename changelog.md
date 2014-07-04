@@ -1,6 +1,14 @@
 
 
-Read more about in [forum GEAR: Propeller Debugging Environment](http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment)
+Read more in forum threads:
+* [More GEAR - Improved Emulation of the Propeller](http://forums.parallax.com/showthread.php/100380-More-GEAR-Improved-Emulation-of-the-Propeller)
+* [GEAR: Propeller Debugging Environment](http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment)
+
+
+## V09_10_26 26 October 2009
+
+* Many thanks to Bob Anderson for identifying bugs in and subsequently testing improvements to the emulation of SUBS, SUBSX, CMPSX and REV.
+
 
 ## V09_06_05 (140) 5 June 2009
 
