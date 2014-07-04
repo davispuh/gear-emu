@@ -2,6 +2,31 @@
 
 Read more about in [forum GEAR: Propeller Debugging Environment](http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment)
 
+## V08 04 29 (159) 29 April 2008
+* The lastest stimulus.zip is now included in V08_04_29.zip.
+* 'R' and 'S' keys can now be used to run, stop and step the currently active cog.
+* Floating the cursor over an assembly cog page shows the values stored at the source and destination registers for the instruction line that's under the mouse. The values are shown as both hex and decimal.
+
+### On 23 January 2008
+
+* Updated stimulus.zip. Still works with V08_01_18 of GEAR.
+* The stimulus plug-in page has a context menu which allows a new stimulus file to be loaded and the current one to be saved.
+* Editing of the stimulus file is allowed - previously it was read-only.
+* As part of the stimulus file, it is now possible to include the words reset and stop.
+
+reset - simulates a reset of the processor.
+stop - causes a breakpoint - click Run to go to the next stop / breakpoint
+
+### On 21 January 2008
+
+* Added stimulus.zip which updates stimulus.xml and the example stimulus file. It is now possible to do clock and pwm generation.
+
+
+## V08_01_18 (140)
+
+* Pin toggling by means of a stimulus file.
+
+
 ## V08_01_13 (86)
 
 * Better disassembly of PASM
