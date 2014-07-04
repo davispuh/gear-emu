@@ -661,7 +661,7 @@ namespace Gear.EmulationCore
 
         private void InstructionRCR()
         {
-            int bits = (int)SourceValue;
+            int bits = (int)SourceValue & 31;
             DataResult = DestinationValue >> bits;
             if (Carry)
                 DataResult |= ~(0xFFFFFFFF >> bits);
@@ -672,7 +672,7 @@ namespace Gear.EmulationCore
 
         private void InstructionRCL()
         {
-            int bits = (int)SourceValue;
+            int bits = (int)SourceValue & 31;
             DataResult = DestinationValue << bits;
             if (Carry)
                 DataResult |= ~(0xFFFFFFFF << bits);
@@ -683,7 +683,7 @@ namespace Gear.EmulationCore
 
         private void InstructionROR()
         {
-            int bits = (int)SourceValue;
+            int bits = (int)SourceValue & 31;
             ulong mask = DestinationValue | ((ulong)DestinationValue << 32);
 
             DataResult = (uint)(mask >> bits);
@@ -693,7 +693,7 @@ namespace Gear.EmulationCore
 
         private void InstructionROL()
         {
-            int bits = (int)SourceValue;
+            int bits = (int)SourceValue & 31;
             ulong mask = DestinationValue | ((ulong)DestinationValue << 32);
 
             DataResult = (uint)(mask << bits >> 32);
@@ -703,7 +703,7 @@ namespace Gear.EmulationCore
 
         private void InstructionSHR()
         {
-            int bits = (int)SourceValue;
+            int bits = (int)SourceValue & 31;
 
             DataResult = DestinationValue >> bits;
             CarryResult = (DestinationValue & 0x00000001) != 0;
@@ -712,7 +712,7 @@ namespace Gear.EmulationCore
 
         private void InstructionSHL()
         {
-            int bits = (int)SourceValue;
+            int bits = (int)SourceValue & 31;
 
             DataResult = DestinationValue << bits;
             CarryResult = (DestinationValue & 0x80000000) != 0;
@@ -721,7 +721,7 @@ namespace Gear.EmulationCore
 
         private void InstructionSAR()
         {
-            int bits = (int)SourceValue;
+            int bits = (int)SourceValue & 31;
 
             DataResult = DestinationValue >> bits;
             if ((DestinationValue & 0x80000000) != 0)
@@ -864,18 +864,16 @@ namespace Gear.EmulationCore
             int shift = 0;
 
             DataResult = 0;
-
-            if (SourceValue < 32)
-            {
-                for (int i = 31 - (int)SourceValue; i >= 0; i--)
-                    DataResult |= (DestinationValue >> i) << (shift++);
+//            if (SourceValue < 32)
+//            {
+                for (int i = 31 - ((int)SourceValue & 31); i >= 0; i--)
+                    DataResult |= ((DestinationValue >> i) & 1) << (shift++);
                 ZeroResult = DataResult == 0;
-            }
-            else
-            {
-                ZeroResult = true;
-            }
-
+//            }
+//            else
+//            {
+//                ZeroResult = true;
+//            }
             CarryResult = (DestinationValue & 1) != 0;
         }
 
@@ -1131,7 +1129,7 @@ namespace Gear.EmulationCore
 
         private void InstructionSUBX()
         {
-            ulong result = (ulong)SourceValue - (ulong)DestinationValue;
+            ulong result = (ulong)DestinationValue - (ulong)SourceValue;
 
             if (Carry)
                 result--;
@@ -1143,16 +1141,17 @@ namespace Gear.EmulationCore
 
         private void InstructionSUBS()
         {
-            long result = (int)SourceValue - (int)DestinationValue;
+            long result = (int)DestinationValue - (int)SourceValue;
+
             DataResult = (uint)result;
-            ZeroResult = Zero && (DataResult == 0);
+            ZeroResult = (DataResult == 0);
             CarryResult = ((SourceValue ^ DestinationValue) & 0x80000000) != 0
-                && ((SourceValue ^ DataResult) & 0x80000000) != 0;
+                && ((SourceValue ^ DataResult) & 0x80000000) == 0;
         }
 
         private void InstructionSUBSX()
         {
-            long result = (int)SourceValue - (int)DestinationValue;
+            long result = (int)DestinationValue - (int)SourceValue;
 
             if (Carry)
                 result--;
@@ -1160,7 +1159,7 @@ namespace Gear.EmulationCore
             DataResult = (uint)result;
             ZeroResult = Zero && (DataResult == 0);
             CarryResult = ((SourceValue ^ DestinationValue) & 0x80000000) != 0
-                && ((SourceValue ^ DataResult) & 0x80000000) != 0;
+                && ((SourceValue ^ DataResult) & 0x80000000) == 0;
         }
 
         private void InstructionSUMC()
@@ -1228,22 +1227,22 @@ namespace Gear.EmulationCore
             long result = (long)(int)DestinationValue - (long)(int)SourceValue;
 
             DataResult = (uint)result;
-            ZeroResult = Zero && (DataResult == 0);
-//            CarryResult = result < -2147483648;
+            ZeroResult = (DataResult == 0);
             CarryResult = (DataResult & 0x80000000) == 0x80000000;
         }
 
         private void InstructionCMPSX()
         {
-            long result = (long)(int)SourceValue - (long)(int)DestinationValue;
+            long result = (long)(int)DestinationValue - (long)(int)SourceValue;
 
             if (Carry)
                 result--;
 
             DataResult = (uint)result;
             ZeroResult = Zero && (DataResult == 0);
-//            CarryResult = result < -2147483648;
             CarryResult = (DataResult & 0x80000000) == 0x80000000;
+            if (((SourceValue ^ DestinationValue) & 0x80000000) != 0)
+              CarryResult = !CarryResult;
         }
 
         private void InstructionCMPSUB()
@@ -1251,7 +1250,7 @@ namespace Gear.EmulationCore
             if (DestinationValue >= SourceValue)
             {
                 DataResult = DestinationValue - SourceValue;
-                ZeroResult = DestinationValue == SourceValue;
+				ZeroResult = (DataResult == 0);
             }
             else
             {

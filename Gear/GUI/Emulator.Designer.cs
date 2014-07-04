@@ -248,6 +248,7 @@ namespace Gear.GUI
             this.documentsTab.Size = new System.Drawing.Size(648, 403);
             this.documentsTab.TabIndex = 5;
             this.documentsTab.Click += new System.EventHandler(this.documentsTab_Click);
+            this.documentsTab.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.documentsTab_KeyPress);
             // 
             // pinnedSplitter
             // 

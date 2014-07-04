@@ -1047,7 +1047,12 @@ namespace Gear.EmulationCore
             }
 
             if (Indexed != 0)
-                address += PopStack() << (Size >> 5);
+            {
+                if (Base == 0x00)
+                    address = PopStack() + (address << (Size >> 5));
+                else
+                    address += PopStack() << (Size >> 5);
+            }
 
             switch (Type)
             {

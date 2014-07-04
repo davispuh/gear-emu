@@ -383,5 +383,27 @@ namespace Gear.GUI
         {
 
         }
+
+        private void documentsTab_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (ActiveControl is PluginBase)
+            {
+                PluginBase b = ActiveControl as PluginBase;
+                if (b.AllowHotKeys != true)
+                  return;
+            }
+            if ((e.KeyChar == 's') | (e.KeyChar == 'S'))
+            {
+                if (runTimer.Enabled)
+                    runTimer.Stop();
+                else
+                    stepInstruction_Click(sender, e);
+            }
+            if ((e.KeyChar == 'r') | (e.KeyChar == 'R'))
+            {
+                if (!runTimer.Enabled)
+                    runTimer.Start();
+            }
+        }
     }
 }

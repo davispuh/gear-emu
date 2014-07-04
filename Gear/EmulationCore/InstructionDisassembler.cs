@@ -399,21 +399,21 @@ namespace Gear.EmulationCore
 	            "Branch",
 	            "Call",
 	            "ObjCall",
-	            "OBJCALL_INDEXED",
-	            "LOOP_START",
-	            "LOOP_CONTINUE",
+	            "ObjCall[]",
+	            "LoopStart",
+	            "LoopContinue",
 	            "JumpIfFalse",
 	            "JumpIfTrue",
 	            "JumpFromStack",
 	            "Case ==",
 	            "CaseRange",
-	            "LOOK_ABORT",
-	            "LOOKUP_COMPARE",
-	            "LOOKDOWN_COMPARE",
-	            "LOOKUPRANGE_COMPARE",
-	            "LOOKDOWNRANGE_COMPARE",
+	            "LookAbort",
+	            "LookUpOne",
+	            "LookDownOne",
+	            "LookUpRange",
+	            "LookDownRange",
 	            "Quit",
-	            "MARK_INTERPRETED",
+	            "MarkInterpreted",
 	            "StrSize",
 	            "StrComp",
 	            "ByteFill",
@@ -426,16 +426,16 @@ namespace Gear.EmulationCore
 	            "WaitPNE",
 	            "CLKSET",
 	            "CogStop",
-	            "LOCKRET",
+	            "LockRet",
 	            "WaitCNT",
-	            "READ_INDEXED_SPR",
-	            "WRITE_INDEXED_SPR",
-	            "EFFECT_INDEXED_SPR",
+	            "RdLong SPR[]",
+	            "WrLong SPR[]",
+	            "RdWrLong SPR[]",
 	            "WaitVID",
 	            "CogInitReturns",
-	            "LOCKNEW_RETURNS",
-	            "LOCKSET_RETURNS",
-	            "LOCKCLR_RETURNS",
+	            "LockNewReturns",
+	            "LockSetReturns",
+	            "LockClearReturns",
 	            "CogInit",
 	            "LockNew",
 	            "LockSet",
@@ -1081,10 +1081,10 @@ namespace Gear.EmulationCore
             else if (InstructionCode <= 3)
             {
                 ShowRdWr = false;
-                if (WriteResult)
-                    inst = InstWriteHub[InstructionCode];
-                else
+                if (WriteResult)  // Write the result to cog memory
                     inst = InstReadHub[InstructionCode];
+                else
+                    inst = InstWriteHub[InstructionCode];
             }
             else if (InstructionCode == 0x17) 
             {

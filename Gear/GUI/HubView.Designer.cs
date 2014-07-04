@@ -57,6 +57,7 @@ namespace Gear.GUI
             System.Windows.Forms.Label label5;
             System.Windows.Forms.Label label4;
             System.Windows.Forms.Label label3;
+            System.Windows.Forms.Label label9;
             this.coreFrequency = new System.Windows.Forms.Label();
             this.xtalFrequency = new System.Windows.Forms.Label();
             this.clockMode = new System.Windows.Forms.Label();
@@ -67,6 +68,8 @@ namespace Gear.GUI
             this.pinLocksFree = new Gear.GUI.BitView();
             this.pinLocks = new Gear.GUI.BitView();
             this.ringMeter = new Gear.GUI.RingMeter();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             label8 = new System.Windows.Forms.Label();
             label7 = new System.Windows.Forms.Label();
             label6 = new System.Windows.Forms.Label();
@@ -76,6 +79,7 @@ namespace Gear.GUI
             label5 = new System.Windows.Forms.Label();
             label4 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
+            label9 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label8
@@ -265,10 +269,43 @@ namespace Gear.GUI
             this.ringMeter.TabIndex = 0;
             this.ringMeter.Value = ((uint)(0u));
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(73, 501);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(82, 13);
+            this.label1.TabIndex = 31;
+            this.label1.Text = "S - Stop or Step";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(73, 481);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(44, 13);
+            this.label2.TabIndex = 30;
+            this.label2.Text = "R - Run";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // label9
+            // 
+            label9.AutoSize = true;
+            label9.Location = new System.Drawing.Point(3, 481);
+            label9.Name = "label9";
+            label9.Size = new System.Drawing.Size(61, 13);
+            label9.TabIndex = 29;
+            label9.Text = "Quick Keys";
+            label9.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // HubView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(label9);
             this.Controls.Add(this.coreFrequency);
             this.Controls.Add(this.xtalFrequency);
             this.Controls.Add(this.clockMode);
@@ -289,7 +326,7 @@ namespace Gear.GUI
             this.Controls.Add(this.pinLocks);
             this.Controls.Add(this.ringMeter);
             this.Name = "HubView";
-            this.Size = new System.Drawing.Size(214, 531);
+            this.Size = new System.Drawing.Size(214, 546);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -307,5 +344,7 @@ namespace Gear.GUI
         private BitView pinFloating;
         private BitView pinLocksFree;
         private BitView pinLocks;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
     }
 }

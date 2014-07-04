@@ -409,7 +409,7 @@ namespace Gear.EmulationCore
                 
         }
 
-        protected uint ReadLong(uint address)
+        public uint ReadLong(uint address)
         {
             switch( address & 0x1FF )
             {

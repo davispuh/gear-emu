@@ -31,17 +31,13 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle("Gear")]
 [assembly: AssemblyDescription(
-    "Developers: Robert Vandiver.\r\n" +
+    "Original Developer: Robert Vandiver.\r\n" +
     "\r\n" +
-    "Thanks to everyone on the forums for being " +
-    "so helpful with providing me with information\r\n" +
+    "Current Developers:\r\n" +
+    "   mirror\r\n" +
+    "   benjie (Ben Levitt)\r\n" +
     "\r\n" +
-    "As this is a pre-release, there are bound to be bugs\r\n" +
-    "Please do not send me reports, and I'm still in the testing " +
-    "phase, and most everything you will tell me I already know. " +
-    "The interpreted core is mostly untested.  Use at your own risk.\r\n" +
-    "\r\n" +
-    "Contributed code: \r\n" +
+    "Third Party Components: \r\n" +
 	"Windows Forms Collapsible Splitter Control for .Net\r\n" +
 	"(c)Copyright 2002-2003 NJF (furty74@yahoo.com). All rights reserved."
     )]
@@ -67,5 +63,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("1.11.0.0")]
-[assembly: AssemblyFileVersion("1.11.0.0")]
+[assembly: AssemblyVersion("9.10.26.7")]
+[assembly: AssemblyFileVersion("9.10.26.7")]

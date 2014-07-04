@@ -35,10 +35,7 @@ namespace Gear.PluginSupport
 {
     public class PluginBase : UserControl
     {
-        public virtual string Title
-        {
-            get { return "Bus Module"; }
-        }
+        public virtual string Title { get { return "Bus Module"; } }
         public virtual void PresentChip(Propeller host) { }
         public virtual void OnReset() { }
         public virtual void OnClock(double time) { }

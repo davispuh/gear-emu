@@ -102,7 +102,7 @@ namespace Gear.GUI
         private void Repaint(bool tick, NativeCog host)
         {
             Graphics g = Graphics.FromImage((Image)BackBuffer);
-						g.Clear(SystemColors.Control);
+            g.Clear(SystemColors.Control);
             Brush brush;
 
             OpcodeSize.Visible = false;
@@ -420,5 +420,28 @@ namespace Gear.GUI
         {
             positionScroll.Focus();
         }
+
+        private void assemblyPanel_MouseHover(object sender, EventArgs e)
+        {
+
+        }
+
+        private void assemblyPanel_MouseMove(object sender, MouseEventArgs e)
+        {
+            uint line;
+            uint mem;
+            if (!(Chip.GetCog(HostID) is NativeCog))
+                return;
+            NativeCog host = (NativeCog)Chip.GetCog(HostID);
+            line = (uint)positionScroll.Value + (uint)(e.Y / MonoFont.Height);
+            if (line > 0x1FF)
+                return;
+            mem = host.ReadLong(line);
+            toolTip1.SetToolTip(assemblyPanel, String.Format(
+                    "${0:x3}= ${1:x8}, {1}\n${2:x3}= ${3:x8}, {3}",
+                    mem >> 9 & 0x1ff, host.ReadLong(mem >> 9 & 0x1ff), 
+                    mem & 0x1ff, host.ReadLong(mem & 0x1ff)));
+        }
+
     }
 }

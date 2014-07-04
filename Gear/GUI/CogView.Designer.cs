@@ -48,6 +48,7 @@ namespace Gear.GUI
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
@@ -70,6 +71,7 @@ namespace Gear.GUI
             this.OpcodeSize = new System.Windows.Forms.ToolStripDropDownButton();
             this.longOpcodes = new System.Windows.Forms.ToolStripMenuItem();
             this.shortOpcodes = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -105,8 +107,10 @@ namespace Gear.GUI
             this.assemblyPanel.Size = new System.Drawing.Size(548, 421);
             this.assemblyPanel.TabIndex = 1;
             this.assemblyPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.assemblyPanel_MouseDown);
+            this.assemblyPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.assemblyPanel_MouseMove);
             this.assemblyPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.assemblyPanel_MouseClick);
             this.assemblyPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.AssemblyView_Paint);
+            this.assemblyPanel.MouseHover += new System.EventHandler(this.assemblyPanel_MouseHover);
             this.assemblyPanel.SizeChanged += new System.EventHandler(this.AsmSized);
             // 
             // positionScroll
@@ -292,6 +296,7 @@ namespace Gear.GUI
         private System.Windows.Forms.ToolStripDropDownButton OpcodeSize;
         private System.Windows.Forms.ToolStripMenuItem longOpcodes;
         private System.Windows.Forms.ToolStripMenuItem shortOpcodes;
+        private System.Windows.Forms.ToolTip toolTip1;
 
     }
 }
