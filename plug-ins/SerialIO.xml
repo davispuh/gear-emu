@@ -1,0 +1,421 @@
+<plugin>
+  <instance class="SerialIO" />
+  <code>//
+// SerialIO v0.2
+//    A Plugin to the Gear Propeller Simulator that allows connecting
+//    to a FullDuplexSerial object running on the propeller chip.
+//
+// CHANGELOG
+// v0.2 - Fixes a bug in handling receiving a 0 byte.
+//
+// 2009 Ben Levitt
+//
+
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+using Gear.PluginSupport;
+using Gear.EmulationCore;
+
+
+class SerialIO : PluginBase
+{
+  public class SerialTextBox:TextBox
+  {
+    public SerialIO serial;
+    
+    private const int WM_PASTE = 0x0302;
+    
+    protected override void WndProc(ref Message m)
+    {
+      switch (m.Msg) {
+        case WM_PASTE:
+          if (Clipboard.ContainsText() == true) {
+            // Add to the send buffer
+            this.serial.SendString(Clipboard.GetText());
+          }
+          break;
+          
+        default:
+          base.WndProc(ref m);
+          break;
+      }
+    }
+  }
+
+
+
+  private Propeller Chip;
+  
+  private int rxPin;
+  private int txPin;
+  private int baud;
+  private double bitTime;
+  
+  private String displayBuffer;
+  
+  private double rxLastTime;
+  private int rxPhase;        // 0=wait for hi, 1=wait for low, 2=wait for data
+  private int rxBitPos;
+  private int rxCurrentByte;
+  
+  private String txBuffer;
+  private double txLastTime;
+  private int txPhase;        // 0=idle, 1=send low, 2=send data, 3=send high
+  private int txBitPos;
+  
+  // GUI elements
+  private TextBox rxPinField;
+  private TextBox txPinField;
+  private TextBox baudField;
+  
+  private SerialTextBox bodyField;
+  
+  
+  public override string Title
+  {
+    get { return "Serial"; }
+  }
+  
+  
+  public override Boolean AllowHotKeys
+  {
+    get { return false; }
+  }
+  
+  
+  public SerialIO()
+  {
+    rxPin = 30;
+    txPin = 31;
+    baud  = 57600;
+    displayBuffer = "";
+    
+    this.BuildGui();
+    this.OnReset();
+  }
+  
+  
+  public override void OnReset()
+  {
+    // Setup vars
+    rxLastTime = 0;
+    rxPhase = 0;
+    rxBitPos = 0;
+    rxCurrentByte = 0;
+    
+    txBuffer = "";
+    txLastTime = 0;
+    txPhase = 0;
+    txBitPos = 0;
+    
+    rxPin = Convert.ToInt32(rxPinField.Text);
+    txPin = Convert.ToInt32(txPinField.Text);
+    baud = Convert.ToInt32(baudField.Text);
+    bitTime = 1.0/baud;
+  }
+  
+  
+  private void BuildGui()
+  {
+    // Build the Plugin UI
+    System.Windows.Forms.TableLayoutPanel tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
+    System.Windows.Forms.Label rxPinLabel = new System.Windows.Forms.Label();
+    System.Windows.Forms.Label txPinLabel = new System.Windows.Forms.Label();
+    System.Windows.Forms.Label baudLabel = new System.Windows.Forms.Label();
+    System.Windows.Forms.Button resetButton = new System.Windows.Forms.Button();
+    System.Windows.Forms.Button clearButton = new System.Windows.Forms.Button();
+    
+    this.rxPinField = new System.Windows.Forms.TextBox();
+    this.txPinField = new System.Windows.Forms.TextBox();
+    this.baudField = new System.Windows.Forms.TextBox();
+    this.bodyField = new SerialTextBox();
+    
+    this.SuspendLayout();
+    tableLayoutPanel.SuspendLayout();
+    
+    tableLayoutPanel.ColumnCount = 8;
+    tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+    tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+    tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+    tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+    tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+    tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+    tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+    tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+    
+    tableLayoutPanel.Controls.Add(clearButton, 0, 0);
+    tableLayoutPanel.Controls.Add(rxPinLabel,       1, 0);
+    tableLayoutPanel.Controls.Add(this.rxPinField,  2, 0);
+    tableLayoutPanel.Controls.Add(txPinLabel,       3, 0);
+    tableLayoutPanel.Controls.Add(this.txPinField,  4, 0);
+    tableLayoutPanel.Controls.Add(baudLabel,        5, 0);
+    tableLayoutPanel.Controls.Add(this.baudField,   6, 0);
+    tableLayoutPanel.Controls.Add(resetButton, 7, 0);
+    tableLayoutPanel.Controls.Add(this.bodyField,   0, 1);
+    
+    tableLayoutPanel.SetColumnSpan(this.bodyField, 8);
+    
+    tableLayoutPanel.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.FixedSize;
+    tableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+    tableLayoutPanel.Name = "tableLayoutPanel";
+    tableLayoutPanel.RowCount = 2;
+    tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+    tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+    tableLayoutPanel.TabIndex = 6;
+    
+    rxPinLabel.Text = "Rx Pin:";
+    rxPinLabel.TextAlign = ContentAlignment.MiddleRight;
+    rxPinLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+    
+    txPinLabel.Text = "Tx Pin:";
+    txPinLabel.TextAlign = ContentAlignment.MiddleRight;
+    txPinLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+    
+    baudLabel.Text = "Baud Rate:";
+    baudLabel.TextAlign = ContentAlignment.MiddleRight;
+    baudLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+    
+    this.rxPinField.BackColor = System.Drawing.SystemColors.Window;
+    this.rxPinField.Font = new System.Drawing.Font("Courier New", 9.75F, 
+         System.Drawing.FontStyle.Regular, 
+         System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+    this.rxPinField.Multiline = false;
+    this.rxPinField.Text = Convert.ToString(rxPin);
+    this.rxPinField.Dock = System.Windows.Forms.DockStyle.Fill;
+    this.rxPinField.Name = "rxPinField";
+    this.rxPinField.TabIndex = 1;
+    
+    this.txPinField.BackColor = System.Drawing.SystemColors.Window;
+    this.txPinField.Font = new System.Drawing.Font("Courier New", 9.75F, 
+         System.Drawing.FontStyle.Regular, 
+         System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+    this.txPinField.Multiline = false;
+    this.txPinField.Text = Convert.ToString(txPin);
+    this.txPinField.Dock = System.Windows.Forms.DockStyle.Fill;
+    this.txPinField.Name = "txPinField";
+    this.txPinField.TabIndex = 2;
+    
+    this.baudField.BackColor = System.Drawing.SystemColors.Window;
+    this.baudField.Font = new System.Drawing.Font("Courier New", 9.75F, 
+         System.Drawing.FontStyle.Regular, 
+         System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+    this.baudField.Multiline = false;
+    this.baudField.Text = Convert.ToString(baud);
+    this.baudField.Dock = System.Windows.Forms.DockStyle.Fill;
+    this.baudField.Name = "baudField";
+    this.baudField.TabIndex = 3;
+    
+    this.bodyField.BackColor = System.Drawing.SystemColors.Window;
+    this.bodyField.Font = new System.Drawing.Font("Courier New", 9.75F, 
+         System.Drawing.FontStyle.Regular, 
+         System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+    //this.bodyField.ReadOnly = true;
+    this.bodyField.Multiline = true;
+    this.bodyField.Name = "bodyField";
+    this.bodyField.TabIndex = 0;
+    this.bodyField.Dock = System.Windows.Forms.DockStyle.Fill;
+    this.bodyField.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txt_KeyPress);
+    this.bodyField.serial = this;
+    
+    resetButton.Text = "Reset Serial";
+    resetButton.TabIndex = 4;
+    resetButton.Name = "resetButton";
+    resetButton.Dock = System.Windows.Forms.DockStyle.Fill;
+    resetButton.Click += new System.EventHandler(this.reset_Click);
+    
+    clearButton.Text = "Clear Text";
+    clearButton.TabIndex = 4;
+    clearButton.Name = "clearButton";
+    clearButton.Dock = System.Windows.Forms.DockStyle.Fill;
+    clearButton.Click += new System.EventHandler(this.clear_Click);
+    
+    this.Controls.Add(tableLayoutPanel);
+    tableLayoutPanel.ResumeLayout(false);
+    tableLayoutPanel.PerformLayout();
+    this.ResumeLayout(false);
+    this.PerformLayout();
+    
+    this.bodyField.Focus();
+  }
+  
+  
+  public override void PresentChip(Propeller host)
+  {
+    Chip = host;
+    
+    Chip.NotifyOnClock(this);
+    Chip.DrivePin(txPin, false, true);
+  }
+  
+  
+  public override void OnClock(double time)
+  {
+    this.HandleRx(time);
+    this.HandleTx(time);
+  }
+  
+  
+  private void HandleRx(double time)
+  {
+    bool bit = ((Chip.OUT &amp; ((ulong)1 &lt;&lt; rxPin)) != 0);
+    
+    if (rxPhase == 0) {
+      if (bit) {
+        rxPhase = 1;
+      }
+      return;
+    }
+    else if (rxPhase == 1) {
+      if (!bit) {
+        rxPhase = 2;
+        rxLastTime = time + bitTime/2;
+      }
+      return;
+    }
+    else if (rxPhase == 2) {
+      double delta = time - rxLastTime;
+      
+      if (delta &gt; bitTime) {
+        this.GetBit(bit);
+        rxLastTime += bitTime;
+      }
+    }
+  }
+  
+  
+  private void GetBit(bool bit)
+  {
+    if (bit) {
+      rxCurrentByte |= (1 &lt;&lt; rxBitPos);
+    }
+    rxBitPos++;
+    
+    // displayBuffer += ((bit) ? '1' : '.');
+    
+    if (rxBitPos == 8) {
+      rxBitPos = 0;
+      rxPhase = 0;
+      
+      if (rxCurrentByte == 13 || rxCurrentByte == 10) {
+        displayBuffer += "\r\n";
+      }
+      else if (rxCurrentByte &gt; 0) {
+        displayBuffer += Convert.ToChar(rxCurrentByte);
+      }
+      
+      rxCurrentByte = 0;
+    }
+    this.bodyField.Text = displayBuffer;
+    this.bodyField.SelectionStart = this.bodyField.Text.Length;
+  }
+  
+  
+  private void HandleTx(double time)
+  {
+    if (txPhase == 1) {
+      Chip.DrivePin(txPin, false, false);
+      txPhase = 2;
+      txLastTime = time;
+      return;
+    }
+    else if (txPhase == 2) {
+      double delta = time - txLastTime;
+      
+      if (delta &gt; bitTime) {
+        this.SendBit();
+        txLastTime += bitTime;
+      }
+    }
+    else if (txPhase == 3) {
+      double delta = time - txLastTime;
+      
+      if (delta &gt; bitTime) {
+        txPhase = ((txBuffer.Length &gt; 0) ? 1 : 0);
+      }
+      return;
+    }
+  }
+  
+  
+  private void SendBit()
+  {
+    if (txBitPos == 8) {
+      txBitPos = 0;
+      txPhase = 3;
+      txBuffer = txBuffer.Substring(1, txBuffer.Length-1);
+      Chip.DrivePin(txPin, true, true);
+      return;
+    }
+    
+    int sendByte = (int)(txBuffer[0]);
+    bool bit = ((sendByte &amp; (1 &lt;&lt; txBitPos)) != 0);
+    Chip.DrivePin(txPin, false, bit);
+    
+    txBitPos++;
+  }
+  
+  
+  // Handle Paste
+  public void SendString(String str)
+  {
+    txBuffer += str;
+    displayBuffer += str;
+    this.bodyField.Text = displayBuffer;
+    
+    if (txPhase == 0) {
+      txPhase = 1;
+    }
+  }
+  
+  
+  private void ClearText()
+  {
+    displayBuffer = "";
+    this.bodyField.Text = displayBuffer;
+  }
+  
+  
+  private void txt_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
+  {
+    if ((Control.ModifierKeys &amp; Keys.Control) != 0) {
+      return;
+    }
+    
+    e.Handled = true;
+
+    txBuffer += e.KeyChar;
+    
+    if (e.KeyChar == '\n' || e.KeyChar == '\r') {
+      displayBuffer += "\r\n";
+    }
+    else {
+      displayBuffer += e.KeyChar;
+    }
+    
+    this.bodyField.Text = displayBuffer;
+    
+    if (txPhase == 0) {
+      txPhase = 1;
+    }
+  }
+  
+  
+  private void clear_Click(object sender, System.EventArgs e)
+  {
+    this.ClearText();
+    this.bodyField.Focus();
+  }
+  
+  
+  private void reset_Click(object sender, System.EventArgs e)
+  {
+    this.OnReset();
+    this.bodyField.Focus();
+  }
+}
+
+</code>
+</plugin>
