@@ -41,6 +41,13 @@ namespace Gear.GUI
         private Font MonoFont;
         private Font MonoFontBold;
         private Bitmap BackBuffer;
+        private uint[] InterpAddress;
+        private int StackMargin = 180;
+        private uint StringX;
+        private uint StringY;
+        private Brush StringBrush;
+        private bool displayAsHexadecimal;
+        private bool useShortOpcodes;
 
         public override string Title
         {
@@ -52,12 +59,17 @@ namespace Gear.GUI
 
         public CogView(int host)
         {
-            HostID = host;
+		    HostID = host;
+		    
+		    InterpAddress = new uint[80];   //Allow for up to 80 lines of displayed interpreted text
+		    
+		    displayAsHexadecimal = false;
+            useShortOpcodes = true;
 
             MonoFont = new Font(FontFamily.GenericMonospace, 10);
             if (MonoFont == null)
                 MonoFont = this.Font;
-
+					  
             MonoFontBold = new Font(MonoFont, FontStyle.Bold);
 
             InitializeComponent();
@@ -73,21 +85,33 @@ namespace Gear.GUI
             Chip = host;
         }
 
+        private void DrawString(Graphics g, string s)
+        {
+            g.DrawString(s, MonoFont, StringBrush, StringX, StringY);
+            StringY += (uint)MonoFont.Height;
+        }
+
         private void Repaint(bool tick, NativeCog host)
         {
             Graphics g = Graphics.FromImage((Image)BackBuffer);
-            g.Clear(SystemColors.Control);
+						g.Clear(SystemColors.Control);
+            Brush brush;
 
+            OpcodeSize.Visible = false;
+            DisplayUnits.Visible = false;
             zeroFlagLable.Text = "Zero: " + (host.ZeroFlag ? "True" : "False");
             carryFlagLable.Text = "Carry: " + (host.CarryFlag ? "True" : "False");
 
             String display;
+			uint topLine, bottomLine;
+			topLine = 5;
+			bottomLine = (uint)((ClientRectangle.Height / MonoFont.Height) - 5);
 
-            for (uint i = (uint)positionScroll.Value, y = 0;
+            for (uint i = (uint)positionScroll.Value, y = 0, line = 1;
                 y < ClientRectangle.Height;
-                y += (uint)MonoFont.Height, i++)
+                y += (uint)MonoFont.Height, i++, line++)
             {
-                if (i > 0x1FF)
+                if ((i > 0x1FF) || (i < 0))
                     continue;
 
                 uint mem = host[(int)i];
@@ -106,13 +130,20 @@ namespace Gear.GUI
                 }
                 else
                 {
-                    display = String.Format("{0:X4}:  {2:X8}   {1}",
+                    display = String.Format("{0:X3}:  {2:X8}   {1}",
                         i,
                         InstructionDisassembler.AssemblyText(mem),
                         mem);
                 }
 
-                g.FillRectangle(SystemBrushes.Control, 0, y, assemblyPanel.Width, y + MonoFont.Height);
+                if((uint)positionScroll.Value + line - 1 == host.BreakPoint)
+                    brush = System.Drawing.Brushes.Pink;
+                else if ((!followPCButton.Checked) || (line <= topLine) || (line >= bottomLine))
+				    brush = SystemBrushes.Control;
+				else
+				    brush = SystemBrushes.Window;
+                g.FillRectangle(brush, 0, y, assemblyPanel.Width, y + MonoFont.Height);
+
 
                 g.DrawString(
                     display,
@@ -124,12 +155,19 @@ namespace Gear.GUI
         private void Repaint(bool tick, InterpretedCog host)
         {
             Graphics g = Graphics.FromImage((Image)BackBuffer);
+            Brush brush;
+            
             g.Clear(SystemColors.Control);
 
             String display;
+            uint topLine, bottomLine;
+            topLine = 5;
+            bottomLine = (uint)((ClientRectangle.Height / MonoFont.Height) - 5);
 
             zeroFlagLable.Text = "";
             carryFlagLable.Text = "";
+            OpcodeSize.Visible = true;
+            DisplayUnits.Visible = true;
 
             if (memoryViewButton.Checked)
             {
@@ -137,8 +175,8 @@ namespace Gear.GUI
                     y < ClientRectangle.Height;
                     y += (uint)MonoFont.Height, i++)
                 {
-                    if (i > 0x1FF)
-                        continue;
+					if ((i > 0xFFFF) || (i < 0))
+					    continue;
 
                     uint mem = host[(int)i];
 
@@ -147,10 +185,12 @@ namespace Gear.GUI
                     while (binary.Length < 32)
                         binary = "0" + binary;
 
-                    display = String.Format("{0:X4}:  {1:X8}   {2}   {1}",
-                        i,
-                        mem,
-                        binary);
+                    display = String.Format("{0:X4}:  {1:X8}   {2}   ",
+                              i,  mem,  binary);
+                    if (displayAsHexadecimal)
+                        display = display + String.Format("{0:X8}",mem);
+                    else
+                        display = display + String.Format("{0}", mem);
 
                     g.FillRectangle(SystemBrushes.Control, 0, y, assemblyPanel.Width, y + MonoFont.Height);
 
@@ -164,26 +204,25 @@ namespace Gear.GUI
             {
                 uint y = 0;
 
-                for (uint i = (uint)positionScroll.Value;
+                for (uint i = (uint)positionScroll.Value, line = 1;
                     y < ClientRectangle.Height;
-                    y += (uint)MonoFont.Height)
+                    y += (uint)MonoFont.Height, line++)
                 {
-                    if (i > 0x7FFF)
+                    if (i > 0xFFFF)
                         continue;
 
                     uint start = i;
 
-                    string inst = InstructionDisassembler.InterpreterText(Chip, ref i);
+                    string inst = InstructionDisassembler.InterpreterText(Chip, ref i, displayAsHexadecimal, useShortOpcodes);
                     display = String.Format("{0:X4}: ", start);
-
+                    InterpAddress[line] = start;
+                    
                     for (uint q = start; q < start + 4; q++)
                     {
                         if (q < i)
                         {
                             byte b = Chip.ReadByte(q);
                             display += String.Format(" {0:X2}", b);
-
-
                         }
                         else
                             display += "   ";
@@ -192,7 +231,13 @@ namespace Gear.GUI
 
                     display += "  " + inst;
 
-                    g.FillRectangle(SystemBrushes.Control, 0, y, assemblyPanel.Width, y + MonoFont.Height);
+                    if (InterpAddress[line] == host.BreakPoint)
+                        brush = System.Drawing.Brushes.Pink;
+                    else if ((!followPCButton.Checked) || (line <= topLine) || (line >= bottomLine))
+                        brush = SystemBrushes.Control;
+                    else
+                        brush = SystemBrushes.Window;
+                    g.FillRectangle(brush, 0, y, assemblyPanel.Width, y + MonoFont.Height);
 
                     g.DrawString(
                         display,
@@ -200,42 +245,26 @@ namespace Gear.GUI
                         SystemBrushes.ControlText, 0, y);
                 }
 
-                y = 0;
+                StringBrush = SystemBrushes.ControlText;
+                StringY = 0;
+                StringX = (uint)(assemblyPanel.Width - StackMargin);
 
-                g.DrawString(Chip.ReadWord(host.Local - 8).ToString(),
-                    MonoFont,
-                    SystemBrushes.ControlText,
-                    assemblyPanel.Width - 128, y);
-                y += (uint)MonoFont.Height;
-
-                g.DrawString(Chip.ReadWord(host.Local - 6).ToString(),
-                    MonoFont,
-                    SystemBrushes.ControlText,
-                    assemblyPanel.Width - 128, y);
-                y += (uint)MonoFont.Height;
-
-                g.DrawString(Chip.ReadWord(host.Local - 4).ToString(),
-                    MonoFont,
-                    SystemBrushes.ControlText,
-                    assemblyPanel.Width - 128, y);
-                y += (uint)MonoFont.Height;
-
-                g.DrawString(Chip.ReadWord(host.Local - 2).ToString(),
-                    MonoFont,
-                    SystemBrushes.ControlText,
-                    assemblyPanel.Width - 128, y);
-                y += (uint)MonoFont.Height;
-
-                g.DrawLine(Pens.Black, assemblyPanel.Width - 128, y, assemblyPanel.Width, y);
+                DrawString(g, String.Format("@Stk[0] = ${0:X4} {0}", host.Stack));
+                DrawString(g, String.Format("@Obj[0] = ${0:X4} {0}", host.Object));
+                DrawString(g, String.Format("@Loc[0] = ${0:X4} {0}", host.Local));
+                DrawString(g, String.Format("@Var[0] = ${0:X4} {0}", host.Variable));
+                g.DrawLine(Pens.Black, assemblyPanel.Width - StackMargin, StringY, assemblyPanel.Width, StringY);
+                DrawString(g, String.Format("Caller& = ${0:X4} {0}", Chip.ReadWord(host.Local - 8)));
+                DrawString(g, String.Format("          ${0:X4} {0}", Chip.ReadWord(host.Local - 6)));
+                DrawString(g, String.Format("          ${0:X4} {0}", Chip.ReadWord(host.Local - 4)));
+                DrawString(g, String.Format("Return& = ${0:X4}",     Chip.ReadWord(host.Local - 2)));
+                g.DrawLine(Pens.Black, assemblyPanel.Width - StackMargin, StringY, assemblyPanel.Width, StringY);
 
                 for (uint i = host.Local;
-                    i < host.Stack && y < ClientRectangle.Height;
-                    y += (uint)MonoFont.Height, i += 4)
+                    i < host.Stack && StringY < ClientRectangle.Height;
+                    i += 4)
                 {
-                    g.DrawString(((int)Chip.ReadLong(i)).ToString(),
-                        MonoFont,
-                        SystemBrushes.ControlText,
-                        assemblyPanel.Width - 128, y);
+                    DrawString(g, String.Format("${0:X8}  {0}", (int)Chip.ReadLong(i)));
                 }
             }
         }
@@ -243,9 +272,7 @@ namespace Gear.GUI
         public override void Repaint(bool tick)
         {
             if (Chip == null)
-            {
                 return;
-            }
 
             Cog Host = Chip.GetCog(HostID);
 
@@ -260,25 +287,35 @@ namespace Gear.GUI
 
             positionScroll.Minimum = 0;
 
-            if (Host is InterpretedCog)
-                positionScroll.Maximum = 0x8000;
-            else if (Host is NativeCog)
-                positionScroll.Maximum = 0x200;
+            if      (Host is InterpretedCog)  positionScroll.Maximum = 0xFFFF;
+            else if (Host is NativeCog)       positionScroll.Maximum = 0x200;
 
-            positionScroll.LargeChange = 1;
-            if (positionScroll.Maximum < positionScroll.Value)
+            positionScroll.LargeChange = 10;
+			positionScroll.SmallChange = 1;
+			
+			if (positionScroll.Maximum < positionScroll.Value)
                 positionScroll.Value = positionScroll.Maximum;
 
             if (followPCButton.Checked)
-                positionScroll.Value = (int)Host.ProgramCursor;
+            {
+                uint topLine, bottomLine;
+                topLine = 5;
+                bottomLine = (uint)((ClientRectangle.Height / MonoFont.Height) - 5);
+                if (Host is NativeCog)
+                {
+                    if (Host.ProgramCursor < topLine)
+                        positionScroll.Value = 0;
+                    else if (Host.ProgramCursor - positionScroll.Value >= bottomLine - 1)
+                        positionScroll.Value = (int)Host.ProgramCursor - (int)topLine;
+                    else if (Host.ProgramCursor - positionScroll.Value < topLine)
+                        positionScroll.Value = (int)Host.ProgramCursor - (int)topLine;
+                }
+                else
+                    positionScroll.Value = (int)Host.ProgramCursor;
+            }
 
-            programCounterLable.Text = "PC: " + String.Format("{0:X8}", Host.ProgramCursor);
-            processorStateLable.Text = "CPU State: " + Host.CogState;
-
-            if (Host is NativeCog)
-                Repaint(tick, (NativeCog)Host);
-            else if (Host is InterpretedCog)
-                Repaint(tick, (InterpretedCog)Host);
+            if      (Host is NativeCog)       Repaint(tick, (NativeCog)Host);
+            else if (Host is InterpretedCog)  Repaint(tick, (InterpretedCog)Host);
 
             programCounterLable.Text = "PC: " + String.Format("{0:X8}", Host.ProgramCursor);
             processorStateLable.Text = "CPU State: " + Host.CogState;
@@ -305,6 +342,75 @@ namespace Gear.GUI
             else
                 BackBuffer = new Bitmap(1, 1);
             Repaint(false);
+        }
+
+		private void memoryViewButton_Click(object sender, EventArgs e)
+		{
+		    Repaint(false);
+		}
+
+        private void assemblyPanel_MouseDown(object sender, MouseEventArgs e)
+        {
+            int bp = 0;
+            if ((e.Button & MouseButtons.Left) == MouseButtons.Left)
+            {
+                //Make sure it's a valid breakpoint environment
+                if (Chip == null)  return;
+                Cog Host = Chip.GetCog(HostID);
+                if (Host == null)  return;
+                //Find the line that was clicked on
+                bp = (assemblyPanel.PointToClient(MousePosition).Y / MonoFont.Height);
+                //What type of cog?
+                if      (Host is NativeCog)       bp += positionScroll.Value;
+                else if (Host is InterpretedCog)  bp = (int)InterpAddress[bp + 1];
+                //Toggle/move the breakpoint
+                if (bp == Host.BreakPoint)   Host.BreakPoint = -1;
+                else                         Host.BreakPoint = bp;
+                //Show the user what happened
+                Repaint(false);
+            }
+        }
+
+        private void followPCButton_Click(object sender, EventArgs e)
+        {
+            Repaint(false);
+        }
+
+        private void hexadecimalUnits_Click(object sender, EventArgs e)
+        {
+            displayAsHexadecimal = true;
+            hexadecimalUnits.Checked = true;
+            decimalUnits.Checked = false;
+            Repaint(false);
+        }
+
+        private void decimalUnits_Click(object sender, EventArgs e)
+        {
+            displayAsHexadecimal = false;
+            hexadecimalUnits.Checked = false;
+            decimalUnits.Checked = true;
+            Repaint(false);
+        }
+
+        private void longOpcodes_Click(object sender, EventArgs e)
+        {
+            useShortOpcodes = false;
+            longOpcodes.Checked = true;
+            shortOpcodes.Checked = false;
+            Repaint(false);
+        }
+
+        private void shortOpcodes_Click(object sender, EventArgs e)
+        {
+            useShortOpcodes = true;
+            longOpcodes.Checked = false;
+            shortOpcodes.Checked = true;
+            Repaint(false);
+        }
+
+        private void assemblyPanel_MouseClick(object sender, MouseEventArgs e)
+        {
+            positionScroll.Focus();
         }
     }
 }

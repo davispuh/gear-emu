@@ -214,6 +214,7 @@ namespace Gear.GUI
             this.pinnedPanel.Name = "pinnedPanel";
             this.pinnedPanel.Size = new System.Drawing.Size(648, 100);
             this.pinnedPanel.TabIndex = 3;
+            this.pinnedPanel.Visible = false;
             // 
             // documentsTab
             // 
@@ -223,6 +224,7 @@ namespace Gear.GUI
             this.documentsTab.SelectedIndex = 0;
             this.documentsTab.Size = new System.Drawing.Size(648, 403);
             this.documentsTab.TabIndex = 5;
+            this.documentsTab.Click += new System.EventHandler(this.documentsTab_Click);
             // 
             // pinnedSplitter
             // 

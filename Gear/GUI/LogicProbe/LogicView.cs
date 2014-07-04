@@ -127,7 +127,8 @@ namespace Gear.GUI.LogicProbe
 
                 if (range > 0)
                 {
-                    minTime = range * timeAdjustBar.Value / timeAdjustBar.Maximum + minimum;
+                    minTime = range * (timeAdjustBar.Value + timeAdjustBar.LargeChange) / 
+                              timeAdjustBar.Maximum + minimum;
                     maxTime = minTime + TimeScale;
                 }
                 else

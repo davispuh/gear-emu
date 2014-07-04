@@ -43,10 +43,10 @@ namespace Gear.GUI
         private List<Control> FloatControls;
 
         private Timer runTimer;
-
+        
         public Emulator( string source )
         {
-            Chip = new Propeller();
+            Chip = new Propeller(this);
             Source = source;
             FloatControls = new List<Control>();
 
@@ -70,8 +70,15 @@ namespace Gear.GUI
             hubView.Host = Chip;
         }
 
+        public void BreakPoint()
+        {
+            runTimer.Stop();
+            RepaintViews();
+        }
+
         private void AttachPlugin(PluginBase bm)
         {
+            Chip.IncludePlugin(bm);
             bm.PresentChip(Chip);
 
             TabPage t = new TabPage(bm.Title);
@@ -83,7 +90,11 @@ namespace Gear.GUI
         private void RunEmulatorStep(object sender, EventArgs e)
         {
             for( int i = 0; i < 1024; i++ )
-                Chip.Step();
+                if (!Chip.Step())
+                {
+                    runTimer.Stop();
+                    break;
+                }
             RepaintViews();
         }
 
@@ -102,13 +113,7 @@ namespace Gear.GUI
         {
             try
             {
-                FileStream fo = File.OpenRead(FileName);
-                byte[] program = new byte[fo.Length];
-                fo.Read(program, 0, (int)fo.Length);
-                fo.Close();
-
-                Chip.Initialize(program);
-
+                Chip.Initialize(File.ReadAllBytes(FileName));
                 return true;
             }
             catch (IOException ioe)
@@ -118,7 +123,6 @@ namespace Gear.GUI
                     "Failed to load program binary",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Exclamation);
-
                 return false;
             }
         }
@@ -346,6 +350,11 @@ namespace Gear.GUI
         private void OnDeactivate(object sender, EventArgs e)
         {
             runTimer.Stop();
+        }
+
+        private void documentsTab_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

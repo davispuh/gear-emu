@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="EmulationCore\ClockSource.cs" />
     <Compile Include="EmulationCore\Cog.cs" />
+    <Compile Include="EmulationCore\DisassemblerStrings.cs" />
     <Compile Include="EmulationCore\InstructionDisassembler.cs" />
     <Compile Include="EmulationCore\FreqGenerator.cs" />
     <Compile Include="EmulationCore\InterpretedCog.cs" />

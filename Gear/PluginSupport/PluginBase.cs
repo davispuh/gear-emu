@@ -39,8 +39,8 @@ namespace Gear.PluginSupport
         {
             get { return "Bus Module"; }
         }
-
         public virtual void PresentChip(Propeller host) { }
+        public virtual void OnReset() { }
         public virtual void OnClock(double time) { }
         public virtual void OnPinChange(double time, PinState[] pins) { }
         public virtual void Repaint(bool force) { }

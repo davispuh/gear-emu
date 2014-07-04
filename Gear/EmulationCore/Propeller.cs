@@ -31,6 +31,7 @@ using System.Windows.Forms;
 
 using Gear;
 using Gear.PluginSupport;
+using Gear.GUI;
 
 namespace Gear.EmulationCore
 {
@@ -91,11 +92,16 @@ namespace Gear.EmulationCore
         private uint CoreFreq;
         private byte ClockMode;
         private PinState[] PinStates;
+        
+        private bool pinChange;
 
         private double Time;
+        
+        private Emulator emulator;
 
         private List<PluginBase> TickHandlers;
         private List<PluginBase> PinNoiseHandlers;
+        private List<PluginBase> PlugIns;
 
         const int TOTAL_COGS = 8;
         const int TOTAL_LOCKS = 8;
@@ -103,8 +109,9 @@ namespace Gear.EmulationCore
         const int TOTAL_MEMORY = 0x10000;
         const int TOTAL_RAM = 0x8000;
 
-        public Propeller()
+        public Propeller(Emulator em)
         {
+            emulator = em;
             Cogs = new Cog[TOTAL_COGS];             // 8 general purpose cogs
 
             for (int i = 0; i < TOTAL_COGS; i++)
@@ -115,6 +122,7 @@ namespace Gear.EmulationCore
 
             TickHandlers = new List<PluginBase>();
             PinNoiseHandlers = new List<PluginBase>();
+            PlugIns = new List<PluginBase>();
 
             Time = 0;
             RingPosition = 0;
@@ -130,6 +138,11 @@ namespace Gear.EmulationCore
 
             // Put rom it top part of main ram.
             Resources.BiosImage.CopyTo(Memory, TOTAL_MEMORY - TOTAL_RAM);
+        }
+
+        public void BreakPoint()
+        {
+            emulator.BreakPoint();
         }
 
         public double EmulatorTime
@@ -314,7 +327,7 @@ namespace Gear.EmulationCore
             get { return CoreFreq; }
         }
 
-            public byte LocksFree
+        public byte LocksFree
         {
             get
             {
@@ -375,6 +388,18 @@ namespace Gear.EmulationCore
             return (PLLGroup)ClockSources[cog];
         }
 
+        public void IncludePlugin(PluginBase mod)
+        {
+            if( !(PlugIns.Contains(mod)) )
+                PlugIns.Add(mod);
+        }
+
+        public void RemovePlugin(PluginBase mod)
+        {
+            if (PlugIns.Contains(mod))
+                PlugIns.Remove(mod);
+        }
+        
         public void NotifyOnClock(PluginBase mod)
         {
             if( !(TickHandlers.Contains(mod)) )
@@ -449,6 +474,8 @@ namespace Gear.EmulationCore
             ResetMemory.CopyTo(Memory, 0);
 
             SystemCounter = 0;
+            Time = 0;
+            RingPosition = 0;
             for (int i = 0; i < ClockSources.Length; i++)
             {
                 ClockSources[i] = null;
@@ -456,6 +483,9 @@ namespace Gear.EmulationCore
                 LocksAvailable[i] = true;
             }
 
+            foreach (PluginBase mod in PlugIns)
+                mod.OnReset();
+                
             PinChanged();
 
             SetClockMode((byte)(ClockMode & 0x7F));           
@@ -491,12 +521,14 @@ namespace Gear.EmulationCore
             }
         }
 
-        public void Step()
+        public bool Step()
         {
             ulong pins;
             ulong dir;
             int sourceTicked;
-
+            bool cogResult;
+            bool result = true;
+            
             do
             {
                 double minimumTime = CoreClockSource.TimeUntilClock;
@@ -531,7 +563,7 @@ namespace Gear.EmulationCore
 
                 Time += minimumTime; // Time increment
 
-                if (sourceTicked != -1 && (pins != IN || dir != DIR))
+                if (sourceTicked != -1 && ((pins != IN || dir != DIR) || pinChange))
                     PinChanged();
             }
             while (sourceTicked != -1);
@@ -541,7 +573,10 @@ namespace Gear.EmulationCore
 
             for (int i = 0; i < Cogs.Length; i++)
                 if (Cogs[i] != null)
-                    Cogs[i].Step();
+                {
+                    cogResult = Cogs[i].Step();
+                    result &= cogResult;
+                }
 
             if ((RingPosition & 1) == 0)  // Every other clock, a cog gets a tick
             {
@@ -550,7 +585,7 @@ namespace Gear.EmulationCore
                     Cogs[cog].HubAccessable();
             }
 
-            if (pins != IN || dir != DIR)
+            if (pins != IN || dir != DIR || pinChange) 
                 PinChanged();
 
             pins = IN;
@@ -563,13 +598,17 @@ namespace Gear.EmulationCore
             foreach (PluginBase mod in TickHandlers)
                 mod.OnClock(Time);
 
-            if (pins != IN || dir != DIR)
+            if (pins != IN || dir != DIR || pinChange)
                 PinChanged();
+                
+            return result;
         }
 
         public void PinChanged()
         {
             ulong pinsState = OUT;
+            
+            pinChange = false;
 
             for (int i = 0; i < 64; i++)
             {
@@ -608,6 +647,8 @@ namespace Gear.EmulationCore
                 PinHi |= mask;
             else
                 PinHi &= ~mask;
+                
+            pinChange = true;    
         }
 
         public byte ReadByte(uint address)

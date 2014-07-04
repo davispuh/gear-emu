@@ -47,11 +47,18 @@ namespace Gear.EmulationCore
 
         static private string[] Conditions;
         static private string[] Instructions;
+        static private string[] InstReadHub;
+        static private string[] InstWriteHub;
+        static private string[] InstHubOp;
         static private string[] InterpretedOps;
-        static private ArguementMode[] ArguementModes;
         static private Dictionary<byte, string> EffectCodes;
+        static private string[] BriefInterpretedOps;
+        static private Dictionary<byte, string> BriefEffectCodes;
+        static private string[] BigInterpretedOps;
+        static private Dictionary<byte, string> BigEffectCodes;
+        static private ArguementMode[] ArguementModes;
         static private string[] CogRegister;
-
+        
         static InstructionDisassembler()
         {
             Conditions = new string[] {
@@ -80,7 +87,21 @@ namespace Gear.EmulationCore
                 "WAITPEQ","WAITPNE","WAITCNT","WAITVID"
             };
 
-            InterpretedOps = new string[] {
+            InstReadHub = new string[] {
+                "RDBYTE ","RDWORD ","RDLONG "
+            };
+            
+            InstWriteHub = new string[] {
+                "WRBYTE ","WRWORD ","WRLONG "
+            };
+
+            InstHubOp = new string[] {
+                "CLKSET ","COGID  ","COGINIT","COGSTOP",
+                "LOCKNEW","LOCKRET","LOCKSET","LOCKCLR"
+            };
+
+            BigInterpretedOps = new string[] {
+              // 0x00
 	            "FRAME_CALL_RETURN",
 	            "FRAME_CALL_NORETURN",
 	            "FRAME_CALL_ABORT",
@@ -89,6 +110,7 @@ namespace Gear.EmulationCore
 	            "CALL",
 	            "OBJCALL",
 	            "OBJCALL_INDEXED",
+              // 0x08
 	            "LOOP_START",
 	            "LOOP_CONTINUE",
 	            "JUMP_IF_FALSE",
@@ -97,7 +119,8 @@ namespace Gear.EmulationCore
 	            "COMPARE_CASE",
 	            "COMPARE_CASE_RANGE",
 	            "LOOK_ABORT",
-	            "LOOKUP_COMPARE",
+	            // 0x10
+              "LOOKUP_COMPARE",
 	            "LOOKDOWN_COMPARE",
 	            "LOOKUPRANGE_COMPARE",
 	            "LOOKDOWNRANGE_COMPARE",
@@ -105,7 +128,8 @@ namespace Gear.EmulationCore
 	            "MARK_INTERPRETED",
 	            "STRSIZE",
 	            "STRCOMP",
-	            "BYTEFILL",
+	            // 0x18
+              "BYTEFILL",
 	            "WORDFILL",
 	            "LONGFILL",
 	            "WAITPEQ",
@@ -113,6 +137,7 @@ namespace Gear.EmulationCore
 	            "WORDMOVE",
 	            "LONGMOVE",
 	            "WAITPNE",
+              // 0x20
 	            "CLKSET",
 	            "COGSTOP",
 	            "LOCKRET",
@@ -121,6 +146,7 @@ namespace Gear.EmulationCore
 	            "WRITE_INDEXED_SPR",
 	            "EFFECT_INDEXED_SPR",
 	            "WAITVID",
+              // 0x28
 	            "COGINIT_RETURNS",
 	            "LOCKNEW_RETURNS",
 	            "LOCKSET_RETURNS",
@@ -129,6 +155,7 @@ namespace Gear.EmulationCore
 	            "LOCKNEW",
 	            "LOCKSET",
 	            "LOCKCLR",
+              // 0x30
 	            "ABORT",
 	            "ABORT_WITH_RETURN",
 	            "RETURN",
@@ -137,6 +164,7 @@ namespace Gear.EmulationCore
 	            "PUSH_0",
 	            "PUSH_1",
 	            "PUSH_PACKED_LIT",
+              // 0x38
 	            "PUSH_BYTE_LIT",
 	            "PUSH_WORD_LIT",
 	            "PUSH_MID_LIT",
@@ -145,6 +173,7 @@ namespace Gear.EmulationCore
 	            "INDEXED_MEM_OP",
 	            "INDEXED_RANGE_MEM_OP",
 	            "MEMORY_OP",
+              // 0x40
 	            "PUSH_VARMEM_LONG_0",
 	            "POP_VARMEM_LONG_0",
 	            "EFFECT_VARMEM_LONG_0",
@@ -153,7 +182,8 @@ namespace Gear.EmulationCore
 	            "POP_VARMEM_LONG_1",
 	            "EFFECT_VARMEM_LONG_1",
 	            "REFERENCE_VARMEM_LONG_1",
-	            "PUSH_VARMEM_LONG_2",
+	            // 0x48
+              "PUSH_VARMEM_LONG_2",
 	            "POP_VARMEM_LONG_2",
 	            "EFFECT_VARMEM_LONG_2",
 	            "REFERENCE_VARMEM_LONG_2",
@@ -161,6 +191,7 @@ namespace Gear.EmulationCore
 	            "POP_VARMEM_LONG_3",
 	            "EFFECT_VARMEM_LONG_3",
 	            "REFERENCE_VARMEM_LONG_3",
+              // 0x50
 	            "PUSH_VARMEM_LONG_4",
 	            "POP_VARMEM_LONG_4",
 	            "EFFECT_VARMEM_LONG_4",
@@ -169,6 +200,7 @@ namespace Gear.EmulationCore
 	            "POP_VARMEM_LONG_5",
 	            "EFFECT_VARMEM_LONG_5",
 	            "REFERENCE_VARMEM_LONG_5",
+              // 0x58
 	            "PUSH_VARMEM_LONG_6",
 	            "POP_VARMEM_LONG_6",
 	            "EFFECT_VARMEM_LONG_6",
@@ -177,6 +209,7 @@ namespace Gear.EmulationCore
 	            "POP_VARMEM_LONG_7",
 	            "EFFECT_VARMEM_LONG_7",
 	            "REFERENCE_VARMEM_LONG_7",
+              // 0x60
 	            "PUSH_LOCALMEM_LONG_0",
 	            "POP_LOCALMEM_LONG_0",
 	            "EFFECT_LOCALMEM_LONG_0",
@@ -185,6 +218,7 @@ namespace Gear.EmulationCore
 	            "POP_LOCALMEM_LONG_1",
 	            "EFFECT_LOCALMEM_LONG_1",
 	            "REFERENCE_LOCALMEM_LONG_1",
+              // 0x68
 	            "PUSH_LOCALMEM_LONG_2",
 	            "POP_LOCALMEM_LONG_2",
 	            "EFFECT_LOCALMEM_LONG_2",
@@ -193,6 +227,7 @@ namespace Gear.EmulationCore
 	            "POP_LOCALMEM_LONG_3",
 	            "EFFECT_LOCALMEM_LONG_3",
 	            "REFERENCE_LOCALMEM_LONG_3",
+              // 0x70
 	            "PUSH_LOCALMEM_LONG_4",
 	            "POP_LOCALMEM_LONG_4",
 	            "EFFECT_LOCALMEM_LONG_4",
@@ -201,6 +236,7 @@ namespace Gear.EmulationCore
 	            "POP_LOCALMEM_LONG_5",
 	            "EFFECT_LOCALMEM_LONG_5",
 	            "REFERENCE_LOCALMEM_LONG_5",
+              // 0x78
 	            "PUSH_LOCALMEM_LONG_6",
 	            "POP_LOCALMEM_LONG_6",
 	            "EFFECT_LOCALMEM_LONG_6",
@@ -209,6 +245,7 @@ namespace Gear.EmulationCore
 	            "POP_LOCALMEM_LONG_7",
 	            "EFFECT_LOCALMEM_LONG_7",
 	            "REFERENCE_LOCALMEM_LONG_7",
+              // 0x80
 	            "PUSH_MAINMEM_BYTE",
 	            "POP_MAINMEM_BYTE",
 	            "EFFECT_MAINMEM_BYTE",
@@ -217,14 +254,16 @@ namespace Gear.EmulationCore
 	            "POP_OBJECTMEM_BYTE",
 	            "EFFECT_OBJECTMEM_BYTE",
 	            "REFERENCE_OBJECTMEM_BYTE",
+              // 0x88
 	            "PUSH_VARIABLEMEM_BYTE",
 	            "POP_VARIABLEMEM_BYTE",
 	            "EFFECT_VARIABLEMEM_BYTE",
 	            "REFERENCE_VARIABLEMEM_BYTE",
-	            "PUSH_INDEXED_LOCALMEM_BYTE",
-	            "POP_INDEXED_LOCALMEM_BYTE",
-	            "EFFECT_INDEXED_LOCALMEM_BYTE",
-	            "REFERENCE_INDEXED_LOCALMEM_BYTE",
+	            "PUSH_LOCALMEM_BYTE",
+	            "POP_LOCALMEM_BYTE",
+	            "EFFECT_LOCALMEM_BYTE",
+	            "REFERENCE_LOCALMEM_BYTE",
+              // 0x90
 	            "PUSH_INDEXED_MAINMEM_BYTE",
 	            "POP_INDEXED_MAINMEM_BYTE",
 	            "EFFECT_INDEXED_MAINMEM_BYTE",
@@ -233,6 +272,7 @@ namespace Gear.EmulationCore
 	            "POP_INDEXED_OBJECTMEM_BYTE",
 	            "EFFECT_INDEXED_OBJECTMEM_BYTE",
 	            "REFERENCE_INDEXED_OBJECTMEM_BYTE",
+              // 0x98
 	            "PUSH_INDEXED_VARIABLEMEM_BYTE",
 	            "POP_INDEXED_VARIABLEMEM_BYTE",
 	            "EFFECT_INDEXED_VARIABLEMEM_BYTE",
@@ -241,6 +281,7 @@ namespace Gear.EmulationCore
 	            "POP_INDEXED_LOCALMEM_BYTE",
 	            "EFFECT_INDEXED_LOCALMEM_BYTE",
 	            "REFERENCE_INDEXED_LOCALMEM_BYTE",
+              // 0xA0
 	            "PUSH_MAINMEM_WORD",
 	            "POP_MAINMEM_WORD",
 	            "EFFECT_MAINMEM_WORD",
@@ -249,6 +290,7 @@ namespace Gear.EmulationCore
 	            "POP_OBJECTMEM_WORD",
 	            "EFFECT_OBJECTMEM_WORD",
 	            "REFERENCE_OBJECTMEM_WORD",
+              // 0xA8
 	            "PUSH_VARIABLEMEM_WORD",
 	            "POP_VARIABLEMEM_WORD",
 	            "EFFECT_VARIABLEMEM_WORD",
@@ -257,6 +299,7 @@ namespace Gear.EmulationCore
 	            "POP_LOCALMEM_WORD",
 	            "EFFECT_LOCALMEM_WORD",
 	            "REFERENCE_LOCALMEM_WORD",
+              // 0xB0
 	            "PUSH_INDEXED_MAINMEM_WORD",
 	            "POP_INDEXED_MAINMEM_WORD",
 	            "EFFECT_INDEXED_MAINMEM_WORD",
@@ -265,6 +308,7 @@ namespace Gear.EmulationCore
 	            "POP_INDEXED_OBJECTMEM_WORD",
 	            "EFFECT_INDEXED_OBJECTMEM_WORD",
 	            "REFERENCE_INDEXED_OBJECTMEM_WORD",
+              // 0xB8
 	            "PUSH_INDEXED_VARIABLEMEM_WORD",
 	            "POP_INDEXED_VARIABLEMEM_WORD",
 	            "EFFECT_INDEXED_VARIABLEMEM_WORD",
@@ -273,6 +317,7 @@ namespace Gear.EmulationCore
 	            "POP_INDEXED_LOCALMEM_WORD",
 	            "EFFECT_INDEXED_LOCALMEM_WORD",
 	            "REFERENCE_INDEXED_LOCALMEM_WORD",
+              // 0xC0
 	            "PUSH_MAINMEM_LONG",
 	            "POP_MAINMEM_LONG",
 	            "EFFECT_MAINMEM_LONG",
@@ -281,6 +326,7 @@ namespace Gear.EmulationCore
 	            "POP_OBJECTMEM_LONG",
 	            "EFFECT_OBJECTMEM_LONG",
 	            "REFERENCE_OBJECTMEM_LONG",
+              // 0xC8
 	            "PUSH_VARIABLEMEM_LONG",
 	            "POP_VARIABLEMEM_LONG",
 	            "EFFECT_VARIABLEMEM_LONG",
@@ -289,6 +335,7 @@ namespace Gear.EmulationCore
 	            "POP_LOCALMEM_LONG",
 	            "EFFECT_LOCALMEM_LONG",
 	            "REFERENCE_LOCALMEM_LONG",
+              // 0xD0
 	            "PUSH_INDEXED_MAINMEM_LONG",
 	            "POP_INDEXED_MAINMEM_LONG",
 	            "EFFECT_INDEXED_MAINMEM_LONG",
@@ -297,6 +344,7 @@ namespace Gear.EmulationCore
 	            "POP_INDEXED_OBJECTMEM_LONG",
 	            "EFFECT_INDEXED_OBJECTMEM_LONG",
 	            "REFERENCE_INDEXED_OBJECTMEM_LONG",
+              // 0xD8
 	            "PUSH_INDEXED_VARIABLEMEM_LONG",
 	            "POP_INDEXED_VARIABLEMEM_LONG",
 	            "EFFECT_INDEXED_VARIABLEMEM_LONG",
@@ -305,6 +353,7 @@ namespace Gear.EmulationCore
 	            "POP_INDEXED_LOCALMEM_LONG",
 	            "EFFECT_INDEXED_LOCALMEM_LONG",
 	            "REFERENCE_INDEXED_LOCALMEM_LONG",
+              // 0xE0
 	            "ROTATE_RIGHT",
 	            "ROTATE_LEFT",
 	            "SHIFT_RIGHT",
@@ -313,6 +362,7 @@ namespace Gear.EmulationCore
 	            "LIMIT_MAX",
 	            "NEGATE",
 	            "COMPLEMENT",
+              // 0xE8
 	            "BIT_AND",
 	            "ABSOLUTE_VALUE",
 	            "BIT_OR",
@@ -321,6 +371,7 @@ namespace Gear.EmulationCore
 	            "SUBTRACT",
 	            "ARITH_SHIFT_RIGHT",
 	            "BIT_REVERSE",
+              // 0xF0
 	            "LOGICAL_AND",
 	            "ENCODE",
 	            "LOGICAL_OR",
@@ -329,6 +380,7 @@ namespace Gear.EmulationCore
 	            "MULTIPLY_HI",
 	            "DIVIDE",
 	            "MODULO",
+              // 0xF8
 	            "SQUARE_ROOT",
 	            "LESS",
 	            "GREATER",
@@ -338,6 +390,267 @@ namespace Gear.EmulationCore
 	            "GREATER_EQUAL",
 	            "LOGICAL_NOT"
             };
+
+            BriefInterpretedOps = new string[] {
+	            "FrameReturn",
+	            "FrameNoReturn",
+	            "FrameAbort",
+	            "FrameTrashAbort",
+	            "Branch",
+	            "Call",
+	            "ObjCall",
+	            "OBJCALL_INDEXED",
+	            "LOOP_START",
+	            "LOOP_CONTINUE",
+	            "JumpIfFalse",
+	            "JumpIfTrue",
+	            "JumpFromStack",
+	            "Case ==",
+	            "CaseRange",
+	            "LOOK_ABORT",
+	            "LOOKUP_COMPARE",
+	            "LOOKDOWN_COMPARE",
+	            "LOOKUPRANGE_COMPARE",
+	            "LOOKDOWNRANGE_COMPARE",
+	            "Quit",
+	            "MARK_INTERPRETED",
+	            "StrSize",
+	            "StrComp",
+	            "ByteFill",
+	            "WordFill",
+	            "LongFill",
+	            "WaitPEQ",
+	            "ByteMove",
+	            "WordMove",
+	            "LongMove",
+	            "WaitPNE",
+	            "CLKSET",
+	            "CogStop",
+	            "LOCKRET",
+	            "WaitCNT",
+	            "READ_INDEXED_SPR",
+	            "WRITE_INDEXED_SPR",
+	            "EFFECT_INDEXED_SPR",
+	            "WaitVID",
+	            "CogInitReturns",
+	            "LOCKNEW_RETURNS",
+	            "LOCKSET_RETURNS",
+	            "LOCKCLR_RETURNS",
+	            "CogInit",
+	            "LockNew",
+	            "LockSet",
+	            "LockClear",
+	            "Abort",
+	            "AbortWithResult",
+	            "Return",
+	            "ReturnWithResult",
+	            "# -1",
+	            "# 0",
+	            "# 1",
+	            "#",
+	            "#",
+	            "#",
+	            "#",
+	            "#",
+	            "UNKNOWN OP $3C",
+	            "INDEXED_MEM_OP",
+	            "INDEXED_RANGE_MEM_OP",
+	            "MEMORY_OP",
+	            "Var[0]@",
+	            "Var[0]!",
+	            "Var[0] with",
+	            "&Var[0]",
+	            "Var[1]@",
+	            "Var[1]!",
+	            "Var[1] with",
+	            "&Var[1]",
+	            "Var[2]@",
+	            "Var[2]!",
+	            "Var[2] with",
+	            "&Var[2]",
+	            "Var[3]@",
+	            "Var[3]!",
+	            "Var[3] with",
+	            "&Var[3]",
+	            "Var[4]@",
+	            "Var[4]!",
+	            "Var[4] with",
+	            "&Var[4]",
+	            "Var[5]@",
+	            "Var[5]!",
+	            "Var[5] with",
+	            "&Var[5]",
+	            "Var[6]@",
+	            "Var[6]!",
+	            "Var[6] with",
+	            "&Var[6]",
+	            "Var[7]@",
+	            "Var[7]!",
+	            "Var[7] with",
+	            "&Var[7]",
+	            "Loc[0]@",
+	            "Loc[0]!",
+	            "Loc[0] with",
+	            "&Loc[0]",
+	            "Loc[1]@",
+	            "Loc[1]!",
+	            "Loc[1] with",
+	            "&Loc[1]",
+	            "Loc[2]@",
+	            "Loc[2]!",
+	            "Loc[2] with",
+	            "&Loc[2]",
+	            "Loc[3]@",
+	            "Loc[3]!",
+	            "Loc[3] with",
+	            "&Loc[3]",
+	            "Loc[4]@",
+	            "Loc[4]!",
+	            "Loc[4] with",
+	            "&Loc[4]",
+	            "Loc[5]@",
+	            "Loc[5]!",
+	            "Loc[5] with",
+	            "&Loc[5]",
+	            "Loc[6]@",
+	            "Loc[6]!",
+	            "Loc[6] with",
+	            "&Loc[6]",
+	            "Loc[7]@",
+	            "Loc[7]!",
+	            "Loc[7] with",
+	            "&Loc[7]",
+	            "byte Mem[]@",
+	            "byte Mem[]!",
+	            "byte Mem[] with",
+	            "byte &Mem[]",
+	            "byte Obj[]@",
+	            "byte Obj[]!",
+	            "byte Obj[] with",
+	            "byte &Obj[]",
+	            "byte Var[]@",
+	            "byte Var[]!",
+	            "byte Var[] with",
+	            "byte &Var[]",
+	            "byte Loc[]@",
+	            "byte Loc[]!",
+	            "byte Loc[] then",
+	            "byte &Loc[]",
+	            "byte Mem[idx]@",
+	            "byte Mem[idx]!",
+	            "byte Mem[idx] with",
+	            "byte &Mem[idx]",
+	            "byte Obj[idx]@",
+	            "byte Obj[idx]!",
+	            "byte Obj[idx] with",
+	            "byte &Obj[idx]",
+	            "byte Var[idx]@",
+	            "byte Var[idx]!",
+	            "byte Var[idx] with",
+	            "byte &Var[idx]",
+	            "byte Loc[idx]@",
+	            "byte Loc[idx]!",
+	            "byte Loc[idx] with",
+	            "byte &Loc[idx]",
+	            "word Mem[]@",
+	            "word Mem[]!",
+	            "word Mem[] with",
+	            "word &Mem[]",
+	            "word Obj[]@",
+	            "word Obj[]!",
+	            "word Obj[] with",
+	            "word &Obj[]",
+	            "word Var[]@",
+	            "word Var[]!",
+	            "word Var[] with",
+	            "word &Var[]",
+	            "word Loc[]@",
+	            "word Loc[]!",
+	            "word Loc[] with",
+	            "word &Loc[]",
+	            "word Mem[idx]@",
+	            "word Mem[idx]!",
+	            "word Mem[idx] with",
+	            "word &Mem[idx]",
+	            "word Obj[idx]@",
+	            "word Obj[idx]!",
+	            "word Obj[idx] with",
+	            "word &Obj[idx]",
+	            "word Var[idx]@",
+	            "word Var[idx]!",
+	            "word Var[idx] with",
+	            "word &Var[idx]",
+	            "word Loc[idx]@",
+	            "word Loc[idx]!",
+	            "word Loc[idx] with",
+	            "word &Loc[idx]",
+	            "Mem[]@",
+	            "Mem[]!",
+	            "Mem[] with",
+	            "&Mem[]",
+	            "Obj[]@",
+	            "Obj[]!",
+	            "Obj[] with",
+	            "&Obj[]",
+	            "Var[]@",
+	            "Var[]!",
+	            "Var[] with",
+	            "&Var[]",
+	            "Loc[]@",
+	            "Loc[]!",
+	            "Loc[] with",
+	            "&Loc[]",
+	            "Mem[idx]@",
+	            "Mem[idx]!",
+	            "Mem[idx] with",
+	            "&Mem[idx]",
+	            "Obj[idx]@",
+	            "Obj[idx]!",
+	            "Obj[idx] with",
+	            "&Obj[idx]",
+	            "Var[idx]@",
+	            "Var[idx]!",
+	            "Var[idx] with",
+	            "&Var[idx]",
+	            "Loc[idx]@",
+	            "Loc[idx]!",
+	            "Loc[idx] with",
+	            "&Loc[idx]",
+	            "a->b",
+	            "a<-b",
+	            "a>>b",
+	            "a<<b",
+	            "a#>b",
+	            "a#<b",
+	            "-a",
+	            "~a",
+	            "a&b",
+	            "||a",
+	            "a|b",
+	            "a^b",
+	            "a+b",
+	            "a-b",
+	            "a~>b",
+	            "a><b",
+	            "a and b",
+	            ">|a",
+	            "a or b",
+	            "|<a",
+	            "a*b",
+	            "(a*b)>>32",
+	            "a/b",
+	            "a mod b",
+	            "sqrt(a)",
+	            "a<b",
+	            "a>b",
+	            "a<>b",
+	            "a==b",
+	            "a=<b",
+	            "a=>b",
+	            "not a"
+            };
+
+            InterpretedOps = BigInterpretedOps;
 
             ArguementModes = new ArguementMode[] {
 	            ArguementMode.None,
@@ -598,70 +911,130 @@ namespace Gear.EmulationCore
 	            ArguementMode.None
             };
 
-            EffectCodes = new Dictionary<byte, string>();
+            BigEffectCodes = new Dictionary<byte, string>();
 
-            EffectCodes[0x0] = "COPY";
-            EffectCodes[0x8] = "FORWARD_RANDOM";
-            EffectCodes[0xC] = "REVERSE_RANDOM";
-            EffectCodes[0x10] = "EXTEND_8";
-            EffectCodes[0x14] = "EXTEND_16";
-            EffectCodes[0x18] = "BIT_CLEAR";
-            EffectCodes[0x1C] = "BIT_SET";
-            EffectCodes[0x20] = "PRE_INCREMENT_BITS";
-            EffectCodes[0x22] = "PRE_INCREMENT_BYTE";
-            EffectCodes[0x24] = "PRE_INCREMENT_WORD";
-            EffectCodes[0x26] = "PRE_INCREMENT_LONG";
-            EffectCodes[0x28] = "POST_INCREMENT_BITS";
-            EffectCodes[0x2A] = "POST_INCREMENT_BYTE";
-            EffectCodes[0x2C] = "POST_INCREMENT_WORD";
-            EffectCodes[0x2E] = "POST_INCREMENT_LONG";
-            EffectCodes[0x30] = "PRE_DECREMENT_BITS";
-            EffectCodes[0x32] = "PRE_DECREMENT_BYTE";
-            EffectCodes[0x34] = "PRE_DECREMENT_WORD";
-            EffectCodes[0x36] = "PRE_DECREMENT_LONG";
-            EffectCodes[0x38] = "POST_DECREMENT_BITS";
-            EffectCodes[0x3A] = "POST_DECREMENT_BYTE";
-            EffectCodes[0x3C] = "POST_DECREMENT_WORD";
-            EffectCodes[0x3E] = "POST_DECREMENT_LONG";
-            EffectCodes[0x40] = "ROTATE_RIGHT";
-            EffectCodes[0x41] = "ROTATE_LEFT";
-            EffectCodes[0x42] = "SHIFT_RIGHT";
-            EffectCodes[0x43] = "SHIFT_LEFT";
-            EffectCodes[0x44] = "MINIMUM";
-            EffectCodes[0x45] = "MAXIMUM";
-            EffectCodes[0x46] = "NEGATE";
-            EffectCodes[0x47] = "COMPLEMENT";
-            EffectCodes[0x48] = "BIT_AND";
-            EffectCodes[0x49] = "ABSOLUTE_VALUE";
-            EffectCodes[0x4A] = "BIT_OR";
-            EffectCodes[0x4B] = "BIT_XOR";
-            EffectCodes[0x4C] = "ADD";
-            EffectCodes[0x4D] = "SUBTRACT";
-            EffectCodes[0x4E] = "ARITH_SHIFT_RIGHT";
-            EffectCodes[0x4F] = "BIT_REVERSE";
-            EffectCodes[0x50] = "LOGICAL_AND";
-            EffectCodes[0x51] = "ENCODE";
-            EffectCodes[0x52] = "LOGICAL_OR";
-            EffectCodes[0x53] = "DECODE";
-            EffectCodes[0x54] = "MULTIPLY";
-            EffectCodes[0x55] = "MULTIPLY_HI";
-            EffectCodes[0x56] = "DIVIDE";
-            EffectCodes[0x57] = "MODULO";
-            EffectCodes[0x58] = "SQUARE_ROOT";
-            EffectCodes[0x59] = "LESS";
-            EffectCodes[0x5A] = "GREATER";
-            EffectCodes[0x5B] = "NOT_EQUAL";
-            EffectCodes[0x5C] = "EQUAL";
-            EffectCodes[0x5D] = "LESS_EQUAL";
-            EffectCodes[0x5E] = "GREATER_EQUAL";
-            EffectCodes[0x5F] = "NOT";
+            BigEffectCodes[0x0] = "COPY";
+            BigEffectCodes[0x8] = "FORWARD_RANDOM";
+            BigEffectCodes[0xC] = "REVERSE_RANDOM";
+            BigEffectCodes[0x10] = "EXTEND_8";
+            BigEffectCodes[0x14] = "EXTEND_16";
+            BigEffectCodes[0x18] = "BIT_CLEAR";
+            BigEffectCodes[0x1C] = "BIT_SET";
+            BigEffectCodes[0x20] = "PRE_INCREMENT_BITS";
+            BigEffectCodes[0x22] = "PRE_INCREMENT_BYTE";
+            BigEffectCodes[0x24] = "PRE_INCREMENT_WORD";
+            BigEffectCodes[0x26] = "PRE_INCREMENT_LONG";
+            BigEffectCodes[0x28] = "POST_INCREMENT_BITS";
+            BigEffectCodes[0x2A] = "POST_INCREMENT_BYTE";
+            BigEffectCodes[0x2C] = "POST_INCREMENT_WORD";
+            BigEffectCodes[0x2E] = "POST_INCREMENT_LONG";
+            BigEffectCodes[0x30] = "PRE_DECREMENT_BITS";
+            BigEffectCodes[0x32] = "PRE_DECREMENT_BYTE";
+            BigEffectCodes[0x34] = "PRE_DECREMENT_WORD";
+            BigEffectCodes[0x36] = "PRE_DECREMENT_LONG";
+            BigEffectCodes[0x38] = "POST_DECREMENT_BITS";
+            BigEffectCodes[0x3A] = "POST_DECREMENT_BYTE";
+            BigEffectCodes[0x3C] = "POST_DECREMENT_WORD";
+            BigEffectCodes[0x3E] = "POST_DECREMENT_LONG";
+            BigEffectCodes[0x40] = "ROTATE_RIGHT";
+            BigEffectCodes[0x41] = "ROTATE_LEFT";
+            BigEffectCodes[0x42] = "SHIFT_RIGHT";
+            BigEffectCodes[0x43] = "SHIFT_LEFT";
+            BigEffectCodes[0x44] = "MINIMUM";
+            BigEffectCodes[0x45] = "MAXIMUM";
+            BigEffectCodes[0x46] = "NEGATE";
+            BigEffectCodes[0x47] = "COMPLEMENT";
+            BigEffectCodes[0x48] = "BIT_AND";
+            BigEffectCodes[0x49] = "ABSOLUTE_VALUE";
+            BigEffectCodes[0x4A] = "BIT_OR";
+            BigEffectCodes[0x4B] = "BIT_XOR";
+            BigEffectCodes[0x4C] = "ADD";
+            BigEffectCodes[0x4D] = "SUBTRACT";
+            BigEffectCodes[0x4E] = "ARITH_SHIFT_RIGHT";
+            BigEffectCodes[0x4F] = "BIT_REVERSE";
+            BigEffectCodes[0x50] = "LOGICAL_AND";
+            BigEffectCodes[0x51] = "ENCODE";
+            BigEffectCodes[0x52] = "LOGICAL_OR";
+            BigEffectCodes[0x53] = "DECODE";
+            BigEffectCodes[0x54] = "MULTIPLY";
+            BigEffectCodes[0x55] = "MULTIPLY_HI";
+            BigEffectCodes[0x56] = "DIVIDE";
+            BigEffectCodes[0x57] = "MODULO";
+            BigEffectCodes[0x58] = "SQUARE_ROOT";
+            BigEffectCodes[0x59] = "LESS";
+            BigEffectCodes[0x5A] = "GREATER";
+            BigEffectCodes[0x5B] = "NOT_EQUAL";
+            BigEffectCodes[0x5C] = "EQUAL";
+            BigEffectCodes[0x5D] = "LESS_EQUAL";
+            BigEffectCodes[0x5E] = "GREATER_EQUAL";
+            BigEffectCodes[0x5F] = "NOT";
+
+            BriefEffectCodes = new Dictionary<byte, string>();
+
+            BriefEffectCodes[0x0] = "(dup)";
+            BriefEffectCodes[0x8] = "(a=?a)";
+            BriefEffectCodes[0xC] = "(a=a?)";
+            BriefEffectCodes[0x10] = "(a=8<<a)";
+            BriefEffectCodes[0x14] = "(a=16<<a)";
+            BriefEffectCodes[0x18] = "(a=~)";
+            BriefEffectCodes[0x1C] = "(a=~~)";
+            BriefEffectCodes[0x20] = "(++bits)";
+            BriefEffectCodes[0x22] = "(++byte)";
+            BriefEffectCodes[0x24] = "(++word)";
+            BriefEffectCodes[0x26] = "(++long)";
+            BriefEffectCodes[0x28] = "(bits++)";
+            BriefEffectCodes[0x2A] = "(byte++)";
+            BriefEffectCodes[0x2C] = "(word++)";
+            BriefEffectCodes[0x2E] = "(long++)";
+            BriefEffectCodes[0x30] = "(--bits)";
+            BriefEffectCodes[0x32] = "(--byte)";
+            BriefEffectCodes[0x34] = "(--word)";
+            BriefEffectCodes[0x36] = "(--long)";
+            BriefEffectCodes[0x38] = "(bits--)";
+            BriefEffectCodes[0x3A] = "(byte--)";
+            BriefEffectCodes[0x3C] = "(word--)";
+            BriefEffectCodes[0x3E] = "(long--)";
+            BriefEffectCodes[0x40] = "(b=b->a)";
+            BriefEffectCodes[0x41] = "(b=b<-a)";
+            BriefEffectCodes[0x42] = "(b=b>>a)";
+            BriefEffectCodes[0x43] = "(b=b<<a)";
+            BriefEffectCodes[0x44] = "(b=min(b,a))";
+            BriefEffectCodes[0x45] = "(b=max(b,a))";
+            BriefEffectCodes[0x46] = "(b=-b)";
+            BriefEffectCodes[0x47] = "(b=inv(b))";
+            BriefEffectCodes[0x48] = "(b&=a)";
+            BriefEffectCodes[0x49] = "(a=||a)";
+            BriefEffectCodes[0x4A] = "(b|=a)";
+            BriefEffectCodes[0x4B] = "(b^=a)";
+            BriefEffectCodes[0x4C] = "(b+=a)";
+            BriefEffectCodes[0x4D] = "(b-=a)";
+            BriefEffectCodes[0x4E] = "(b=b~>a)";
+            BriefEffectCodes[0x4F] = "(b=b><a)";
+            BriefEffectCodes[0x50] = "(b=b AND a)";
+            BriefEffectCodes[0x51] = "(a=>|a)";
+            BriefEffectCodes[0x52] = "(b=b OR a)";
+            BriefEffectCodes[0x53] = "(a=|<a)";
+            BriefEffectCodes[0x54] = "(b*=a)";
+            BriefEffectCodes[0x55] = "(b=(b*a)>>32";
+            BriefEffectCodes[0x56] = "(b/=a)";
+            BriefEffectCodes[0x57] = "(b=b mod a)";
+            BriefEffectCodes[0x58] = "(a=^^a)";
+            BriefEffectCodes[0x59] = "(b<=a)";
+            BriefEffectCodes[0x5A] = "(b>=a)";
+            BriefEffectCodes[0x5B] = "(b<>=a)";
+            BriefEffectCodes[0x5C] = "(b===a)";
+            BriefEffectCodes[0x5D] = "(b=<=a)";
+            BriefEffectCodes[0x5E] = "(b=>=a)";
+            BriefEffectCodes[0x5F] = "(a=!a)";
+
+            EffectCodes = BigEffectCodes;
 
             CogRegister = new string[] {
                 "MEM_0","MEM_1","MEM_2","MEM_3",
                 "MEM_4","MEM_5","MEM_6","MEM_7",
                 "MEM_8","MEM_9","MEM_A","MEM_B",
                 "MEM_C","MEM_D","MEM_E","MEM_F",
-                "PAR",  "CNT",  "INA",  "INB",
+                "PAR ", "CNT ", "INA ", "INB ",
                 "OUTA", "OUTB", "DIRA", "DIRB",
                 "CTRA", "CTRB", "FRQA", "FRQB",
                 "PHSA", "PHSB", "VCFG", "VSCL"
@@ -677,22 +1050,75 @@ namespace Gear.EmulationCore
             bool WriteCarry = (Operation & 0x01000000) != 0;
             bool WriteResult = (Operation & 0x00800000) != 0;
             bool ImmediateValue = (Operation & 0x00400000) != 0;
+            bool ShowRdWr = true;
 
             uint Source = Operation & 0x1FF;
             uint Destination = (Operation >> 9) & 0x1FF;
+            string SrcString;
+            string DestString;
+            string instruction;
+            string inst;
 
-            string instruction =
-
-            String.Format("{0} {1} {2:X3}, {3}{4:X3}", new object[] { Conditions[ConditionCode],
-                Instructions[InstructionCode],
-                Destination,
-                ImmediateValue ? "#" : " ",
-                Source } );
-
-            if (WriteResult)
-                instruction += " WR";
+            if (Source >= 0x1f0)
+                SrcString = String.Format("{0}{1}", 
+                        ImmediateValue ? "#" : " ", 
+                        CogRegister[Source - 0x1e0]);
             else
-                instruction += " NR";
+                SrcString = String.Format("{0}${1:X3}", 
+                        ImmediateValue ? "#" : " ", 
+                        Source);
+
+            if (Destination >= 0x1f0)
+                DestString = String.Format(" {0},", CogRegister[Destination - 0x1e0]);
+            else
+                DestString = String.Format(" ${0:X3},", Destination);
+
+            if (InstructionCode == 3)
+            {
+                SrcString = "";
+                inst = InstHubOp[Source % 8];
+            }
+            else if (InstructionCode <= 3)
+            {
+                ShowRdWr = false;
+                if (WriteResult)
+                    inst = InstWriteHub[InstructionCode];
+                else
+                    inst = InstReadHub[InstructionCode];
+            }
+            else if (InstructionCode == 0x17) 
+            {
+                ShowRdWr = false;
+                inst = "JMPRET ";
+                if (!WriteResult)
+                {
+                  inst = "JMP    ";
+                  DestString = "";
+                  if (Source == 0)
+                  {
+                      SrcString = "";
+                      inst = "RET    ";
+                  }
+                }
+                else if (Destination != 0)
+                  inst = "CALL   ";
+            }
+            else
+                inst = Instructions[InstructionCode];
+            
+            instruction = String.Format("{0} {1}{2} {3}", new object[] 
+                { Conditions[ConditionCode],
+                inst,
+                DestString,
+                SrcString });            
+
+            if (ShowRdWr)
+            {
+                if (WriteResult)
+                    instruction += " WR";
+                else
+                    instruction += " NR";
+            }
             if (WriteZero)
                 instruction += " WZ";
             if (WriteCarry)
@@ -781,29 +1207,44 @@ namespace Gear.EmulationCore
                 case 0xA0:
                     return String.Format("POP {0}", CogRegister[op & 0x1F]);
                 case 0xC0:
-                    return String.Format("EFFECT {0}", CogRegister[op & 0x1F], GetEffectCode(chip,ref address));
+                    return String.Format("EFFECT {0} {1}", CogRegister[op & 0x1F], GetEffectCode(chip,ref address));
                 default:
                     return String.Format("UNKNOWN_E {0}", CogRegister[op & 0x1F]);
             }
         }
 
-        public static string InterpreterText(Propeller chip, ref uint address)
+        public static string InterpreterText(Propeller chip, ref uint address, bool displayAsHexadecimal,
+                bool useShortOpcodes)
         {
             byte op = chip.ReadByte(address++);
-
+            string format;
+            if (displayAsHexadecimal)
+                format = "{0} ${1:X}";
+            else
+                format = "{0} {1}";
+            if (useShortOpcodes)
+            {
+                EffectCodes = BriefEffectCodes;
+                InterpretedOps = BriefInterpretedOps;
+            }
+            else
+            {
+                EffectCodes = BigEffectCodes;
+                InterpretedOps = BigInterpretedOps;
+            }
+            
             switch (ArguementModes[op])
             {
                 case ArguementMode.UnsignedOffset:
-                    {
-                        return String.Format("{0} {1}", InterpretedOps[op], GetPackedOffset(chip, ref address));
-                    }
+                        return String.Format(format, InterpretedOps[op], GetPackedOffset(chip, ref address));
                 case ArguementMode.UnsignedEffectedOffset:
                     {
                         int arg = GetPackedOffset(chip, ref address);
-                        return String.Format("{0} {1} {2}", InterpretedOps[op], arg, GetEffectCode(chip, ref address));
+                        format = "{0} {1} {2}";
+                        return String.Format(format, InterpretedOps[op], arg, GetEffectCode(chip, ref address));
                     }
                 case ArguementMode.Effect:
-                    return String.Format("{0} {1}", InterpretedOps[op], GetEffectCode(chip, ref address));
+                        return String.Format(format, InterpretedOps[op], GetEffectCode(chip, ref address));
                 case ArguementMode.SignedOffset:
                     {
                         uint result = chip.ReadByte(address++);
@@ -820,13 +1261,12 @@ namespace Gear.EmulationCore
                             if ((result & 0x4000) != 0)
                                 result |= 0xFFFF8000;
                         }
-
-                        return String.Format("{0} {1}", InterpretedOps[op], (int)result);
+                        return String.Format(format, InterpretedOps[op], (int)result);
                     }
                 case ArguementMode.PackedLiteral:
-                    return String.Format("{0} ${1:x}", InterpretedOps[op], GetPackedLiteral(chip, ref address));
+                    return String.Format(format, InterpretedOps[op], GetPackedLiteral(chip, ref address));
                 case ArguementMode.ByteLiteral:
-                    return String.Format("{0} {1}", InterpretedOps[op], chip.ReadByte(address++));
+                    return String.Format(format, InterpretedOps[op], chip.ReadByte(address++));
                 case ArguementMode.WordLiteral:
                     {
                         int result = 0;
@@ -835,7 +1275,7 @@ namespace Gear.EmulationCore
                             result <<= 8;
                             result |= chip.ReadByte(address++);
                         }
-                        return String.Format("{0} {1}", InterpretedOps[op], result);
+                        return String.Format(format, InterpretedOps[op], result);
                     }
                 case ArguementMode.NearLongLiteral:
                     {
@@ -845,7 +1285,7 @@ namespace Gear.EmulationCore
                             result <<= 8;
                             result |= chip.ReadByte(address++);
                         }
-                        return String.Format("{0} {1}", InterpretedOps[op], result);
+                        return String.Format(format, InterpretedOps[op], result);
                     }
                 case ArguementMode.LongLiteral:
                     {
@@ -855,18 +1295,16 @@ namespace Gear.EmulationCore
                             result <<= 8;
                             result |= chip.ReadByte(address++);
                         }
-                        return String.Format("{0} {1}", InterpretedOps[op], result);
+                        return String.Format(format, InterpretedOps[op], result);
                     }
                 case ArguementMode.ObjCallPair:
                     {
                         byte obj = chip.ReadByte(address++);
                         byte funct = chip.ReadByte(address++);
-                        return String.Format("{0} {1}.{2}", InterpretedOps[op], obj,funct );
+                        return String.Format("{0} {1}.{2}", InterpretedOps[op], obj, funct );
                     }
                 case ArguementMode.MemoryOpCode:
-                    {
                         return String.Format("{0} {1}", InterpretedOps[op], GetMemoryOp(chip, ref address));
-                    }
             }
 
             return InterpretedOps[op];

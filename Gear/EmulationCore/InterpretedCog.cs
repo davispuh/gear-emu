@@ -60,7 +60,7 @@ namespace Gear.EmulationCore
 
         public uint Object
         {
-            get { return LocalFrame; }
+            get { return ObjectFrame; }
         }
 
         public uint Variable
@@ -185,7 +185,7 @@ namespace Gear.EmulationCore
             return Hub.HubOp(this, (uint)HubOperationCodes.HUBOP_COGINIT, code, ref temp);
         }
 
-        override public void DoInstruction()
+        override public bool DoInstruction()
         {
             switch (State)
             {
@@ -193,7 +193,7 @@ namespace Gear.EmulationCore
                 case CogRunState.WAIT_INTERPRETER:
                     if (--StateCount == 0)
                         State = CogRunState.EXEC_INTERPRETER;
-                    return;
+                    return true;
                 case CogRunState.EXEC_INTERPRETER:
                     State = CogRunState.WAIT_INTERPRETER;
                     StateCount = 32;  // 32 cycles per instruction (faked)
@@ -206,7 +206,7 @@ namespace Gear.EmulationCore
                         if (maskedIn != TargetValue)
                             State = CogRunState.EXEC_INTERPRETER;
 
-                        return;
+                        return true;
                     }
                 case CogRunState.WAIT_PEQ:
                     {
@@ -214,7 +214,7 @@ namespace Gear.EmulationCore
                         if (maskedIn == TargetValue)
                             State = CogRunState.EXEC_INTERPRETER;
 
-                        return;
+                        return true;
                     }
                 case CogRunState.WAIT_CNT:
                     {
@@ -223,7 +223,7 @@ namespace Gear.EmulationCore
                         if (TargetValue == target)
                             State = CogRunState.EXEC_INTERPRETER;
 
-                        return;
+                        return true;
                     }
                 case CogRunState.WAIT_VID:
                     if (Video.Ready)
@@ -231,11 +231,11 @@ namespace Gear.EmulationCore
                         State = CogRunState.EXEC_INTERPRETER;
                         Video.Feed(ColorsValue, PixelsValue);
                     }
-                    return;
+                    return true;
 
                 // Non-execute states are ignored
                 default:
-                    return;
+                    return true;
             }
 
             byte op = Hub.ReadByte(PC++);
@@ -249,7 +249,7 @@ namespace Gear.EmulationCore
             else if (op >= 0x80)
             {
                 StepMaskedMemoryOp(op);
-                return;
+                return true;
             }
             // Inplicit Location Memory Ops
             else if (op >= 0x40)
@@ -735,7 +735,8 @@ namespace Gear.EmulationCore
                         ReturnFromSub(Hub.ReadLong(LocalFrame), false);
                         break;
                     case 0x33:  // Pop return value (same as 0x61)
-                        Hub.WriteLong(LocalFrame, PopStack());
+                        // Hub.WriteLong(LocalFrame, PopStack());
+                        ReturnFromSub(PopStack(), false);
                         break;
                     case 0x34:  // Push -1
                     case 0x35:  // Push 0
@@ -807,6 +808,7 @@ namespace Gear.EmulationCore
                         break;
                 }
             }
+            return PC != BP;
         }
 
         private void ReturnFromSub(uint value, bool abort)
@@ -859,8 +861,8 @@ namespace Gear.EmulationCore
                     break;
                 case 0xC0:
                     {
-                        uint val = (ReadLong(reg) & mask) >> lowestbit;
-                        WriteLong(reg, (val & ~mask) | ((InplaceEffect(val) << lowestbit) & mask));
+                        uint val = ReadLong(reg);
+                        WriteLong(reg, (val & ~mask) | ((InplaceEffect((val & mask) >> lowestbit) << lowestbit) & mask));
                     }
                     break;
                 default:

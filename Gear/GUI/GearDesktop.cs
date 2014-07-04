@@ -50,6 +50,7 @@ namespace Gear.GUI
                 if (em.OpenFile(openFileDialog.FileName))
                 {
                     em.MdiParent = this;
+                    em.WindowState = FormWindowState.Maximized;
                     em.Show();
                 }
             }

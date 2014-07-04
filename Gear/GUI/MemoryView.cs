@@ -112,5 +112,10 @@ namespace Gear.GUI
         {
             Repaint(false);
         }
+
+        private void memoryPanel_MouseClick(object sender, MouseEventArgs e)
+        {
+            positionScrollBar.Focus();
+        }
     }
 }

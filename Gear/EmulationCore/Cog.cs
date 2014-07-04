@@ -27,28 +27,28 @@ using System.Text;
 
 namespace Gear.EmulationCore
 {
-    public enum CogRunState
-    {
-        STATE_EXECUTE,          // Waiting for instruction to finish executing
+  public enum CogRunState
+  {
+    STATE_EXECUTE,          // Waiting for instruction to finish executing
 
-        WAIT_LOAD_PROGRAM,      // Cog is loading program memory
-        WAIT_CYCLES,            // Cog is executing an instruction, and waiting an alloted ammount of cycles
-        WAIT_PREWAIT,           // Waits for an allotted number of cycles before changing to a new state
+    WAIT_LOAD_PROGRAM,      // Cog is loading program memory
+    WAIT_CYCLES,            // Cog is executing an instruction, and waiting an alloted ammount of cycles
+    WAIT_PREWAIT,           // Waits for an allotted number of cycles before changing to a new state
 
-        BOOT_INTERPRETER,       // Interpreter is booting up
-        WAIT_INTERPRETER,       // Interpreter is executing an instruction
-        EXEC_INTERPRETER,       // Interpreter is fetching instruction
+    BOOT_INTERPRETER,       // Interpreter is booting up
+    WAIT_INTERPRETER,       // Interpreter is executing an instruction
+    EXEC_INTERPRETER,       // Interpreter is fetching instruction
 
-        WAIT_PEQ,               // Waits for pins to match
-        WAIT_PNE,               // Waits for pins to NOT match
-        WAIT_CNT,               // Waits for count
-        WAIT_VID,               // Waits for video
+    WAIT_PEQ,               // Waits for pins to match
+    WAIT_PNE,               // Waits for pins to NOT match
+    WAIT_CNT,               // Waits for count
+    WAIT_VID,               // Waits for video
 
-        HUB_RDBYTE,             // Waiting to read byte
-        HUB_RDWORD,             // Waiting to read word
-        HUB_RDLONG,             // Waiting to read uint
-        HUB_HUBOP,              // Waiting to perform hub operation
-    }
+    HUB_RDBYTE,             // Waiting to read byte
+    HUB_RDWORD,             // Waiting to read word
+    HUB_RDLONG,             // Waiting to read uint
+    HUB_HUBOP,              // Waiting to perform hub operation
+  }
 
     public enum CogSpecialAddress : uint
     {
@@ -114,7 +114,8 @@ namespace Gear.EmulationCore
         protected uint[] Memory;            // Program Memory
 
         protected Propeller Hub;            // Host processor
-        protected uint PC;                  // Program Cursor
+        protected volatile uint PC;         // Program Cursor
+        protected volatile int BP;          // Breakpoint Address
 
         protected int StateCount;           // Arguement for the current state
         protected CogRunState State;        // Current COG state
@@ -134,7 +135,7 @@ namespace Gear.EmulationCore
         {
             Hub = host;
 
-            Memory = new uint[0x200];     // 512 bytes of memory
+            Memory = new uint[0x200];     // 512 longs of memory
             ProgramAddress = programAddress;
             ParamAddress = param;
 
@@ -147,6 +148,7 @@ namespace Gear.EmulationCore
             PhaseLockedLoop.SetupPLL(Video);
 
             PC = 0;
+            BP = -1;    // Breakpoint disabled
 
             // We are in boot time load
             Memory[(int)CogSpecialAddress.PAR] = param;
@@ -158,6 +160,12 @@ namespace Gear.EmulationCore
                 this[i] = 0;
 
             SetClock(frequency);
+        }
+
+        public int BreakPoint
+        {
+            get { return BP; }
+            set { BP = value; }
         }
 
         public ulong OUT
@@ -373,13 +381,13 @@ namespace Gear.EmulationCore
             Video.DetachAural();
         }
 
-        public void Step()
+        public bool Step()
         {
-            DoInstruction();
-            
+            bool result = DoInstruction();
             // Run our frequency counters
             FreqA.Tick(Hub.IN);
             FreqB.Tick(Hub.IN);
+            return result;    // false - we hit a breakpoint
         }
 
         public void SetClock(uint freq)
@@ -472,7 +480,7 @@ namespace Gear.EmulationCore
             }
         }
 
-        abstract public void DoInstruction();
+        abstract public bool DoInstruction();
         abstract public void Boot();
     }
 }

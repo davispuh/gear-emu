@@ -62,6 +62,14 @@ namespace Gear.GUI
             this.zeroFlagLable = new System.Windows.Forms.ToolStripLabel();
             this.carryFlagLable = new System.Windows.Forms.ToolStripLabel();
             this.processorStateLable = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.DisplayUnits = new System.Windows.Forms.ToolStripDropDownButton();
+            this.decimalUnits = new System.Windows.Forms.ToolStripMenuItem();
+            this.hexadecimalUnits = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+            this.OpcodeSize = new System.Windows.Forms.ToolStripDropDownButton();
+            this.longOpcodes = new System.Windows.Forms.ToolStripMenuItem();
+            this.shortOpcodes = new System.Windows.Forms.ToolStripMenuItem();
             toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -96,16 +104,20 @@ namespace Gear.GUI
             this.assemblyPanel.Name = "assemblyPanel";
             this.assemblyPanel.Size = new System.Drawing.Size(548, 421);
             this.assemblyPanel.TabIndex = 1;
+            this.assemblyPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.assemblyPanel_MouseDown);
+            this.assemblyPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.assemblyPanel_MouseClick);
             this.assemblyPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.AssemblyView_Paint);
             this.assemblyPanel.SizeChanged += new System.EventHandler(this.AsmSized);
             // 
             // positionScroll
             // 
             this.positionScroll.Dock = System.Windows.Forms.DockStyle.Right;
+            this.positionScroll.LargeChange = 16;
             this.positionScroll.Location = new System.Drawing.Point(548, 25);
             this.positionScroll.Name = "positionScroll";
             this.positionScroll.Size = new System.Drawing.Size(17, 421);
             this.positionScroll.TabIndex = 2;
+            this.positionScroll.TabStop = true;
             this.positionScroll.Scroll += new System.Windows.Forms.ScrollEventHandler(this.UpdateOnScroll);
             // 
             // toolStrip
@@ -120,7 +132,11 @@ namespace Gear.GUI
             toolStripSeparator2,
             this.carryFlagLable,
             toolStripSeparator3,
-            this.processorStateLable});
+            this.processorStateLable,
+            this.toolStripSeparator5,
+            this.DisplayUnits,
+            this.toolStripSeparator6,
+            this.OpcodeSize});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
             this.toolStrip.Size = new System.Drawing.Size(565, 25);
@@ -136,6 +152,7 @@ namespace Gear.GUI
             this.memoryViewButton.Name = "memoryViewButton";
             this.memoryViewButton.Size = new System.Drawing.Size(78, 22);
             this.memoryViewButton.Text = "Show Memory";
+            this.memoryViewButton.Click += new System.EventHandler(this.memoryViewButton_Click);
             // 
             // followPCButton
             // 
@@ -148,6 +165,7 @@ namespace Gear.GUI
             this.followPCButton.Name = "followPCButton";
             this.followPCButton.Size = new System.Drawing.Size(57, 22);
             this.followPCButton.Text = "Follow PC";
+            this.followPCButton.Click += new System.EventHandler(this.followPCButton_Click);
             // 
             // programCounterLable
             // 
@@ -173,14 +191,80 @@ namespace Gear.GUI
             this.processorStateLable.Size = new System.Drawing.Size(19, 22);
             this.processorStateLable.Text = "---";
             // 
-            // CogViewer
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(6, 25);
+            // 
+            // DisplayUnits
+            // 
+            this.DisplayUnits.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.DisplayUnits.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.decimalUnits,
+            this.hexadecimalUnits});
+            this.DisplayUnits.Image = ((System.Drawing.Image)(resources.GetObject("DisplayUnits.Image")));
+            this.DisplayUnits.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.DisplayUnits.Name = "DisplayUnits";
+            this.DisplayUnits.Size = new System.Drawing.Size(44, 22);
+            this.DisplayUnits.Text = "Units";
+            // 
+            // decimalUnits
+            // 
+            this.decimalUnits.Checked = true;
+            this.decimalUnits.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.decimalUnits.Name = "decimalUnits";
+            this.decimalUnits.Size = new System.Drawing.Size(145, 22);
+            this.decimalUnits.Text = "Decimal";
+            this.decimalUnits.Click += new System.EventHandler(this.decimalUnits_Click);
+            // 
+            // hexadecimalUnits
+            // 
+            this.hexadecimalUnits.Name = "hexadecimalUnits";
+            this.hexadecimalUnits.Size = new System.Drawing.Size(145, 22);
+            this.hexadecimalUnits.Text = "Hexadecimal";
+            this.hexadecimalUnits.Click += new System.EventHandler(this.hexadecimalUnits_Click);
+            // 
+            // toolStripSeparator6
+            // 
+            this.toolStripSeparator6.Name = "toolStripSeparator6";
+            this.toolStripSeparator6.Size = new System.Drawing.Size(6, 25);
+            // 
+            // OpcodeSize
+            // 
+            this.OpcodeSize.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.OpcodeSize.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.longOpcodes,
+            this.shortOpcodes});
+            this.OpcodeSize.Image = ((System.Drawing.Image)(resources.GetObject("OpcodeSize.Image")));
+            this.OpcodeSize.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.OpcodeSize.Name = "OpcodeSize";
+            this.OpcodeSize.Size = new System.Drawing.Size(62, 22);
+            this.OpcodeSize.Text = "Opcodes";
+            // 
+            // longOpcodes
+            // 
+            this.longOpcodes.Name = "longOpcodes";
+            this.longOpcodes.Size = new System.Drawing.Size(156, 22);
+            this.longOpcodes.Text = "Long Opcodes";
+            this.longOpcodes.Click += new System.EventHandler(this.longOpcodes_Click);
+            // 
+            // shortOpcodes
+            // 
+            this.shortOpcodes.Checked = true;
+            this.shortOpcodes.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.shortOpcodes.Name = "shortOpcodes";
+            this.shortOpcodes.Size = new System.Drawing.Size(156, 22);
+            this.shortOpcodes.Text = "Short Opcodes";
+            this.shortOpcodes.Click += new System.EventHandler(this.shortOpcodes_Click);
+            // 
+            // CogView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.assemblyPanel);
             this.Controls.Add(this.positionScroll);
             this.Controls.Add(this.toolStrip);
-            this.Name = "CogViewer";
+            this.Name = "CogView";
             this.Size = new System.Drawing.Size(565, 446);
             this.toolStrip.ResumeLayout(false);
             this.toolStrip.PerformLayout();
@@ -200,6 +284,14 @@ namespace Gear.GUI
         private System.Windows.Forms.ToolStripLabel processorStateLable;
         private System.Windows.Forms.ToolStripButton memoryViewButton;
         private System.Windows.Forms.ToolStripButton followPCButton;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+        private System.Windows.Forms.ToolStripDropDownButton DisplayUnits;
+        private System.Windows.Forms.ToolStripMenuItem decimalUnits;
+        private System.Windows.Forms.ToolStripMenuItem hexadecimalUnits;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
+        private System.Windows.Forms.ToolStripDropDownButton OpcodeSize;
+        private System.Windows.Forms.ToolStripMenuItem longOpcodes;
+        private System.Windows.Forms.ToolStripMenuItem shortOpcodes;
 
     }
 }

@@ -42,6 +42,8 @@ namespace Gear.GUI
         private ToolStripButton analizeButton;
         private VScrollBar scrollPosition;
         private Brush[] Colorize;
+        private Splitter splitter1;
+        private System.ComponentModel.IContainer components;
         private Bitmap BackBuffer;
 
         public override string Title
@@ -102,44 +104,56 @@ namespace Gear.GUI
             for (i = Host.ReadWord(0x8); i < Host.ReadWord(0xA); i++)
                 Colorize[i] = Brushes.LightYellow;
 
-            for (; i < Colorize.Length; i++)
+            for (; i < 0x8000; i++)
                 Colorize[i] = Brushes.LightGray;
-
 
             ColorObject(Host.ReadWord(0x6), Host.ReadWord(0x8), root);
         }
 
         private void ColorObject(uint objFrame, uint varFrame, TreeNode root )
         {
-            uint i;
+            uint i, addr, addrnext;
 
             root = root.Nodes.Add(String.Format("Object {0:X}",objFrame));
             root.Tag = (int)objFrame;
 
             root.Nodes.Add(String.Format("Variable Space {0:X4}", varFrame)).Tag = (int)varFrame;
+            Colorize[varFrame] = Brushes.LightBlue;
 
             ushort size = Host.ReadWord(objFrame);
             byte longs = Host.ReadByte(objFrame+2);
             byte objects = Host.ReadByte(objFrame + 3);
 
             for (i = 0; i < longs*4; i++)
-                Colorize[i+objFrame] = Brushes.LightPink;
+                Colorize[i + objFrame] = Brushes.LightPink;
             for (; i < (longs + objects) * 4; i++)
                 Colorize[i + objFrame] = Brushes.LavenderBlush;
             for (; i < size; i++)
                 Colorize[i + objFrame] = Brushes.LightGreen;
-
+            
+            addrnext = Host.ReadWord(1 * 4 + objFrame) + objFrame;
             for (i = 1; i < longs; i++)
-                ColorFunction(Host.ReadWord(i * 4 + objFrame) + objFrame, root);
+            {
+                addr = addrnext;
+                addrnext = Host.ReadWord((i + 1) * 4 + objFrame) + objFrame;
+                if (i == longs - 1)
+                {
+                  addrnext = addr + 1;
+                  while (Colorize[addrnext] == Brushes.LightGreen)
+                    addrnext++;
+                }
+                ColorFunction(addr, addrnext, root);
+            }
 
             for (i = 0; i < objects; i++)
                 ColorObject(Host.ReadWord((longs + i) * 4 + objFrame) + objFrame, 
                     Host.ReadWord((longs + i) * 4 + 2 + objFrame) + varFrame, root);
         }
 
-        private void ColorFunction(uint functFrame, TreeNode root)
+        private void ColorFunction(uint functFrame, uint functFrameEnd, TreeNode root)
         {
-            root = root.Nodes.Add(String.Format("Function {0:X}", functFrame));
+            root = root.Nodes.Add(String.Format("Function {0:X} ({1:d})", functFrame, 
+                    functFrameEnd - functFrame));
             root.Tag = (int)functFrame;
 
             Colorize[functFrame] = Brushes.Yellow;
@@ -156,22 +170,28 @@ namespace Gear.GUI
             g.Clear(SystemColors.Control);
 
             Size s = TextRenderer.MeasureText("00", MonoSpace);
+            Size a = TextRenderer.MeasureText("0000:", MonoSpace);
 
             for (int y = scrollPosition.Value, dy = 0; 
                 y < 0x10000 && dy < hexView.ClientRectangle.Height; 
                 dy += s.Height)
             {
-                for (int x = 0, dx = 0;
+                // Draw the address
+                g.FillRectangle(Brushes.White, new Rectangle(0, dy, a.Width, s.Height));
+                g.DrawString(String.Format("{0:X4}:", y),
+                    MonoSpace, SystemBrushes.ControlText, 0, dy);
+                // Draw the line of data
+                for (int x = 0, dx = a.Width;
                     y < 0x10000 && x < 16; 
                     x++, dx += s.Width, y++)
                 {
                     byte data = Host.ReadByte((uint)y);
                     g.FillRectangle(Colorize[y], new Rectangle(dx, dy, s.Width, s.Height));
 
-                    if( data > 32 && data < 127 )
-                        g.DrawString(ascii.GetString( new byte[] {data} ),
-                            MonoSpace, SystemBrushes.ControlText, dx, dy);
-                    else
+                    //if( data > 32 && data < 127 )
+                    //    g.DrawString(ascii.GetString( new byte[] {data} ),
+                    //        MonoSpace, SystemBrushes.ControlText, dx, dy);
+                    //else
                         g.DrawString(String.Format("{0:X2}", data),
                             MonoSpace, SystemBrushes.ControlText, dx, dy);
                 }
@@ -179,6 +199,8 @@ namespace Gear.GUI
 
             hexView.CreateGraphics().DrawImageUnscaled(BackBuffer, 0, 0);
         }
+
+        #region FormCode
 
         private void InitializeComponent()
         {
@@ -188,12 +210,14 @@ namespace Gear.GUI
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.analizeButton = new System.Windows.Forms.ToolStripButton();
             this.scrollPosition = new System.Windows.Forms.VScrollBar();
+            this.splitter1 = new System.Windows.Forms.Splitter();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // objectView
             // 
             this.objectView.Dock = System.Windows.Forms.DockStyle.Left;
+            this.objectView.Indent = 15;
             this.objectView.Location = new System.Drawing.Point(0, 25);
             this.objectView.Name = "objectView";
             this.objectView.Size = new System.Drawing.Size(193, 424);
@@ -207,6 +231,7 @@ namespace Gear.GUI
             this.hexView.Name = "hexView";
             this.hexView.Size = new System.Drawing.Size(415, 424);
             this.hexView.TabIndex = 1;
+            this.hexView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.hexView_MouseClick);
             this.hexView.Paint += new System.Windows.Forms.PaintEventHandler(this.OnPaint);
             this.hexView.SizeChanged += new System.EventHandler(this.OnSize);
             // 
@@ -233,15 +258,26 @@ namespace Gear.GUI
             // scrollPosition
             // 
             this.scrollPosition.Dock = System.Windows.Forms.DockStyle.Right;
+            this.scrollPosition.LargeChange = 16;
             this.scrollPosition.Location = new System.Drawing.Point(608, 25);
             this.scrollPosition.Maximum = 65535;
             this.scrollPosition.Name = "scrollPosition";
             this.scrollPosition.Size = new System.Drawing.Size(17, 424);
             this.scrollPosition.TabIndex = 0;
+            this.scrollPosition.TabStop = true;
             this.scrollPosition.Scroll += new System.Windows.Forms.ScrollEventHandler(this.OnScroll);
+            // 
+            // splitter1
+            // 
+            this.splitter1.Location = new System.Drawing.Point(193, 25);
+            this.splitter1.Name = "splitter1";
+            this.splitter1.Size = new System.Drawing.Size(3, 424);
+            this.splitter1.TabIndex = 2;
+            this.splitter1.TabStop = false;
             // 
             // SpinView
             // 
+            this.Controls.Add(this.splitter1);
             this.Controls.Add(this.hexView);
             this.Controls.Add(this.objectView);
             this.Controls.Add(this.scrollPosition);
@@ -254,6 +290,8 @@ namespace Gear.GUI
             this.PerformLayout();
 
         }
+
+        #endregion
 
         private void OnPaint(object sender, PaintEventArgs e)
         {
@@ -274,6 +312,7 @@ namespace Gear.GUI
         private void analizeButton_Click(object sender, EventArgs e)
         {
             ColorCode();
+            objectView.ExpandAll();
             Repaint(false);
         }
 
@@ -291,6 +330,21 @@ namespace Gear.GUI
             else
                 BackBuffer = new Bitmap(1, 1);
             Repaint(false);
+        }
+
+        private void hexView_MouseClick(object sender, MouseEventArgs e)
+        {
+            scrollPosition.Focus();
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void openStimulusFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

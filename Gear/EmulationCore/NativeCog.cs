@@ -220,7 +220,7 @@ namespace Gear.EmulationCore
             base.HubAccessable();
         }
 
-        override public void DoInstruction()
+        override public bool DoInstruction()
         {
             switch (State)
             {
@@ -228,12 +228,12 @@ namespace Gear.EmulationCore
                 case CogRunState.WAIT_CYCLES:
                     if (--StateCount == 1)
                         WriteBackResult();
-                    return;
+                    return true;
                 // Clocked, but not executed
                 case CogRunState.WAIT_PREWAIT:
                     if (--StateCount == 1)
                         State = NextState;
-                    return;
+                    return true;
 
                 // Execute State
                 case CogRunState.STATE_EXECUTE:
@@ -249,7 +249,7 @@ namespace Gear.EmulationCore
                             // TODO: DETERMINE CARRY
                             WriteBackResult();
                         }
-                        return;
+                        return true;
                     }
                 case CogRunState.WAIT_PEQ:
                     {
@@ -260,9 +260,9 @@ namespace Gear.EmulationCore
                             Zero = maskedIn == 0;
                             // TODO: DETERMINE CARRY
                             WriteBackResult();
-                            return;
+                            return true;
                         }
-                        return;
+                        return true;
                     }
                 case CogRunState.WAIT_CNT:
                     {
@@ -275,9 +275,9 @@ namespace Gear.EmulationCore
                             CarryResult = target > 0xFFFFFFFF;
                             ZeroResult = DataResult == 0;
                             WriteBackResult();
-                            return;
+                            return true;
                         }
-                        return;
+                        return true;
                     }
                 case CogRunState.WAIT_VID:
                     if (Video.Ready)
@@ -286,11 +286,11 @@ namespace Gear.EmulationCore
                         // TODO: Determine carry, zero, and result
                         WriteBackResult();
                     }
-                    return;
+                    return true;
 
                 // Non-execute states are ignored
                 default:
-                    return;
+                    return true;
             }
 
             PC = (PC + 1) & 0x1FF;
@@ -317,7 +317,7 @@ namespace Gear.EmulationCore
                 State = CogRunState.WAIT_PREWAIT;
                 NextState = CogRunState.STATE_EXECUTE;
                 StateCount = 4;
-                return;
+                return true;
             }
 
             switch (InstructionCode)
@@ -655,7 +655,8 @@ namespace Gear.EmulationCore
 
             // Prefetch instruction
             Operation = ReadLong(PC);
-
+            // Check if it's time to trigger a breakpoint
+            return PC != BP;
         }
 
         private void InstructionRCR()
@@ -1224,11 +1225,12 @@ namespace Gear.EmulationCore
 
         private void InstructionCMPS()
         {
-            long result = (long)(int)SourceValue - (long)(int)DestinationValue;
+            long result = (long)(int)DestinationValue - (long)(int)SourceValue;
 
             DataResult = (uint)result;
             ZeroResult = Zero && (DataResult == 0);
-            CarryResult = result < -2147483648;
+//            CarryResult = result < -2147483648;
+            CarryResult = (DataResult & 0x80000000) == 0x80000000;
         }
 
         private void InstructionCMPSX()
@@ -1240,7 +1242,8 @@ namespace Gear.EmulationCore
 
             DataResult = (uint)result;
             ZeroResult = Zero && (DataResult == 0);
-            CarryResult = result < -2147483648;
+//            CarryResult = result < -2147483648;
+            CarryResult = (DataResult & 0x80000000) == 0x80000000;
         }
 
         private void InstructionCMPSUB()
