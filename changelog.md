@@ -2,6 +2,12 @@
 
 Read more about in [forum GEAR: Propeller Debugging Environment](http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment)
 
+## V09_05_12 (50) 11 May 2009
+
+* Fixed memory references of the form `LONG[ &MyVar ][ 2 ]`, this case was being emulated as `LONG[ 2 ][ &MyVar ]`.
+* Included SerialIO plugin (with thanks to Ben Levitt) in the distribution.
+
+
 ## V08_10_16 (151) 16 October 2008
 
 * An extra function has been added which allows hot keys to be disabled for a plugin.
