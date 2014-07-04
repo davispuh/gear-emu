@@ -310,9 +310,8 @@ class SerialIO : PluginBase
       }
       
       rxCurrentByte = 0;
-      
-    this.bodyField.Text = displayBuffer;
-    this.bodyField.SelectionStart = this.bodyField.Text.Length;
+      this.bodyField.Text = displayBuffer;
+      this.bodyField.SelectionStart = this.bodyField.Text.Length;
       this.bodyField.ScrollToCaret();
     }
   }

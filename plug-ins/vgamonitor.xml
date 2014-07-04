@@ -1,5 +1,5 @@
 <plugin>
-  <instance class="Gear.VGAMonitor" />
+  <instance class="VGAMonitor" />
   <code>using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,123 +12,110 @@ using System.Data;
 using Gear.EmulationCore;
 using Gear.PluginSupport;
 
-namespace Gear
+class VGAMonitor : PluginBase
 {
-    public class VGAMonitor : PluginBase
+  private Propeller Chip;
+  private Bitmap Screen;
+      
+  private double Minimum;
+  private Color Output;
+
+  private Color[] Palette;
+
+  public bool VSync;
+  public bool HSync;
+
+  private double LastTime;
+
+  public int ScanLine;
+  public int Pixel;		
+
+  public override string Title
+  {
+    get { return "VGA Monitor"; }
+  }
+
+  public VGAMonitor()
+  {
+    Screen = new Bitmap(1300, 800);
+    ScanLine = 0;
+    Pixel = 0;
+    Minimum = 1;
+    Palette = new Color[0x40];
+
+    for( int i = 0; i &lt; 0x40; i++ )
     {
-        private Propeller Chip;
-        private Bitmap Screen;
-        
-        private double Minimum;
-        private Color Output;
-
-	  private Color[] Palette;
-
-        public bool VSync;
-        public bool HSync;
-
-        private double LastTime;
-
-        public int ScanLine;
-        public int Pixel;		
-
-        public override string Title
-        {
-            get
-            {
-                return "VGA Monitor";
-            }
-        }
-
-        public VGAMonitor()
-        {
-            Screen = new Bitmap(1300, 800);
-            ScanLine = 0;
-            Pixel = 0;
-            Minimum = 1;
-
-		Palette = new Color[0x40];
-
-		for( int i = 0; i &lt; 0x40; i++ )
-		{
-			uint color = 0xFF000000;
-
-			if( (i &amp; 1) != 0 )
-				color |= 0x000055;
-			if( (i &amp; 2) != 0 )
-				color |= 0x0000AA;
-			if( (i &amp; 4) != 0 )
-				color |= 0x005500;
-			if( (i &amp; 8) != 0 )
-				color |= 0x00AA00;
-			if( (i &amp; 16) != 0 )
-				color |= 0x550000;
-			if( (i &amp; 32) != 0 )
-				color |= 0xAA0000;
-
-			Palette[i] = Color.FromArgb((int)color);
-		}
-
-		Output = Palette[0];
-        }
-
-        public override void PresentChip(Propeller host)
-        {
-            Chip = host;
-            Chip.NotifyOnPins(this);
-        }
-
-        public override void OnPinChange(double time, PinState[] pins)
-        {
-            double delta = time - LastTime;
-            LastTime = time;
-
-            if (delta &lt; Minimum &amp;&amp; delta &gt; 0)
-                Minimum = delta;
-
-            int pixels = (int)(delta / Minimum);
-            while (pixels-- &gt; 0 &amp;&amp; Pixel &lt; Screen.Width &amp;&amp; ScanLine &lt; Screen.Height)
-                Screen.SetPixel(Pixel++, ScanLine, Output);
-
-            // Check to see if the scanline pins have changed
-
-            if (pins[16] == PinState.OUTPUT_LO &amp;&amp; !VSync)
-            {
-                if( !VSync )
-                	ScanLine = 0;
-            }
-
-            if (pins[17] == PinState.OUTPUT_LO &amp;&amp; !HSync)
-            {
-                if (++ScanLine == Screen.Height)
-                    ScanLine = 0;
-                Pixel = 0;
-            }
-
-            VSync = pins[16] == PinState.OUTPUT_LO;
-            HSync = pins[17] == PinState.OUTPUT_LO;
-
-
-		// Drive color off propeller demo board pins
-		int index = 0;
-
-		for( int b = 0, p = 18; b &lt; 6; b++, p++ )
-			if(pins[p] == PinState.OUTPUT_HI)
-				index |= 1 &lt;&lt; b;
-
-		Output = Palette[index];
-        }
-
-        public override void Repaint(bool force)
-        {
-            CreateGraphics().DrawImage(Screen,0,0);
-        }
-
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            e.Graphics.DrawImage(Screen,0,0);
-        }
+      uint color = 0xFF000000;
+      if( (i &amp; 1) != 0 )  color |= 0x000055;
+      if( (i &amp; 2) != 0 )  color |= 0x0000AA;
+      if( (i &amp; 4) != 0 )  color |= 0x005500;
+      if( (i &amp; 8) != 0 )  color |= 0x00AA00;
+      if( (i &amp; 16) != 0 ) color |= 0x550000;
+      if( (i &amp; 32) != 0 ) color |= 0xAA0000;
+      Palette[i] = Color.FromArgb((int)color);
     }
+
+    Output = Palette[0];
+    for( int x = 0; x &lt; Screen.Width; x++ )
+      for( int y = 0; y &lt; Screen.Height; y++ )
+        Screen.SetPixel(x, y, Output);
+  }
+
+  public override void PresentChip(Propeller host)
+  {
+    Chip = host;
+    Chip.NotifyOnPins(this);
+  }
+
+  public override void OnPinChange(double time, PinState[] pins)
+  {
+    double delta = time - LastTime;
+    LastTime = time;
+
+    if (delta &lt; Minimum &amp;&amp; delta &gt; 0)
+      Minimum = delta;
+
+    int pixels = (int)(delta / Minimum);
+    while (pixels-- &gt; 0 &amp;&amp; Pixel &lt; Screen.Width &amp;&amp; ScanLine &lt; Screen.Height)
+      Screen.SetPixel(Pixel++, ScanLine, Output);
+
+    // Check to see if the scanline pins have changed
+    if (pins[16] == PinState.OUTPUT_LO &amp;&amp; !VSync)
+    {
+      if( !VSync )
+       	ScanLine = 0;
+    }
+
+    if (pins[17] == PinState.OUTPUT_LO &amp;&amp; !HSync)
+    {
+      if (++ScanLine == Screen.Height)
+        ScanLine = 0;
+        Pixel = 0;
+    }
+
+    VSync = pins[16] == PinState.OUTPUT_LO;
+    HSync = pins[17] == PinState.OUTPUT_LO;
+
+
+    // Drive color off propeller demo board pins
+    int index = 0;
+
+    for( int b = 0, p = 18; b &lt; 6; b++, p++ )
+      if(pins[p] == PinState.OUTPUT_HI)
+        index |= 1 &lt;&lt; b;
+
+    Output = Palette[index];
+  }
+
+  public override void Repaint(bool force)
+  {
+    CreateGraphics().DrawImage(Screen,0,0);
+  }
+
+  protected override void OnPaint(PaintEventArgs e)
+  {
+    e.Graphics.DrawImage(Screen,0,0);
+  }
 }
 </code>
 </plugin>
