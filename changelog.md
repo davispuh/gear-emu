@@ -2,6 +2,13 @@
 
 Read more about in [forum GEAR: Propeller Debugging Environment](http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment)
 
+## V08_10_16 (151) 16 October 2008
+
+* An extra function has been added which allows hot keys to be disabled for a plugin.
+Simply add the following function to your plugin:
+`public override Boolean AllowHotKeys { get { return false; } }`
+
+
 ## V08 04 29 (159) 29 April 2008
 * The lastest stimulus.zip is now included in V08_04_29.zip.
 * 'R' and 'S' keys can now be used to run, stop and step the currently active cog.
