@@ -280,7 +280,7 @@ lops = {
     0x00: "COPY",
     0x08: "PRE_RANDOM",
     0x0C: "POST_RANDOM",
-    
+
     0x10: "PRE_EXTEND_8",
     0x14: "PRE_EXTEND_16",
     0x18: "POST_EXTEND_8",
@@ -320,7 +320,7 @@ lops = {
     0x4d: "SUBTRACT",
     0x4e: "ARITH_SHIFT_RIGHT",
     0x4f: "BIT_REVERSE",
-    
+
     0x50: "LOGICAL_AND",
     0x51: "ENCODE",
     0x52: "LOGICAL_OR",
@@ -387,13 +387,13 @@ def PackedSigned( fo, addresses ):
     if code & 0x80 != 0:
         code = ord(fo.read(1)) | (code<<8)
 
-        if code & 0x4000:    
+        if code & 0x4000:
             code -= 0x10000
         else:
             code &= 0x3FFF
     else:
         if code & 0x40:
-            code -= 0x80        
+            code -= 0x80
 
     if code >= 0:
         addresses += [fo.tell()+code]
@@ -441,8 +441,8 @@ def DoFunction( fo, base, end, obj_base, assemblies ):
                 raise "BRANCH OUT OF RANGE"
         addresses = naddr
 
-        x = ord(fo.read(1))        
-        
+        x = ord(fo.read(1))
+
         print "\t%x:\t%x\t" % (fo.tell()-1,x),
 
         head, uop = simpleOps[x]
@@ -450,10 +450,10 @@ def DoFunction( fo, base, end, obj_base, assemblies ):
 
         if uop == 1:
             PrintLOP(fo,addresses)
-                
+
         elif uop == 2:
             print PackedSigned(fo,addresses)
-                
+
         elif uop == 3:
             data = ord(fo.read(1))
 
@@ -467,7 +467,7 @@ def DoFunction( fo, base, end, obj_base, assemblies ):
                 print "%x -> %x" % (data, ~((2 << (data & 0x1F))-1))
             else:
                 raise "Unknown packed literal", hex(data)
-                   
+
         elif uop == 4:
             print "[%x]" % PackedUnsigned( fo )
         elif uop == 5:
@@ -485,9 +485,9 @@ def DoFunction( fo, base, end, obj_base, assemblies ):
         elif uop == 11:
             op = ord(fo.read(1))
             style = op & 0xE0
-                    
+
             print CogReg[op & 0x1F],
-                
+
             if style == 0x80:
                 print "PUSH"
             elif style == 0xA0:
@@ -508,7 +508,7 @@ def DoFunction( fo, base, end, obj_base, assemblies ):
             guess = False
         if (x == 0x2C or x == 0x28) and guess:
             assemblies += [guess]
-        
+
         if len(addresses) == 0 and x == 0x32:
             break
 
@@ -521,7 +521,7 @@ def DoDataChunk( fo, base, end, assemblies ):
     fo.seek(base)
     print "Data chunk %x" % base
     print "Assembly code at: ", assemblies
-    
+
     print "\tbyte ",
     i = 16
 
@@ -615,7 +615,7 @@ def DumpChecksum(f,checksum_target):
     for c in d:
         cs += ~ord(c)
         cs &= 0xFF
-        
+
     if cs:
         print "- Invalid %x" % cs
     else:
@@ -637,7 +637,7 @@ def DumpHeader(f):
     DumpChecksum(f,var)
     print
     DoChunk( f, 0x10 )
-    
+
 
 def Disassemble(fn):
     print "--- STARTING OBJECT DUMP FOR %s ---" % fn

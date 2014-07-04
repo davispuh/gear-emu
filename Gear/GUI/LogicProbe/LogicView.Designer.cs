@@ -11,7 +11,7 @@
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -22,12 +22,12 @@ namespace Gear.GUI.LogicProbe
 {
     partial class LogicView
     {
-        /// <summary> 
+        /// <summary>
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary> 
+        /// <summary>
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
@@ -42,8 +42,8 @@ namespace Gear.GUI.LogicProbe
 
         #region Component Designer generated code
 
-        /// <summary> 
-        /// Required method for Designer support - do not modify 
+        /// <summary>
+        /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
@@ -67,26 +67,26 @@ namespace Gear.GUI.LogicProbe
             toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
-            // 
+            //
             // toolStripLabel1
-            // 
+            //
             toolStripLabel1.Name = "toolStripLabel1";
             toolStripLabel1.Size = new System.Drawing.Size(112, 22);
             toolStripLabel1.Text = "Time Frame (seconds)";
-            // 
+            //
             // toolStripLabel2
-            // 
+            //
             toolStripLabel2.Name = "toolStripLabel2";
             toolStripLabel2.Size = new System.Drawing.Size(123, 22);
             toolStripLabel2.Text = "Tick Mark Grid (seconds)";
-            // 
+            //
             // toolStripSeparator2
-            // 
+            //
             toolStripSeparator2.Name = "toolStripSeparator2";
             toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
-            // 
+            //
             // toolStrip1
-            // 
+            //
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             toolStripLabel1,
             this.timeFrameBox,
@@ -102,21 +102,21 @@ namespace Gear.GUI.LogicProbe
             this.toolStrip1.Size = new System.Drawing.Size(697, 25);
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
-            // 
+            //
             // timeFrameBox
-            // 
+            //
             this.timeFrameBox.Name = "timeFrameBox";
             this.timeFrameBox.Size = new System.Drawing.Size(75, 25);
             this.timeFrameBox.Text = "0.0001";
-            // 
+            //
             // tickMarkBox
-            // 
+            //
             this.tickMarkBox.Name = "tickMarkBox";
             this.tickMarkBox.Size = new System.Drawing.Size(75, 25);
             this.tickMarkBox.Text = "0.0000032";
-            // 
+            //
             // updateGridButton
-            // 
+            //
             this.updateGridButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.updateGridButton.Image = ((System.Drawing.Image)(resources.GetObject("updateGridButton.Image")));
             this.updateGridButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -124,9 +124,9 @@ namespace Gear.GUI.LogicProbe
             this.updateGridButton.Size = new System.Drawing.Size(46, 22);
             this.updateGridButton.Text = "Update";
             this.updateGridButton.Click += new System.EventHandler(this.updateGridButton_Click);
-            // 
+            //
             // analogButton
-            // 
+            //
             this.analogButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.analogButton.Image = ((System.Drawing.Image)(resources.GetObject("analogButton.Image")));
             this.analogButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -134,9 +134,9 @@ namespace Gear.GUI.LogicProbe
             this.analogButton.Size = new System.Drawing.Size(52, 22);
             this.analogButton.Text = "+Analog";
             this.analogButton.Click += new System.EventHandler(this.analogButton_Click);
-            // 
+            //
             // digitalButton
-            // 
+            //
             this.digitalButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.digitalButton.Image = ((System.Drawing.Image)(resources.GetObject("digitalButton.Image")));
             this.digitalButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -144,18 +144,18 @@ namespace Gear.GUI.LogicProbe
             this.digitalButton.Size = new System.Drawing.Size(48, 22);
             this.digitalButton.Text = "+Digital";
             this.digitalButton.Click += new System.EventHandler(this.digitalButton_Click);
-            // 
+            //
             // viewOffset
-            // 
+            //
             this.viewOffset.Dock = System.Windows.Forms.DockStyle.Right;
             this.viewOffset.Location = new System.Drawing.Point(680, 25);
             this.viewOffset.Name = "viewOffset";
             this.viewOffset.Size = new System.Drawing.Size(17, 411);
             this.viewOffset.TabIndex = 1;
             this.viewOffset.Scroll += new System.Windows.Forms.ScrollEventHandler(this.ScrollChanged);
-            // 
+            //
             // waveView
-            // 
+            //
             this.waveView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.waveView.Location = new System.Drawing.Point(0, 25);
             this.waveView.Name = "waveView";
@@ -165,9 +165,9 @@ namespace Gear.GUI.LogicProbe
             this.waveView.Click += new System.EventHandler(this.OnClick);
             this.waveView.Paint += new System.Windows.Forms.PaintEventHandler(this.WaveView_Paint);
             this.waveView.SizeChanged += new System.EventHandler(this.OnSized);
-            // 
+            //
             // timeAdjustBar
-            // 
+            //
             this.timeAdjustBar.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.timeAdjustBar.Location = new System.Drawing.Point(0, 436);
             this.timeAdjustBar.Maximum = 1000;
@@ -176,14 +176,14 @@ namespace Gear.GUI.LogicProbe
             this.timeAdjustBar.TabIndex = 0;
             this.timeAdjustBar.Value = 1000;
             this.timeAdjustBar.Scroll += new System.Windows.Forms.ScrollEventHandler(this.TimeChanged);
-            // 
+            //
             // pinsTextBox
-            // 
+            //
             this.pinsTextBox.Name = "pinsTextBox";
             this.pinsTextBox.Size = new System.Drawing.Size(75, 25);
-            // 
+            //
             // LogicView
-            // 
+            //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.waveView);

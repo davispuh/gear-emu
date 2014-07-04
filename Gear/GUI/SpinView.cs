@@ -14,7 +14,7 @@
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -217,9 +217,9 @@ namespace Gear.GUI
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
-            // 
+            //
             // objectView
-            // 
+            //
             this.objectView.Dock = System.Windows.Forms.DockStyle.Left;
             this.objectView.Indent = 15;
             this.objectView.Location = new System.Drawing.Point(0, 25);
@@ -227,9 +227,9 @@ namespace Gear.GUI
             this.objectView.Size = new System.Drawing.Size(193, 424);
             this.objectView.TabIndex = 0;
             this.objectView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.SelectChanged);
-            // 
+            //
             // hexView
-            // 
+            //
             this.hexView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.hexView.Location = new System.Drawing.Point(193, 25);
             this.hexView.Name = "hexView";
@@ -238,9 +238,9 @@ namespace Gear.GUI
             this.hexView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.hexView_MouseClick);
             this.hexView.Paint += new System.Windows.Forms.PaintEventHandler(this.OnPaint);
             this.hexView.SizeChanged += new System.EventHandler(this.OnSize);
-            // 
+            //
             // toolStrip1
-            // 
+            //
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.analizeButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
@@ -248,9 +248,9 @@ namespace Gear.GUI
             this.toolStrip1.Size = new System.Drawing.Size(625, 25);
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
-            // 
+            //
             // analizeButton
-            // 
+            //
             this.analizeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.analizeButton.Image = ((System.Drawing.Image)(resources.GetObject("analizeButton.Image")));
             this.analizeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -258,9 +258,9 @@ namespace Gear.GUI
             this.analizeButton.Size = new System.Drawing.Size(57, 22);
             this.analizeButton.Text = "Reanalize";
             this.analizeButton.Click += new System.EventHandler(this.analizeButton_Click);
-            // 
+            //
             // scrollPosition
-            // 
+            //
             this.scrollPosition.Dock = System.Windows.Forms.DockStyle.Right;
             this.scrollPosition.LargeChange = 16;
             this.scrollPosition.Location = new System.Drawing.Point(608, 25);
@@ -270,17 +270,17 @@ namespace Gear.GUI
             this.scrollPosition.TabIndex = 0;
             this.scrollPosition.TabStop = true;
             this.scrollPosition.Scroll += new System.Windows.Forms.ScrollEventHandler(this.OnScroll);
-            // 
+            //
             // splitter1
-            // 
+            //
             this.splitter1.Location = new System.Drawing.Point(193, 25);
             this.splitter1.Name = "splitter1";
             this.splitter1.Size = new System.Drawing.Size(3, 424);
             this.splitter1.TabIndex = 2;
             this.splitter1.TabStop = false;
-            // 
+            //
             // SpinView
-            // 
+            //
             this.Controls.Add(this.splitter1);
             this.Controls.Add(this.hexView);
             this.Controls.Add(this.objectView);

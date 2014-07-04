@@ -6,7 +6,7 @@ fo.close()
 data = struct.unpack(str(len(data)/4)+"I",data)
 
 conditions = [
-"IF_NEVER",         
+"IF_NEVER",
 "IF_NZ_AND_NC",
 "IF_NC_AND_Z",
 "IF_NC\t",
@@ -111,7 +111,7 @@ for i in range(len(data)):
         WriteI = ""
     else:
         WriteI = "#"
-        
+
     if cond == 0x00:
         print "%x:\t\t\tNOP" % (i*4+0x8000)
     else:

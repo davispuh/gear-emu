@@ -14,7 +14,7 @@
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -182,7 +182,7 @@ namespace Gear.EmulationCore
         {
             // The top four bits of the 'color' for the current pixel is added to this,
             // If bit 3 of the color is set, then the MSB signifies a +/- 1 offset on
-            // the luma output.  (1/16 phase divider with a 16 entry shifter).  The 
+            // the luma output.  (1/16 phase divider with a 16 entry shifter).  The
             // lower four bits are unused.
 
             // Output LUMA

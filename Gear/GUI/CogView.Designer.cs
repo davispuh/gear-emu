@@ -11,7 +11,7 @@
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -22,12 +22,12 @@ namespace Gear.GUI
 {
     partial class CogView
     {
-        /// <summary> 
+        /// <summary>
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary> 
+        /// <summary>
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
@@ -42,8 +42,8 @@ namespace Gear.GUI
 
         #region Component Designer generated code
 
-        /// <summary> 
-        /// Required method for Designer support - do not modify 
+        /// <summary>
+        /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
@@ -78,29 +78,29 @@ namespace Gear.GUI
             toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStrip.SuspendLayout();
             this.SuspendLayout();
-            // 
+            //
             // toolStripSeparator4
-            // 
+            //
             toolStripSeparator4.Name = "toolStripSeparator4";
             toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
-            // 
+            //
             // toolStripSeparator1
-            // 
+            //
             toolStripSeparator1.Name = "toolStripSeparator1";
             toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-            // 
+            //
             // toolStripSeparator2
-            // 
+            //
             toolStripSeparator2.Name = "toolStripSeparator2";
             toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
-            // 
+            //
             // toolStripSeparator3
-            // 
+            //
             toolStripSeparator3.Name = "toolStripSeparator3";
             toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
-            // 
+            //
             // assemblyPanel
-            // 
+            //
             this.assemblyPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.assemblyPanel.Location = new System.Drawing.Point(0, 25);
             this.assemblyPanel.Name = "assemblyPanel";
@@ -112,9 +112,9 @@ namespace Gear.GUI
             this.assemblyPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.AssemblyView_Paint);
             this.assemblyPanel.MouseHover += new System.EventHandler(this.assemblyPanel_MouseHover);
             this.assemblyPanel.SizeChanged += new System.EventHandler(this.AsmSized);
-            // 
+            //
             // positionScroll
-            // 
+            //
             this.positionScroll.Dock = System.Windows.Forms.DockStyle.Right;
             this.positionScroll.LargeChange = 16;
             this.positionScroll.Location = new System.Drawing.Point(548, 25);
@@ -123,9 +123,9 @@ namespace Gear.GUI
             this.positionScroll.TabIndex = 2;
             this.positionScroll.TabStop = true;
             this.positionScroll.Scroll += new System.Windows.Forms.ScrollEventHandler(this.UpdateOnScroll);
-            // 
+            //
             // toolStrip
-            // 
+            //
             this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.memoryViewButton,
             this.followPCButton,
@@ -146,9 +146,9 @@ namespace Gear.GUI
             this.toolStrip.Size = new System.Drawing.Size(565, 25);
             this.toolStrip.TabIndex = 0;
             this.toolStrip.Text = "toolStrip1";
-            // 
+            //
             // memoryViewButton
-            // 
+            //
             this.memoryViewButton.CheckOnClick = true;
             this.memoryViewButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.memoryViewButton.Image = ((System.Drawing.Image)(resources.GetObject("memoryViewButton.Image")));
@@ -157,9 +157,9 @@ namespace Gear.GUI
             this.memoryViewButton.Size = new System.Drawing.Size(78, 22);
             this.memoryViewButton.Text = "Show Memory";
             this.memoryViewButton.Click += new System.EventHandler(this.memoryViewButton_Click);
-            // 
+            //
             // followPCButton
-            // 
+            //
             this.followPCButton.Checked = true;
             this.followPCButton.CheckOnClick = true;
             this.followPCButton.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -170,38 +170,38 @@ namespace Gear.GUI
             this.followPCButton.Size = new System.Drawing.Size(57, 22);
             this.followPCButton.Text = "Follow PC";
             this.followPCButton.Click += new System.EventHandler(this.followPCButton_Click);
-            // 
+            //
             // programCounterLable
-            // 
+            //
             this.programCounterLable.Name = "programCounterLable";
             this.programCounterLable.Size = new System.Drawing.Size(19, 22);
             this.programCounterLable.Text = "---";
-            // 
+            //
             // zeroFlagLable
-            // 
+            //
             this.zeroFlagLable.Name = "zeroFlagLable";
             this.zeroFlagLable.Size = new System.Drawing.Size(19, 22);
             this.zeroFlagLable.Text = "---";
-            // 
+            //
             // carryFlagLable
-            // 
+            //
             this.carryFlagLable.Name = "carryFlagLable";
             this.carryFlagLable.Size = new System.Drawing.Size(19, 22);
             this.carryFlagLable.Text = "---";
-            // 
+            //
             // processorStateLable
-            // 
+            //
             this.processorStateLable.Name = "processorStateLable";
             this.processorStateLable.Size = new System.Drawing.Size(19, 22);
             this.processorStateLable.Text = "---";
-            // 
+            //
             // toolStripSeparator5
-            // 
+            //
             this.toolStripSeparator5.Name = "toolStripSeparator5";
             this.toolStripSeparator5.Size = new System.Drawing.Size(6, 25);
-            // 
+            //
             // DisplayUnits
-            // 
+            //
             this.DisplayUnits.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.DisplayUnits.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.decimalUnits,
@@ -211,30 +211,30 @@ namespace Gear.GUI
             this.DisplayUnits.Name = "DisplayUnits";
             this.DisplayUnits.Size = new System.Drawing.Size(44, 22);
             this.DisplayUnits.Text = "Units";
-            // 
+            //
             // decimalUnits
-            // 
+            //
             this.decimalUnits.Checked = true;
             this.decimalUnits.CheckState = System.Windows.Forms.CheckState.Checked;
             this.decimalUnits.Name = "decimalUnits";
             this.decimalUnits.Size = new System.Drawing.Size(145, 22);
             this.decimalUnits.Text = "Decimal";
             this.decimalUnits.Click += new System.EventHandler(this.decimalUnits_Click);
-            // 
+            //
             // hexadecimalUnits
-            // 
+            //
             this.hexadecimalUnits.Name = "hexadecimalUnits";
             this.hexadecimalUnits.Size = new System.Drawing.Size(145, 22);
             this.hexadecimalUnits.Text = "Hexadecimal";
             this.hexadecimalUnits.Click += new System.EventHandler(this.hexadecimalUnits_Click);
-            // 
+            //
             // toolStripSeparator6
-            // 
+            //
             this.toolStripSeparator6.Name = "toolStripSeparator6";
             this.toolStripSeparator6.Size = new System.Drawing.Size(6, 25);
-            // 
+            //
             // OpcodeSize
-            // 
+            //
             this.OpcodeSize.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.OpcodeSize.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.longOpcodes,
@@ -244,25 +244,25 @@ namespace Gear.GUI
             this.OpcodeSize.Name = "OpcodeSize";
             this.OpcodeSize.Size = new System.Drawing.Size(62, 22);
             this.OpcodeSize.Text = "Opcodes";
-            // 
+            //
             // longOpcodes
-            // 
+            //
             this.longOpcodes.Name = "longOpcodes";
             this.longOpcodes.Size = new System.Drawing.Size(156, 22);
             this.longOpcodes.Text = "Long Opcodes";
             this.longOpcodes.Click += new System.EventHandler(this.longOpcodes_Click);
-            // 
+            //
             // shortOpcodes
-            // 
+            //
             this.shortOpcodes.Checked = true;
             this.shortOpcodes.CheckState = System.Windows.Forms.CheckState.Checked;
             this.shortOpcodes.Name = "shortOpcodes";
             this.shortOpcodes.Size = new System.Drawing.Size(156, 22);
             this.shortOpcodes.Text = "Short Opcodes";
             this.shortOpcodes.Click += new System.EventHandler(this.shortOpcodes_Click);
-            // 
+            //
             // CogView
-            // 
+            //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.assemblyPanel);

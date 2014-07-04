@@ -3,14 +3,14 @@
 		<title>Propeller SPIN Interpreter ByteCode Format</title>
 	</head>
 
-	<body>		
+	<body>
 		<table width=75%>
 		<tr><td width=64px>&nbsp;</td></tr>
 
 		<tr><td colspan=2><H1>Propeller SPIN Interpreter ByteCode Format</H1></td></tr>
 		<tr><td></td><td>
 <pre>
-The SPIN virtual machine is a stack based interpreter.  
+The SPIN virtual machine is a stack based interpreter.
 Everything operates on pushing and poping values from a large buffer of LONG values.
 
 Note that the byte-order explicitly changes during bytecode execution, else where everything is intel ordered.
@@ -91,14 +91,14 @@ abort is most likely an internal flag.
 		<tr><td colspan=2><br><h2>Checksum Format</h2></td></tr>
 		<tr><td></td><td>
 <pre>
-The checksum is a intel-hex LIKE format that covers data the 
+The checksum is a intel-hex LIKE format that covers data the
 
 The checksum is calculated by summing the complement of every byte of ram.
-The system assumes that the termination code is there (which is essentially just +20 to 
+The system assumes that the termination code is there (which is essentially just +20 to
 the checksum counter) and that the var block and unused space is null. If the result is
 zero, than the checksum is valid.
 
-Note that .binary files do NOT include the termination codes.  You will have to 
+Note that .binary files do NOT include the termination codes.  You will have to
 dd those yourself, although their position is unimportant.
 </pre>
 		</td></tr>
@@ -146,7 +146,7 @@ dd those yourself, although their position is unimportant.
 			</tr>
 			<tr>
 				<td colspan=2><center> ... After Object Header ... </center></td>
-			</tr>			
+			</tr>
 			<tr>
 				<td>DAT Block</td>
 			</tr>
@@ -440,7 +440,7 @@ dd those yourself, although their position is unimportant.
 <pre>
 Packed offsets are stored as either a byte or a word.  You load a byte.
 
-If the byte is less than 0x80 (the MSB is clear), 
+If the byte is less than 0x80 (the MSB is clear),
 if it's a relative (signed) value, than you would sign extend from
 This gives you an effecive 7bit address.
 
@@ -464,9 +464,9 @@ Packed literals are commonly used binary masks and similar.
 Note that only half of the packed literal values are known.
 
 Essential Format of a packed literal:
-		
+
 2 << ( packed_lit & 0x1F )
-		
+
 if bit 5 is set, than you subtract one from result
 if bit 6 is set, than you complement the result (after subtraction if nessessary)
 </pre>
@@ -518,7 +518,7 @@ lower 5 bits.
 		<tr><td colspan=2><br><h2>Inplace Operations</H2></td></tr>
 		<tr><td></td><td>
 <pre>
-Inplace operations are any operations that immediately effect the memory of whatever is being pushed 
+Inplace operations are any operations that immediately effect the memory of whatever is being pushed
 on to the stack.  The result of this may or may not remain on the stack.
 
 For example, if you did i++ (and lets just assume I is the first arguement of a function), the result
@@ -532,7 +532,7 @@ it is pushed to the stack, otherwise, the result is discarded (after the memory 
 The lower 7 bits determine what operation is to be performed.  That gives a total of 128 possible operations.
 
 Most of this space is left unfilled, most likely for future expansion.
-</pre>		
+</pre>
 		<H3>Inplace Operation Codes</H3>
 		<table cellpadding=3 border=1>
 			<tr><td></td><td>+0</td><td>+1</td><td>+2</td><td>+3</td></tr>
