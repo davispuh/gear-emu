@@ -1,12 +1,14 @@
 <plugin>
   <instance class="SerialIO" />
   <code>//
-// SerialIO v0.2
+// SerialIO v0.3
 //    A Plugin to the Gear Propeller Simulator that allows connecting
 //    to a FullDuplexSerial object running on the propeller chip.
 //
 // CHANGELOG
+// v0.2 - Adds a scrollbar and automatically scrolls down as text comes in.
 // v0.2 - Fixes a bug in handling receiving a 0 byte.
+// v0.1 - Initial release.
 //
 // 2009 Ben Levitt
 //
@@ -214,7 +216,9 @@ class SerialIO : PluginBase
          System.Drawing.GraphicsUnit.Point, ((byte)(0)));
     //this.bodyField.ReadOnly = true;
     this.bodyField.Multiline = true;
+    this.bodyField.WordWrap = true;
     this.bodyField.Name = "bodyField";
+    this.bodyField.ScrollBars = ScrollBars.Vertical;
     this.bodyField.TabIndex = 0;
     this.bodyField.Dock = System.Windows.Forms.DockStyle.Fill;
     this.bodyField.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txt_KeyPress);
@@ -293,8 +297,6 @@ class SerialIO : PluginBase
     }
     rxBitPos++;
     
-    // displayBuffer += ((bit) ? '1' : '.');
-    
     if (rxBitPos == 8) {
       rxBitPos = 0;
       rxPhase = 0;
@@ -307,9 +309,11 @@ class SerialIO : PluginBase
       }
       
       rxCurrentByte = 0;
+      
+      this.bodyField.Text = displayBuffer;
+      this.bodyField.SelectionStart = this.bodyField.Text.Length;
+      this.bodyField.ScrollToCaret();
     }
-    this.bodyField.Text = displayBuffer;
-    this.bodyField.SelectionStart = this.bodyField.Text.Length;
   }
   
   
@@ -364,6 +368,8 @@ class SerialIO : PluginBase
     txBuffer += str;
     displayBuffer += str;
     this.bodyField.Text = displayBuffer;
+    this.bodyField.SelectionStart = this.bodyField.Text.Length;
+    this.bodyField.ScrollToCaret();
     
     if (txPhase == 0) {
       txPhase = 1;
@@ -396,6 +402,8 @@ class SerialIO : PluginBase
     }
     
     this.bodyField.Text = displayBuffer;
+    this.bodyField.SelectionStart = this.bodyField.Text.Length;
+    this.bodyField.ScrollToCaret();
     
     if (txPhase == 0) {
       txPhase = 1;
