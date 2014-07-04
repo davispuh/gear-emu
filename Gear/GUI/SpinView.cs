@@ -43,7 +43,7 @@ namespace Gear.GUI
         private VScrollBar scrollPosition;
         private Brush[] Colorize;
         private Splitter splitter1;
-        private System.ComponentModel.IContainer components;
+        //private System.ComponentModel.IContainer components;
         private Bitmap BackBuffer;
 
         public override string Title
@@ -51,6 +51,14 @@ namespace Gear.GUI
             get
             {
                 return "Spin Map";
+            }
+        }
+
+        public override Boolean IsClosable
+        {
+            get
+            {
+                return false;
             }
         }
 

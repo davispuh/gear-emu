@@ -48,6 +48,14 @@ namespace Gear.GUI
             }
         }
 
+        public override Boolean IsClosable
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public MemoryView()
         {
             MonoFont = new Font(FontFamily.GenericMonospace, 10);

@@ -54,6 +54,14 @@ namespace Gear.GUI.LogicProbe
             }
         }
 
+        public override Boolean IsClosable
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public LogicView()
         {
             InitializeComponent();

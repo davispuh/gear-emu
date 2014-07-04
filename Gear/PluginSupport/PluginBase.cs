@@ -44,5 +44,7 @@ namespace Gear.PluginSupport
         public virtual void OnClock(double time) { }
         public virtual void OnPinChange(double time, PinState[] pins) { }
         public virtual void Repaint(bool force) { }
+        public virtual Boolean AllowHotKeys { get { return true; } }
+        public virtual Boolean IsClosable { get { return true; } }
     }
 }

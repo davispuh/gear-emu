@@ -53,11 +53,13 @@ namespace Gear.GUI
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Emulator));
             this.controlBar = new System.Windows.Forms.ToolStrip();
             this.openBinaryButton = new System.Windows.Forms.ToolStripButton();
+            this.reloadBinaryButton = new System.Windows.Forms.ToolStripButton();
             this.resetEmulatorButton = new System.Windows.Forms.ToolStripButton();
             this.runEmulatorButton = new System.Windows.Forms.ToolStripButton();
             this.stopEmulatorButton = new System.Windows.Forms.ToolStripButton();
             this.stepInstructionButton = new System.Windows.Forms.ToolStripButton();
             this.stepClockButton = new System.Windows.Forms.ToolStripButton();
+            this.closeButton = new System.Windows.Forms.ToolStripButton();
             this.unpinButton = new System.Windows.Forms.ToolStripButton();
             this.pinButton = new System.Windows.Forms.ToolStripButton();
             this.floatButton = new System.Windows.Forms.ToolStripButton();
@@ -86,6 +88,7 @@ namespace Gear.GUI
             // 
             this.controlBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openBinaryButton,
+            this.reloadBinaryButton,
             toolStripSeparator1,
             this.resetEmulatorButton,
             this.runEmulatorButton,
@@ -93,6 +96,7 @@ namespace Gear.GUI
             this.stepInstructionButton,
             this.stepClockButton,
             toolStripSeparator2,
+            this.closeButton,
             this.unpinButton,
             this.pinButton,
             this.floatButton,
@@ -112,6 +116,15 @@ namespace Gear.GUI
             this.openBinaryButton.Size = new System.Drawing.Size(37, 22);
             this.openBinaryButton.Text = "Open";
             this.openBinaryButton.Click += new System.EventHandler(this.openBinary_Click);
+            // 
+            // reloadBinaryButton
+            // 
+            this.reloadBinaryButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.reloadBinaryButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.reloadBinaryButton.Name = "reloadBinaryButton";
+            this.reloadBinaryButton.Size = new System.Drawing.Size(44, 22);
+            this.reloadBinaryButton.Text = "Reload";
+            this.reloadBinaryButton.Click += new System.EventHandler(this.reloadBinary_Click);
             // 
             // resetEmulatorButton
             // 
@@ -162,6 +175,16 @@ namespace Gear.GUI
             this.stepClockButton.Size = new System.Drawing.Size(61, 22);
             this.stepClockButton.Text = "Step Clock";
             this.stepClockButton.Click += new System.EventHandler(this.stepEmulator_Click);
+            // 
+            // closeButton
+            // 
+            this.closeButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.closeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.closeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.closeButton.Name = "closeButton";
+            this.closeButton.Size = new System.Drawing.Size(37, 22);
+            this.closeButton.Text = "Close";
+            this.closeButton.Click += new System.EventHandler(this.closeActiveTab_Click);
             // 
             // unpinButton
             // 
@@ -282,8 +305,10 @@ namespace Gear.GUI
             this.controlBar.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
+        private System.Windows.Forms.ToolStripButton reloadBinaryButton;
+        private System.Windows.Forms.ToolStripButton closeButton;
+        private System.Windows.Forms.ToolStripButton openBinaryButton;
 
         #endregion
 
@@ -292,7 +317,6 @@ namespace Gear.GUI
         private System.Windows.Forms.Panel pinnedPanel;
         private Gear.GUI.CollapsibleSplitter pinnedSplitter;
         private System.Windows.Forms.TabControl documentsTab;
-        private System.Windows.Forms.ToolStripButton openBinaryButton;
         private System.Windows.Forms.ToolStripButton resetEmulatorButton;
         private System.Windows.Forms.ToolStripButton runEmulatorButton;
         private System.Windows.Forms.ToolStripButton stopEmulatorButton;

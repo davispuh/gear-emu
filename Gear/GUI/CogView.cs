@@ -57,6 +57,14 @@ namespace Gear.GUI
             }
         }
 
+        public override Boolean IsClosable
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public CogView(int host)
         {
 		    HostID = host;

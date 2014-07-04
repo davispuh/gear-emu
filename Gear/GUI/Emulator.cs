@@ -40,6 +40,7 @@ namespace Gear.GUI
     {
         private Propeller Chip;
         private String Source;
+        private String LastFileName;
         private List<Control> FloatControls;
 
         private Timer runTimer;
@@ -61,6 +62,7 @@ namespace Gear.GUI
             AttachPlugin(new MemoryView());
             AttachPlugin(new LogicProbe.LogicView());
             AttachPlugin(new SpinView());
+            documentsTab.SelectedIndex = 0;
             
             // TEMPORARY RUN FUNCTION
             runTimer = new Timer();
@@ -85,6 +87,7 @@ namespace Gear.GUI
             t.Parent = documentsTab;
             bm.Dock = DockStyle.Fill;
             bm.Parent = t;
+            documentsTab.SelectedTab = t;
         }
 
         private void RunEmulatorStep(object sender, EventArgs e)
@@ -114,6 +117,8 @@ namespace Gear.GUI
             try
             {
                 Chip.Initialize(File.ReadAllBytes(FileName));
+                LastFileName = FileName;
+                RepaintViews();
                 return true;
             }
             catch (IOException ioe)
@@ -209,9 +214,16 @@ namespace Gear.GUI
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Propeller Runtime Image (*.binary;*.eeprom)|*.binary;*.eeprom|All Files (*.*)|*.*";
             openFileDialog.Title = "Open Propeller Binary..."; 
+            openFileDialog.FileName = Source;
 
             if (openFileDialog.ShowDialog(this) == DialogResult.OK)
                 OpenFile(openFileDialog.FileName);
+        }
+
+        private void reloadBinary_Click(object sender, EventArgs e)
+        {
+            OpenFile(LastFileName);
+            Chip.Reset();
         }
 
         protected override void OnClosed(EventArgs e)
@@ -252,6 +264,21 @@ namespace Gear.GUI
             RepaintViews();
         }
 
+        private void closeActiveTab_Click(object sender, EventArgs e)
+        {
+            TabPage tp = documentsTab.SelectedTab;
+            PluginBase p = (PluginBase)tp.Controls[0];
+            
+            if (p.IsClosable)
+            {
+            	if (documentsTab.SelectedIndex > 0)
+            	{
+                   documentsTab.SelectedIndex = documentsTab.SelectedIndex - 1;
+            	}
+            	tp.Parent = null;
+        	}
+        }
+        
         private void floatActiveTab_Click(object sender, EventArgs e)
         {
             TabPage tp = documentsTab.SelectedTab;
