@@ -2,6 +2,21 @@
 
 Read more about in [forum GEAR: Propeller Debugging Environment](http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment)
 
+## V08_01_13 (86)
+
+* Better disassembly of PASM
+* Some fixes in assembly language emulation
+* An alternative / short instruction set for the spin bytecodes (the original is still available)
+* The ability to display numbers as hex or decimal
+* The ability to add a single breakpoint (just click on a line of code).
+* Improved simulation of the timing from the output pinsV08_01_13 (86)
+* Better disassembly of PASM
+* Some fixes in assembly language emulation
+* An alternative / short instruction set for the spin bytecodes (the original is still available)
+* The ability to display numbers as hex or decimal
+* The ability to add a single breakpoint (just click on a line of code).
+* Improved simulation of the timing from the output pins
+
 
 ## Version 1.11.0.0
 
