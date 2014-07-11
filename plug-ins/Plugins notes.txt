@@ -1,0 +1,25 @@
+Some hints on plugins:
+
+PinNoise - stimulus on some pins at a fixed clock rate. (included in original GEAR)
+========
+By default it changes pin p2 in every clock, and pin p3 in every two clocks. To change that, you need to edit it in the plugin editor, at your will.
+
+
+SerialIO - terminal emulation. (included in mirror's GEAR version, with help of Ben Levitt)
+========
+It has user controls in tab view to change tx & rx pins, and baud rate.
+
+
+Stimulus - read stimulus from file, and set propeller pins according by time specified on it. (included in original GEAR)
+========
+It read *.stm files. See included "test.stm" to hints to formats and usage.
+
+
+Television - emulation of a screen TV signal reception from propeller. (included in original GEAR)
+==========
+By default it uses pins p12, p13 and p14. To change that, you need to edit it in the plugin editor, at your will.
+
+
+vgamonitor - emulation of a VGA signal reception from propeller. (included in original GEAR)
+==========
+By default it uses pins p16 and p17. To change that, you need to edit it in the plugin editor, at your will.
