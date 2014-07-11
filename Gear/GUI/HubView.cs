@@ -73,5 +73,9 @@ namespace Gear.GUI
         {
 
         }
+
+        private void HubView_Load(object sender, EventArgs e)
+        {
+        }
     }
 }

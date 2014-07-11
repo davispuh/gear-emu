@@ -39,10 +39,19 @@ namespace Gear.GUI
         private ulong bits;
         private int shown;
 
+        // ASB: tooltip helpers
+        private String prefix;
+        private String postfix;
+        private String text;
+
+        private int last_box;   // ASB: last value of index
+        const int nil = -1;     // ASB: constant for none value selected
+
         public BitView()
         {
             bits = 0;
             shown = 32;
+            last_box = nil;     // ASB: none selected initially
             InitializeComponent();
         }
 
@@ -87,6 +96,41 @@ namespace Gear.GUI
             }
         }
 
+        // ASB: set property of prefix for tooltip
+        public String Prefix
+        {
+            set
+            {
+                prefix = value;
+            }
+            get
+            {
+                return prefix;
+            }
+        }
+
+        // ASB: set property of postfix for tooltip
+        public String Postfix
+        {
+            set
+            {
+                postfix = value;
+            }
+            get
+            {
+                return postfix;
+            }
+        }
+
+        // ASB: get text for tooltip
+        private String ToolTipText
+        {
+            get
+            {
+                return (prefix + text + postfix);
+            }
+        }
+
         private void Redraw(Graphics g)
         {
             for (int i = 0; i < shown; i++)
@@ -113,6 +157,49 @@ namespace Gear.GUI
             }
 
             Redraw(e.Graphics);
+        }
+
+        // ASB: event handler for set/clear tooltip, depending on mouse position
+        private void BitView_MouseMove(object sender, MouseEventArgs e)
+        {
+            int x = e.X, y = e.Y, temp = 0,
+                valX = nil, valY = nil;     // vars for column & row of boxes
+
+            if (x < BitsPerRow * BitSize)   // test Max X range
+            {
+                temp = (x / BitSize);       // Integer division
+                if (((temp * BitSize) <= x) && (x <= ((temp + 1) * BitSize - 2)))
+                {                           // test inside box
+                    valX = temp;
+                }
+            }
+
+            // Test max Y range
+            if (y < (((int)(shown - 1) % BitsPerRow + 1) * BitSize - 2) && (valX != nil))
+            {
+                temp = (y / BitSize);       // Integer division
+                if (((temp * BitSize) <= y) && (y <= ((temp + 1) * BitSize - 2)))
+                {                           // test inside box
+                    valY = temp;
+                }
+            }
+
+            if (valX != nil && valY != nil)
+            {
+                temp = valY * BitsPerRow + valX;
+                // update tooltip only if box has change, to prevent flickering
+                if (temp != last_box)
+                {
+                    text = temp.ToString("0");
+                    toolTip1.SetToolTip(this, ToolTipText);
+                    last_box = temp;
+                }
+            }
+            else
+            {
+                last_box = nil;
+                toolTip1.SetToolTip(this, "");
+            };
         }
     }
 }

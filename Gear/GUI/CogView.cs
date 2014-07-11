@@ -42,7 +42,8 @@ namespace Gear.GUI
         private Font MonoFontBold;
         private Bitmap BackBuffer;
         private uint[] InterpAddress;
-        private int StackMargin = 180;
+        private int  StackMargin = 180;
+        private uint LastLine    = 0;       // ASB: added to hold last line in NativeCog view
         private uint StringX;
         private uint StringY;
         private Brush StringBrush;
@@ -69,7 +70,7 @@ namespace Gear.GUI
         {
             HostID = host;
 
-            InterpAddress = new uint[80];   //Allow for up to 80 lines of displayed interpreted text
+            InterpAddress = new uint[80];   // Allow for up to 80 lines of displayed interpreted text
 
             displayAsHexadecimal = false;
             useShortOpcodes = true;
@@ -436,11 +437,17 @@ namespace Gear.GUI
             line = (uint)positionScroll.Value + (uint)(e.Y / MonoFont.Height);
             if (line > 0x1FF)
                 return;
-            mem = host.ReadLong(line);
-            toolTip1.SetToolTip(assemblyPanel, String.Format(
-                    "${0:x3}= ${1:x8}, {1}\n${2:x3}= ${3:x8}, {3}",
-                    mem >> 9 & 0x1ff, host.ReadLong(mem >> 9 & 0x1ff),
-                    mem & 0x1ff, host.ReadLong(mem & 0x1ff)));
+
+            // ASB: update tooltip only if line has change to prevent flickering
+            if (line != LastLine)
+            {
+                mem = host.ReadLong(line);
+                toolTip1.SetToolTip(assemblyPanel, String.Format("${0:x3}= ${1:x8}, {1}\n${2:x3}= ${3:x8}, {3}",
+                                                                 mem >> 9 & 0x1ff, host.ReadLong(mem >> 9 & 0x1ff),
+                                                                 mem      & 0x1ff, host.ReadLong(mem      & 0x1ff))
+                );
+                LastLine = line;
+            }
         }
 
     }

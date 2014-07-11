@@ -129,9 +129,7 @@ namespace Gear.EmulationCore
         protected VideoGenerator Video;
         protected PLLGroup PhaseLockedLoop;
 
-        public Cog(Propeller host,
-            uint programAddress, uint param, uint frequency,
-            PLLGroup pll)
+        public Cog(Propeller host, uint programAddress, uint param, uint frequency, PLLGroup pll)
         {
             Hub = host;
 
@@ -157,7 +155,9 @@ namespace Gear.EmulationCore
 
             // Clear the special purpose registers
             for (int i = (int)CogSpecialAddress.CNT; i <= 0x1FF; i++)
+            {
                 this[i] = 0;
+            }
 
             SetClock(frequency);
         }
@@ -276,14 +276,31 @@ namespace Gear.EmulationCore
             get
             {
                 if (i >= 0x200)
+                {
                     return 0x55;
-                return Memory[i];
+                }
+                else
+                {
+                    // ASB: change to show special registers, because their values are in
+                    // variables in Cog object and not in memory array.
+                    if (i >= (int)CogSpecialAddress.PAR)
+                    {
+                        return ReadLong((uint)i);
+                    }
+                    else
+                    {
+                        // ASB: end of change
+                        return Memory[i];
+                    }
+                }
             }
 
             set
             {
                 if (i < 0x200)
+                {
                     Memory[i] = value;
+                }
             }
         }
 
@@ -389,37 +406,36 @@ namespace Gear.EmulationCore
             {
                 Hub.Step();
             }
-            while (State != CogRunState.EXEC_INTERPRETER &&
-                   State != CogRunState.STATE_EXECUTE &&
-                   --i > 0);
-
+            while (State != CogRunState.EXEC_INTERPRETER && State != CogRunState.STATE_EXECUTE && --i > 0);
         }
 
         public uint ReadLong(uint address)
         {
-            switch (address & 0x1FF)
+            // ASB: changed case values to use CogSpecialAddress enum, intead of direct hex values
+            // ASB: added (cast) to use CogSpecialAddress enum
+            switch ((CogSpecialAddress)(address & 0x1FF))
             {
-                case 0x1F1:
+                case CogSpecialAddress.CNT:
                     return Hub.Counter;
-                case 0x1F2:
+                case CogSpecialAddress.INA:
                     return Hub.INA;
-                case 0x1F3:
+                case CogSpecialAddress.INB:
                     return Hub.INB;
-                case 0x1F8:
+                case CogSpecialAddress.CNTA:
                     return FreqA.CTR;
-                case 0x1F9:
+                case CogSpecialAddress.CNTB:
                     return FreqB.CTR;
-                case 0x1FA:
+                case CogSpecialAddress.FRQA:
                     return FreqA.FRQ;
-                case 0x1FB:
+                case CogSpecialAddress.FRQB:
                     return FreqB.FRQ;
-                case 0x1FC:
+                case CogSpecialAddress.PHSA:
                     return FreqA.PHS;
-                case 0x1FD:
+                case CogSpecialAddress.PHSB:
                     return FreqB.PHS;
-                case 0x1FE:
+                case CogSpecialAddress.VCFG:
                     return Video.CFG;
-                case 0x1FF:
+                case CogSpecialAddress.VSCL:
                     return Video.SCL;
                 default:
                     return Memory[address & 0x1FF];
@@ -428,36 +444,38 @@ namespace Gear.EmulationCore
 
         protected void WriteLong(uint address, uint data)
         {
-            switch (address & 0x1FF)
+            // ASB: changed case values to use CogSpecialAddress enum, intead of direct hex values
+            // ASB: added (cast) to use CogSpecialAddress enum
+            switch ((CogSpecialAddress)(address & 0x1FF))
             {
                 // Read only registers
-                case 0x1F0:
-                case 0x1F1:
-                case 0x1F2:
-                case 0x1F3:
+                // case CogSpecialAddress.PAR: // ASB: PAR register changed to writeable
+                case CogSpecialAddress.CNT:
+                case CogSpecialAddress.INA:
+                case CogSpecialAddress.INB:
                     return;
-                case 0x1F8:
+                case CogSpecialAddress.CNTA:
                     FreqA.CTR = data;
                     break;
-                case 0x1F9:
+                case CogSpecialAddress.CNTB:
                     FreqB.CTR = data;
                     break;
-                case 0x1FA:
+                case CogSpecialAddress.FRQA:
                     FreqA.FRQ = data;
                     break;
-                case 0x1FB:
+                case CogSpecialAddress.FRQB:
                     FreqB.FRQ = data;
                     break;
-                case 0x1FC:
+                case CogSpecialAddress.PHSA:
                     FreqA.PHS = data;
                     break;
-                case 0x1FD:
+                case CogSpecialAddress.PHSB:
                     FreqB.PHS = data;
                     break;
-                case 0x1FE:
+                case CogSpecialAddress.VCFG:
                     Video.CFG = data;
                     break;
-                case 0x1FF:
+                case CogSpecialAddress.VSCL:
                     Video.SCL = data;
                     break;
                 default:

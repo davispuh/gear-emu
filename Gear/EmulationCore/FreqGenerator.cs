@@ -50,6 +50,24 @@ namespace Gear.EmulationCore
         NEG_DETECTOR_FEEDBACK,
         NEGEDGE_DETECTOR,
         NEGEDGE_DETECTOR_FEEDBACK,
+
+        // ASB: New logic modes not implemented on gear v1.11
+        LOGIC_NEVER,
+        LOGIC_NOTA_AND_NOTB,
+        LOGIC_A_AND_NOTB,
+        LOGIC_NOTB,
+        LOGIC_NOTA_AND_B,
+        LOGIC_NOTA,
+        LOGIC_A_DIFF_B,
+        LOGIC_NOTA_OR_NOTB,
+        LOGIC_A_AND_B,
+        LOGIC_A_EQ_B,
+        LOGIC_A,
+        LOGIC_A_OR_NOTB,
+        LOGIC_B,
+        LOGIC_NOTA_OR_B,
+        LOGIC_A_OR_B,
+        LOGIC_ALWAYS
     }
 
     public class FreqGenerator
@@ -132,6 +150,7 @@ namespace Gear.EmulationCore
                     case CounterMode.PLL_INTERNAL:
                     case CounterMode.PLL_SINGLE_ENDED:
                     case CounterMode.PLL_DIFFERENTIAL:
+                    case CounterMode.LOGIC_NEVER:       // ASB: do nothing for LOGIC_NEVER
 
                         // This is a special dejitter function
                         // The edge-sensitive system resulted in unstable
@@ -253,8 +272,11 @@ namespace Gear.EmulationCore
                     OutB = !PinA;
                     break;
                 default:
-                    if (Cog.ConditionCompare((CogConditionCodes)((int)CtrMode - 16), PinA, PinB))
+                    // ASB: changed to NOT ConditionCompare(.) to repair Logic Modes Counter
+                    if (!Cog.ConditionCompare((CogConditionCodes)((int)CtrMode - 16), PinA, PinB))
+                    {
                         PHS += FRQ;
+                    }
                     break;
             }
 

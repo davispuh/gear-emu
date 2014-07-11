@@ -33,19 +33,23 @@ using System.IO;
 using System.CodeDom.Compiler;
 
 using Gear.PluginSupport;
+using System.Text.RegularExpressions;
 
 namespace Gear.GUI
 {
     public partial class PluginEditor : Form
     {
         private string m_SaveFileName;
+        private Font defaultFont;       // ASB: default font for editor code
 
         public PluginEditor()
         {
             InitializeComponent();
             m_SaveFileName = null;
 
-            codeEditorView.Font = new Font(FontFamily.GenericMonospace, 10);
+            // ASB: setting default font
+            defaultFont = new Font(FontFamily.GenericMonospace, 10, FontStyle.Regular);
+            codeEditorView.Font = defaultFont;
             if (codeEditorView.Font == null)
                 codeEditorView.Font = this.Font;
 
@@ -70,6 +74,10 @@ namespace Gear.GUI
                 {
                     if (tr.NodeType == XmlNodeType.Text && ReadText)
                     {
+                        // ASB: set or reset font and color
+                        codeEditorView.SelectAll();
+                        codeEditorView.SelectionFont = this.defaultFont;
+                        codeEditorView.SelectionColor = Color.Black;
                         codeEditorView.Text = tr.Value;
                         ReadText = false;
                     }
@@ -88,6 +96,9 @@ namespace Gear.GUI
                     }
                 }
                 m_SaveFileName = FileName;
+
+                // ASB: add name to the title window
+                this.Text = "Plugin Editor: " + m_SaveFileName;
 
                 if (displayErrors)
                 {
@@ -247,6 +258,81 @@ namespace Gear.GUI
         {
             referencesList.Items.Add(referenceName.Text);
             referenceName.Text = "";
+        }
+
+        // ASB: sintax highlighting
+        private void syntaxButton_Click(object sender, EventArgs e)
+        {
+            // Foreach line in input,
+            // identify key words and format them when adding to the rich text box.
+            Regex r = new Regex("\\n", RegexOptions.Compiled);
+            String[] lines = r.Split(codeEditorView.Text);
+            codeEditorView.SelectAll();
+            codeEditorView.Enabled = false;
+            foreach (string l in lines)
+            {
+                ParseLine(l);
+            }
+            codeEditorView.Enabled = true;
+        }
+
+        // ASB: parse line for sintax highlighting
+        private void ParseLine(string line)
+        {
+            Regex r = new Regex("([ \\t{}();:])", RegexOptions.Compiled);
+            String[] tokens = r.Split(line);
+            System.Drawing.Font fontRegular = this.defaultFont;
+            System.Drawing.Font fontBold = new Font(fontRegular, FontStyle.Bold);
+
+            foreach (string token in tokens)
+            {
+                // Set the token's default color and font.
+                codeEditorView.SelectionColor = Color.Black;
+                codeEditorView.SelectionFont = fontRegular;
+
+                // Check for a comment.
+                if (token == "//" || token.StartsWith("//"))
+                {
+                    // Find the start of the comment and then extract the whole comment.
+                    int index = line.IndexOf("//");
+                    string comment = line.Substring(index, line.Length - index);
+                    codeEditorView.SelectionColor = Color.Green;
+                    codeEditorView.SelectionFont = fontRegular;
+                    codeEditorView.SelectedText = comment;
+                    break;
+                }
+
+                // Check whether the token is a keyword.
+                String[] keywords = {
+                                        "add", "abstract", "alias", "as", "ascending", "async", "await",
+                                        "base", "bool", "break", "byte", "case", "catch", "char", "checked",
+                                        "class", "const", "continue", "decimal", "default", "delegate",
+                                        "descending", "do", "double", "dynamic", "else", "enum", "event",
+                                        "explicit", "extern", "false", "finally", "fixed", "float",
+                                        "for", "foreach", "from", "get", "global", "goto", "group", "if",
+                                        "implicit", "in", "int", "interface", "internal", "into", "is",
+                                        "join", "let", "lock", "long", "namespace", "new", "null", "object",
+                                        "operator", "orderby", "out", "override", "params", "partial ",
+                                        "private", "protected", "public", "readonly", "ref", "remove",
+                                        "return", "sbyte", "sealed", "select", "set", "short", "sizeof",
+                                        "stackalloc", "static", "string", "struct", "switch", "this",
+                                        "throw", "true", "try", "typeof", "uint", "ulong", "unchecked",
+                                        "unsafe", "ushort", "using", "value", "var", "virtual", "void",
+                                        "volatile", "where", "while", "yield"
+                };
+                for (int i = 0; i < keywords.Length; i++)
+                {
+                    if (keywords[i] == token)
+                    {
+                        // Apply alternative color and font to highlight keyword.
+                        codeEditorView.SelectionColor = Color.Blue;
+                        codeEditorView.SelectionFont = fontBold;
+                        break;
+                    }
+                }
+                codeEditorView.SelectedText = token;
+            }
+            codeEditorView.SelectedText = "\n";
         }
     }
 }

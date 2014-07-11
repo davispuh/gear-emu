@@ -69,13 +69,20 @@ namespace Gear.GUI.LogicProbe
             Wrapped = false;
             PinNumber = pin;
 
-            Time[0] = 0;
-            Pins[0] = PinState.FLOATING;
-            WritePointer = 1;
+            // ASB: use the new method Reset()
+            Reset();
         }
 
         public override void Click()
         {
+        }
+
+        // ASB: new method to clear samples when reset is needed
+        public override void Reset()
+        {
+            Time[0] = 0.0;
+            Pins[0] = PinState.FLOATING;
+            WritePointer = 1;
         }
 
         public void Update(PinState pin, double time)

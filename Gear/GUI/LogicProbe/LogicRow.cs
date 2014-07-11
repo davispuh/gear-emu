@@ -37,5 +37,6 @@ namespace Gear.GUI.LogicProbe
         public abstract int Height { get; }
         public abstract int Draw(Graphics g, int top, float left, float width, double minTime, double scale);
         public abstract void Click();
+        public abstract void Reset(); // ASB: new method to clear previus samples
     }
 }

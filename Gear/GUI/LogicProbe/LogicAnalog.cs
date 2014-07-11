@@ -77,9 +77,16 @@ namespace Gear.GUI.LogicProbe
         {
         }
 
-        public override int Draw(System.Drawing.Graphics g, int top,
-            float left, float width,
-            double minTime, double scale)
+        // ASB: new method to clear samples when reset is needed
+        public override void Reset()
+        {
+            foreach (LogicDigital r in Channels)
+            {
+                r.Reset();
+            }
+        }
+
+        public override int Draw(System.Drawing.Graphics g, int top, float left, float width, double minTime, double scale)
         {
             float height = Height * 3 / 4;
             float bottom = top + Height;

@@ -1,0 +1,56 @@
+Changes and corrections - V14.07.03
+====================================
+Antonio Sanhueza B., July 3, 2014
+
+When I tried to test a modified Servo32v9 obex object in GEAR, I can see the PASM code use counters in "LOGIC always" mode to timming a group of 8 pins, and it didn't work well. So I propose a few changes in the C# code.
+
++Faster emulation.
+    In my own testing, GEAR runs now about 30% or 35% faster than Gear V09_10_26, maybe because the executable now use MS .NET framework 4.0 instead of 2.0. The drawback is the need to download the framework, but in windows 7 or 8, probably it is installed already.
+    Also, updated the project files to MS Visual C# 2010 Express (the old proyect was in MS Visual C# 2005). I use that because it was the only I could find.
+
++Show Cog RAM Special Purpose Registers values.
+    Now the values of special registers in cog memory (between $1F0 - PAR and $1FF - VSCL) are displayed correctly in memory or PASM view.
+
+    Technical explanation: almost all the special registers in cog memory, were emulated using different properties in Cog object and not writed back to the memory array. So the method to retrieve the cog memory values didn't take care of tis diference.
+    Corrections: 1) changes in the array operator ( Cog[.] operator ), to detect special registers (between $1F0 - PAR and $1FF - VSCL) and to use ReadLong(.) method instead of reading from the memory array.
+
++Logic modes in counters.
+    Logic modes (CTRMODE between %10000 and %11111) didn't work well in past versions of Gear.
+
+    Technical explanation: method Cog.ConditionCompare(.) returns false in case of match on operator and CTRMODE, but in method FreqGenerator.Tick(.) it was expecting the opposite.
+    Corrections: 1) Changed logic to NOT Cog.ConditionCompare(.) in IF condition to add the counter cummulator. 2) new constants added in CounterMode enumeration for logic modes counter, to help in debugging. 3) added CASE CounterMode.LOGIC_NEVER to not add the counter in that mode.
+
++Correction to enable PAR register changes.
+    As there was some reports of prop forum users that GEAR was of not capable to change the PAR cog register (forum thread "PASM simulator / debugger?" http://forums.parallax.com/showthread.php/115909-PASM-simulator-debugger) then I enabled it.  They claims that some parallax video drivers in PASM changes the PAR register, and GEAR didn't emulate that. The Propeller Manual V1.2 specify that is a read-only register, but if parallax did that drivers that really run on the real one...
+
+    Technical explanation: in Cog.WriteLong(.) CASE CogSpecialAddress.PAR was forbiden to change.
+    Corrections: 1) commenting that line to in Cog.WriteLong(.) method, to enable to change it in DEFAULT: section of the method. 2) changed methods Cog.WriteLong(.) and Cog.ReadLong(.) to use the CogSpecialAddress enumeration for clarity, instead of hex hardcoded values.
+
++Fixes in Logic View.
+    When you reload a binary or reset it, and you had run it before using pins, the logic view show a mix between new and old samples.
+    If you are using windows in other languages than english, -with other number formats-, the preset values for time frame and tick mark (with "." decimal separator) will not work if you press the update button.
+
+    Technical explanation: In the case of reloading or reseting, the LogicView Plugin hadn't implemented OnReset method to clear old samples taken previusly. The other problem about presets, they were stored in text format (ex. "0.0000032") and then tried to converted to number, but not taking care of localizated format of different countries.
+    Correction: 1) implemented new methods LogicView.OnReset(), LogicRow.Reset(), LogicDigital() and LogicAnalog() with necesary housekeeping to restore the indexes and initial values. 2) the presets now starts in double internal format and then converted to string, taking care of localizated format, and stored in the text boxes in a correct format for the locale. 3) added caption on pinsTextBox to indicate what is expected to input on it.
+
++Flickering correction on cog view over PASM lines.
+    When you were on cog view (PASM code), the tool tip text sometimes flickers.
+
+    Technical explanation: the flicker appered, because every time the program was setting the tooltip text.
+    Corrections: 1) added new data member LastLine on CogView class to hold the last line value. 2) added guard in assemblyPanel_MouseMove(.) method to not set tooltip text if the mouse is is still over the same code line.
+
++Tooltips over pins and locks in hub view.
+    Added tooltips on hub view on pins and locks views (IN*, DIR*, Floating, Lock Free, Locks), to identify easily which pin or lock is.
+
+    Corrections: 1) added tooltip object to BitView designer. 2) added new public data members Prefix & Postfix in BitView class, to be able to set the tooltip message, setting on design time. (ex. setting prefix:"P[", postfix: "]", gives "P[0]" tooltip hovering on pin 0). 3) added BitView.BitView_MouseMove(.) event handler that determine the mouse position relative to boxes that represents each pin, and set or clear tooltip text based on it. 4) added private data member BitView.last_box to prevent flickering on hover.
+
++Plugin editor enhancements.
+    Experimental C# sintax highlighting of code. Now the name of the file is displayed on the title of the window. Added tooltips to be more self explaining.
+
+================================================================
++Bug fixed on closing a plugin in emulator.
+    When you close a plugin (pressing the close button at the right), the plugin is still working inside the emulator: there was no way to stop it, except close the instance of the emulator. It still uses resourses and doing its job (ex. PinNoise is affecting pins) but had no tab window.
+    TODO: junto con el cambio de posición de botón Close para plugin, hacer que al cambiarse de pestaña lea el atributo PluginBase.IsClosable y según eso habilite o no el botón Close.
+    TODO: utilizar método Propeller.RemovePlugin(.) en nuevo metodo Emulator.DettachPlugin(.) que sea llamado desde closeActiveTab_Click(.) para matar el plugin y cerrar su ventana.
+    TODO: agregar propiedad a clase PluginBase, para permitir una sola instancia o no: 'SingleInstanceOnly'. Al cargar un plugin se debe revisar si ese atributo para permitir o no otra instancia, dentro de ¿método Emulator.AttachPlugin(.)?
+    TODO: agregar propiedades al XML del plugin para permitir agregar descripción del plugin, autor, versión, fecha. Agregar botón o leyenda o algo a la pestaña para indicar esas propiedades. Hacer que se habilite/desabilite el botón "About" en la barra para un plugin, según disponga esos datos.

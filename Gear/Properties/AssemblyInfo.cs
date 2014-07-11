@@ -35,6 +35,7 @@ using System.Runtime.InteropServices;
     "\r\n" +
     "Current Developers:\r\n" +
     "   mirror\r\n" +
+    "   gatuno (Antonio Sanhueza)\r\n" +
     "   benjie (Ben Levitt)\r\n" +
     "\r\n" +
     "Third Party Components: \r\n" +
@@ -63,5 +64,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("9.10.26.7")]
-[assembly: AssemblyFileVersion("9.10.26.7")]
+[assembly: AssemblyVersion("14.07.03.0")]
+[assembly: AssemblyFileVersion("14.07.03.0")]

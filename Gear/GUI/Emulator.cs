@@ -88,6 +88,15 @@ namespace Gear.GUI
             bm.Dock = DockStyle.Fill;
             bm.Parent = t;
             documentsTab.SelectedTab = t;
+            // ASB: mantain the close button avalaibility
+            if (bm.IsClosable)
+            {
+                closeButton.Enabled = true;
+            }
+            else
+            {
+                closeButton.Enabled = false;
+            }
         }
 
         private void RunEmulatorStep(object sender, EventArgs e)
@@ -379,9 +388,26 @@ namespace Gear.GUI
             runTimer.Stop();
         }
 
+        // ASB: Method to mantain close button avaibility when tab is changed
         private void documentsTab_Click(object sender, EventArgs e)
         {
-
+            TabPage tp = documentsTab.SelectedTab;
+            if (tp.Controls[0] is PluginBase)
+            {
+                PluginBase b = (tp.Controls[0]) as PluginBase;
+                if (b.IsClosable)
+                {
+                    closeButton.Enabled = true;
+                }
+                else
+                {
+                    closeButton.Enabled = false;
+                }
+            }
+            else
+            {
+                closeButton.Enabled = false;
+            }
         }
 
         private void documentsTab_KeyPress(object sender, KeyPressEventArgs e)

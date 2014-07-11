@@ -68,9 +68,18 @@ namespace Gear.GUI.LogicProbe
 
             MonoFont = new Font(FontFamily.GenericMonospace, 10);
             if (MonoFont == null)
+            {
                 MonoFont = this.Font;
+            }
 
             viewOffset.LargeChange = 1;
+
+            // ASB: set international localized text for timeFrame & tickMark text boxes
+            double timeFrame = 0.0001,
+                   tickMark  = 0.0000032;
+
+            timeFrameBox.Text = timeFrame.ToString("0.0000");
+            tickMarkBox.Text = tickMark.ToString("0.0000000") ;
 
             TimeScale = 0.0001;
             Marker = 256.0 / 80000000.0;
@@ -79,10 +88,14 @@ namespace Gear.GUI.LogicProbe
             DigitalPins = new LogicDigital[64];
 
             for (int i = 0; i < DigitalPins.Length; i++)
+            {
                 DigitalPins[i] = new LogicDigital(i);
+            }
 
             for (int i = 0; i < 32; i++)
+            {
                 Pins.Add(DigitalPins[i]);
+            }
         }
 
         public override void PresentChip(Propeller host)
@@ -91,10 +104,21 @@ namespace Gear.GUI.LogicProbe
             Host.NotifyOnPins(this);
         }
 
+        // ASB: added method to clean samples of LogicRow
+        public override void OnReset()
+        {
+            for (int i = 0; i < DigitalPins.Length; i++)
+            {
+                DigitalPins[i].Reset();
+            }
+        }
+
         public override void OnPinChange(double time, PinState[] states)
         {
             for (int i = 0; i < states.Length; i++)
+            {
                 DigitalPins[i].Update(states[i], time);
+            }
         }
 
         public override void Repaint(bool tick)

@@ -62,14 +62,14 @@ namespace Gear.GUI
             this.xtalFrequency = new System.Windows.Forms.Label();
             this.clockMode = new System.Windows.Forms.Label();
             this.systemCounter = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.pinIN = new Gear.GUI.BitView();
             this.pinDIR = new Gear.GUI.BitView();
             this.pinFloating = new Gear.GUI.BitView();
             this.pinLocksFree = new Gear.GUI.BitView();
             this.pinLocks = new Gear.GUI.BitView();
             this.ringMeter = new Gear.GUI.RingMeter();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             label8 = new System.Windows.Forms.Label();
             label7 = new System.Windows.Forms.Label();
             label6 = new System.Windows.Forms.Label();
@@ -173,6 +173,16 @@ namespace Gear.GUI
             label3.Text = "Floating";
             label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             //
+            // label9
+            //
+            label9.AutoSize = true;
+            label9.Location = new System.Drawing.Point(3, 481);
+            label9.Name = "label9";
+            label9.Size = new System.Drawing.Size(61, 13);
+            label9.TabIndex = 29;
+            label9.Text = "Quick Keys";
+            label9.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            //
             // coreFrequency
             //
             this.coreFrequency.AutoSize = true;
@@ -213,62 +223,6 @@ namespace Gear.GUI
             this.systemCounter.Text = "SysCounter";
             this.systemCounter.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             //
-            // pinIN
-            //
-            this.pinIN.Bits = 64;
-            this.pinIN.Location = new System.Drawing.Point(73, 361);
-            this.pinIN.Name = "pinIN";
-            this.pinIN.Size = new System.Drawing.Size(128, 32);
-            this.pinIN.TabIndex = 22;
-            this.pinIN.Value = ((ulong)(0ul));
-            //
-            // pinDIR
-            //
-            this.pinDIR.Bits = 64;
-            this.pinDIR.Location = new System.Drawing.Point(73, 399);
-            this.pinDIR.Name = "pinDIR";
-            this.pinDIR.Size = new System.Drawing.Size(128, 32);
-            this.pinDIR.TabIndex = 23;
-            this.pinDIR.Value = ((ulong)(0ul));
-            //
-            // pinFloating
-            //
-            this.pinFloating.Bits = 64;
-            this.pinFloating.Location = new System.Drawing.Point(73, 437);
-            this.pinFloating.Name = "pinFloating";
-            this.pinFloating.Size = new System.Drawing.Size(138, 41);
-            this.pinFloating.TabIndex = 26;
-            this.pinFloating.Value = ((ulong)(0ul));
-            //
-            // pinLocksFree
-            //
-            this.pinLocksFree.Bits = 8;
-            this.pinLocksFree.Location = new System.Drawing.Point(73, 315);
-            this.pinLocksFree.Name = "pinLocksFree";
-            this.pinLocksFree.Size = new System.Drawing.Size(110, 10);
-            this.pinLocksFree.TabIndex = 27;
-            this.pinLocksFree.Value = ((ulong)(0ul));
-            //
-            // pinLocks
-            //
-            this.pinLocks.AutoSize = true;
-            this.pinLocks.Bits = 8;
-            this.pinLocks.Location = new System.Drawing.Point(73, 335);
-            this.pinLocks.Name = "pinLocks";
-            this.pinLocks.Size = new System.Drawing.Size(107, 10);
-            this.pinLocks.TabIndex = 28;
-            this.pinLocks.Value = ((ulong)(0ul));
-            //
-            // ringMeter
-            //
-            this.ringMeter.Location = new System.Drawing.Point(0, 0);
-            this.ringMeter.MaximumSize = new System.Drawing.Size(214, 214);
-            this.ringMeter.MinimumSize = new System.Drawing.Size(214, 214);
-            this.ringMeter.Name = "ringMeter";
-            this.ringMeter.Size = new System.Drawing.Size(214, 214);
-            this.ringMeter.TabIndex = 0;
-            this.ringMeter.Value = ((uint)(0u));
-            //
             // label1
             //
             this.label1.AutoSize = true;
@@ -289,15 +243,71 @@ namespace Gear.GUI
             this.label2.Text = "R - Run";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             //
-            // label9
+            // pinIN
             //
-            label9.AutoSize = true;
-            label9.Location = new System.Drawing.Point(3, 481);
-            label9.Name = "label9";
-            label9.Size = new System.Drawing.Size(61, 13);
-            label9.TabIndex = 29;
-            label9.Text = "Quick Keys";
-            label9.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.pinIN.Bits = 64;
+            this.pinIN.Location = new System.Drawing.Point(73, 361);
+            this.pinIN.Name = "pinIN";
+            this.pinIN.Postfix = "";
+            this.pinIN.Prefix = "P";
+            this.pinIN.Size = new System.Drawing.Size(128, 32);
+            this.pinIN.TabIndex = 22;
+            this.pinIN.Value = ((ulong)(0ul));
+            //
+            // pinDIR
+            //
+            this.pinDIR.Bits = 64;
+            this.pinDIR.Location = new System.Drawing.Point(73, 399);
+            this.pinDIR.Name = "pinDIR";
+            this.pinDIR.Postfix = "";
+            this.pinDIR.Prefix = "P";
+            this.pinDIR.Size = new System.Drawing.Size(128, 32);
+            this.pinDIR.TabIndex = 23;
+            this.pinDIR.Value = ((ulong)(0ul));
+            //
+            // pinFloating
+            //
+            this.pinFloating.Bits = 64;
+            this.pinFloating.Location = new System.Drawing.Point(73, 437);
+            this.pinFloating.Name = "pinFloating";
+            this.pinFloating.Postfix = "";
+            this.pinFloating.Prefix = "P";
+            this.pinFloating.Size = new System.Drawing.Size(138, 41);
+            this.pinFloating.TabIndex = 26;
+            this.pinFloating.Value = ((ulong)(0ul));
+            //
+            // pinLocksFree
+            //
+            this.pinLocksFree.Bits = 8;
+            this.pinLocksFree.Location = new System.Drawing.Point(73, 315);
+            this.pinLocksFree.Name = "pinLocksFree";
+            this.pinLocksFree.Postfix = "";
+            this.pinLocksFree.Prefix = "Lock";
+            this.pinLocksFree.Size = new System.Drawing.Size(110, 10);
+            this.pinLocksFree.TabIndex = 27;
+            this.pinLocksFree.Value = ((ulong)(0ul));
+            //
+            // pinLocks
+            //
+            this.pinLocks.AutoSize = true;
+            this.pinLocks.Bits = 8;
+            this.pinLocks.Location = new System.Drawing.Point(73, 335);
+            this.pinLocks.Name = "pinLocks";
+            this.pinLocks.Postfix = "";
+            this.pinLocks.Prefix = "Lock";
+            this.pinLocks.Size = new System.Drawing.Size(107, 10);
+            this.pinLocks.TabIndex = 28;
+            this.pinLocks.Value = ((ulong)(0ul));
+            //
+            // ringMeter
+            //
+            this.ringMeter.Location = new System.Drawing.Point(0, 0);
+            this.ringMeter.MaximumSize = new System.Drawing.Size(214, 214);
+            this.ringMeter.MinimumSize = new System.Drawing.Size(214, 214);
+            this.ringMeter.Name = "ringMeter";
+            this.ringMeter.Size = new System.Drawing.Size(214, 214);
+            this.ringMeter.TabIndex = 0;
+            this.ringMeter.Value = ((uint)(0u));
             //
             // HubView
             //
@@ -327,6 +337,7 @@ namespace Gear.GUI
             this.Controls.Add(this.ringMeter);
             this.Name = "HubView";
             this.Size = new System.Drawing.Size(214, 546);
+            this.Load += new System.EventHandler(this.HubView_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

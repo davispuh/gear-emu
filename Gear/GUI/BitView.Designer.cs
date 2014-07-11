@@ -48,10 +48,21 @@ namespace Gear.GUI
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
+            this.components = new System.ComponentModel.Container();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.SuspendLayout();
+            //
+            // BitView
+            //
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Name = "BitView";
+            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.BitView_MouseMove);
+            this.ResumeLayout(false);
         }
 
         #endregion
+
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }

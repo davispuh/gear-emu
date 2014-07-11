@@ -59,11 +59,13 @@ namespace Gear.GUI
             this.stopEmulatorButton = new System.Windows.Forms.ToolStripButton();
             this.stepInstructionButton = new System.Windows.Forms.ToolStripButton();
             this.stepClockButton = new System.Windows.Forms.ToolStripButton();
-            this.closeButton = new System.Windows.Forms.ToolStripButton();
             this.unpinButton = new System.Windows.Forms.ToolStripButton();
             this.pinButton = new System.Windows.Forms.ToolStripButton();
             this.floatButton = new System.Windows.Forms.ToolStripButton();
             this.openPluginButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.closeButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.pinnedPanel = new System.Windows.Forms.Panel();
             this.documentsTab = new System.Windows.Forms.TabControl();
             this.pinnedSplitter = new Gear.GUI.CollapsibleSplitter();
@@ -96,14 +98,16 @@ namespace Gear.GUI
             this.stepInstructionButton,
             this.stepClockButton,
             toolStripSeparator2,
-            this.closeButton,
             this.unpinButton,
             this.pinButton,
             this.floatButton,
-            this.openPluginButton});
+            this.openPluginButton,
+            this.toolStripButton1,
+            this.closeButton,
+            this.toolStripSeparator3});
             this.controlBar.Location = new System.Drawing.Point(215, 0);
             this.controlBar.Name = "controlBar";
-            this.controlBar.Size = new System.Drawing.Size(648, 25);
+            this.controlBar.Size = new System.Drawing.Size(657, 25);
             this.controlBar.TabIndex = 2;
             this.controlBar.Text = "Control Bar";
             //
@@ -115,6 +119,7 @@ namespace Gear.GUI
             this.openBinaryButton.Name = "openBinaryButton";
             this.openBinaryButton.Size = new System.Drawing.Size(40, 22);
             this.openBinaryButton.Text = "Open";
+            this.openBinaryButton.ToolTipText = "Open image of propeller (binary/eeprom)";
             this.openBinaryButton.Click += new System.EventHandler(this.openBinary_Click);
             //
             // reloadBinaryButton
@@ -124,6 +129,7 @@ namespace Gear.GUI
             this.reloadBinaryButton.Name = "reloadBinaryButton";
             this.reloadBinaryButton.Size = new System.Drawing.Size(47, 22);
             this.reloadBinaryButton.Text = "Reload";
+            this.reloadBinaryButton.ToolTipText = "Reload image (binary/eeprom) from file";
             this.reloadBinaryButton.Click += new System.EventHandler(this.reloadBinary_Click);
             //
             // resetEmulatorButton
@@ -134,6 +140,7 @@ namespace Gear.GUI
             this.resetEmulatorButton.Name = "resetEmulatorButton";
             this.resetEmulatorButton.Size = new System.Drawing.Size(39, 22);
             this.resetEmulatorButton.Text = "Reset";
+            this.resetEmulatorButton.ToolTipText = "Reset the emulator";
             this.resetEmulatorButton.Click += new System.EventHandler(this.resetEmulator_Click);
             //
             // runEmulatorButton
@@ -176,16 +183,6 @@ namespace Gear.GUI
             this.stepClockButton.Text = "Step Clock";
             this.stepClockButton.Click += new System.EventHandler(this.stepEmulator_Click);
             //
-            // closeButton
-            //
-            this.closeButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.closeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.closeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.closeButton.Name = "closeButton";
-            this.closeButton.Size = new System.Drawing.Size(40, 22);
-            this.closeButton.Text = "Close";
-            this.closeButton.Click += new System.EventHandler(this.closeActiveTab_Click);
-            //
             // unpinButton
             //
             this.unpinButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
@@ -195,6 +192,7 @@ namespace Gear.GUI
             this.unpinButton.Name = "unpinButton";
             this.unpinButton.Size = new System.Drawing.Size(48, 22);
             this.unpinButton.Text = "Unsplit";
+            this.unpinButton.ToolTipText = "Restore the splitted object to a tab window";
             this.unpinButton.Click += new System.EventHandler(this.unpinButton_Click);
             //
             // pinButton
@@ -206,6 +204,7 @@ namespace Gear.GUI
             this.pinButton.Name = "pinButton";
             this.pinButton.Size = new System.Drawing.Size(34, 22);
             this.pinButton.Text = "Split";
+            this.pinButton.ToolTipText = "Embbed the selected tab to the lower split area";
             this.pinButton.Click += new System.EventHandler(this.pinActiveTab_Click);
             //
             // floatButton
@@ -217,6 +216,7 @@ namespace Gear.GUI
             this.floatButton.Name = "floatButton";
             this.floatButton.Size = new System.Drawing.Size(37, 22);
             this.floatButton.Text = "Float";
+            this.floatButton.ToolTipText = "Float the selected tab to a new window";
             this.floatButton.Click += new System.EventHandler(this.floatActiveTab_Click);
             //
             // openPluginButton
@@ -227,7 +227,34 @@ namespace Gear.GUI
             this.openPluginButton.Name = "openPluginButton";
             this.openPluginButton.Size = new System.Drawing.Size(77, 22);
             this.openPluginButton.Text = "Open Plugin";
+            this.openPluginButton.ToolTipText = "Open Plugin to this emulator session";
             this.openPluginButton.Click += new System.EventHandler(this.OpenPlugin_Click);
+            //
+            // toolStripButton1
+            //
+            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(44, 22);
+            this.toolStripButton1.Text = "About";
+            this.toolStripButton1.ToolTipText = "About Plugin";
+            this.toolStripButton1.Visible = false;
+            //
+            // closeButton
+            //
+            this.closeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.closeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.closeButton.Name = "closeButton";
+            this.closeButton.Size = new System.Drawing.Size(40, 22);
+            this.closeButton.Text = "Close";
+            this.closeButton.ToolTipText = "Close the tab window (if permitted)";
+            this.closeButton.Click += new System.EventHandler(this.closeActiveTab_Click);
+            //
+            // toolStripSeparator3
+            //
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
             //
             // pinnedPanel
             //
@@ -235,17 +262,19 @@ namespace Gear.GUI
             this.pinnedPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.pinnedPanel.Location = new System.Drawing.Point(215, 436);
             this.pinnedPanel.Name = "pinnedPanel";
-            this.pinnedPanel.Size = new System.Drawing.Size(648, 100);
+            this.pinnedPanel.Size = new System.Drawing.Size(657, 100);
             this.pinnedPanel.TabIndex = 3;
             this.pinnedPanel.Visible = false;
             //
             // documentsTab
             //
             this.documentsTab.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.documentsTab.HotTrack = true;
             this.documentsTab.Location = new System.Drawing.Point(215, 25);
             this.documentsTab.Name = "documentsTab";
             this.documentsTab.SelectedIndex = 0;
-            this.documentsTab.Size = new System.Drawing.Size(648, 403);
+            this.documentsTab.ShowToolTips = true;
+            this.documentsTab.Size = new System.Drawing.Size(657, 403);
             this.documentsTab.TabIndex = 5;
             this.documentsTab.Click += new System.EventHandler(this.documentsTab_Click);
             this.documentsTab.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.documentsTab_KeyPress);
@@ -292,7 +321,7 @@ namespace Gear.GUI
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(863, 536);
+            this.ClientSize = new System.Drawing.Size(872, 536);
             this.Controls.Add(this.documentsTab);
             this.Controls.Add(this.pinnedSplitter);
             this.Controls.Add(this.pinnedPanel);
@@ -329,5 +358,7 @@ namespace Gear.GUI
         private HubView hubView;
         private System.Windows.Forms.ToolStripButton stepInstructionButton;
         private System.Windows.Forms.ToolStripButton openPluginButton;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripButton toolStripButton1;
     }
 }
