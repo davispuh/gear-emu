@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Gear.Disassembler;
 
 namespace Gear.EmulationCore
 {
@@ -45,11 +46,6 @@ namespace Gear.EmulationCore
             MemoryOpCode
         }
 
-        static private string[] Conditions;
-        static private string[] Instructions;
-        static private string[] InstReadHub;
-        static private string[] InstWriteHub;
-        static private string[] InstHubOp;
         static private string[] InterpretedOps;
         static private Dictionary<byte, string> EffectCodes;
         static private string[] BriefInterpretedOps;
@@ -57,49 +53,9 @@ namespace Gear.EmulationCore
         static private string[] BigInterpretedOps;
         static private Dictionary<byte, string> BigEffectCodes;
         static private ArguementMode[] ArguementModes;
-        static private string[] CogRegister;
 
         static InstructionDisassembler()
         {
-            Conditions = new string[] {
-                "IF_NEVER    ","IF_NZ_AND_NC","IF_NC_AND_Z ","IF_NC       ",
-                "IF_C_AND_NZ ","IF_NZ       ","IF_C_NE_Z   ","IF_NC_OR_NZ ",
-                "IF_C_AND_Z  ","IF_C_EQ_Z   ","IF_Z        ","IF_NC_OR_Z  ",
-                "IF_C        ","IF_C_OR_NZ  ","IF_Z_OR_C   ","            "
-            };
-
-            Instructions = new string[] {
-                "RWBYTE ","RWWORD ","RWLONG ","HUBOP  ",
-                "MUL    ","MULS   ","ENC    ","ONES   ",
-                "ROR    ","ROL    ","SHR    ","SHL    ",
-                "RCR    ","RCL    ","SAR    ","REV    ",
-                "MINS   ","MAXS   ","MIN    ","MAX    ",
-                "MOVS   ","MOVD   ","MOVI   ","JMPRET ",
-                "AND    ","ANDN   ","OR     ","XOR    ",
-                "MUXC   ","MUXNC  ","MUXZ   ","MUXNZ  ",
-                "ADD    ","SUB    ","ADDABS ","SUBABS ",
-                "SUMC   ","SUMNC  ","SUMZ   ","SUMNZ  ",
-                "MOV    ","NEG    ","ABS    ","ABSNEG ",
-                "NEGC   ","NEGNC  ","NEGZ   ","NEGNZ  ",
-                "CMPS   ","CMPSX  ","ADDX   ","SUBX   ",
-                "ADDS   ","SUBS   ","ADDSX  ","SUBSX  ",
-                "CMPSUB ","DJNZ   ","TJNZ   ","TJZ    ",
-                "WAITPEQ","WAITPNE","WAITCNT","WAITVID"
-            };
-
-            InstReadHub = new string[] {
-                "RDBYTE ","RDWORD ","RDLONG "
-            };
-
-            InstWriteHub = new string[] {
-                "WRBYTE ","WRWORD ","WRLONG "
-            };
-
-            InstHubOp = new string[] {
-                "CLKSET ","COGID  ","COGINIT","COGSTOP",
-                "LOCKNEW","LOCKRET","LOCKSET","LOCKCLR"
-            };
-
             BigInterpretedOps = new string[] {
               // 0x00
 	            "FRAME_CALL_RETURN",
@@ -1028,124 +984,80 @@ namespace Gear.EmulationCore
             BriefEffectCodes[0x5F] = "(a=!a)";
 
             EffectCodes = BigEffectCodes;
-
-            CogRegister = new string[] {
-                "MEM_0","MEM_1","MEM_2","MEM_3",
-                "MEM_4","MEM_5","MEM_6","MEM_7",
-                "MEM_8","MEM_9","MEM_A","MEM_B",
-                "MEM_C","MEM_D","MEM_E","MEM_F",
-                "PAR ", "CNT ", "INA ", "INB ",
-                "OUTA", "OUTB", "DIRA", "DIRB",
-                "CTRA", "CTRB", "FRQA", "FRQB",
-                "PHSA", "PHSB", "VCFG", "VSCL"
-            };
         }
 
         public static string AssemblyText(uint Operation)
         {
-            uint InstructionCode = (Operation & 0xFC000000) >> 26;
-            uint ConditionCode = (Operation & 0x003C0000) >> 18;
+            Assembly.ParsedInstruction instr = new Assembly.ParsedInstruction(Operation);
+            string text;
+            if (instr.CON > 0x00)
+            {
+                Assembly.SubInstruction ActualInstruction = instr.GetSubInstruction();
 
-            bool WriteZero = (Operation & 0x02000000) != 0;
-            bool WriteCarry = (Operation & 0x01000000) != 0;
-            bool WriteResult = (Operation & 0x00800000) != 0;
-            bool ImmediateValue = (Operation & 0x00400000) != 0;
-            bool ShowRdWr = true;
+                string SrcString = "";
+                string DestString = "";
 
-            uint Source = Operation & 0x1FF;
-            uint Destination = (Operation >> 9) & 0x1FF;
-            string SrcString;
-            string DestString;
-            string instruction;
-            string inst;
-
-            if (Source >= 0x1f0)
-            {
-                SrcString = String.Format("{0}{1}",
-                        ImmediateValue ? "#" : " ",
-                        CogRegister[Source - 0x1e0]);
-            }
-            else
-            {
-                SrcString = String.Format("{0}${1:X3}",
-                        ImmediateValue ? "#" : " ",
-                        Source);
-            }
-
-            if (Destination >= 0x1f0)
-            {
-                DestString = String.Format(" {0},", CogRegister[Destination - 0x1e0]);
-            }
-            else
-            {
-                DestString = String.Format(" ${0:X3},", Destination);
-            }
-
-            if (InstructionCode == 3)
-            {
-                SrcString = "";
-                inst = InstHubOp[Source % 8];
-            }
-            else if (InstructionCode <= 3)
-            {
-                ShowRdWr = false;
-                if (WriteResult)
-                {  // Write the result to cog memory
-                    inst = InstReadHub[InstructionCode];
-                }
-                else
+                if (ActualInstruction.Source)
                 {
-                    inst = InstWriteHub[InstructionCode];
-                }
-            }
-            else if (InstructionCode == 0x17)
-            {
-                ShowRdWr = false;
-                inst = "JMPRET ";
-                if (!WriteResult)
-                {
-                    inst = "JMP    ";
-                    DestString = "";
-                    if (Source == 0)
+                    if (instr.SRC >= Assembly.RegisterBaseAddress)
                     {
-                        SrcString = "";
-                        inst = "RET    ";
+                        SrcString = String.Format("{0}{1}",
+                                instr.ImmediateValue() ? "#" : "",
+                                Assembly.Registers[instr.SRC - Assembly.RegisterBaseAddress].Name);
+                    }
+                    else
+                    {
+                        SrcString = String.Format("{0}${1:X3}",
+                                instr.ImmediateValue() ? "#" : "",
+                                instr.SRC);
                     }
                 }
-                else if (Destination != 0)
+
+                if (ActualInstruction.Destination)
                 {
-                    inst = "CALL   ";
+                    if (instr.DEST >= Assembly.RegisterBaseAddress)
+                    {
+                        DestString = String.Format("{0}", Assembly.Registers[instr.DEST - Assembly.RegisterBaseAddress].Name);
+                    }
+                    else
+                    {
+                        DestString = String.Format("${0:X3}", instr.DEST);
+                    }
+                }
+
+                text = String.Format("{0} {1} {2}{3}{4}", new object[] {
+                    Assembly.Conditions[instr.CON][0],
+                    ActualInstruction.Name,
+                    DestString,
+                    (ActualInstruction.Source && ActualInstruction.Destination) ? ", " : "",
+                    SrcString }
+                );
+
+                if (instr.WriteResult())
+                {
+                    text += " WR";
+                }
+
+                if (instr.NoResult())
+                {
+                    text += " NR";
+                }
+
+                if (instr.WriteZero())
+                {
+                    text += " WZ";
+                }
+
+                if (instr.WriteCarry())
+                {
+                    text += " WC";
                 }
             }
             else
             {
-                inst = Instructions[InstructionCode];
+                text = String.Format("{0} {1}", new object[] { Assembly.Conditions[0][1], Assembly.Conditions[0][2] });
             }
-
-            instruction = String.Format("{0} {1}{2} {3}", new object[] {
-                Conditions[ConditionCode],
-                inst,
-                DestString,
-                SrcString }
-            );
-
-            if (ShowRdWr)
-            {
-                if (WriteResult)
-                {
-                    instruction += " WR";
-                }
-                else
-                {
-                    instruction += " NR";
-                }
-            }
-            if (WriteZero)
-                instruction += " WZ";
-            if (WriteCarry)
-                instruction += " WC";
-
-            return instruction;
+            return text;
         }
 
         private static uint GetPackedLiteral(Propeller chip, ref uint address)
@@ -1219,26 +1131,20 @@ namespace Gear.EmulationCore
 
         public static string GetMemoryOp(Propeller chip, ref uint address)
         {
-            byte op = chip.ReadByte(address++);
+            Spin.ParsedMemoryOperation OP = new Spin.ParsedMemoryOperation(chip.ReadByte(address++));
 
-            switch (op & 0xE0)
+            string Name = OP.GetRegister().Name;
+
+            switch (OP.Action)
             {
-                case 0x00:
-                    return String.Format("UNKNOWN_0 {0}", CogRegister[op & 0x1F]);
-                case 0x20:
-                    return String.Format("UNKNOWN_2 {0}", CogRegister[op & 0x1F]);
-                case 0x40:
-                    return String.Format("UNKNOWN_4 {0}", CogRegister[op & 0x1F]);
-                case 0x60:
-                    return String.Format("UNKNOWN_6 {0}", CogRegister[op & 0x1F]);
-                case 0x80:
-                    return String.Format("PUSH {0}", CogRegister[op & 0x1F]);
-                case 0xA0:
-                    return String.Format("POP {0}", CogRegister[op & 0x1F]);
-                case 0xC0:
-                    return String.Format("EFFECT {0} {1}", CogRegister[op & 0x1F], GetEffectCode(chip, ref address));
+                case Spin.MemoryAction.PUSH:
+                    return String.Format("PUSH {0}", Name);
+                case Spin.MemoryAction.POP:
+                    return String.Format("POP {0}", Name);
+                case Spin.MemoryAction.EFFECT:
+                    return String.Format("EFFECT {0} {1}", Name, GetEffectCode(chip, ref address));
                 default:
-                    return String.Format("UNKNOWN_E {0}", CogRegister[op & 0x1F]);
+                    return String.Format("UNKNOWN_{0} {1}", OP.Action, Name);
             }
         }
 

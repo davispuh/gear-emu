@@ -598,7 +598,9 @@ namespace Gear.EmulationCore
 
             // Run our modules on time event
             foreach (PluginBase mod in TickHandlers)
+            {
                 mod.OnClock(Time);
+            }
 
             if (pins != IN || dir != DIR || pinChange)
                 PinChanged();

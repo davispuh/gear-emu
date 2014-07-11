@@ -61,6 +61,13 @@
     <Compile Include="EmulationCore\ClockSource.cs" />
     <Compile Include="EmulationCore\Cog.cs" />
     <Compile Include="EmulationCore\DisassemblerStrings.cs" />
+    <Compile Include="Disassembler\Disassembler.cs" />
+    <Compile Include="Disassembler\Spin.cs" />
+    <Compile Include="Disassembler\AssemblyInstructions.cs" />
+    <Compile Include="Disassembler\SpinRegisters.cs" />
+    <Compile Include="Disassembler\AssemblyRegisters.cs" />
+    <Compile Include="Disassembler\Conditions.cs" />
+    <Compile Include="Disassembler\Assembly.cs" />
     <Compile Include="EmulationCore\InstructionDisassembler.cs" />
     <Compile Include="EmulationCore\FreqGenerator.cs" />
     <Compile Include="EmulationCore\InterpretedCog.cs" />
