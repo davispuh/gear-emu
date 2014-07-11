@@ -50,7 +50,7 @@ When I tried to test a modified Servo32v9 obex object in GEAR, I can see the PAS
 ================================================================
 +Bug fixed on closing a plugin in emulator.
     When you close a plugin (pressing the close button at the right), the plugin is still working inside the emulator: there was no way to stop it, except close the instance of the emulator. It still uses resourses and doing its job (ex. PinNoise is affecting pins) but had no tab window.
-    TODO: junto con el cambio de posici髇 de bot髇 Close para plugin, hacer que al cambiarse de pesta馻 lea el atributo PluginBase.IsClosable y seg鷑 eso habilite o no el bot髇 Close.
-    TODO: utilizar m閠odo Propeller.RemovePlugin(.) en nuevo metodo Emulator.DettachPlugin(.) que sea llamado desde closeActiveTab_Click(.) para matar el plugin y cerrar su ventana.
-    TODO: agregar propiedad a clase PluginBase, para permitir una sola instancia o no: 'SingleInstanceOnly'. Al cargar un plugin se debe revisar si ese atributo para permitir o no otra instancia, dentro de 縨閠odo Emulator.AttachPlugin(.)?
-    TODO: agregar propiedades al XML del plugin para permitir agregar descripci髇 del plugin, autor, versi髇, fecha. Agregar bot髇 o leyenda o algo a la pesta馻 para indicar esas propiedades. Hacer que se habilite/desabilite el bot髇 "About" en la barra para un plugin, seg鷑 disponga esos datos.
+    TODO: junto con el cambio de posici贸n de bot贸n Close para plugin, hacer que al cambiarse de pesta艅a lea el atributo PluginBase.IsClosable y seg艣n eso habilite o no el bot贸n Close.
+    TODO: utilizar m茅todo Propeller.RemovePlugin(.) en nuevo metodo Emulator.DettachPlugin(.) que sea llamado desde closeActiveTab_Click(.) para matar el plugin y cerrar su ventana.
+    TODO: agregar propiedad a clase PluginBase, para permitir una sola instancia o no: 'SingleInstanceOnly'. Al cargar un plugin se debe revisar si ese atributo para permitir o no otra instancia, dentro de 忙m茅todo Emulator.AttachPlugin(.)?
+    TODO: agregar propiedades al XML del plugin para permitir agregar descripci贸n del plugin, autor, versi贸n, fecha. Agregar bot贸n o leyenda o algo a la pesta艅a para indicar esas propiedades. Hacer que se habilite/desabilite el bot贸n "About" en la barra para un plugin, seg艣n disponga esos datos.
