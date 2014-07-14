@@ -30,843 +30,13 @@ namespace Gear.EmulationCore
 {
     public static class InstructionDisassembler
     {
-        private enum ArguementMode
-        {
-            None,
-            Effect,
-            SignedOffset,
-            PackedLiteral,
-            UnsignedOffset,
-            UnsignedEffectedOffset,
-            ByteLiteral,
-            WordLiteral,
-            NearLongLiteral,
-            LongLiteral,
-            ObjCallPair,
-            MemoryOpCode
-        }
 
-        static private string[] InterpretedOps;
         static private Dictionary<byte, string> EffectCodes;
-        static private string[] BriefInterpretedOps;
         static private Dictionary<byte, string> BriefEffectCodes;
-        static private string[] BigInterpretedOps;
         static private Dictionary<byte, string> BigEffectCodes;
-        static private ArguementMode[] ArguementModes;
 
         static InstructionDisassembler()
         {
-            BigInterpretedOps = new string[] {
-              // 0x00
-	            "FRAME_CALL_RETURN",
-	            "FRAME_CALL_NORETURN",
-	            "FRAME_CALL_ABORT",
-	            "FRAME_CALL_TRASHABORT",
-	            "BRANCH",
-	            "CALL",
-	            "OBJCALL",
-	            "OBJCALL_INDEXED",
-              // 0x08
-	            "LOOP_START",
-	            "LOOP_CONTINUE",
-	            "JUMP_IF_FALSE",
-	            "JUMP_IF_TRUE",
-	            "JUMP_FROM_STACK",
-	            "COMPARE_CASE",
-	            "COMPARE_CASE_RANGE",
-	            "LOOK_ABORT",
-	            // 0x10
-              "LOOKUP_COMPARE",
-	            "LOOKDOWN_COMPARE",
-	            "LOOKUPRANGE_COMPARE",
-	            "LOOKDOWNRANGE_COMPARE",
-	            "QUIT",
-	            "MARK_INTERPRETED",
-	            "STRSIZE",
-	            "STRCOMP",
-	            // 0x18
-              "BYTEFILL",
-	            "WORDFILL",
-	            "LONGFILL",
-	            "WAITPEQ",
-	            "BYTEMOVE",
-	            "WORDMOVE",
-	            "LONGMOVE",
-	            "WAITPNE",
-              // 0x20
-	            "CLKSET",
-	            "COGSTOP",
-	            "LOCKRET",
-	            "WAITCNT",
-	            "READ_INDEXED_SPR",
-	            "WRITE_INDEXED_SPR",
-	            "EFFECT_INDEXED_SPR",
-	            "WAITVID",
-              // 0x28
-	            "COGINIT_RETURNS",
-	            "LOCKNEW_RETURNS",
-	            "LOCKSET_RETURNS",
-	            "LOCKCLR_RETURNS",
-	            "COGINIT",
-	            "LOCKNEW",
-	            "LOCKSET",
-	            "LOCKCLR",
-              // 0x30
-	            "ABORT",
-	            "ABORT_WITH_RETURN",
-	            "RETURN",
-	            "POP_RETURN",
-	            "PUSH_NEG1",
-	            "PUSH_0",
-	            "PUSH_1",
-	            "PUSH_PACKED_LIT",
-              // 0x38
-	            "PUSH_BYTE_LIT",
-	            "PUSH_WORD_LIT",
-	            "PUSH_MID_LIT",
-	            "PUSH_LONG_LIT",
-	            "UNKNOWN OP $3C",
-	            "INDEXED_MEM_OP",
-	            "INDEXED_RANGE_MEM_OP",
-	            "MEMORY_OP",
-              // 0x40
-	            "PUSH_VARMEM_LONG_0",
-	            "POP_VARMEM_LONG_0",
-	            "EFFECT_VARMEM_LONG_0",
-	            "REFERENCE_VARMEM_LONG_0",
-	            "PUSH_VARMEM_LONG_1",
-	            "POP_VARMEM_LONG_1",
-	            "EFFECT_VARMEM_LONG_1",
-	            "REFERENCE_VARMEM_LONG_1",
-	            // 0x48
-              "PUSH_VARMEM_LONG_2",
-	            "POP_VARMEM_LONG_2",
-	            "EFFECT_VARMEM_LONG_2",
-	            "REFERENCE_VARMEM_LONG_2",
-	            "PUSH_VARMEM_LONG_3",
-	            "POP_VARMEM_LONG_3",
-	            "EFFECT_VARMEM_LONG_3",
-	            "REFERENCE_VARMEM_LONG_3",
-              // 0x50
-	            "PUSH_VARMEM_LONG_4",
-	            "POP_VARMEM_LONG_4",
-	            "EFFECT_VARMEM_LONG_4",
-	            "REFERENCE_VARMEM_LONG_4",
-	            "PUSH_VARMEM_LONG_5",
-	            "POP_VARMEM_LONG_5",
-	            "EFFECT_VARMEM_LONG_5",
-	            "REFERENCE_VARMEM_LONG_5",
-              // 0x58
-	            "PUSH_VARMEM_LONG_6",
-	            "POP_VARMEM_LONG_6",
-	            "EFFECT_VARMEM_LONG_6",
-	            "REFERENCE_VARMEM_LONG_6",
-	            "PUSH_VARMEM_LONG_7",
-	            "POP_VARMEM_LONG_7",
-	            "EFFECT_VARMEM_LONG_7",
-	            "REFERENCE_VARMEM_LONG_7",
-              // 0x60
-	            "PUSH_LOCALMEM_LONG_0",
-	            "POP_LOCALMEM_LONG_0",
-	            "EFFECT_LOCALMEM_LONG_0",
-	            "REFERENCE_LOCALMEM_LONG_0",
-	            "PUSH_LOCALMEM_LONG_1",
-	            "POP_LOCALMEM_LONG_1",
-	            "EFFECT_LOCALMEM_LONG_1",
-	            "REFERENCE_LOCALMEM_LONG_1",
-              // 0x68
-	            "PUSH_LOCALMEM_LONG_2",
-	            "POP_LOCALMEM_LONG_2",
-	            "EFFECT_LOCALMEM_LONG_2",
-	            "REFERENCE_LOCALMEM_LONG_2",
-	            "PUSH_LOCALMEM_LONG_3",
-	            "POP_LOCALMEM_LONG_3",
-	            "EFFECT_LOCALMEM_LONG_3",
-	            "REFERENCE_LOCALMEM_LONG_3",
-              // 0x70
-	            "PUSH_LOCALMEM_LONG_4",
-	            "POP_LOCALMEM_LONG_4",
-	            "EFFECT_LOCALMEM_LONG_4",
-	            "REFERENCE_LOCALMEM_LONG_4",
-	            "PUSH_LOCALMEM_LONG_5",
-	            "POP_LOCALMEM_LONG_5",
-	            "EFFECT_LOCALMEM_LONG_5",
-	            "REFERENCE_LOCALMEM_LONG_5",
-              // 0x78
-	            "PUSH_LOCALMEM_LONG_6",
-	            "POP_LOCALMEM_LONG_6",
-	            "EFFECT_LOCALMEM_LONG_6",
-	            "REFERENCE_LOCALMEM_LONG_6",
-	            "PUSH_LOCALMEM_LONG_7",
-	            "POP_LOCALMEM_LONG_7",
-	            "EFFECT_LOCALMEM_LONG_7",
-	            "REFERENCE_LOCALMEM_LONG_7",
-              // 0x80
-	            "PUSH_MAINMEM_BYTE",
-	            "POP_MAINMEM_BYTE",
-	            "EFFECT_MAINMEM_BYTE",
-	            "REFERENCE_MAINMEM_BYTE",
-	            "PUSH_OBJECTMEM_BYTE",
-	            "POP_OBJECTMEM_BYTE",
-	            "EFFECT_OBJECTMEM_BYTE",
-	            "REFERENCE_OBJECTMEM_BYTE",
-              // 0x88
-	            "PUSH_VARIABLEMEM_BYTE",
-	            "POP_VARIABLEMEM_BYTE",
-	            "EFFECT_VARIABLEMEM_BYTE",
-	            "REFERENCE_VARIABLEMEM_BYTE",
-	            "PUSH_LOCALMEM_BYTE",
-	            "POP_LOCALMEM_BYTE",
-	            "EFFECT_LOCALMEM_BYTE",
-	            "REFERENCE_LOCALMEM_BYTE",
-              // 0x90
-	            "PUSH_INDEXED_MAINMEM_BYTE",
-	            "POP_INDEXED_MAINMEM_BYTE",
-	            "EFFECT_INDEXED_MAINMEM_BYTE",
-	            "REFERENCE_INDEXED_MAINMEM_BYTE",
-	            "PUSH_INDEXED_OBJECTMEM_BYTE",
-	            "POP_INDEXED_OBJECTMEM_BYTE",
-	            "EFFECT_INDEXED_OBJECTMEM_BYTE",
-	            "REFERENCE_INDEXED_OBJECTMEM_BYTE",
-              // 0x98
-	            "PUSH_INDEXED_VARIABLEMEM_BYTE",
-	            "POP_INDEXED_VARIABLEMEM_BYTE",
-	            "EFFECT_INDEXED_VARIABLEMEM_BYTE",
-	            "REFERENCE_INDEXED_VARIABLEMEM_BYTE",
-	            "PUSH_INDEXED_LOCALMEM_BYTE",
-	            "POP_INDEXED_LOCALMEM_BYTE",
-	            "EFFECT_INDEXED_LOCALMEM_BYTE",
-	            "REFERENCE_INDEXED_LOCALMEM_BYTE",
-              // 0xA0
-	            "PUSH_MAINMEM_WORD",
-	            "POP_MAINMEM_WORD",
-	            "EFFECT_MAINMEM_WORD",
-	            "REFERENCE_MAINMEM_WORD",
-	            "PUSH_OBJECTMEM_WORD",
-	            "POP_OBJECTMEM_WORD",
-	            "EFFECT_OBJECTMEM_WORD",
-	            "REFERENCE_OBJECTMEM_WORD",
-              // 0xA8
-	            "PUSH_VARIABLEMEM_WORD",
-	            "POP_VARIABLEMEM_WORD",
-	            "EFFECT_VARIABLEMEM_WORD",
-	            "REFERENCE_VARIABLEMEM_WORD",
-	            "PUSH_LOCALMEM_WORD",
-	            "POP_LOCALMEM_WORD",
-	            "EFFECT_LOCALMEM_WORD",
-	            "REFERENCE_LOCALMEM_WORD",
-              // 0xB0
-	            "PUSH_INDEXED_MAINMEM_WORD",
-	            "POP_INDEXED_MAINMEM_WORD",
-	            "EFFECT_INDEXED_MAINMEM_WORD",
-	            "REFERENCE_INDEXED_MAINMEM_WORD",
-	            "PUSH_INDEXED_OBJECTMEM_WORD",
-	            "POP_INDEXED_OBJECTMEM_WORD",
-	            "EFFECT_INDEXED_OBJECTMEM_WORD",
-	            "REFERENCE_INDEXED_OBJECTMEM_WORD",
-              // 0xB8
-	            "PUSH_INDEXED_VARIABLEMEM_WORD",
-	            "POP_INDEXED_VARIABLEMEM_WORD",
-	            "EFFECT_INDEXED_VARIABLEMEM_WORD",
-	            "REFERENCE_INDEXED_VARIABLEMEM_WORD",
-	            "PUSH_INDEXED_LOCALMEM_WORD",
-	            "POP_INDEXED_LOCALMEM_WORD",
-	            "EFFECT_INDEXED_LOCALMEM_WORD",
-	            "REFERENCE_INDEXED_LOCALMEM_WORD",
-              // 0xC0
-	            "PUSH_MAINMEM_LONG",
-	            "POP_MAINMEM_LONG",
-	            "EFFECT_MAINMEM_LONG",
-	            "REFERENCE_MAINMEM_LONG",
-	            "PUSH_OBJECTMEM_LONG",
-	            "POP_OBJECTMEM_LONG",
-	            "EFFECT_OBJECTMEM_LONG",
-	            "REFERENCE_OBJECTMEM_LONG",
-              // 0xC8
-	            "PUSH_VARIABLEMEM_LONG",
-	            "POP_VARIABLEMEM_LONG",
-	            "EFFECT_VARIABLEMEM_LONG",
-	            "REFERENCE_VARIABLEMEM_LONG",
-	            "PUSH_LOCALMEM_LONG",
-	            "POP_LOCALMEM_LONG",
-	            "EFFECT_LOCALMEM_LONG",
-	            "REFERENCE_LOCALMEM_LONG",
-              // 0xD0
-	            "PUSH_INDEXED_MAINMEM_LONG",
-	            "POP_INDEXED_MAINMEM_LONG",
-	            "EFFECT_INDEXED_MAINMEM_LONG",
-	            "REFERENCE_INDEXED_MAINMEM_LONG",
-	            "PUSH_INDEXED_OBJECTMEM_LONG",
-	            "POP_INDEXED_OBJECTMEM_LONG",
-	            "EFFECT_INDEXED_OBJECTMEM_LONG",
-	            "REFERENCE_INDEXED_OBJECTMEM_LONG",
-              // 0xD8
-	            "PUSH_INDEXED_VARIABLEMEM_LONG",
-	            "POP_INDEXED_VARIABLEMEM_LONG",
-	            "EFFECT_INDEXED_VARIABLEMEM_LONG",
-	            "REFERENCE_INDEXED_VARIABLEMEM_LONG",
-	            "PUSH_INDEXED_LOCALMEM_LONG",
-	            "POP_INDEXED_LOCALMEM_LONG",
-	            "EFFECT_INDEXED_LOCALMEM_LONG",
-	            "REFERENCE_INDEXED_LOCALMEM_LONG",
-              // 0xE0
-	            "ROTATE_RIGHT",
-	            "ROTATE_LEFT",
-	            "SHIFT_RIGHT",
-	            "SHIFT_LEFT",
-	            "LIMIT_MIN",
-	            "LIMIT_MAX",
-	            "NEGATE",
-	            "COMPLEMENT",
-              // 0xE8
-	            "BIT_AND",
-	            "ABSOLUTE_VALUE",
-	            "BIT_OR",
-	            "BIT_XOR",
-	            "ADD",
-	            "SUBTRACT",
-	            "ARITH_SHIFT_RIGHT",
-	            "BIT_REVERSE",
-              // 0xF0
-	            "LOGICAL_AND",
-	            "ENCODE",
-	            "LOGICAL_OR",
-	            "DECODE",
-	            "MULTIPLY",
-	            "MULTIPLY_HI",
-	            "DIVIDE",
-	            "MODULO",
-              // 0xF8
-	            "SQUARE_ROOT",
-	            "LESS",
-	            "GREATER",
-	            "NOT_EQUAL",
-	            "EQUAL",
-	            "LESS_EQUAL",
-	            "GREATER_EQUAL",
-	            "LOGICAL_NOT"
-            };
-
-            BriefInterpretedOps = new string[] {
-	            "FrameReturn",
-	            "FrameNoReturn",
-	            "FrameAbort",
-	            "FrameTrashAbort",
-	            "Branch",
-	            "Call",
-	            "ObjCall",
-	            "ObjCall[]",
-	            "LoopStart",
-	            "LoopContinue",
-	            "JumpIfFalse",
-	            "JumpIfTrue",
-	            "JumpFromStack",
-	            "Case ==",
-	            "CaseRange",
-	            "LookAbort",
-	            "LookUpOne",
-	            "LookDownOne",
-	            "LookUpRange",
-	            "LookDownRange",
-	            "Quit",
-	            "MarkInterpreted",
-	            "StrSize",
-	            "StrComp",
-	            "ByteFill",
-	            "WordFill",
-	            "LongFill",
-	            "WaitPEQ",
-	            "ByteMove",
-	            "WordMove",
-	            "LongMove",
-	            "WaitPNE",
-	            "CLKSET",
-	            "CogStop",
-	            "LockRet",
-	            "WaitCNT",
-	            "RdLong SPR[]",
-	            "WrLong SPR[]",
-	            "RdWrLong SPR[]",
-	            "WaitVID",
-	            "CogInitReturns",
-	            "LockNewReturns",
-	            "LockSetReturns",
-	            "LockClearReturns",
-	            "CogInit",
-	            "LockNew",
-	            "LockSet",
-	            "LockClear",
-	            "Abort",
-	            "AbortWithResult",
-	            "Return",
-	            "ReturnWithResult",
-	            "# -1",
-	            "# 0",
-	            "# 1",
-	            "#",
-	            "#",
-	            "#",
-	            "#",
-	            "#",
-	            "UNKNOWN OP $3C",
-	            "INDEXED_MEM_OP",
-	            "INDEXED_RANGE_MEM_OP",
-	            "MEMORY_OP",
-	            "Var[0]@",
-	            "Var[0]!",
-	            "Var[0] with",
-	            "&Var[0]",
-	            "Var[1]@",
-	            "Var[1]!",
-	            "Var[1] with",
-	            "&Var[1]",
-	            "Var[2]@",
-	            "Var[2]!",
-	            "Var[2] with",
-	            "&Var[2]",
-	            "Var[3]@",
-	            "Var[3]!",
-	            "Var[3] with",
-	            "&Var[3]",
-	            "Var[4]@",
-	            "Var[4]!",
-	            "Var[4] with",
-	            "&Var[4]",
-	            "Var[5]@",
-	            "Var[5]!",
-	            "Var[5] with",
-	            "&Var[5]",
-	            "Var[6]@",
-	            "Var[6]!",
-	            "Var[6] with",
-	            "&Var[6]",
-	            "Var[7]@",
-	            "Var[7]!",
-	            "Var[7] with",
-	            "&Var[7]",
-	            "Loc[0]@",
-	            "Loc[0]!",
-	            "Loc[0] with",
-	            "&Loc[0]",
-	            "Loc[1]@",
-	            "Loc[1]!",
-	            "Loc[1] with",
-	            "&Loc[1]",
-	            "Loc[2]@",
-	            "Loc[2]!",
-	            "Loc[2] with",
-	            "&Loc[2]",
-	            "Loc[3]@",
-	            "Loc[3]!",
-	            "Loc[3] with",
-	            "&Loc[3]",
-	            "Loc[4]@",
-	            "Loc[4]!",
-	            "Loc[4] with",
-	            "&Loc[4]",
-	            "Loc[5]@",
-	            "Loc[5]!",
-	            "Loc[5] with",
-	            "&Loc[5]",
-	            "Loc[6]@",
-	            "Loc[6]!",
-	            "Loc[6] with",
-	            "&Loc[6]",
-	            "Loc[7]@",
-	            "Loc[7]!",
-	            "Loc[7] with",
-	            "&Loc[7]",
-	            "byte Mem[]@",
-	            "byte Mem[]!",
-	            "byte Mem[] with",
-	            "byte &Mem[]",
-	            "byte Obj[]@",
-	            "byte Obj[]!",
-	            "byte Obj[] with",
-	            "byte &Obj[]",
-	            "byte Var[]@",
-	            "byte Var[]!",
-	            "byte Var[] with",
-	            "byte &Var[]",
-	            "byte Loc[]@",
-	            "byte Loc[]!",
-	            "byte Loc[] then",
-	            "byte &Loc[]",
-	            "byte Mem[idx]@",
-	            "byte Mem[idx]!",
-	            "byte Mem[idx] with",
-	            "byte &Mem[idx]",
-	            "byte Obj[idx]@",
-	            "byte Obj[idx]!",
-	            "byte Obj[idx] with",
-	            "byte &Obj[idx]",
-	            "byte Var[idx]@",
-	            "byte Var[idx]!",
-	            "byte Var[idx] with",
-	            "byte &Var[idx]",
-	            "byte Loc[idx]@",
-	            "byte Loc[idx]!",
-	            "byte Loc[idx] with",
-	            "byte &Loc[idx]",
-	            "word Mem[]@",
-	            "word Mem[]!",
-	            "word Mem[] with",
-	            "word &Mem[]",
-	            "word Obj[]@",
-	            "word Obj[]!",
-	            "word Obj[] with",
-	            "word &Obj[]",
-	            "word Var[]@",
-	            "word Var[]!",
-	            "word Var[] with",
-	            "word &Var[]",
-	            "word Loc[]@",
-	            "word Loc[]!",
-	            "word Loc[] with",
-	            "word &Loc[]",
-	            "word Mem[idx]@",
-	            "word Mem[idx]!",
-	            "word Mem[idx] with",
-	            "word &Mem[idx]",
-	            "word Obj[idx]@",
-	            "word Obj[idx]!",
-	            "word Obj[idx] with",
-	            "word &Obj[idx]",
-	            "word Var[idx]@",
-	            "word Var[idx]!",
-	            "word Var[idx] with",
-	            "word &Var[idx]",
-	            "word Loc[idx]@",
-	            "word Loc[idx]!",
-	            "word Loc[idx] with",
-	            "word &Loc[idx]",
-	            "Mem[]@",
-	            "Mem[]!",
-	            "Mem[] with",
-	            "&Mem[]",
-	            "Obj[]@",
-	            "Obj[]!",
-	            "Obj[] with",
-	            "&Obj[]",
-	            "Var[]@",
-	            "Var[]!",
-	            "Var[] with",
-	            "&Var[]",
-	            "Loc[]@",
-	            "Loc[]!",
-	            "Loc[] with",
-	            "&Loc[]",
-	            "Mem[idx]@",
-	            "Mem[idx]!",
-	            "Mem[idx] with",
-	            "&Mem[idx]",
-	            "Obj[idx]@",
-	            "Obj[idx]!",
-	            "Obj[idx] with",
-	            "&Obj[idx]",
-	            "Var[idx]@",
-	            "Var[idx]!",
-	            "Var[idx] with",
-	            "&Var[idx]",
-	            "Loc[idx]@",
-	            "Loc[idx]!",
-	            "Loc[idx] with",
-	            "&Loc[idx]",
-	            "a->b",
-	            "a<-b",
-	            "a>>b",
-	            "a<<b",
-	            "a#>b",
-	            "a#<b",
-	            "-a",
-	            "~a",
-	            "a&b",
-	            "||a",
-	            "a|b",
-	            "a^b",
-	            "a+b",
-	            "a-b",
-	            "a~>b",
-	            "a><b",
-	            "a and b",
-	            ">|a",
-	            "a or b",
-	            "|<a",
-	            "a*b",
-	            "(a*b)>>32",
-	            "a/b",
-	            "a mod b",
-	            "sqrt(a)",
-	            "a<b",
-	            "a>b",
-	            "a<>b",
-	            "a==b",
-	            "a=<b",
-	            "a=>b",
-	            "not a"
-            };
-
-            InterpretedOps = BigInterpretedOps;
-
-            ArguementModes = new ArguementMode[] {
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.SignedOffset,
-	            ArguementMode.ByteLiteral,
-	            ArguementMode.ObjCallPair,
-	            ArguementMode.ObjCallPair,
-	            ArguementMode.SignedOffset,
-	            ArguementMode.SignedOffset,
-	            ArguementMode.SignedOffset,
-	            ArguementMode.SignedOffset,
-	            ArguementMode.None,
-	            ArguementMode.SignedOffset,
-	            ArguementMode.SignedOffset,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.Effect,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.PackedLiteral,
-	            ArguementMode.ByteLiteral,
-	            ArguementMode.WordLiteral,
-	            ArguementMode.NearLongLiteral,
-	            ArguementMode.LongLiteral,
-	            ArguementMode.None,
-	            ArguementMode.MemoryOpCode,
-	            ArguementMode.MemoryOpCode,
-	            ArguementMode.MemoryOpCode,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.Effect,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.Effect,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.Effect,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.Effect,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.Effect,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.Effect,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.Effect,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.Effect,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.Effect,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.Effect,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.Effect,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.Effect,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.Effect,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.Effect,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.Effect,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.Effect,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.Effect,
-	            ArguementMode.None,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedEffectedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedEffectedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedEffectedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.Effect,
-	            ArguementMode.None,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedEffectedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedEffectedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedEffectedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.Effect,
-	            ArguementMode.None,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedEffectedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedEffectedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedEffectedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.Effect,
-	            ArguementMode.None,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedEffectedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedEffectedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedEffectedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.Effect,
-	            ArguementMode.None,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedEffectedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedEffectedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedEffectedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.Effect,
-	            ArguementMode.None,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedEffectedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedEffectedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.UnsignedEffectedOffset,
-	            ArguementMode.UnsignedOffset,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None,
-	            ArguementMode.None
-            };
-
             BigEffectCodes = new Dictionary<byte, string>();
 
             BigEffectCodes[0x0] = "COPY";
@@ -1150,36 +320,43 @@ namespace Gear.EmulationCore
 
         public static string InterpreterText(Propeller chip, ref uint address, bool displayAsHexadecimal, bool useShortOpcodes)
         {
-            byte op = chip.ReadByte(address++);
             string format;
             if (displayAsHexadecimal)
-                format = "{0} ${1:X}";
-            else
-                format = "{0} {1}";
-            if (useShortOpcodes)
             {
-                EffectCodes = BriefEffectCodes;
-                InterpretedOps = BriefInterpretedOps;
+                format = "{0} ${1:X}";
             }
             else
             {
-                EffectCodes = BigEffectCodes;
-                InterpretedOps = BigInterpretedOps;
+                format = "{0} {1}";
             }
 
-            switch (ArguementModes[op])
+            Spin.Instruction Instr = Spin.Instructions[chip.ReadByte(address++)];
+
+            string Name;
+            if (useShortOpcodes)
             {
-                case ArguementMode.UnsignedOffset:
-                    return String.Format(format, InterpretedOps[op], GetPackedOffset(chip, ref address));
-                case ArguementMode.UnsignedEffectedOffset:
+                Name = Instr.NameBrief;
+                EffectCodes = BriefEffectCodes;
+            }
+            else
+            {
+                Name = Instr.Name;
+                EffectCodes = BigEffectCodes;
+            }
+
+            switch (Instr.ArguementMode)
+            {
+                case Spin.ArguementMode.UnsignedOffset:
+                    return String.Format(format, Name, GetPackedOffset(chip, ref address));
+                case Spin.ArguementMode.UnsignedEffectedOffset:
                     {
                         int arg = GetPackedOffset(chip, ref address);
                         format = "{0} {1} {2}";
-                        return String.Format(format, InterpretedOps[op], arg, GetEffectCode(chip, ref address));
+                        return String.Format(format, Name, arg, GetEffectCode(chip, ref address));
                     }
-                case ArguementMode.Effect:
-                    return String.Format(format, InterpretedOps[op], GetEffectCode(chip, ref address));
-                case ArguementMode.SignedOffset:
+                case Spin.ArguementMode.Effect:
+                    return String.Format(format, Name, GetEffectCode(chip, ref address));
+                case Spin.ArguementMode.SignedOffset:
                     {
                         uint result = chip.ReadByte(address++);
 
@@ -1195,13 +372,13 @@ namespace Gear.EmulationCore
                             if ((result & 0x4000) != 0)
                                 result |= 0xFFFF8000;
                         }
-                        return String.Format(format, InterpretedOps[op], (int)result);
+                        return String.Format(format, Name, (int)result);
                     }
-                case ArguementMode.PackedLiteral:
-                    return String.Format(format, InterpretedOps[op], GetPackedLiteral(chip, ref address));
-                case ArguementMode.ByteLiteral:
-                    return String.Format(format, InterpretedOps[op], chip.ReadByte(address++));
-                case ArguementMode.WordLiteral:
+                case Spin.ArguementMode.PackedLiteral:
+                    return String.Format(format, Name, GetPackedLiteral(chip, ref address));
+                case Spin.ArguementMode.ByteLiteral:
+                    return String.Format(format, Name, chip.ReadByte(address++));
+                case Spin.ArguementMode.WordLiteral:
                     {
                         int result = 0;
                         for (int i = 0; i < 2; i++)
@@ -1209,9 +386,9 @@ namespace Gear.EmulationCore
                             result <<= 8;
                             result |= chip.ReadByte(address++);
                         }
-                        return String.Format(format, InterpretedOps[op], result);
+                        return String.Format(format, Name, result);
                     }
-                case ArguementMode.NearLongLiteral:
+                case Spin.ArguementMode.NearLongLiteral:
                     {
                         int result = 0;
                         for (int i = 0; i < 3; i++)
@@ -1219,9 +396,9 @@ namespace Gear.EmulationCore
                             result <<= 8;
                             result |= chip.ReadByte(address++);
                         }
-                        return String.Format(format, InterpretedOps[op], result);
+                        return String.Format(format, Name, result);
                     }
-                case ArguementMode.LongLiteral:
+                case Spin.ArguementMode.LongLiteral:
                     {
                         int result = 0;
                         for (int i = 0; i < 4; i++)
@@ -1229,19 +406,19 @@ namespace Gear.EmulationCore
                             result <<= 8;
                             result |= chip.ReadByte(address++);
                         }
-                        return String.Format(format, InterpretedOps[op], result);
+                        return String.Format(format, Name, result);
                     }
-                case ArguementMode.ObjCallPair:
+                case Spin.ArguementMode.ObjCallPair:
                     {
                         byte obj = chip.ReadByte(address++);
                         byte funct = chip.ReadByte(address++);
-                        return String.Format("{0} {1}.{2}", InterpretedOps[op], obj, funct);
+                        return String.Format("{0} {1}.{2}", Name, obj, funct);
                     }
-                case ArguementMode.MemoryOpCode:
-                    return String.Format("{0} {1}", InterpretedOps[op], GetMemoryOp(chip, ref address));
+                case Spin.ArguementMode.MemoryOpCode:
+                    return String.Format("{0} {1}", Name, GetMemoryOp(chip, ref address));
             }
 
-            return InterpretedOps[op];
+            return Name;
         }
     }
 }

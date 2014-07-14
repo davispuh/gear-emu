@@ -62,6 +62,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Disassembler\SpinInstructions.cs" />
     <Compile Include="EmulationCore\ClockSource.cs" />
     <Compile Include="EmulationCore\Cog.cs" />
     <Compile Include="EmulationCore\DisassemblerStrings.cs" />

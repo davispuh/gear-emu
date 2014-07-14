@@ -18,6 +18,22 @@ namespace Gear.Disassembler
             UNKNOWN_7
         }
 
+        public enum ArguementMode
+        {
+            None,
+            Effect,
+            SignedOffset,
+            PackedLiteral,
+            UnsignedOffset,
+            UnsignedEffectedOffset,
+            ByteLiteral,
+            WordLiteral,
+            NearLongLiteral,
+            LongLiteral,
+            ObjCallPair,
+            MemoryOpCode
+        }
+
         public class Register : Disassembler.Register
         {
             public Register(string Name)
@@ -51,6 +67,20 @@ namespace Gear.Disassembler
                 {
                     return Registers[this.Register];
                 };
+            }
+        }
+
+        public class Instruction
+        {
+            public string        Name          { get; private set; }
+            public string        NameBrief     { get; private set; }
+            public ArguementMode ArguementMode { get; private set; }
+
+            public Instruction(string Name, string NameBrief, ArguementMode ArguementMode)
+            {
+                this.Name          = Name;
+                this.NameBrief     = NameBrief;
+                this.ArguementMode = ArguementMode;
             }
         }
     }
