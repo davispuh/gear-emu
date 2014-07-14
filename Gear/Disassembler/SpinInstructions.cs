@@ -45,8 +45,8 @@ namespace Gear.Disassembler
             new Instruction("WAITCNT",                            "WaitCNT",            ArguementMode.None),                   //  0x23
             new Instruction("READ_INDEXED_SPR",                   "RdLong SPR[]",       ArguementMode.None),                   //  0x24
             new Instruction("WRITE_INDEXED_SPR",                  "WrLong SPR[]",       ArguementMode.None),                   //  0x25
-            new Instruction("EFFECT_INDEXED_SPR",                 "RdWrLong SPR[]",     ArguementMode.None),                   //  0x26
-            new Instruction("WAITVID",                            "WaitVID",            ArguementMode.Effect),                 //  0x27
+            new Instruction("EFFECT_INDEXED_SPR",                 "RdWrLong SPR[]",     ArguementMode.Effect),                 //  0x26
+            new Instruction("WAITVID",                            "WaitVID",            ArguementMode.None),                   //  0x27
             new Instruction("COGINIT_RETURNS",                    "CogInitReturns",     ArguementMode.None),                   //  0x28
             new Instruction("LOCKNEW_RETURNS",                    "LockNewReturns",     ArguementMode.None),                   //  0x29
             new Instruction("LOCKSET_RETURNS",                    "LockSetReturns",     ArguementMode.None),                   //  0x2A
