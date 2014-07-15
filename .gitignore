@@ -187,9 +187,4 @@ UpgradeLog*.htm
 FakesAssemblies/
 
 #doxygen documentation
-Doc/
-html/
-*.html
-*.js
-*.css
-*.png
+Doc/**

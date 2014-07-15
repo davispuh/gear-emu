@@ -30,15 +30,20 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 
+/// @brief Contains definitions related to GUI objects (controlling objects) namespace.
+/// @namespace Gear.GUI
 namespace Gear.GUI
 {
+    /// @todo Document Gear.GUI.GearDesktop class
     public partial class GearDesktop : Form
     {
+        /// @todo Document Gear.GUI.GearDesktop()
         public GearDesktop()
         {
             InitializeComponent();
         }
 
+        /// @todo Document Gear.GUI.OpenFile()
         private void OpenFile(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -56,31 +61,37 @@ namespace Gear.GUI
             }
         }
 
+        /// @todo Document Gear.GUI.ExitToolsStripMenuItem_Click()
         private void ExitToolsStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }
 
+        /// @todo Document Gear.GUI.CascadeToolStripMenuItem_Click()
         private void CascadeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LayoutMdi(MdiLayout.Cascade);
         }
 
+        /// @todo Document Gear.GUI.TileVerticleToolStripMenuItem_Click()
         private void TileVerticleToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LayoutMdi(MdiLayout.TileVertical);
         }
 
+        /// @todo Document Gear.GUI.TileHorizontalToolStripMenuItem_Click()
         private void TileHorizontalToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LayoutMdi(MdiLayout.TileHorizontal);
         }
 
+        /// @todo Document Gear.GUI.ArrangeIconsToolStripMenuItem_Click()
         private void ArrangeIconsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LayoutMdi(MdiLayout.ArrangeIcons);
         }
 
+        /// @todo Document Gear.GUI.CloseAllToolStripMenuItem_Click()
         private void CloseAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
             foreach (Form childForm in MdiChildren)
@@ -89,13 +100,15 @@ namespace Gear.GUI
             }
         }
 
+        /// @todo Document Gear.GUI.aboutToolStripMenuItem_Click()
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AboutGear about = new AboutGear();
             about.ShowDialog(this);
         }
 
-        private void toolStripButton1_Click(object sender, EventArgs e)
+        /// @todo Document Gear.GUI.OpenPluginButton_Click()
+        private void OpenPluginButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Gear plug-in component (*.xml)|*.xml|All Files (*.*)|*.*";
@@ -113,11 +126,14 @@ namespace Gear.GUI
             }
         }
 
+        /// @todo Document Gear.GUI.newPlugin_Click()
         private void newPlugin_Click(object sender, EventArgs e)
         {
             PluginEditor plugin = new PluginEditor();
             plugin.MdiParent = this;
             plugin.Show();
         }
+
+
     }
 }
