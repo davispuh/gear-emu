@@ -344,19 +344,19 @@ namespace Gear.EmulationCore
                 EffectCodes = BigEffectCodes;
             }
 
-            switch (Instr.ArguementMode)
+            switch (Instr.ArgumentMode)
             {
-                case Spin.ArguementMode.UnsignedOffset:
+                case Spin.ArgumentMode.UnsignedOffset:
                     return String.Format(format, Name, GetPackedOffset(chip, ref address));
-                case Spin.ArguementMode.UnsignedEffectedOffset:
+                case Spin.ArgumentMode.UnsignedEffectedOffset:
                     {
                         int arg = GetPackedOffset(chip, ref address);
                         format = "{0} {1} {2}";
                         return String.Format(format, Name, arg, GetEffectCode(chip, ref address));
                     }
-                case Spin.ArguementMode.Effect:
+                case Spin.ArgumentMode.Effect:
                     return String.Format(format, Name, GetEffectCode(chip, ref address));
-                case Spin.ArguementMode.SignedOffset:
+                case Spin.ArgumentMode.SignedOffset:
                     {
                         uint result = chip.ReadByte(address++);
 
@@ -374,11 +374,11 @@ namespace Gear.EmulationCore
                         }
                         return String.Format(format, Name, (int)result);
                     }
-                case Spin.ArguementMode.PackedLiteral:
+                case Spin.ArgumentMode.PackedLiteral:
                     return String.Format(format, Name, GetPackedLiteral(chip, ref address));
-                case Spin.ArguementMode.ByteLiteral:
+                case Spin.ArgumentMode.ByteLiteral:
                     return String.Format(format, Name, chip.ReadByte(address++));
-                case Spin.ArguementMode.WordLiteral:
+                case Spin.ArgumentMode.WordLiteral:
                     {
                         int result = 0;
                         for (int i = 0; i < 2; i++)
@@ -388,7 +388,7 @@ namespace Gear.EmulationCore
                         }
                         return String.Format(format, Name, result);
                     }
-                case Spin.ArguementMode.NearLongLiteral:
+                case Spin.ArgumentMode.NearLongLiteral:
                     {
                         int result = 0;
                         for (int i = 0; i < 3; i++)
@@ -398,7 +398,7 @@ namespace Gear.EmulationCore
                         }
                         return String.Format(format, Name, result);
                     }
-                case Spin.ArguementMode.LongLiteral:
+                case Spin.ArgumentMode.LongLiteral:
                     {
                         int result = 0;
                         for (int i = 0; i < 4; i++)
@@ -408,13 +408,13 @@ namespace Gear.EmulationCore
                         }
                         return String.Format(format, Name, result);
                     }
-                case Spin.ArguementMode.ObjCallPair:
+                case Spin.ArgumentMode.ObjCallPair:
                     {
                         byte obj = chip.ReadByte(address++);
                         byte funct = chip.ReadByte(address++);
                         return String.Format("{0} {1}.{2}", Name, obj, funct);
                     }
-                case Spin.ArguementMode.MemoryOpCode:
+                case Spin.ArgumentMode.MemoryOpCode:
                     return String.Format("{0} {1}", Name, GetMemoryOp(chip, ref address));
             }
 

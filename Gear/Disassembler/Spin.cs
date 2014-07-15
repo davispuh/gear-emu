@@ -18,7 +18,7 @@ namespace Gear.Disassembler
             UNKNOWN_7
         }
 
-        public enum ArguementMode
+        public enum ArgumentMode
         {
             None,
             Effect,
@@ -74,13 +74,13 @@ namespace Gear.Disassembler
         {
             public string        Name          { get; private set; }
             public string        NameBrief     { get; private set; }
-            public ArguementMode ArguementMode { get; private set; }
+            public ArgumentMode  ArgumentMode  { get; private set; }
 
-            public Instruction(string Name, string NameBrief, ArguementMode ArguementMode)
+            public Instruction(string Name, string NameBrief, ArgumentMode ArgumentMode)
             {
                 this.Name          = Name;
                 this.NameBrief     = NameBrief;
-                this.ArguementMode = ArguementMode;
+                this.ArgumentMode  = ArgumentMode;
             }
         }
     }
