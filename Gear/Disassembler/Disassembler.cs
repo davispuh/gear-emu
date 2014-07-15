@@ -10,5 +10,11 @@ namespace Gear.Disassembler
         {
             public string Name { get; protected set; }
         }
+
+        public class BasicInstruction
+        {
+            public string Name      { get; protected set; }
+            public string NameBrief { get; protected set; }
+        }
     }
 }
