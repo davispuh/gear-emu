@@ -34,7 +34,7 @@ using System.Xml;
 using Gear.EmulationCore;
 using Gear.PluginSupport;
 
-/// @todo document Gear.GUI namespace
+/// @copydoc Gear.GUI
 /// 
 namespace Gear.GUI
 {
@@ -47,7 +47,7 @@ namespace Gear.GUI
         private String LastFileName;        //!< @brief Last file name opened.
         private List<Control> FloatControls;//!< @brief List of floating controls.
 
-        private Timer runTimer;
+        private Timer runTimer;             //!< @todo Document GUI.Emulator.runtimer member (what it is for???)
 
         /// @brief Emulator Constructor.
         /// @param source Binary program loaded (path & name)
@@ -79,6 +79,8 @@ namespace Gear.GUI
             hubView.Host = Chip;
         }
 
+        /// @todo Document GUI.Emulator.BreakPoint()
+        /// 
         public void BreakPoint()
         {
             runTimer.Stop();
@@ -99,11 +101,15 @@ namespace Gear.GUI
             bm.Dock = DockStyle.Fill;
             bm.Parent = t;
             documentsTab.SelectedTab = t;
-            // ASB: mantain the close button avalaibility
+            // ASB: mantain the close button availability
             if (bm.IsClosable)
+            {
                 closeButton.Enabled = true;
+            }
             else
+            {
                 closeButton.Enabled = false;
+            }
         }
 
         /// @brief Delete a plugin from a propeller chip instance.
@@ -115,14 +121,16 @@ namespace Gear.GUI
         //ASB: added method to detach a plugin from the active plugin list of the propeller instance.
         private void DetachPlugin(PluginBase bm)
         {
-            if (bm.IsClosable)      //check if the plugin is closable
+            if (bm.IsClosable)      //check if the plugin is closable, then remove...
             {
-                Chip.RemoveOnPins(bm);
-                Chip.RemoveOnClock(bm);
-                Chip.RemovePlugin(bm);
+                Chip.RemoveOnPins(bm);  //from pins watch list
+                Chip.RemoveOnClock(bm); //from clock watch list
+                Chip.RemovePlugin(bm);  //from the plugins registered to the propeller emulator
             };
         }
 
+        /// @todo Document GUI.Emulator.RunEmulatorStep
+        /// 
         private void RunEmulatorStep(object sender, EventArgs e)
         {
             for (int i = 0; i < 1024; i++)
@@ -134,6 +142,8 @@ namespace Gear.GUI
             RepaintViews();
         }
 
+        /// @todo Document GUI.Emulator.Unfloat()
+        /// 
         public void Unfloat(Control c)
         {
             TabPage tp = new TabPage(c.Text);
@@ -145,6 +155,8 @@ namespace Gear.GUI
             FloatControls.Remove(c.Parent);
         }
 
+        /// @todo Document GUI.Emulator.OpenFile()
+        /// 
         public bool OpenFile(string FileName)
         {
             try
@@ -265,12 +277,16 @@ namespace Gear.GUI
                 OpenFile(openFileDialog.FileName);
         }
 
+        /// @todo Document GUI.Emulator.reloadBinary_Click()
+        /// 
         private void reloadBinary_Click(object sender, EventArgs e)
         {
             OpenFile(LastFileName);
             Chip.Reset();
         }
 
+        /// @todo Document GUI.Emulator.OnClosed()
+        /// 
         protected override void OnClosed(EventArgs e)
         {
             foreach (Control c in FloatControls)
@@ -281,6 +297,8 @@ namespace Gear.GUI
             base.OnClosed(e);
         }
 
+        /// @todo Document GUI.Emulator.RepaintViews()
+        /// 
         private void RepaintViews()
         {
             foreach (Control s in FloatControls)
@@ -297,12 +315,16 @@ namespace Gear.GUI
             hubView.DataChanged();
         }
 
+        /// @todo Document GUI.Emulator.resetEmulator_Click()
+        /// 
         private void resetEmulator_Click(object sender, EventArgs e)
         {
             Chip.Reset();
             RepaintViews();
         }
 
+        /// @todo Document GUI.Emulator.stepEmulator_Click()
+        /// 
         private void stepEmulator_Click(object sender, EventArgs e)
         {
             Chip.Step();
@@ -334,6 +356,8 @@ namespace Gear.GUI
             }
         }
 
+        /// @todo Document GUI.Emulator.floatActiveTab_Click()
+        /// 
         private void floatActiveTab_Click(object sender, EventArgs e)
         {
             TabPage tp = documentsTab.SelectedTab;
@@ -353,6 +377,8 @@ namespace Gear.GUI
             FloatControls.Add(fw);
         }
 
+        /// @todo Document GUI.Emulator.pinActiveTab_Click()
+        /// 
         private void pinActiveTab_Click(object sender, EventArgs e)
         {
             Control oldPin = pinnedPanel.GetNextControl(null, true);
@@ -376,6 +402,8 @@ namespace Gear.GUI
             }
         }
 
+        /// @todo Document GUI.Emulator.unpinButton_Click()
+        /// 
         private void unpinButton_Click(object sender, EventArgs e)
         {
             Control oldPin = pinnedPanel.GetNextControl(null, true);
@@ -391,16 +419,22 @@ namespace Gear.GUI
             }
         }
 
+        /// @todo Document GUI.Emulator.runEmulator_Click()
+        /// 
         private void runEmulator_Click(object sender, EventArgs e)
         {
             runTimer.Start();
         }
 
+        /// @todo Document GUI.Emulator.stopEmulator_Click()
+        /// 
         private void stopEmulator_Click(object sender, EventArgs e)
         {
             runTimer.Stop();
         }
 
+        /// @todo Document GUI.Emulator.stepInstruction_Click()
+        /// 
         private void stepInstruction_Click(object sender, EventArgs e)
         {
             if (documentsTab.SelectedTab != null)
@@ -419,6 +453,8 @@ namespace Gear.GUI
             RepaintViews();
         }
 
+        /// @todo Document GUI.Emulator.OpenPlugin_Click()
+        /// 
         private void OpenPlugin_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -429,6 +465,8 @@ namespace Gear.GUI
                 LoadPlugin(openFileDialog.FileName);
         }
 
+        /// @todo Document GUI.Emulator.OnDeactivate()
+        /// 
         private void OnDeactivate(object sender, EventArgs e)
         {
             runTimer.Stop();
@@ -458,6 +496,8 @@ namespace Gear.GUI
             }
         }
 
+        /// @todo Document GUI.Emulator.documentsTab_KeyPress()
+        /// 
         private void documentsTab_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (ActiveControl is PluginBase)

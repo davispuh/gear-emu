@@ -39,8 +39,8 @@ namespace Gear.EmulationCore
 {
     public enum HubOperationCodes : uint
     {
-        HUBOP_CLKSET = 0,
-        HUBOP_COGID = 1,
+        HUBOP_CLKSET  = 0,
+        HUBOP_COGID   = 1,
         HUBOP_COGINIT = 2,
         HUBOP_COGSTOP = 3,
         HUBOP_LOCKNEW = 4,
@@ -106,11 +106,11 @@ namespace Gear.EmulationCore
         private List<PluginBase> PlugIns;
 
         //ASB: Expose constants declarations to use on the project. Now they are public.
-        public const int TOTAL_COGS = 8;
-        public const int TOTAL_LOCKS = 8;
-        public const int TOTAL_PINS = 64;
+        public const int TOTAL_COGS   = 8;
+        public const int TOTAL_LOCKS  = 8;
+        public const int TOTAL_PINS   = 64;
         public const int TOTAL_MEMORY = 0x10000;
-        public const int TOTAL_RAM = 0x8000;
+        public const int TOTAL_RAM    = 0x8000;
 
         /// @brief Propeller Constructor.
         /// 

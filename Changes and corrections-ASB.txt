@@ -1,6 +1,6 @@
-Changes and corrections - V14.07.xx
+Changes and corrections - V14.07.15
 ====================================
-Antonio Sanhueza B., July XX, 2014
+Antonio Sanhueza B., July 15, 2014
 
 +Bug fixed on closing a plugin in emulator.
     When you close a plugin (pressing the close button at the right), the plugin is still working inside the emulator: there was no way to stop it, except close the instance of the emulator. It still uses resourses and doing its job (ex. PinNoise is affecting pins) but had no tab window to see it.
@@ -8,6 +8,9 @@ Antonio Sanhueza B., July XX, 2014
 	Corrections: 1) Enable Close button seeing the PluginBase.IsClosable() attribute of each plugin Tab. 2) add new method Emulator.DettachPlugin() to terminate a plugin by user request, taking care to not using anymore to detect clock ticks or pin changes.
 
 +Started Documenting with Doxygen
+
++Corrections of C# style and .gitignore changes, suggested by davispuh.
+	+Processed 'GUI.Emulator.cs' with @todo marks.
 
 ================================================================
 
