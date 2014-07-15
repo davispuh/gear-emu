@@ -33,6 +33,8 @@ using Gear;
 using Gear.PluginSupport;
 using Gear.GUI;
 
+/// @todo Document Gear.EmulationCore namespace.
+/// 
 namespace Gear.EmulationCore
 {
     public enum HubOperationCodes : uint
@@ -103,12 +105,17 @@ namespace Gear.EmulationCore
         private List<PluginBase> PinNoiseHandlers;
         private List<PluginBase> PlugIns;
 
-        const int TOTAL_COGS = 8;
-        const int TOTAL_LOCKS = 8;
-        const int TOTAL_PINS = 64;
-        const int TOTAL_MEMORY = 0x10000;
-        const int TOTAL_RAM = 0x8000;
+        //ASB: Expose constants declarations to use on the project. Now they are public.
+        public const int TOTAL_COGS = 8;
+        public const int TOTAL_LOCKS = 8;
+        public const int TOTAL_PINS = 64;
+        public const int TOTAL_MEMORY = 0x10000;
+        public const int TOTAL_RAM = 0x8000;
 
+        /// @brief Propeller Constructor.
+        /// 
+        /// @param em Reference to the Gear.GUI.Emulator instance controlling this Propeller.
+        /// 
         public Propeller(Emulator em)
         {
             emulator = em;
@@ -390,36 +397,54 @@ namespace Gear.EmulationCore
             return (PLLGroup)ClockSources[cog];
         }
 
+        /// @brief Include a plugin in active plugin list of propeller instance
+        /// It see if the plugin exist already to insert or not.
+        /// @param[in] mod Compiled plugin reference to include
         public void IncludePlugin(PluginBase mod)
         {
             if (!(PlugIns.Contains(mod)))
                 PlugIns.Add(mod);
         }
 
+        /// @brief Remove a plugin from the active plugin list of propeller instance
+        /// Only if the plugin exists on the list, this method removes from it. 
+        /// @param[in] mod Compiled plugin reference to remove
         public void RemovePlugin(PluginBase mod)
         {
             if (PlugIns.Contains(mod))
                 PlugIns.Remove(mod);
         }
 
+        /// @brief Add a plugin to be notified on clock ticks
+        /// It see if the plugin exist already to insert or not.
+        /// @param mod Compiled plugin reference to include
         public void NotifyOnClock(PluginBase mod)
         {
             if (!(TickHandlers.Contains(mod)))
                 TickHandlers.Add(mod);
         }
 
+        /// @brief Remove a plugin from the clock notify list
+        /// Only if the plugin exists on the list, this method removes from it. 
+        /// @param mod Compiled plugin reference to remove
         public void RemoveOnClock(PluginBase mod)
         {
             if (TickHandlers.Contains(mod))
                 TickHandlers.Remove(mod);
         }
 
+        /// @brief Add a plugin to be notified on pin changes
+        /// It see if the plugin exist already to insert or not.
+        /// @param mod Compiled plugin reference to include
         public void NotifyOnPins(PluginBase mod)
         {
             if (!(PinNoiseHandlers.Contains(mod)))
                 PinNoiseHandlers.Add(mod);
         }
 
+        /// @brief Remove a plugin from the pin changed notify list
+        /// Only if the plugin exists on the list, this method removes from it. 
+        /// @param mod Compiled plugin reference to remove
         public void RemoveOnPins(PluginBase mod)
         {
             if (PinNoiseHandlers.Contains(mod))
