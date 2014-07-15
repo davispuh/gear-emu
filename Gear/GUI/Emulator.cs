@@ -34,7 +34,7 @@ using System.Xml;
 using Gear.EmulationCore;
 using Gear.PluginSupport;
 
-/// @todo document Gear.GUI namespace
+/// @copydoc Gear.GUI
 /// 
 namespace Gear.GUI
 {
@@ -103,13 +103,13 @@ namespace Gear.GUI
             documentsTab.SelectedTab = t;
             // ASB: mantain the close button availability
             if (bm.IsClosable)
-			{
+            {
                 closeButton.Enabled = true;
-			}
+            }
             else
-			{
+            {
                 closeButton.Enabled = false;
-			}
+            }
         }
 
         /// @brief Delete a plugin from a propeller chip instance.
@@ -121,11 +121,11 @@ namespace Gear.GUI
         //ASB: added method to detach a plugin from the active plugin list of the propeller instance.
         private void DetachPlugin(PluginBase bm)
         {
-            if (bm.IsClosable)      //check if the plugin is closable
+            if (bm.IsClosable)      //check if the plugin is closable, then remove...
             {
-                Chip.RemoveOnPins(bm);
-                Chip.RemoveOnClock(bm);
-                Chip.RemovePlugin(bm);
+                Chip.RemoveOnPins(bm);  //from pins watch list
+                Chip.RemoveOnClock(bm); //from clock watch list
+                Chip.RemovePlugin(bm);  //from the plugins registered to the propeller emulator
             };
         }
 

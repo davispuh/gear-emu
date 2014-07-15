@@ -35,13 +35,18 @@ using System.CodeDom.Compiler;
 using Gear.PluginSupport;
 using System.Text.RegularExpressions;
 
+/// @copydoc Gear.GUI
+/// 
 namespace Gear.GUI
 {
+    /// @todo Document Gear.GUI.
     public partial class PluginEditor : Form
     {
         /// @brief File name of current plugin on editor window
+        /// 
         private string m_SaveFileName;
         /// @brief Default font for editor code
+        /// 
         private Font defaultFont;       
 
         /// @todo document constructor PluginEditor()
@@ -66,7 +71,7 @@ namespace Gear.GUI
             errorListView.Columns.Add("Message", -2, HorizontalAlignment.Left);
         }
 
-        /// @todo document method PluginEditor::OpenFile()
+        /// @todo Document Gear.GUI.OpenFile()
         /// @todo Correct method to implement new plugin system
         public bool OpenFile(string FileName, bool displayErrors)
         {
@@ -140,8 +145,8 @@ namespace Gear.GUI
             }
         }
 
-        ///
-        /// @todo document method PluginEditor::SaveFile()
+        /// @todo Document method PluginEditor::SaveFile()
+        /// 
         public void SaveFile(string FileName)
         {
             XmlDocument xmlDoc = new XmlDocument();
@@ -259,7 +264,7 @@ namespace Gear.GUI
             }
         }
 
-        /// @todo document method PluginEditor::ErrorView_SelectedIndexChanged() 
+        /// @todo Document method PluginEditor::ErrorView_SelectedIndexChanged() 
         ///
         private void ErrorView_SelectedIndexChanged(object sender, EventArgs e)
         {
