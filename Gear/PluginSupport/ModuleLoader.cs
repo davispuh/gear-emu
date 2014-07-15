@@ -29,14 +29,20 @@ using Microsoft.CSharp;
 using System.CodeDom.Compiler;
 using System.Reflection;
 
+/// @todo Document Gear.PluginSupport namespace.
+/// 
 namespace Gear.PluginSupport
 {
     public delegate void ErrorEnumProc(CompilerError e);
 
+    /// @todo Document Gear.PluginSupport.ModuleLoader class.
+    /// 
     static class ModuleLoader
     {
-        static private CompilerErrorCollection m_Errors;
+        static private CompilerErrorCollection m_Errors;    //!< @brief Collection for error list on compile a dynamic plugin.
 
+        /// @brief ModuleLoader Constructor.
+        /// Clear error list by default.
         static ModuleLoader()
         {
             m_Errors = null;
@@ -51,6 +57,17 @@ namespace Gear.PluginSupport
                 proc(e);
         }
 
+        /// @brief Dynamic compiling & loading for a plugin.
+        /// Try to dynamically compile a module for the plugin, based on supplied C# code and other 
+        /// C# modules referenced. If the compiling fails, it gives a list of errors, intended to be 
+        /// showed in the plugin view.
+        /// @param[in] code C# Source code based on PluginBase class, to implement your plugin
+        /// @param[in] module Class name of the plugin
+        /// @param[in] references `string` array with auxiliary references used by your plugin. See notes for defaults used.
+        /// @returns New Plugin class instance compiled (on sucess), or NULL (on fail).
+        /// @note There are some references already added, so you don't need to include on your plugins: 
+        /// @note `using System;`, `using System.Data;`, `using System.Drawing;`, 
+        /// @note `using System.Windows.Forms;`, `using System.Xml;`.
         static public PluginBase LoadModule(string code, string module, string[] references)
         {
             CodeDomProvider provider = new Microsoft.CSharp.CSharpCodeProvider();

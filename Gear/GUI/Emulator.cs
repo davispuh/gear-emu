@@ -34,17 +34,24 @@ using System.Xml;
 using Gear.EmulationCore;
 using Gear.PluginSupport;
 
+/// @todo document Gear.GUI namespace
+/// 
 namespace Gear.GUI
 {
+    /// @todo Document GUI.Emulator class
+    /// 
     public partial class Emulator : Form
     {
-        private Propeller Chip;
-        private String Source;
-        private String LastFileName;
-        private List<Control> FloatControls;
+        private Propeller Chip;             //!< @brief Reference to the Propeller running instance.
+        private String Source;              //!< @brief Name of Binary program loaded.
+        private String LastFileName;        //!< @brief Last file name opened.
+        private List<Control> FloatControls;//!< @brief List of floating controls.
 
         private Timer runTimer;
 
+        /// @brief Emulator Constructor.
+        /// @param source Binary program loaded (path & name)
+        /// 
         public Emulator(string source)
         {
             Chip = new Propeller(this);
@@ -56,7 +63,7 @@ namespace Gear.GUI
             this.Text = "Propeller: " + source;
 
             // Create default layout
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < Propeller.TOTAL_COGS; i++)  //ASB: now using constant TOTAL_COGS
                 AttachPlugin(new CogView(i));
 
             AttachPlugin(new MemoryView());
@@ -78,6 +85,10 @@ namespace Gear.GUI
             RepaintViews();
         }
 
+        /// @brief Include a plugin to a propeller chip instance.
+        /// Attach a plugin, linking the propeller instance to the plugin, opening a new tab window and 
+        /// enabling the close button by plugin's closable property.
+        /// @param[in] bm Instance of a Gear.PluginSupport.PluginBase class to be attached.
         private void AttachPlugin(PluginBase bm)
         {
             Chip.IncludePlugin(bm);
@@ -90,13 +101,26 @@ namespace Gear.GUI
             documentsTab.SelectedTab = t;
             // ASB: mantain the close button avalaibility
             if (bm.IsClosable)
-            {
                 closeButton.Enabled = true;
-            }
             else
-            {
                 closeButton.Enabled = false;
-            }
+        }
+
+        /// @brief Delete a plugin from a propeller chip instance.
+        /// Delete a plugin from the actives plugins of the propeller instance, efectibly stopping the plugin.
+        /// Remove also from pins and clock watch list.
+        /// @param bm Instance of a Gear.PluginSupport.PluginBase class to be detached.
+        /// @todo add '\@version' tag to tell the new Method added.
+        /// 
+        //ASB: added method to detach a plugin from the active plugin list of the propeller instance.
+        private void DetachPlugin(PluginBase bm)
+        {
+            if (bm.IsClosable)      //check if the plugin is closable
+            {
+                Chip.RemoveOnPins(bm);
+                Chip.RemoveOnClock(bm);
+                Chip.RemovePlugin(bm);
+            };
         }
 
         private void RunEmulatorStep(object sender, EventArgs e)
@@ -141,6 +165,14 @@ namespace Gear.GUI
             }
         }
 
+        /// @brief Load a plugin from XML file.
+        /// Try to open the xml definition for the plugin from the file name given as parameter.
+        /// Then extract information from the XML (class name, auxiliary references and source code to compile), 
+        /// trying to compile the C# source code (based on Gear.PluginSupport.PluginBase class) and returning the new class instance.
+        /// If the compilation fails, then it opens the plugin editor to show errors and source code.
+        /// @param[in] FileName Name and path to the XML plugin file to open
+        /// @returns Reference to the new plugin instance (on success) or NULL (on fail).
+        /// 
         public PluginBase LoadPlugin(string FileName)
         {
             XmlTextReader tr = new XmlTextReader(FileName);
@@ -175,19 +207,19 @@ namespace Gear.GUI
                     }
                 }
 
-
+                //ASB: Dynamic load and compile the plugin module as a class
                 PluginBase bm = ModuleLoader.LoadModule(code, instanceName, references.ToArray());
 
-                if (bm == null)
+                if (bm == null)     //ASB: if it fails...
                 {
-                    PluginEditor pe = new PluginEditor();
+                    PluginEditor pe = new PluginEditor();   //ASB: ...open plugin editor in other window
                     pe.OpenFile(FileName, true);
                     pe.MdiParent = this.MdiParent;
                     pe.Show();
                 }
-                else
+                else               //ASB: if success compiling & instanciate the new class...
                 {
-                    AttachPlugin(bm);
+                    AttachPlugin(bm);   //ASB: ...add the reference to the plugin list of the emulator instance
                 }
 
                 return bm;
@@ -218,6 +250,10 @@ namespace Gear.GUI
             }
         }
 
+        /// @brief Select binary propeller image to load.
+        /// 
+        /// @param[in] sender Reference to object where event was raised.
+        /// @param[in] e Event data arguments.
         private void openBinary_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -273,18 +309,28 @@ namespace Gear.GUI
             RepaintViews();
         }
 
+        /// @brief Close the plugin window and terminate the plugin instance.
+        /// Not only close the tab window, also detach the plugin from the Propeller what uses it.
+        /// @param[in] sender Reference to object where event was raised.
+        /// @param[in] e Event data arguments.
         private void closeActiveTab_Click(object sender, EventArgs e)
         {
             TabPage tp = documentsTab.SelectedTab;
             PluginBase p = (PluginBase)tp.Controls[0];
-
-            if (p.IsClosable)
+            
+            if (p != null)          //test if cast to PluginBase works...
             {
-                if (documentsTab.SelectedIndex > 0)
+                if (p.IsClosable)   //... so, test if we can close the tab 
                 {
-                    documentsTab.SelectedIndex = documentsTab.SelectedIndex - 1;
-                }
-                tp.Parent = null;
+                    if (documentsTab.SelectedIndex > 0)
+                    {
+                        documentsTab.SelectedIndex = documentsTab.SelectedIndex - 1;    //ASB: select the previous tab
+                        documentsTab_Click(this, e);    //ASB: tab changing housekeeping for plugin close button
+                        this.DetachPlugin(p);           //ASB: detach the plugin from the emulator
+                        p.Dispose();
+                    }
+                    tp.Parent = null;   //delete the reference to plugin
+                };
             }
         }
 
@@ -388,7 +434,13 @@ namespace Gear.GUI
             runTimer.Stop();
         }
 
-        // ASB: Method to mantain close button avaibility when tab is changed
+        /// @brief Determine avalaibility of close plugin button when tab is changed.
+        /// Enable close plugin button based on if active tab is subclass of Gear.PluginSupport.PluginBase 
+        /// and if that class permit close the window. Tipically the user plugins enabled it; but 
+        /// the cog window, main memory, logic probe, etc, don't allow to close.
+        /// @param[in] sender Reference to object where event was raised.
+        /// @param[in] e Event data arguments.
+        /// @version V14.07.03 - Added.
         private void documentsTab_Click(object sender, EventArgs e)
         {
             TabPage tp = documentsTab.SelectedTab;
@@ -396,13 +448,9 @@ namespace Gear.GUI
             {
                 PluginBase b = (tp.Controls[0]) as PluginBase;
                 if (b.IsClosable)
-                {
                     closeButton.Enabled = true;
-                }
                 else
-                {
                     closeButton.Enabled = false;
-                }
             }
             else
             {

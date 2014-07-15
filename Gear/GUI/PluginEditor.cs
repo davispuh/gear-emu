@@ -39,9 +39,13 @@ namespace Gear.GUI
 {
     public partial class PluginEditor : Form
     {
+        /// @brief File name of current plugin on editor window
         private string m_SaveFileName;
-        private Font defaultFont;       // ASB: default font for editor code
+        /// @brief Default font for editor code
+        private Font defaultFont;       
 
+        /// @todo document constructor PluginEditor()
+        ///
         public PluginEditor()
         {
             InitializeComponent();
@@ -62,6 +66,8 @@ namespace Gear.GUI
             errorListView.Columns.Add("Message", -2, HorizontalAlignment.Left);
         }
 
+        /// @todo document method PluginEditor::OpenFile()
+        /// @todo Correct method to implement new plugin system
         public bool OpenFile(string FileName, bool displayErrors)
         {
             XmlTextReader tr = new XmlTextReader(FileName);
@@ -134,6 +140,8 @@ namespace Gear.GUI
             }
         }
 
+        ///
+        /// @todo document method PluginEditor::SaveFile()
         public void SaveFile(string FileName)
         {
             XmlDocument xmlDoc = new XmlDocument();
@@ -161,6 +169,10 @@ namespace Gear.GUI
             m_SaveFileName = FileName;
         }
 
+        /// @brief Method to compile C# source code to check errors on it.
+        /// Actually call a C# compiler to determine errors, using references.
+        /// @param[in] sender Object who called this on event
+        /// @param[in] e <c>EventArgs</c> class with a list of argument to the event call
         private void CheckSource_Click(object sender, EventArgs e)
         {
             string[] refs = new string[referencesList.Items.Count];
@@ -171,13 +183,16 @@ namespace Gear.GUI
                 refs[i++] = s;
 
             if (ModuleLoader.LoadModule(codeEditorView.Text, instanceName.Text, refs) != null)
-                MessageBox.Show("Script compiled without errors.");
+                MessageBox.Show("Script compiled without errors.","Plugin Editor - Check source.");
             else
             {
                 ModuleLoader.EnumerateErrors(EnumErrors);
             }
         }
 
+        /// @brief Add error details on screen list.
+        /// 
+        /// @param[in] e <c>CompileError</c> object 
         private void EnumErrors(CompilerError e)
         {
             ListViewItem item = new ListViewItem(e.ErrorNumber, 0);
@@ -188,7 +203,10 @@ namespace Gear.GUI
 
             errorListView.Items.Add(item);
         }
-
+        /// @brief Show dialog to load a file with plugin information.
+        ///
+        /// @param[in] sender Object who called this on event
+        /// @param[in] e <c>EventArgs</c> class with a list of argument to the event call
         private void OpenButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -201,6 +219,10 @@ namespace Gear.GUI
             }
         }
 
+        /// @brief Show dialog to save a plugin information into file, using GEAR plugin format.
+        ///
+        /// @param[in] sender Object who called this on event
+        /// @param[in] e <c>EventArgs</c> class with a list of argument to the event call
         private void SaveButton_Click(object sender, EventArgs e)
         {
             if (m_SaveFileName != null)
@@ -209,6 +231,10 @@ namespace Gear.GUI
                 SaveAsButton_Click(sender, e);
         }
 
+        /// @brief Show dialog to save a plugin information into file, using GEAR plugin format.
+        ///
+        /// @param[in] sender Object who called this on event
+        /// @param[in] e <c>EventArgs</c> class with a list of argument to the event call
         private void SaveAsButton_Click(object sender, EventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -221,6 +247,10 @@ namespace Gear.GUI
             }
         }
 
+        /// @brief Remove the selected reference of the list
+        /// 
+        /// @param[in] sender Object who called this on event
+        /// @param[in] e <c>EventArgs</c> class with a list of argument to the event call
         private void RemoveButton_Click(object sender, EventArgs e)
         {
             if (referencesList.SelectedIndex != -1)
@@ -229,6 +259,8 @@ namespace Gear.GUI
             }
         }
 
+        /// @todo document method PluginEditor::ErrorView_SelectedIndexChanged() 
+        ///
         private void ErrorView_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (errorListView.SelectedIndices.Count < 1)
@@ -254,12 +286,22 @@ namespace Gear.GUI
             return;
         }
 
-        private void toolStripButton1_Click(object sender, EventArgs e)
+        /// @brief Add a reference from the `ReferenceName`text box.
+        /// @todo add '\@version' tag to tell the change on the name of method from `toolStripButton1_Click()`
+        /// @param[in] sender Object who called this on event
+        /// @param[in] e <c>EventArgs</c> class with a list of argument to the event call
+        private void addReferenceButton_Click(object sender, EventArgs e)
         {
             referencesList.Items.Add(referenceName.Text);
             referenceName.Text = "";
         }
 
+        /// @brief Check syntax on the C# source code
+        /// 
+        /// @param[in] sender Object who called this on event
+        /// @param[in] e <c>EventArgs</c> class with a list of argument to the event call
+        /// @since V14.07.03
+        /// @note Experimental highlighting. Probably changes in the future
         // ASB: sintax highlighting
         private void syntaxButton_Click(object sender, EventArgs e)
         {
@@ -276,6 +318,12 @@ namespace Gear.GUI
             codeEditorView.Enabled = true;
         }
 
+        /// @brief Auxiliary method to check syntax.
+        /// Examines line by line, parsing reserved C# words.
+        /// In this
+        /// @param[in] line Text line from the source code.
+        /// @since V14.07.03
+        /// @note Experimental highlighting. Probably changes in the future.
         // ASB: parse line for sintax highlighting
         private void ParseLine(string line)
         {

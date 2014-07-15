@@ -1,1 +1,1 @@
-"c:\Program Files\Mono-1.2.2.1\bin\gmcs" -r:System.dll -r:System.Data.dll -r:System.Design.dll -r:System.Drawing.dll -r:System.Windows.Forms.dll -r:System.Xml.dll Gear\*.cs Gear\EmulationCore\*.cs Gear\PluginSupport\*.cs Gear\Properties\*.cs Gear\GUI\*.cs 
+"C:\Program Files (x86)\Mono-3.2.3\bin\gmcs" -r:System.dll -r:System.Data.dll -r:System.Design.dll -r:System.Drawing.dll -r:System.Windows.Forms.dll -r:System.Xml.dll Gear\*.cs Gear\EmulationCore\*.cs Gear\PluginSupport\*.cs Gear\Properties\*.cs Gear\GUI\*.cs Gear\GUI\LogicProbe\*.cs Gear\Disassembler\*.cs

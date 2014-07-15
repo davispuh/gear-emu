@@ -50,6 +50,8 @@ namespace Gear.GUI
             }
         }
 
+        /// @brief update screen data on event
+        /// 
         public void DataChanged()
         {
             if (m_Host == null)
@@ -67,11 +69,6 @@ namespace Gear.GUI
             clockMode.Text = m_Host.Clock;
 
             ringMeter.Value = m_Host.Ring;
-        }
-
-        private void label11_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void HubView_Load(object sender, EventArgs e)

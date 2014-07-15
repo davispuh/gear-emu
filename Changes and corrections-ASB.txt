@@ -1,3 +1,16 @@
+Changes and corrections - V14.07.xx
+====================================
+Antonio Sanhueza B., July XX, 2014
+
++Bug fixed on closing a plugin in emulator.
+    When you close a plugin (pressing the close button at the right), the plugin is still working inside the emulator: there was no way to stop it, except close the instance of the emulator. It still uses resourses and doing its job (ex. PinNoise is affecting pins) but had no tab window to see it.
+	
+	Corrections: 1) Enable Close button seeing the PluginBase.IsClosable() attribute of each plugin Tab. 2) add new method Emulator.DettachPlugin() to terminate a plugin by user request, taking care to not using anymore to detect clock ticks or pin changes.
+
++Started Documenting with Doxygen
+
+================================================================
+
 Changes and corrections - V14.07.03
 ====================================
 Antonio Sanhueza B., July 3, 2014
@@ -47,12 +60,4 @@ When I tried to test a modified Servo32v9 obex object in GEAR, I can see the PAS
 +Plugin editor enhancements.
     Experimental C# sintax highlighting of code. Now the name of the file is displayed on the title of the window. Added tooltips to be more self explaining.
 
-+Bug fixed on closing a plugin in emulator.
-    When you close a plugin (pressing the close button at the right), the plugin is still working inside the emulator: there was no way to stop it, except close the instance of the emulator. It still uses resourses and doing its job (ex. PinNoise is affecting pins) but had no tab window to see it.
-	
-	Corrections: 1) Enable Close button seeing the PluginBase.IsClosable attribute of each plugin Tab. 2) 
-================================================================
-    TODO: junto con el cambio de posición de botón Close para plugin, hacer que al cambiarse de pestańa lea el atributo PluginBase.IsClosable y segśn eso habilite o no el botón Close.
-    TODO: utilizar método Propeller.RemovePlugin(.) en nuevo metodo Emulator.DettachPlugin(.) que sea llamado desde closeActiveTab_Click(.) para matar el plugin y cerrar su ventana.
-    TODO: agregar propiedad a clase PluginBase, para permitir una sola instancia o no: 'SingleInstanceOnly'. Al cargar un plugin se debe revisar si ese atributo para permitir o no otra instancia, dentro de æmétodo Emulator.AttachPlugin(.)?
     TODO: agregar propiedades al XML del plugin para permitir agregar descripción del plugin, autor, versión, fecha. Agregar botón o leyenda o algo a la pestańa para indicar esas propiedades. Hacer que se habilite/desabilite el botón "About" en la barra para un plugin, segśn disponga esos datos.
