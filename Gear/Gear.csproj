@@ -78,6 +78,7 @@
     <Compile Include="EmulationCore\InstructionDisassembler.cs" />
     <Compile Include="EmulationCore\FreqGenerator.cs" />
     <Compile Include="EmulationCore\InterpretedCog.cs" />
+    <Compile Include="EmulationCore\MemoryManager.cs" />
     <Compile Include="EmulationCore\NativeCog.cs" />
     <Compile Include="EmulationCore\PLL.cs" />
     <Compile Include="EmulationCore\PLLGroup.cs" />

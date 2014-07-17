@@ -108,9 +108,9 @@ namespace Gear.EmulationCore
             return text;
         }
 
-        private static uint GetPackedLiteral(Propeller chip, ref uint address)
+        private static uint GetPackedLiteral(MemoryManager memory)
         {
-            byte op = chip.ReadByte(address++);
+            byte op = memory.ReadByte();
 
             if (op >= 0x80)
                 // TODO: COMPLAIN!
@@ -126,21 +126,21 @@ namespace Gear.EmulationCore
             return data;
         }
 
-        private static int GetPackedOffset(Propeller chip, ref uint address)
+        private static int GetPackedOffset(MemoryManager memory)
         {
-            ushort op = chip.ReadByte(address++);
+            ushort op = memory.ReadByte();
 
             if ((op & 0x80) == 0)
                 return (op & 0x7F);
 
             op &= 0x7F;
 
-            return (op << 8) | (chip.ReadByte(address++));
+            return (op << 8) | (memory.ReadByte());
         }
 
-        private static short GetSignedPackedOffset(Propeller chip, ref uint address)
+        private static short GetSignedPackedOffset(MemoryManager memory)
         {
-            short op = chip.ReadByte(address++);
+            short op = memory.ReadByte();
             bool extended = (op & 0x80) != 0;
 
             op = (short)((op & 0x7F) | ((op << 1) & 0x80));
@@ -148,12 +148,12 @@ namespace Gear.EmulationCore
             if (!extended)
                 return (short)(sbyte)op;
 
-            return (short)((op << 8) | chip.ReadByte(address++));
+            return (short)((op << 8) | memory.ReadByte());
         }
 
-        private static string GetEffectCode(Propeller chip, ref uint address, bool useShortOpcodes)
+        private static string GetEffectCode(MemoryManager memory, bool useShortOpcodes)
         {
-            Spin.ParsedAssignment ParsedAssignment = new Spin.ParsedAssignment(chip.ReadByte(address++));
+            Spin.ParsedAssignment ParsedAssignment = new Spin.ParsedAssignment(memory.ReadByte());
 
             string effect = ParsedAssignment.Push ? "" : "POP ";
 
@@ -174,7 +174,7 @@ namespace Gear.EmulationCore
                     case Spin.ArgumentMode.None:
                         break;
                     case Spin.ArgumentMode.SignedPackedOffset:
-                        effect += " " + GetSignedPackedOffset(chip, ref address);
+                        effect += " " + GetSignedPackedOffset(memory);
                         break;
                     default:
                         throw new Exception("Unexpected Spin Argument Mode: " + SubAssignment.ArgumentMode.ToString());
@@ -184,9 +184,9 @@ namespace Gear.EmulationCore
             return effect;
         }
 
-        public static string GetMemoryOp(Propeller chip, ref uint address, bool useShortOpcodes)
+        public static string GetMemoryOp(MemoryManager memory, bool useShortOpcodes)
         {
-            Spin.ParsedMemoryOperation OP = new Spin.ParsedMemoryOperation(chip.ReadByte(address++));
+            Spin.ParsedMemoryOperation OP = new Spin.ParsedMemoryOperation(memory.ReadByte());
 
             string Name = OP.GetRegister().Name;
 
@@ -197,13 +197,13 @@ namespace Gear.EmulationCore
                 case Spin.MemoryAction.POP:
                     return String.Format("POP {0}", Name);
                 case Spin.MemoryAction.EFFECT:
-                    return String.Format("EFFECT {0} {1}", Name, GetEffectCode(chip, ref address, useShortOpcodes));
+                    return String.Format("EFFECT {0} {1}", Name, GetEffectCode(memory, useShortOpcodes));
                 default:
                     return String.Format("UNKNOWN_{0} {1}", OP.Action, Name);
             }
         }
 
-        public static string InterpreterText(Propeller chip, ref uint address, bool displayAsHexadecimal, bool useShortOpcodes)
+        public static string InterpreterText(MemoryManager memory, bool displayAsHexadecimal, bool useShortOpcodes)
         {
             string format;
             if (displayAsHexadecimal)
@@ -215,7 +215,7 @@ namespace Gear.EmulationCore
                 format = "{0} {1}";
             }
 
-            Spin.Instruction Instr = Spin.Instructions[chip.ReadByte(address++)];
+            Spin.Instruction Instr = Spin.Instructions[memory.ReadByte()];
 
             string Name;
             if (useShortOpcodes)
@@ -232,18 +232,18 @@ namespace Gear.EmulationCore
                 case Spin.ArgumentMode.None:
                     return Name;
                 case Spin.ArgumentMode.UnsignedOffset:
-                    return String.Format(format, Name, GetPackedOffset(chip, ref address));
+                    return String.Format(format, Name, GetPackedOffset(memory));
                 case Spin.ArgumentMode.UnsignedEffectedOffset:
                     {
-                        int arg = GetPackedOffset(chip, ref address);
+                        int arg = GetPackedOffset(memory);
                         format = "{0} {1} {2}";
-                        return String.Format(format, Name, arg, GetEffectCode(chip, ref address, useShortOpcodes));
+                        return String.Format(format, Name, arg, GetEffectCode(memory, useShortOpcodes));
                     }
                 case Spin.ArgumentMode.Effect:
-                    return String.Format(format, Name, GetEffectCode(chip, ref address, useShortOpcodes));
+                    return String.Format(format, Name, GetEffectCode(memory, useShortOpcodes));
                 case Spin.ArgumentMode.SignedOffset:
                     {
-                        uint result = chip.ReadByte(address++);
+                        uint result = memory.ReadByte();
 
                         if ((result & 0x80) == 0)
                         {
@@ -252,7 +252,7 @@ namespace Gear.EmulationCore
                         }
                         else
                         {
-                            result = (result << 8) | chip.ReadByte(address++);
+                            result = (result << 8) | memory.ReadByte();
 
                             if ((result & 0x4000) != 0)
                                 result |= 0xFFFF8000;
@@ -260,16 +260,16 @@ namespace Gear.EmulationCore
                         return String.Format(format, Name, (int)result);
                     }
                 case Spin.ArgumentMode.PackedLiteral:
-                    return String.Format(format, Name, GetPackedLiteral(chip, ref address));
+                    return String.Format(format, Name, GetPackedLiteral(memory));
                 case Spin.ArgumentMode.ByteLiteral:
-                    return String.Format(format, Name, chip.ReadByte(address++));
+                    return String.Format(format, Name, memory.ReadByte());
                 case Spin.ArgumentMode.WordLiteral:
                     {
                         int result = 0;
                         for (int i = 0; i < 2; i++)
                         {
                             result <<= 8;
-                            result |= chip.ReadByte(address++);
+                            result |= memory.ReadByte();
                         }
                         return String.Format(format, Name, result);
                     }
@@ -279,7 +279,7 @@ namespace Gear.EmulationCore
                         for (int i = 0; i < 3; i++)
                         {
                             result <<= 8;
-                            result |= chip.ReadByte(address++);
+                            result |= memory.ReadByte();
                         }
                         return String.Format(format, Name, result);
                     }
@@ -289,18 +289,18 @@ namespace Gear.EmulationCore
                         for (int i = 0; i < 4; i++)
                         {
                             result <<= 8;
-                            result |= chip.ReadByte(address++);
+                            result |= memory.ReadByte();
                         }
                         return String.Format(format, Name, result);
                     }
                 case Spin.ArgumentMode.ObjCallPair:
                     {
-                        byte obj = chip.ReadByte(address++);
-                        byte funct = chip.ReadByte(address++);
+                        byte obj = memory.ReadByte();
+                        byte funct = memory.ReadByte();
                         return String.Format("{0} {1}.{2}", Name, obj, funct);
                     }
                 case Spin.ArgumentMode.MemoryOpCode:
-                    return String.Format("{0} {1}", Name, GetMemoryOp(chip, ref address, useShortOpcodes));
+                    return String.Format("{0} {1}", Name, GetMemoryOp(memory, useShortOpcodes));
                 default:
                     throw new Exception("Uknown Spin Argument Mode: " + Instr.ArgumentMode.ToString());
             }

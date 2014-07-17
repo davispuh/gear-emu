@@ -213,16 +213,16 @@ namespace Gear.GUI
             {
                 uint y = 0;
 
-                for (uint i = (uint)positionScroll.Value, line = 1;
-                    y < ClientRectangle.Height;
-                    y += (uint)MonoFont.Height, line++)
+                for (uint i = (uint)positionScroll.Value, line = 1; y < ClientRectangle.Height; y += (uint)MonoFont.Height, line++)
                 {
                     if (i > 0xFFFF)
                         continue;
 
                     uint start = i;
 
-                    string inst = InstructionDisassembler.InterpreterText(Chip, ref i, displayAsHexadecimal, useShortOpcodes);
+                    MemoryManager mem = new MemoryManager(Chip, i);
+                    string inst = InstructionDisassembler.InterpreterText(mem, displayAsHexadecimal, useShortOpcodes);
+                    i = mem.Address;
                     display = String.Format("{0:X4}: ", start);
                     InterpAddress[line] = start;
 
@@ -230,7 +230,7 @@ namespace Gear.GUI
                     {
                         if (q < i)
                         {
-                            byte b = Chip.ReadByte(q);
+                            byte b = Chip.DirectReadByte(q);
                             display += String.Format(" {0:X2}", b);
                         }
                         else
@@ -263,17 +263,15 @@ namespace Gear.GUI
                 DrawString(g, String.Format("@Loc[0] = ${0:X4} {0}", host.Local));
                 DrawString(g, String.Format("@Var[0] = ${0:X4} {0}", host.Variable));
                 g.DrawLine(Pens.Black, assemblyPanel.Width - StackMargin, StringY, assemblyPanel.Width, StringY);
-                DrawString(g, String.Format("Caller& = ${0:X4} {0}", Chip.ReadWord(host.Local - 8)));
-                DrawString(g, String.Format("          ${0:X4} {0}", Chip.ReadWord(host.Local - 6)));
-                DrawString(g, String.Format("          ${0:X4} {0}", Chip.ReadWord(host.Local - 4)));
-                DrawString(g, String.Format("Return& = ${0:X4}", Chip.ReadWord(host.Local - 2)));
+                DrawString(g, String.Format("Caller& = ${0:X4} {0}", Chip.DirectReadWord(host.Local - 8)));
+                DrawString(g, String.Format("          ${0:X4} {0}", Chip.DirectReadWord(host.Local - 6)));
+                DrawString(g, String.Format("          ${0:X4} {0}", Chip.DirectReadWord(host.Local - 4)));
+                DrawString(g, String.Format("Return& = ${0:X4}", Chip.DirectReadWord(host.Local - 2)));
                 g.DrawLine(Pens.Black, assemblyPanel.Width - StackMargin, StringY, assemblyPanel.Width, StringY);
 
-                for (uint i = host.Local;
-                    i < host.Stack && StringY < ClientRectangle.Height;
-                    i += 4)
+                for (uint i = host.Local; i < host.Stack && StringY < ClientRectangle.Height; i += 4)
                 {
-                    DrawString(g, String.Format("${0:X8}  {0}", (int)Chip.ReadLong(i)));
+                    DrawString(g, String.Format("${0:X8}  {0}", (int)Chip.DirectReadLong(i)));
                 }
             }
         }

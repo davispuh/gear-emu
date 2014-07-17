@@ -364,7 +364,7 @@ namespace Gear.EmulationCore
             switch (State)
             {
                 case CogRunState.WAIT_LOAD_PROGRAM:
-                    Memory[StateCount++] = Hub.ReadLong(ProgramAddress);
+                    Memory[StateCount++] = Hub.DirectReadLong(ProgramAddress);
                     ProgramAddress += 4;
 
                     if (StateCount == 0x1F0)

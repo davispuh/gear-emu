@@ -58,7 +58,7 @@ namespace Gear.EmulationCore
         INPUT_HI,
     }
 
-    public partial class Propeller
+    public partial class Propeller : DirectMemory
     {
         static private string[] CLKSEL = new string[] {
             "RCFAST",
@@ -76,7 +76,6 @@ namespace Gear.EmulationCore
         };
 
         private Cog[] Cogs;
-        private byte[] Memory;
         private byte[] ResetMemory;
 
         private bool[] LocksAvailable;
@@ -173,16 +172,6 @@ namespace Gear.EmulationCore
             get
             {
                 return RingPosition;
-            }
-        }
-
-        public byte this[int offset]
-        {
-            get
-            {
-                if (offset >= Memory.Length)
-                    return 0x55;
-                return Memory[offset];
             }
         }
 
@@ -361,8 +350,8 @@ namespace Gear.EmulationCore
             ResetMemory = new byte[Memory.Length];
             Memory.CopyTo(ResetMemory, 0);
 
-            CoreFreq = ReadLong(0);
-            ClockMode = ReadByte(4);
+            CoreFreq = DirectReadLong(0);
+            ClockMode = DirectReadByte(4);
 
             if ((ClockMode & 0x18) != 0)
             {
@@ -374,9 +363,9 @@ namespace Gear.EmulationCore
             }
 
             // Write termination code (just in case)
-            uint address = (uint)ReadWord(0x0A) - 8;  // Load the end of the binary
-            WriteLong(address, 0xFFFFF9FF);
-            WriteLong(address + 4, 0xFFFFF9FF);
+            uint address = (uint)DirectReadWord(0x0A) - 8;  // Load the end of the binary
+            DirectWriteLong(address, 0xFFFFF9FF);
+            DirectWriteLong(address + 4, 0xFFFFF9FF);
 
             Reset();
         }
@@ -522,12 +511,12 @@ namespace Gear.EmulationCore
             // Pushes the 3 primary offsets (local offset, var offset, and object offset)
             // Stack -1 is the boot parameter
 
-            uint InitFrame = ReadWord(10);
+            uint InitFrame = DirectReadWord(10);
 
-            WriteWord(InitFrame - 8, ReadWord(6));  // Object
-            WriteWord(InitFrame - 6, ReadWord(8));  // Var
-            WriteWord(InitFrame - 4, ReadWord(12)); // Local
-            WriteWord(InitFrame - 2, ReadWord(14)); // Stack
+            DirectWriteWord(InitFrame - 8, DirectReadWord(6));  // Object
+            DirectWriteWord(InitFrame - 6, DirectReadWord(8));  // Var
+            DirectWriteWord(InitFrame - 4, DirectReadWord(12)); // Local
+            DirectWriteWord(InitFrame - 2, DirectReadWord(14)); // Stack
 
             // Boot parameter is Inital PC in the lo word, and the stack frame in the hi word
             ClockSources[0] = new PLLGroup();
@@ -678,51 +667,6 @@ namespace Gear.EmulationCore
                 PinHi &= ~mask;
 
             pinChange = true;
-        }
-
-        public byte ReadByte(uint address)
-        {
-            return Memory[address & 0xFFFF];
-        }
-
-        public ushort ReadWord(uint address)
-        {
-            address &= 0xFFFFFFFE;
-            return (ushort)(Memory[(address++) & 0xFFFF]
-                | (Memory[(address++) & 0xFFFF] << 8));
-        }
-
-        public uint ReadLong(uint address)
-        {
-            address &= 0xFFFFFFFC;
-
-            return (uint)Memory[(address++) & 0xFFFF]
-                | (uint)(Memory[(address++) & 0xFFFF] << 8)
-                | (uint)(Memory[(address++) & 0xFFFF] << 16)
-                | (uint)(Memory[(address++) & 0xFFFF] << 24);
-        }
-
-        public void WriteByte(uint address, uint value)
-        {
-            if ((address & 0x8000) != 0)
-                return;
-            Memory[(address++) & 0x7FFF] = (byte)value;
-        }
-
-        public void WriteWord(uint address, uint value)
-        {
-            address &= 0xFFFFFFFE;
-            WriteByte(address++, (byte)value);
-            WriteByte(address++, (byte)(value >> 8));
-        }
-
-        public void WriteLong(uint address, uint value)
-        {
-            address &= 0xFFFFFFFC;
-            WriteByte(address++, (byte)value);
-            WriteByte(address++, (byte)(value >> 8));
-            WriteByte(address++, (byte)(value >> 16));
-            WriteByte(address++, (byte)(value >> 24));
         }
 
         public uint LockSet(uint number, bool set)

@@ -89,33 +89,33 @@ namespace Gear.GUI
             TreeNode root = objectView.Nodes.Add("Spin");
             TreeNode node;
 
-            node = root.Nodes.Add(String.Format("System Frequency: {0}mhz", Host.ReadLong(0)));
+            node = root.Nodes.Add(String.Format("System Frequency: {0}mhz", Host.DirectReadLong(0)));
             node.Tag = (int)0;
-            node = root.Nodes.Add(String.Format("Clock Mode: {0:X2}", Host.ReadByte(4)));
+            node = root.Nodes.Add(String.Format("Clock Mode: {0:X2}", Host.DirectReadByte(4)));
             node.Tag = (int)4;
-            node = root.Nodes.Add(String.Format("Check Sum: {0:X2}", Host.ReadByte(5)));
+            node = root.Nodes.Add(String.Format("Check Sum: {0:X2}", Host.DirectReadByte(5)));
             node.Tag = (int)5;
-            node = root.Nodes.Add(String.Format("Root Object: {0:X4}", Host.ReadWord(6)));
+            node = root.Nodes.Add(String.Format("Root Object: {0:X4}", Host.DirectReadWord(6)));
             node.Tag = (int)6;
-            node = root.Nodes.Add(String.Format("Variable Base: {0:X4}", Host.ReadWord(8)));
+            node = root.Nodes.Add(String.Format("Variable Base: {0:X4}", Host.DirectReadWord(8)));
             node.Tag = (int)8;
-            node = root.Nodes.Add(String.Format("Local Frame: {0:X4}", Host.ReadWord(10)));
+            node = root.Nodes.Add(String.Format("Local Frame: {0:X4}", Host.DirectReadWord(10)));
             node.Tag = (int)10;
-            node = root.Nodes.Add(String.Format("Entry PC: {0:X4}", Host.ReadWord(12)));
+            node = root.Nodes.Add(String.Format("Entry PC: {0:X4}", Host.DirectReadWord(12)));
             node.Tag = (int)12;
-            node = root.Nodes.Add(String.Format("Starting Stack: {0:X4}", Host.ReadWord(14)));
+            node = root.Nodes.Add(String.Format("Starting Stack: {0:X4}", Host.DirectReadWord(14)));
             node.Tag = (int)14;
 
             for (i = 0; i < 16; i++)
                 Colorize[i] = Brushes.White;
 
-            for (i = Host.ReadWord(0x8); i < Host.ReadWord(0xA); i++)
+            for (i = Host.DirectReadWord(0x8); i < Host.DirectReadWord(0xA); i++)
                 Colorize[i] = Brushes.LightYellow;
 
             for (; i < 0x8000; i++)
                 Colorize[i] = Brushes.LightGray;
 
-            ColorObject(Host.ReadWord(0x6), Host.ReadWord(0x8), root);
+            ColorObject(Host.DirectReadWord(0x6), Host.DirectReadWord(0x8), root);
         }
 
         private void ColorObject(uint objFrame, uint varFrame, TreeNode root)
@@ -128,9 +128,9 @@ namespace Gear.GUI
             root.Nodes.Add(String.Format("Variable Space {0:X4}", varFrame)).Tag = (int)varFrame;
             Colorize[varFrame] = Brushes.LightBlue;
 
-            ushort size = Host.ReadWord(objFrame);
-            byte longs = Host.ReadByte(objFrame + 2);
-            byte objects = Host.ReadByte(objFrame + 3);
+            ushort size = Host.DirectReadWord(objFrame);
+            byte longs = Host.DirectReadByte(objFrame + 2);
+            byte objects = Host.DirectReadByte(objFrame + 3);
 
             for (i = 0; i < longs * 4; i++)
                 Colorize[i + objFrame] = Brushes.LightPink;
@@ -139,11 +139,11 @@ namespace Gear.GUI
             for (; i < size; i++)
                 Colorize[i + objFrame] = Brushes.LightGreen;
 
-            addrnext = Host.ReadWord(1 * 4 + objFrame) + objFrame;
+            addrnext = Host.DirectReadWord(1 * 4 + objFrame) + objFrame;
             for (i = 1; i < longs; i++)
             {
                 addr = addrnext;
-                addrnext = Host.ReadWord((i + 1) * 4 + objFrame) + objFrame;
+                addrnext = Host.DirectReadWord((i + 1) * 4 + objFrame) + objFrame;
                 if (i == longs - 1)
                 {
                     addrnext = addr + 1;
@@ -154,8 +154,8 @@ namespace Gear.GUI
             }
 
             for (i = 0; i < objects; i++)
-                ColorObject(Host.ReadWord((longs + i) * 4 + objFrame) + objFrame,
-                    Host.ReadWord((longs + i) * 4 + 2 + objFrame) + varFrame, root);
+                ColorObject(Host.DirectReadWord((longs + i) * 4 + objFrame) + objFrame,
+                    Host.DirectReadWord((longs + i) * 4 + 2 + objFrame) + varFrame, root);
         }
 
         private void ColorFunction(uint functFrame, uint functFrameEnd, TreeNode root)
@@ -187,7 +187,7 @@ namespace Gear.GUI
                 // Draw the line of data
                 for (int x = 0, dx = a.Width; y < 0x10000 && x < 16; x++, dx += s.Width, y++)
                 {
-                    byte data = Host.ReadByte((uint)y);
+                    byte data = Host.DirectReadByte((uint)y);
                     g.FillRectangle(Colorize[y], new Rectangle(dx, dy, s.Width, s.Height));
 
                     // if (data > 32 && data < 127)

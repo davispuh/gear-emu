@@ -176,13 +176,13 @@ namespace Gear.EmulationCore
                 case CogRunState.HUB_RDBYTE:
                     if (WriteResult)
                     {
-                        DataResult = Hub.ReadByte(SourceValue);
+                        DataResult = Hub.DirectReadByte(SourceValue);
                         ZeroResult = DataResult == 0;
                         // TODO: Find Carry
                     }
                     else
                     {
-                        Hub.WriteByte(SourceValue, DestinationValue);
+                        Hub.DirectWriteByte(SourceValue, (byte)DestinationValue);
                         // TODO: Find Zero and Carry
                     }
                     WriteBackResult();
@@ -190,13 +190,13 @@ namespace Gear.EmulationCore
                 case CogRunState.HUB_RDWORD:
                     if (WriteResult)
                     {
-                        DataResult = Hub.ReadWord(SourceValue);
+                        DataResult = Hub.DirectReadWord(SourceValue);
                         ZeroResult = DataResult == 0;
                         // TODO: Find Carry
                     }
                     else
                     {
-                        Hub.WriteWord(SourceValue, DestinationValue);
+                        Hub.DirectWriteWord(SourceValue, (ushort)DestinationValue);
                         // TODO: Find Zero and Carry
                     }
                     WriteBackResult();
@@ -204,13 +204,13 @@ namespace Gear.EmulationCore
                 case CogRunState.HUB_RDLONG:
                     if (WriteResult)
                     {
-                        DataResult = Hub.ReadLong(SourceValue);
+                        DataResult = Hub.DirectReadLong(SourceValue);
                         ZeroResult = DataResult == 0;
                         // TODO: Find Carry
                     }
                     else
                     {
-                        Hub.WriteLong(SourceValue, DestinationValue);
+                        Hub.DirectWriteLong(SourceValue, DestinationValue);
                         // TODO: Find Zero and Carry
                     }
                     WriteBackResult();
