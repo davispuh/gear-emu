@@ -51,7 +51,7 @@ namespace Gear.EmulationCore
         NEGEDGE_DETECTOR,
         NEGEDGE_DETECTOR_FEEDBACK,
 
-        // ASB: New logic modes not implemented on gear v1.11
+        // Logic modes not implemented on gear v1.11
         LOGIC_NEVER,
         LOGIC_NOTA_AND_NOTB,
         LOGIC_A_AND_NOTB,
@@ -150,7 +150,7 @@ namespace Gear.EmulationCore
                     case CounterMode.PLL_INTERNAL:
                     case CounterMode.PLL_SINGLE_ENDED:
                     case CounterMode.PLL_DIFFERENTIAL:
-                    case CounterMode.LOGIC_NEVER:       // ASB: do nothing for LOGIC_NEVER
+                    case CounterMode.LOGIC_NEVER:       // do nothing for LOGIC_NEVER
 
                         // This is a special dejitter function
                         // The edge-sensitive system resulted in unstable
@@ -272,7 +272,7 @@ namespace Gear.EmulationCore
                     OutB = !PinA;
                     break;
                 default:
-                    // ASB: changed to NOT ConditionCompare(.) to repair Logic Modes Counter
+                    // changed to NOT ConditionCompare(.) to repair Logic Modes Counter
                     if (!Cog.ConditionCompare((CogConditionCodes)((int)CtrMode - 16), PinA, PinB))
                     {
                         PHS += FRQ;

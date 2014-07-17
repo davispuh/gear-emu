@@ -63,7 +63,7 @@ namespace Gear.GUI
             this.Text = "Propeller: " + source;
 
             // Create default layout
-            for (int i = 0; i < Propeller.TOTAL_COGS; i++)  //ASB: now using constant TOTAL_COGS
+            for (int i = 0; i < Propeller.TOTAL_COGS; i++)  //now using constant TOTAL_COGS
                 AttachPlugin(new CogView(i));
 
             AttachPlugin(new MemoryView());
@@ -77,6 +77,16 @@ namespace Gear.GUI
             runTimer.Tick += new EventHandler(RunEmulatorStep);
 
             hubView.Host = Chip;
+        }
+
+        /// @brief Get the last binary opened succesfully
+        /// 
+        public string GetLastBinary
+        {
+            get
+            {
+                return LastFileName;
+            }
         }
 
         /// @todo Document GUI.Emulator.BreakPoint()
@@ -101,7 +111,7 @@ namespace Gear.GUI
             bm.Dock = DockStyle.Fill;
             bm.Parent = t;
             documentsTab.SelectedTab = t;
-            // ASB: mantain the close button availability
+            //Mantain the close button availability
             if (bm.IsClosable)
             {
                 closeButton.Enabled = true;
@@ -118,7 +128,7 @@ namespace Gear.GUI
         /// @param bm Instance of a Gear.PluginSupport.PluginBase class to be detached.
         /// @todo add '\@version' tag to tell the new Method added.
         /// 
-        //ASB: added method to detach a plugin from the active plugin list of the propeller instance.
+        //Added method to detach a plugin from the active plugin list of the propeller instance.
         private void DetachPlugin(PluginBase bm)
         {
             if (bm.IsClosable)      //check if the plugin is closable, then remove...
@@ -219,19 +229,19 @@ namespace Gear.GUI
                     }
                 }
 
-                //ASB: Dynamic load and compile the plugin module as a class
+                //Dynamic load and compile the plugin module as a class
                 PluginBase bm = ModuleLoader.LoadModule(code, instanceName, references.ToArray());
 
-                if (bm == null)     //ASB: if it fails...
+                if (bm == null)     //if it fails...
                 {
-                    PluginEditor pe = new PluginEditor();   //ASB: ...open plugin editor in other window
+                    PluginEditor pe = new PluginEditor();   // ...open plugin editor in other window
                     pe.OpenFile(FileName, true);
                     pe.MdiParent = this.MdiParent;
                     pe.Show();
                 }
-                else               //ASB: if success compiling & instanciate the new class...
+                else               //if success compiling & instanciate the new class...
                 {
-                    AttachPlugin(bm);   //ASB: ...add the reference to the plugin list of the emulator instance
+                    AttachPlugin(bm);   //...add the reference to the plugin list of the emulator instance
                 }
 
                 return bm;
@@ -346,9 +356,9 @@ namespace Gear.GUI
                 {
                     if (documentsTab.SelectedIndex > 0)
                     {
-                        documentsTab.SelectedIndex = documentsTab.SelectedIndex - 1;    //ASB: select the previous tab
-                        documentsTab_Click(this, e);    //ASB: tab changing housekeeping for plugin close button
-                        this.DetachPlugin(p);           //ASB: detach the plugin from the emulator
+                        documentsTab.SelectedIndex = documentsTab.SelectedIndex - 1;    //select the previous tab
+                        documentsTab_Click(this, e);    //tab changing housekeeping for plugin close button
+                        this.DetachPlugin(p);           //detach the plugin from the emulator
                         p.Dispose();
                     }
                     tp.Parent = null;   //delete the reference to plugin

@@ -281,7 +281,7 @@ namespace Gear.EmulationCore
                 }
                 else
                 {
-                    // ASB: change to show special registers, because their values are in
+                    // show special registers, because their values are in
                     // variables in Cog object and not in memory array.
                     if (i >= (int)CogSpecialAddress.PAR)
                     {
@@ -289,7 +289,6 @@ namespace Gear.EmulationCore
                     }
                     else
                     {
-                        // ASB: end of change
                         return Memory[i];
                     }
                 }
@@ -411,8 +410,7 @@ namespace Gear.EmulationCore
 
         public uint ReadLong(uint address)
         {
-            // ASB: changed case values to use CogSpecialAddress enum, intead of direct hex values
-            // ASB: added (cast) to use CogSpecialAddress enum
+            // values using CogSpecialAddress enum, intead of direct hex values
             switch ((CogSpecialAddress)(address & 0x1FF))
             {
                 case CogSpecialAddress.CNT:
@@ -442,14 +440,21 @@ namespace Gear.EmulationCore
             }
         }
 
+        /// @brief Write cog RAM with a specified value
+        /// This method take care of special cog address that in this class aren't writed in memory array Cog.Memory.
+        /// @param[in] address Address to write
+        /// @param[in] data Data to write in address
+        /// @note PAR address is a special case, because unless Propeller Manual V1.2 specifications says it is a 
+        /// read-only register, there are claims that in reality it is writeable as explains
+        /// <a href="http://forums.parallax.com/showthread.php/115909-PASM-simulator-debugger)">Forum thread "PASM simulator / debugger?</a>.
+        /// They claims that some parallax video drivers in PASM changes the PAR register, and GEAR didn't emulate that.
         protected void WriteLong(uint address, uint data)
         {
-            // ASB: changed case values to use CogSpecialAddress enum, intead of direct hex values
-            // ASB: added (cast) to use CogSpecialAddress enum
+            // values using CogSpecialAddress enum, intead of direct hex values
             switch ((CogSpecialAddress)(address & 0x1FF))
             {
                 // Read only registers
-                // case CogSpecialAddress.PAR: // ASB: PAR register changed to writeable
+                // case CogSpecialAddress.PAR: // PAR register changed to writeable
                 case CogSpecialAddress.CNT:
                 case CogSpecialAddress.INA:
                 case CogSpecialAddress.INB:

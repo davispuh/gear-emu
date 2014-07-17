@@ -39,19 +39,19 @@ namespace Gear.GUI
         private ulong bits;
         private int shown;
 
-        // ASB: tooltip helpers
+        // tooltip helpers
         private String prefix;
         private String postfix;
         private String text;
 
-        private int last_box;   // ASB: last value of index
-        const int nil = -1;     // ASB: constant for none value selected
+        private int last_box;   // last value of index
+        const int nil = -1;     // constant for none value selected
 
         public BitView()
         {
             bits = 0;
             shown = 32;
-            last_box = nil;     // ASB: none selected initially
+            last_box = nil;     // none selected initially
             InitializeComponent();
         }
 
@@ -96,7 +96,7 @@ namespace Gear.GUI
             }
         }
 
-        // ASB: set property of prefix for tooltip
+        // set property of prefix for tooltip
         public String Prefix
         {
             set
@@ -109,7 +109,7 @@ namespace Gear.GUI
             }
         }
 
-        // ASB: set property of postfix for tooltip
+        // set property of postfix for tooltip
         public String Postfix
         {
             set
@@ -122,7 +122,7 @@ namespace Gear.GUI
             }
         }
 
-        // ASB: get text for tooltip
+        // get text for tooltip
         private String ToolTipText
         {
             get
@@ -159,7 +159,7 @@ namespace Gear.GUI
             Redraw(e.Graphics);
         }
 
-        // ASB: event handler for set/clear tooltip, depending on mouse position
+        // event handler for set/clear tooltip, depending on mouse position
         private void BitView_MouseMove(object sender, MouseEventArgs e)
         {
             int x = e.X, y = e.Y, temp = 0,

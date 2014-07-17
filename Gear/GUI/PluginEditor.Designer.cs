@@ -49,7 +49,7 @@ namespace Gear.GUI
         private void InitializeComponent()
         {
             System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-            System.Windows.Forms.ToolStripLabel classNameLable;
+            System.Windows.Forms.ToolStripLabel classNameLabel;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PluginEditor));
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.openButton = new System.Windows.Forms.ToolStripButton();
@@ -70,7 +70,7 @@ namespace Gear.GUI
             this.errorSplitter = new Gear.GUI.CollapsibleSplitter();
             this.referencesSplitter = new Gear.GUI.CollapsibleSplitter();
             toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            classNameLable = new System.Windows.Forms.ToolStripLabel();
+            classNameLabel = new System.Windows.Forms.ToolStripLabel();
             this.toolStrip1.SuspendLayout();
             this.referenceStrip.SuspendLayout();
             this.toolStrip2.SuspendLayout();
@@ -81,12 +81,12 @@ namespace Gear.GUI
             toolStripSeparator1.Name = "toolStripSeparator1";
             toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
             // 
-            // classNameLable
+            // classNameLabel
             // 
-            classNameLable.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            classNameLable.Name = "classNameLable";
-            classNameLable.Size = new System.Drawing.Size(69, 22);
-            classNameLable.Text = "Class Name";
+            classNameLabel.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            classNameLabel.Name = "classNameLabel";
+            classNameLabel.Size = new System.Drawing.Size(69, 22);
+            classNameLabel.Text = "Class Name";
             // 
             // toolStrip1
             // 
@@ -97,7 +97,7 @@ namespace Gear.GUI
             toolStripSeparator1,
             this.checkButton,
             this.instanceName,
-            classNameLable,
+            classNameLabel,
             this.toolStripSeparator2,
             this.syntaxButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
@@ -155,6 +155,7 @@ namespace Gear.GUI
             this.instanceName.Name = "instanceName";
             this.instanceName.Size = new System.Drawing.Size(100, 25);
             this.instanceName.ToolTipText = "Name of the Class for the plugin";
+            this.instanceName.TextChanged += new System.EventHandler(this.instanceName_TextChanged);
             // 
             // toolStripSeparator2
             // 
@@ -188,7 +189,7 @@ namespace Gear.GUI
             this.referencesList.FormattingEnabled = true;
             this.referencesList.Location = new System.Drawing.Point(0, 0);
             this.referencesList.Name = "referencesList";
-            this.referencesList.Size = new System.Drawing.Size(200, 375);
+            this.referencesList.Size = new System.Drawing.Size(200, 394);
             this.referencesList.TabIndex = 1;
             // 
             // toolStrip2
@@ -199,9 +200,9 @@ namespace Gear.GUI
             this.addReferenceButton,
             this.removeReferenceButton});
             this.toolStrip2.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
-            this.toolStrip2.Location = new System.Drawing.Point(0, 375);
+            this.toolStrip2.Location = new System.Drawing.Point(0, 394);
             this.toolStrip2.Name = "toolStrip2";
-            this.toolStrip2.Size = new System.Drawing.Size(200, 42);
+            this.toolStrip2.Size = new System.Drawing.Size(200, 23);
             this.toolStrip2.TabIndex = 0;
             this.toolStrip2.Text = "toolStrip2";
             // 
@@ -249,6 +250,7 @@ namespace Gear.GUI
             // codeEditorView
             // 
             this.codeEditorView.AcceptsTab = true;
+            this.codeEditorView.DetectUrls = false;
             this.codeEditorView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.codeEditorView.Location = new System.Drawing.Point(208, 25);
             this.codeEditorView.Name = "codeEditorView";
@@ -256,6 +258,7 @@ namespace Gear.GUI
             this.codeEditorView.TabIndex = 7;
             this.codeEditorView.Text = "";
             this.codeEditorView.WordWrap = false;
+            this.codeEditorView.TextChanged += new System.EventHandler(this.codeEditorView_TextChanged);
             // 
             // errorSplitter
             // 
@@ -300,6 +303,7 @@ namespace Gear.GUI
             this.Controls.Add(this.toolStrip1);
             this.Name = "PluginEditor";
             this.Text = "Plugin Editor";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PluginEditor_FormClosing);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.referenceStrip.ResumeLayout(false);

@@ -105,7 +105,7 @@ namespace Gear.EmulationCore
         private List<PluginBase> PinNoiseHandlers;
         private List<PluginBase> PlugIns;
 
-        //ASB: Expose constants declarations to use on the project. Now they are public.
+        //Expose constants declarations to use on the project. 
         public const int TOTAL_COGS   = 8;
         public const int TOTAL_LOCKS  = 8;
         public const int TOTAL_PINS   = 64;

@@ -77,7 +77,9 @@ namespace Gear.GUI.LogicProbe
         {
         }
 
-        // ASB: new method to clear samples when reset is needed
+
+        /// @brief Clear samples when reset is needed.
+        /// 
         public override void Reset()
         {
             foreach (LogicDigital r in Channels)

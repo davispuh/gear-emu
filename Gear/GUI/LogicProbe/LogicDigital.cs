@@ -62,6 +62,9 @@ namespace Gear.GUI.LogicProbe
             get { return "P" + PinNumber.ToString(); }
         }
 
+        /// @brief Default Constructor 
+        /// 
+        /// @param[in] pin Pin map to use
         public LogicDigital(int pin)
         {
             Pins = new PinState[MAXIMUM_SAMPLES];
@@ -69,7 +72,7 @@ namespace Gear.GUI.LogicProbe
             Wrapped = false;
             PinNumber = pin;
 
-            // ASB: use the new method Reset()
+            //use the new method Reset()
             Reset();
         }
 
@@ -77,7 +80,8 @@ namespace Gear.GUI.LogicProbe
         {
         }
 
-        // ASB: new method to clear samples when reset is needed
+        /// @brief Clear samples when reset is needed
+        /// 
         public override void Reset()
         {
             Time[0] = 0.0;
