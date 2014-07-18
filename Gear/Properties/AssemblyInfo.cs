@@ -34,9 +34,10 @@ using System.Runtime.InteropServices;
     "Original Developer: Robert Vandiver.\r\n" +
     "\r\n" +
     "Current Developers:\r\n" +
-	"   davispuh\r\n" +
+    "   davispuh\r\n" +
     "   gatuno (Antonio Sanhueza)\r\n" +
-	"Past Developers:\r\n" +
+    "\r\n" +
+    "Past Developers:\r\n" +
     "   mirror\r\n" +
     "   benjie (Ben Levitt)\r\n" +
     "\r\n" +
@@ -45,9 +46,9 @@ using System.Runtime.InteropServices;
     "(c)Copyright 2002-2003 NJF (furty74@yahoo.com). All rights reserved."
     )]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("sublab research")]
+[assembly: AssemblyCompany("Gear-emu")]
 [assembly: AssemblyProduct("Gear: Parallax Propeller Emulator")]
-[assembly: AssemblyCopyright("Copyright © sublab research 2007\r\nCopyright mirror 2009\r\nCopyright 2014")]
+[assembly: AssemblyCopyright("Copyright 2014\r\nCopyright mirror 2009\r\nCopyright © sublab research 2007")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
