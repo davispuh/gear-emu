@@ -40,18 +40,18 @@ namespace Gear.EmulationCore
             string text;
             if (instr.CON > 0x00)
             {
-                Assembly.SubInstruction ActualInstruction = instr.GetSubInstruction();
+                Propeller.Assembly.SubInstruction ActualInstruction = instr.GetSubInstruction();
 
                 string SrcString = "";
                 string DestString = "";
 
                 if (ActualInstruction.Source)
                 {
-                    if (instr.SRC >= Assembly.RegisterBaseAddress)
+                    if (instr.SRC >= Propeller.Assembly.RegisterBaseAddress)
                     {
                         SrcString = String.Format("{0}{1}",
                                 instr.ImmediateValue() ? "#" : "",
-                                Assembly.Registers[instr.SRC - Assembly.RegisterBaseAddress].Name);
+                                Propeller.Assembly.Registers[instr.SRC - Propeller.Assembly.RegisterBaseAddress].Name);
                     }
                     else
                     {
@@ -63,9 +63,9 @@ namespace Gear.EmulationCore
 
                 if (ActualInstruction.Destination)
                 {
-                    if (instr.DEST >= Assembly.RegisterBaseAddress)
+                    if (instr.DEST >= Propeller.Assembly.RegisterBaseAddress)
                     {
-                        DestString = String.Format("{0}", Assembly.Registers[instr.DEST - Assembly.RegisterBaseAddress].Name);
+                        DestString = String.Format("{0}", Propeller.Assembly.Registers[instr.DEST - Propeller.Assembly.RegisterBaseAddress].Name);
                     }
                     else
                     {
@@ -74,7 +74,7 @@ namespace Gear.EmulationCore
                 }
 
                 text = String.Format("{0} {1} {2}{3}{4}", new object[] {
-                    Assembly.Conditions[instr.CON][0],
+                    Propeller.Assembly.Conditions[instr.CON][0],
                     ActualInstruction.Name,
                     DestString,
                     (ActualInstruction.Source && ActualInstruction.Destination) ? ", " : "",
@@ -103,7 +103,7 @@ namespace Gear.EmulationCore
             }
             else
             {
-                text = String.Format("{0} {1}", new object[] { Assembly.Conditions[0][1], Assembly.Conditions[0][2] });
+                text = String.Format("{0} {1}", new object[] { Propeller.Assembly.Conditions[0][1], Propeller.Assembly.Conditions[0][2] });
             }
             return text;
         }
@@ -125,12 +125,12 @@ namespace Gear.EmulationCore
 
             if (!ParsedAssignment.Math)
             {
-                Spin.SubAssignment SubAssignment = ParsedAssignment.GetSubAssignment();
+                Propeller.Spin.SubAssignment SubAssignment = ParsedAssignment.GetSubAssignment();
                 switch (SubAssignment.ArgumentMode)
                 {
-                    case Spin.ArgumentMode.None:
+                    case Propeller.Spin.ArgumentMode.None:
                         break;
-                    case Spin.ArgumentMode.SignedPackedOffset:
+                    case Propeller.Spin.ArgumentMode.SignedPackedOffset:
                         effect += " " + DataUnpacker.GetSignedPackedOffset(memory);
                         break;
                     default:
@@ -149,11 +149,11 @@ namespace Gear.EmulationCore
 
             switch (OP.Action)
             {
-                case Spin.MemoryAction.PUSH:
+                case Propeller.Spin.MemoryAction.PUSH:
                     return String.Format("PUSH {0}", Name);
-                case Spin.MemoryAction.POP:
+                case Propeller.Spin.MemoryAction.POP:
                     return String.Format("POP {0}", Name);
-                case Spin.MemoryAction.EFFECT:
+                case Propeller.Spin.MemoryAction.EFFECT:
                     return String.Format("EFFECT {0} {1}", Name, GetEffectCode(memory, useShortOpcodes));
                 default:
                     return String.Format("UNKNOWN_{0} {1}", OP.Action, Name);
@@ -172,7 +172,7 @@ namespace Gear.EmulationCore
                 format = "{0} {1}";
             }
 
-            Spin.Instruction Instr = Spin.Instructions[memory.ReadByte()];
+            Propeller.Spin.Instruction Instr = Propeller.Spin.Instructions[memory.ReadByte()];
 
             string Name;
             if (useShortOpcodes)
@@ -186,33 +186,33 @@ namespace Gear.EmulationCore
 
             switch (Instr.ArgumentMode)
             {
-                case Spin.ArgumentMode.None:
+                case Propeller.Spin.ArgumentMode.None:
                     return Name;
-                case Spin.ArgumentMode.UnsignedOffset:
+                case Propeller.Spin.ArgumentMode.UnsignedOffset:
                     return String.Format(format, Name, DataUnpacker.GetPackedOffset(memory));
-                case Spin.ArgumentMode.UnsignedEffectedOffset:
+                case Propeller.Spin.ArgumentMode.UnsignedEffectedOffset:
                     return String.Format("{0} {1} {2}", Name, DataUnpacker.GetPackedOffset(memory), GetEffectCode(memory, useShortOpcodes));
-                case Spin.ArgumentMode.Effect:
+                case Propeller.Spin.ArgumentMode.Effect:
                     return String.Format(format, Name, GetEffectCode(memory, useShortOpcodes));
-                case Spin.ArgumentMode.SignedOffset:
+                case Propeller.Spin.ArgumentMode.SignedOffset:
                     return String.Format(format, Name, DataUnpacker.GetSignedOffset(memory));
-                case Spin.ArgumentMode.PackedLiteral:
+                case Propeller.Spin.ArgumentMode.PackedLiteral:
                     return String.Format(format, Name, DataUnpacker.GetPackedLiteral(memory));
-                case Spin.ArgumentMode.ByteLiteral:
+                case Propeller.Spin.ArgumentMode.ByteLiteral:
                     return String.Format(format, Name, memory.ReadByte());
-                case Spin.ArgumentMode.WordLiteral:
+                case Propeller.Spin.ArgumentMode.WordLiteral:
                     return String.Format(format, Name, DataUnpacker.GetWordLiteral(memory));
-                case Spin.ArgumentMode.NearLongLiteral:
+                case Propeller.Spin.ArgumentMode.NearLongLiteral:
                     return String.Format(format, Name, DataUnpacker.GetNearLongLiteral(memory));
-                case Spin.ArgumentMode.LongLiteral:
+                case Propeller.Spin.ArgumentMode.LongLiteral:
                     return String.Format(format, Name, DataUnpacker.GetLongLiteral(memory));
-                case Spin.ArgumentMode.ObjCallPair:
+                case Propeller.Spin.ArgumentMode.ObjCallPair:
                     {
                         byte obj = memory.ReadByte();
                         byte funct = memory.ReadByte();
                         return String.Format("{0} {1}.{2}", Name, obj, funct);
                     }
-                case Spin.ArgumentMode.MemoryOpCode:
+                case Propeller.Spin.ArgumentMode.MemoryOpCode:
                     return String.Format("{0} {1}", Name, GetMemoryOp(memory, useShortOpcodes));
                 default:
                     throw new Exception("Uknown Spin Argument Mode: " + Instr.ArgumentMode.ToString());

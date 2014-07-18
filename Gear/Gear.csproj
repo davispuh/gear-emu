@@ -63,18 +63,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Disassembler\DataUnpacker.cs" />
-    <Compile Include="Disassembler\SpinAssignments.cs" />
-    <Compile Include="Disassembler\SpinMathInstructions.cs" />
-    <Compile Include="Disassembler\SpinInstructions.cs" />
+    <Compile Include="Propeller\Assembly.cs" />
+    <Compile Include="Propeller\Propeller.cs" />
+    <Compile Include="Propeller\Spin.cs" />
+    <Compile Include="Propeller\SpinAssignments.cs" />
+    <Compile Include="Propeller\SpinMathInstructions.cs" />
+    <Compile Include="Propeller\SpinInstructions.cs" />
     <Compile Include="EmulationCore\ClockSource.cs" />
     <Compile Include="EmulationCore\Cog.cs" />
     <Compile Include="EmulationCore\DisassemblerStrings.cs" />
-    <Compile Include="Disassembler\Disassembler.cs" />
     <Compile Include="Disassembler\Spin.cs" />
-    <Compile Include="Disassembler\AssemblyInstructions.cs" />
-    <Compile Include="Disassembler\SpinRegisters.cs" />
-    <Compile Include="Disassembler\AssemblyRegisters.cs" />
-    <Compile Include="Disassembler\Conditions.cs" />
+    <Compile Include="Propeller\AssemblyInstructions.cs" />
+    <Compile Include="Propeller\SpinRegisters.cs" />
+    <Compile Include="Propeller\AssemblyRegisters.cs" />
+    <Compile Include="Propeller\Conditions.cs" />
     <Compile Include="Disassembler\Assembly.cs" />
     <Compile Include="EmulationCore\InstructionDisassembler.cs" />
     <Compile Include="EmulationCore\FreqGenerator.cs" />
@@ -253,6 +255,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.

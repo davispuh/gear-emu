@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Gear.Disassembler
+namespace Gear.Propeller
 {
     public partial class Assembly
     {

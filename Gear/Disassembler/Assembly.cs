@@ -6,84 +6,29 @@ namespace Gear.Disassembler
 {
     public partial class Assembly
     {
-        public enum InstructionType
+        public static Propeller.Assembly.SubInstruction GetSubInstruction(Propeller.Assembly.Instruction SourceInstruction, ParsedInstruction ParsedInstruction)
         {
-            Normal,
-            WR,
-            Hub,
-            Jump
-        }
-
-        public class Register : Disassembler.Register
-        {
-            public bool Read  { get; private set; }
-            public bool Write { get; private set; }
-
-            public Register(string Name, bool Read, bool Write)
+            switch (SourceInstruction.Type)
             {
-                this.Name  = Name;
-                this.Read  = Read;
-                this.Write = Write;
-            }
-        }
-
-        public class SubInstruction
-        {
-            public string Name           { get; private set; }
-            public bool   Destination    { get; private set; }
-            public bool   Source         { get; private set; }
-            public bool   WZ             { get; private set; }
-            public bool   WC             { get; private set; }
-            public bool   WR             { get; private set; }
-            public bool   ImmediateValue { get; private set; }
-
-            public SubInstruction(string Name, bool Destination, bool Source, bool WZ, bool WC, bool WR, bool ImmediateValue)
-            {
-                this.Name           = Name;
-                this.Destination    = Destination;
-                this.Source         = Source;
-                this.WZ             = WZ;
-                this.WC             = WC;
-                this.WR             = WR;
-                this.ImmediateValue = ImmediateValue;
-            }
-        }
-
-        public class Instruction
-        {
-            public InstructionType  Type            { get; private set; }
-            public SubInstruction[] SubInstructions { get; private set; }
-
-            public Instruction(InstructionType Type, SubInstruction[] SubInstructions)
-            {
-                this.Type            = Type;
-                this.SubInstructions = SubInstructions;
-            }
-
-            public SubInstruction GetSubInstruction(ParsedInstruction ParsedInstruction)
-            {
-                switch (this.Type)
-                {
-                    case InstructionType.Normal:
-                        return this.SubInstructions[0];
-                    case InstructionType.WR:
-                        return this.SubInstructions[(ParsedInstruction.ZCRI & ParsedInstruction.WriteResultFlag) == ParsedInstruction.WriteResultFlag ? 0 : 1];
-                    case InstructionType.Hub:
-                        return this.SubInstructions[ParsedInstruction.SRC & 0x7];
-                    case InstructionType.Jump:
-                        int num = ParsedInstruction.ZCRI & 0x3;
-                        if (num <= 1)
+                case Propeller.Assembly.InstructionType.Normal:
+                    return SourceInstruction.SubInstructions[0];
+                case Propeller.Assembly.InstructionType.WR:
+                    return SourceInstruction.SubInstructions[(ParsedInstruction.ZCRI & ParsedInstruction.WriteResultFlag) == ParsedInstruction.WriteResultFlag ? 0 : 1];
+                case Propeller.Assembly.InstructionType.Hub:
+                    return SourceInstruction.SubInstructions[ParsedInstruction.SRC & 0x7];
+                case Propeller.Assembly.InstructionType.Jump:
+                    int num = ParsedInstruction.ZCRI & 0x3;
+                    if (num <= 1)
+                    {
+                        num = 0;
+                        if (ParsedInstruction.SRC == 0)
                         {
-                            num = 0;
-                            if (ParsedInstruction.SRC == 0)
-                            {
-                                num = 1;
-                            }
+                            num = 1;
                         }
-                        return this.SubInstructions[num];
-                }
-                throw new Exception("Uknown Instruction Type: " + this.Type.ToString());
+                    }
+                    return SourceInstruction.SubInstructions[num];
             }
+            throw new Exception("Uknown Instruction Type: " + SourceInstruction.Type.ToString());
         }
 
         public class ParsedInstruction
@@ -100,9 +45,9 @@ namespace Gear.Disassembler
             public ushort DEST   { get; private set; }  // Contains the destination register address
             public ushort SRC    { get; private set; }  // Contains the source register address or 9-bit literal value
 
-            public Instruction SourceInstruction { get; private set; }
+            public Propeller.Assembly.Instruction SourceInstruction { get; private set; }
 
-            private SubInstruction SourceSubInstruction;
+            private Propeller.Assembly.SubInstruction SourceSubInstruction;
 
             public ParsedInstruction(uint Opcode)
             {
@@ -113,15 +58,15 @@ namespace Gear.Disassembler
                 this.DEST   = (ushort)((Opcode >>  9) & 0x1FF);  // (bits 17:09)
                 this.SRC    = (ushort)( Opcode        & 0x1FF);  // (bits 08:00)
 
-                this.SourceInstruction = Instructions[this.INSTR];
+                this.SourceInstruction = Propeller.Assembly.Instructions[this.INSTR];
                 this.SourceSubInstruction = null;
             }
 
-            public SubInstruction GetSubInstruction()
+            public Propeller.Assembly.SubInstruction GetSubInstruction()
             {
                 if (this.SourceSubInstruction == null)
                 {
-                    this.SourceSubInstruction = this.SourceInstruction.GetSubInstruction(this);
+                    this.SourceSubInstruction = Assembly.GetSubInstruction(this.SourceInstruction, this);
                 }
                 return this.SourceSubInstruction;
             }
