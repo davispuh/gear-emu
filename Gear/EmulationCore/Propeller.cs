@@ -49,13 +49,14 @@ namespace Gear.EmulationCore
         HUBOP_LOCKCLR = 7
     }
 
+    /// @brief Possible pin states.
     public enum PinState
     {
-        FLOATING,
-        OUTPUT_LO,
-        OUTPUT_HI,
-        INPUT_LO,
-        INPUT_HI,
+        FLOATING,   //!< Pin Floating
+        OUTPUT_LO,  //!< Output Low (0V)
+        OUTPUT_HI,  //!< Output Hi (3.3V)
+        INPUT_LO,   //!< Input Low (0V)
+        INPUT_HI,   //!< Input Hi (3.3V)
     }
 
     public partial class Propeller : DirectMemory
@@ -104,7 +105,7 @@ namespace Gear.EmulationCore
         private List<PluginBase> PinNoiseHandlers;
         private List<PluginBase> PlugIns;
 
-        //ASB: Expose constants declarations to use on the project. Now they are public.
+        //Expose constants declarations to use on the project. 
         public const int TOTAL_COGS   = 8;
         public const int TOTAL_LOCKS  = 8;
         public const int TOTAL_PINS   = 64;

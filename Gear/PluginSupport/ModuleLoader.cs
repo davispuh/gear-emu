@@ -33,7 +33,7 @@ using System.Reflection;
 /// 
 namespace Gear.PluginSupport
 {
-    public delegate void ErrorEnumProc(CompilerError e);
+    public delegate void ErrorEnumProc(System.CodeDom.Compiler.CompilerError e);
 
     /// @todo Document Gear.PluginSupport.ModuleLoader class.
     /// 
@@ -66,8 +66,8 @@ namespace Gear.PluginSupport
         /// @param[in] references `string` array with auxiliary references used by your plugin. See notes for defaults used.
         /// @returns New Plugin class instance compiled (on sucess), or NULL (on fail).
         /// @note There are some references already added, so you don't need to include on your plugins: 
-        /// @note `using System;`, `using System.Data;`, `using System.Drawing;`, 
-        /// @note `using System.Windows.Forms;`, `using System.Xml;`.
+        /// @li `using System;` @li `using System.Data;` @li `using System.Drawing;`
+        /// @li `using System.Windows.Forms;` @li `using System.Xml;`
         static public PluginBase LoadModule(string code, string module, string[] references)
         {
             CodeDomProvider provider = new Microsoft.CSharp.CSharpCodeProvider();

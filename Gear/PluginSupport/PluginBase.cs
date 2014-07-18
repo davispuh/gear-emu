@@ -45,7 +45,7 @@ namespace Gear.PluginSupport
         /// Changed default name , based on a comment from Asterisk from propeller forum:
         /// Source: <a href="http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment?p=627190&viewfull=1#post627190">Post #32 from original GEAR post</a>
         /// It shows that the original name of the class was "BusModule". Changed to the new name of the class. 
-        /// @todo add '\@version' tag to tell the change on the default name 
+        /// @version V14.07.17 - change on the default name 
         /// 
         public virtual string Title { get { return "Plugin Base"; } }
 

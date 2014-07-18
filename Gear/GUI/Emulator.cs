@@ -38,7 +38,7 @@ using Gear.PluginSupport;
 /// 
 namespace Gear.GUI
 {
-    /// @todo Document GUI.Emulator class
+    /// @todo Document Gear.GUI.Emulator class
     /// 
     public partial class Emulator : Form
     {
@@ -47,10 +47,10 @@ namespace Gear.GUI
         private String LastFileName;        //!< @brief Last file name opened.
         private List<Control> FloatControls;//!< @brief List of floating controls.
 
-        private Timer runTimer;             //!< @todo Document GUI.Emulator.runtimer member (what it is for???)
+        private Timer runTimer;             //!< @todo Document Gear.GUI.Emulator.runtimer member (what it is for???)
 
-        /// @brief Emulator Constructor.
-        /// @param source Binary program loaded (path & name)
+        /// @brief Default Constructor.
+        /// @param[in] source Binary program loaded (path & name)
         /// 
         public Emulator(string source)
         {
@@ -63,7 +63,7 @@ namespace Gear.GUI
             this.Text = "Propeller: " + source;
 
             // Create default layout
-            for (int i = 0; i < Propeller.TOTAL_COGS; i++)  //ASB: now using constant TOTAL_COGS
+            for (int i = 0; i < Propeller.TOTAL_COGS; i++)  //now using constant TOTAL_COGS
                 AttachPlugin(new CogView(i));
 
             AttachPlugin(new MemoryView());
@@ -79,7 +79,17 @@ namespace Gear.GUI
             hubView.Host = Chip;
         }
 
-        /// @todo Document GUI.Emulator.BreakPoint()
+        /// @brief Get the last binary opened succesfully.
+        /// 
+        public string GetLastBinary
+        {
+            get
+            {
+                return LastFileName;
+            }
+        }
+
+        /// @todo Document Gear.GUI.Emulator.BreakPoint()
         /// 
         public void BreakPoint()
         {
@@ -88,6 +98,7 @@ namespace Gear.GUI
         }
 
         /// @brief Include a plugin to a propeller chip instance.
+        /// 
         /// Attach a plugin, linking the propeller instance to the plugin, opening a new tab window and 
         /// enabling the close button by plugin's closable property.
         /// @param[in] bm Instance of a Gear.PluginSupport.PluginBase class to be attached.
@@ -101,7 +112,7 @@ namespace Gear.GUI
             bm.Dock = DockStyle.Fill;
             bm.Parent = t;
             documentsTab.SelectedTab = t;
-            // ASB: mantain the close button availability
+            //Mantain the close button availability
             if (bm.IsClosable)
             {
                 closeButton.Enabled = true;
@@ -113,12 +124,12 @@ namespace Gear.GUI
         }
 
         /// @brief Delete a plugin from a propeller chip instance.
+        /// 
         /// Delete a plugin from the actives plugins of the propeller instance, efectibly stopping the plugin.
         /// Remove also from pins and clock watch list.
         /// @param bm Instance of a Gear.PluginSupport.PluginBase class to be detached.
-        /// @todo add '\@version' tag to tell the new Method added.
-        /// 
-        //ASB: added method to detach a plugin from the active plugin list of the propeller instance.
+        /// @version V14.07.17 - Added.
+        //Added method to detach a plugin from the active plugin list of the propeller instance.
         private void DetachPlugin(PluginBase bm)
         {
             if (bm.IsClosable)      //check if the plugin is closable, then remove...
@@ -129,7 +140,7 @@ namespace Gear.GUI
             };
         }
 
-        /// @todo Document GUI.Emulator.RunEmulatorStep
+        /// @todo Document Gear.GUI.Emulator.RunEmulatorStep
         /// 
         private void RunEmulatorStep(object sender, EventArgs e)
         {
@@ -142,7 +153,7 @@ namespace Gear.GUI
             RepaintViews();
         }
 
-        /// @todo Document GUI.Emulator.Unfloat()
+        /// @todo Document Gear.GUI.Emulator.Unfloat()
         /// 
         public void Unfloat(Control c)
         {
@@ -155,7 +166,7 @@ namespace Gear.GUI
             FloatControls.Remove(c.Parent);
         }
 
-        /// @todo Document GUI.Emulator.OpenFile()
+        /// @todo Document Gear.GUI.Emulator.OpenFile()
         /// 
         public bool OpenFile(string FileName)
         {
@@ -178,13 +189,13 @@ namespace Gear.GUI
         }
 
         /// @brief Load a plugin from XML file.
+        /// 
         /// Try to open the xml definition for the plugin from the file name given as parameter.
         /// Then extract information from the XML (class name, auxiliary references and source code to compile), 
         /// trying to compile the C# source code (based on Gear.PluginSupport.PluginBase class) and returning the new class instance.
         /// If the compilation fails, then it opens the plugin editor to show errors and source code.
         /// @param[in] FileName Name and path to the XML plugin file to open
         /// @returns Reference to the new plugin instance (on success) or NULL (on fail).
-        /// 
         public PluginBase LoadPlugin(string FileName)
         {
             XmlTextReader tr = new XmlTextReader(FileName);
@@ -219,19 +230,20 @@ namespace Gear.GUI
                     }
                 }
 
-                //ASB: Dynamic load and compile the plugin module as a class
+                //Dynamic load and compile the plugin module as a class
                 PluginBase bm = ModuleLoader.LoadModule(code, instanceName, references.ToArray());
 
-                if (bm == null)     //ASB: if it fails...
+                if (bm == null)     //if it fails...
                 {
-                    PluginEditor pe = new PluginEditor();   //ASB: ...open plugin editor in other window
+                    PluginEditor pe = new PluginEditor();   // ...open plugin editor in other window
                     pe.OpenFile(FileName, true);
                     pe.MdiParent = this.MdiParent;
                     pe.Show();
                 }
-                else               //ASB: if success compiling & instanciate the new class...
+                else               //if success compiling & instanciate the new class...
                 {
-                    AttachPlugin(bm);   //ASB: ...add the reference to the plugin list of the emulator instance
+                    AttachPlugin(bm);   //...add the reference to the plugin list of the emulator instance
+                    GearDesktop.LastPlugin = FileName;  //update location of las plugin
                 }
 
                 return bm;
@@ -277,7 +289,7 @@ namespace Gear.GUI
                 OpenFile(openFileDialog.FileName);
         }
 
-        /// @todo Document GUI.Emulator.reloadBinary_Click()
+        /// @todo Document Gear.GUI.Emulator.reloadBinary_Click()
         /// 
         private void reloadBinary_Click(object sender, EventArgs e)
         {
@@ -285,7 +297,7 @@ namespace Gear.GUI
             Chip.Reset();
         }
 
-        /// @todo Document GUI.Emulator.OnClosed()
+        /// @todo Document Gear.GUI.Emulator.OnClosed()
         /// 
         protected override void OnClosed(EventArgs e)
         {
@@ -297,7 +309,7 @@ namespace Gear.GUI
             base.OnClosed(e);
         }
 
-        /// @todo Document GUI.Emulator.RepaintViews()
+        /// @todo Document Gear.GUI.Emulator.RepaintViews()
         /// 
         private void RepaintViews()
         {
@@ -315,7 +327,7 @@ namespace Gear.GUI
             hubView.DataChanged();
         }
 
-        /// @todo Document GUI.Emulator.resetEmulator_Click()
+        /// @todo Document Gear.GUI.Emulator.resetEmulator_Click()
         /// 
         private void resetEmulator_Click(object sender, EventArgs e)
         {
@@ -323,7 +335,7 @@ namespace Gear.GUI
             RepaintViews();
         }
 
-        /// @todo Document GUI.Emulator.stepEmulator_Click()
+        /// @todo Document Gear.GUI.Emulator.stepEmulator_Click()
         /// 
         private void stepEmulator_Click(object sender, EventArgs e)
         {
@@ -332,6 +344,7 @@ namespace Gear.GUI
         }
 
         /// @brief Close the plugin window and terminate the plugin instance.
+        /// 
         /// Not only close the tab window, also detach the plugin from the Propeller what uses it.
         /// @param[in] sender Reference to object where event was raised.
         /// @param[in] e Event data arguments.
@@ -346,9 +359,9 @@ namespace Gear.GUI
                 {
                     if (documentsTab.SelectedIndex > 0)
                     {
-                        documentsTab.SelectedIndex = documentsTab.SelectedIndex - 1;    //ASB: select the previous tab
-                        documentsTab_Click(this, e);    //ASB: tab changing housekeeping for plugin close button
-                        this.DetachPlugin(p);           //ASB: detach the plugin from the emulator
+                        documentsTab.SelectedIndex = documentsTab.SelectedIndex - 1;    //select the previous tab
+                        documentsTab_Click(this, e);    //tab changing housekeeping for plugin close button
+                        this.DetachPlugin(p);           //detach the plugin from the emulator
                         p.Dispose();
                     }
                     tp.Parent = null;   //delete the reference to plugin
@@ -356,7 +369,7 @@ namespace Gear.GUI
             }
         }
 
-        /// @todo Document GUI.Emulator.floatActiveTab_Click()
+        /// @todo Document Gear.GUI.Emulator.floatActiveTab_Click()
         /// 
         private void floatActiveTab_Click(object sender, EventArgs e)
         {
@@ -377,7 +390,7 @@ namespace Gear.GUI
             FloatControls.Add(fw);
         }
 
-        /// @todo Document GUI.Emulator.pinActiveTab_Click()
+        /// @todo Document Gear.GUI.Emulator.pinActiveTab_Click()
         /// 
         private void pinActiveTab_Click(object sender, EventArgs e)
         {
@@ -402,7 +415,7 @@ namespace Gear.GUI
             }
         }
 
-        /// @todo Document GUI.Emulator.unpinButton_Click()
+        /// @todo Document Gear.GUI.Emulator.unpinButton_Click()
         /// 
         private void unpinButton_Click(object sender, EventArgs e)
         {
@@ -419,21 +432,21 @@ namespace Gear.GUI
             }
         }
 
-        /// @todo Document GUI.Emulator.runEmulator_Click()
+        /// @todo Document Gear.GUI.Emulator.runEmulator_Click()
         /// 
         private void runEmulator_Click(object sender, EventArgs e)
         {
             runTimer.Start();
         }
 
-        /// @todo Document GUI.Emulator.stopEmulator_Click()
+        /// @todo Document Gear.GUI.Emulator.stopEmulator_Click()
         /// 
         private void stopEmulator_Click(object sender, EventArgs e)
         {
             runTimer.Stop();
         }
 
-        /// @todo Document GUI.Emulator.stepInstruction_Click()
+        /// @todo Document Gear.GUI.Emulator.stepInstruction_Click()
         /// 
         private void stepInstruction_Click(object sender, EventArgs e)
         {
@@ -453,19 +466,21 @@ namespace Gear.GUI
             RepaintViews();
         }
 
-        /// @todo Document GUI.Emulator.OpenPlugin_Click()
+        /// @todo Document Gear.GUI.Emulator.OpenPlugin_Click()
         /// 
         private void OpenPlugin_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Gear Plug-in (*.xml)|*.xml|All Files (*.*)|*.*";
-            openFileDialog.Title = "Open Gear Plug-in...";
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "Gear Plug-in (*.xml)|*.xml|All Files (*.*)|*.*";
+            dialog.Title = "Open Gear Plug-in...";
+            if (GearDesktop.LastPlugin != null)
+                dialog.InitialDirectory = Path.GetDirectoryName(GearDesktop.LastPlugin);
 
-            if (openFileDialog.ShowDialog(this) == DialogResult.OK)
-                LoadPlugin(openFileDialog.FileName);
+            if (dialog.ShowDialog(this) == DialogResult.OK)
+                LoadPlugin(dialog.FileName);
         }
 
-        /// @todo Document GUI.Emulator.OnDeactivate()
+        /// @todo Document Gear.GUI.Emulator.OnDeactivate()
         /// 
         private void OnDeactivate(object sender, EventArgs e)
         {
@@ -473,6 +488,7 @@ namespace Gear.GUI
         }
 
         /// @brief Determine avalaibility of close plugin button when tab is changed.
+        /// 
         /// Enable close plugin button based on if active tab is subclass of Gear.PluginSupport.PluginBase 
         /// and if that class permit close the window. Tipically the user plugins enabled it; but 
         /// the cog window, main memory, logic probe, etc, don't allow to close.
@@ -496,7 +512,7 @@ namespace Gear.GUI
             }
         }
 
-        /// @todo Document GUI.Emulator.documentsTab_KeyPress()
+        /// @todo Document Gear.GUI.Emulator.documentsTab_KeyPress()
         /// 
         private void documentsTab_KeyPress(object sender, KeyPressEventArgs e)
         {

@@ -74,7 +74,7 @@ namespace Gear.GUI.LogicProbe
 
             viewOffset.LargeChange = 1;
 
-            // ASB: set international localized text for timeFrame & tickMark text boxes
+            //Set international localized text for timeFrame & tickMark text boxes
             double timeFrame = 0.0001,
                    tickMark  = 0.0000032;
 
@@ -104,7 +104,8 @@ namespace Gear.GUI.LogicProbe
             Host.NotifyOnPins(this);
         }
 
-        // ASB: added method to clean samples of LogicRow
+        /// @brief Clean samples of LogicRow
+        /// 
         public override void OnReset()
         {
             for (int i = 0; i < DigitalPins.Length; i++)

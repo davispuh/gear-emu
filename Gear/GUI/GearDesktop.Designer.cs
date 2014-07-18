@@ -65,7 +65,7 @@ namespace Gear.GUI
             this.helpMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip = new System.Windows.Forms.ToolStrip();
-            this.openToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.openBinaryButton = new System.Windows.Forms.ToolStripButton();
             this.newPluginButton = new System.Windows.Forms.ToolStripButton();
             this.openPluginButton = new System.Windows.Forms.ToolStripButton();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
@@ -120,7 +120,7 @@ namespace Gear.GUI
             this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
             this.openToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.openToolStripMenuItem.Text = "&Open Binary";
-            this.openToolStripMenuItem.Click += new System.EventHandler(this.OpenFile);
+            this.openToolStripMenuItem.Click += new System.EventHandler(this.OpenBinaryButton_Click);
             // 
             // exitToolStripMenuItem
             // 
@@ -194,7 +194,7 @@ namespace Gear.GUI
             // toolStrip
             // 
             this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openToolStripButton,
+            this.openBinaryButton,
             toolStripSeparator1,
             this.newPluginButton,
             this.openPluginButton});
@@ -204,15 +204,15 @@ namespace Gear.GUI
             this.toolStrip.TabIndex = 1;
             this.toolStrip.Text = "ToolStrip";
             // 
-            // openToolStripButton
+            // openBinaryButton
             // 
-            this.openToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("openToolStripButton.Image")));
-            this.openToolStripButton.ImageTransparentColor = System.Drawing.Color.Black;
-            this.openToolStripButton.Name = "openToolStripButton";
-            this.openToolStripButton.Size = new System.Drawing.Size(92, 22);
-            this.openToolStripButton.Text = "Open Binary";
-            this.openToolStripButton.ToolTipText = "Open image of propeller (binary/eeprom)";
-            this.openToolStripButton.Click += new System.EventHandler(this.OpenFile);
+            this.openBinaryButton.Image = ((System.Drawing.Image)(resources.GetObject("openBinaryButton.Image")));
+            this.openBinaryButton.ImageTransparentColor = System.Drawing.Color.Black;
+            this.openBinaryButton.Name = "openBinaryButton";
+            this.openBinaryButton.Size = new System.Drawing.Size(92, 22);
+            this.openBinaryButton.Text = "Open Binary";
+            this.openBinaryButton.ToolTipText = "Open image of propeller (binary/eeprom)";
+            this.openBinaryButton.Click += new System.EventHandler(this.OpenBinaryButton_Click);
             // 
             // newPluginButton
             // 
@@ -223,7 +223,7 @@ namespace Gear.GUI
             this.newPluginButton.Size = new System.Drawing.Size(72, 22);
             this.newPluginButton.Text = "New Plugin";
             this.newPluginButton.ToolTipText = "New Plugin in editor window";
-            this.newPluginButton.Click += new System.EventHandler(this.newPlugin_Click);
+            this.newPluginButton.Click += new System.EventHandler(this.newPluginButton_Click);
             // 
             // openPluginButton
             // 
@@ -287,7 +287,7 @@ namespace Gear.GUI
         private System.Windows.Forms.ToolStripMenuItem tileVerticalToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeAllToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem arrangeIconsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripButton openToolStripButton;
+        private System.Windows.Forms.ToolStripButton openBinaryButton;
         private System.Windows.Forms.ToolTip ToolTip;
         private System.Windows.Forms.ToolStripMenuItem helpMenu;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;

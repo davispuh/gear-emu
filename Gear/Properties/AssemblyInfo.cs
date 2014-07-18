@@ -34,8 +34,10 @@ using System.Runtime.InteropServices;
     "Original Developer: Robert Vandiver.\r\n" +
     "\r\n" +
     "Current Developers:\r\n" +
-    "   mirror\r\n" +
+	"   davispuh\r\n" +
     "   gatuno (Antonio Sanhueza)\r\n" +
+	"Past Developers:\r\n" +
+    "   mirror\r\n" +
     "   benjie (Ben Levitt)\r\n" +
     "\r\n" +
     "Third Party Components: \r\n" +
@@ -45,7 +47,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("sublab research")]
 [assembly: AssemblyProduct("Gear: Parallax Propeller Emulator")]
-[assembly: AssemblyCopyright("Copyright © sublab research 2007")]
+[assembly: AssemblyCopyright("Copyright © sublab research 2007\r\nCopyright mirror 2009\r\nCopyright 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -64,5 +66,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("14.07.03.0")]
-[assembly: AssemblyFileVersion("14.07.03.0")]
+[assembly: AssemblyVersion("14.07.17.0")]
+[assembly: AssemblyFileVersion("14.07.17.0")]

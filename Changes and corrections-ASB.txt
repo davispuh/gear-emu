@@ -1,6 +1,19 @@
-Changes and corrections - V14.07.15
+V14.07.17
 ====================================
-Antonio Sanhueza B., July 15, 2014
++Usability improvement: Remember independently last binary & plugin locations for opening binary, and opening and saving plugin.
+
+	Corrections: 1) new attributes GearDesktop.LastPlugin and GearDesktop.LastBinary. 2) Using InitialDirectory in dialogs for open binary and create, open & save plugins. 3) Use initialDirectory en methods of class PluginEditor.
+
++Detect changes not saved on plugin editor: if the user want to close or open plugin without saving, the program warning he or she that the modifications aren't saved.
+
+	Corrections: 1) new public attributes PluginEditor.GetLastPlugin and PluginEditor.CodeChanged. 2) update events detection for changes in plugin editor (code, reference or instance name).
+	
++Documenting some enums with Doxygen.
+
++Update 'About' information.
+
+V14.07.15
+====================================
 
 +Bug fixed on closing a plugin in emulator.
     When you close a plugin (pressing the close button at the right), the plugin is still working inside the emulator: there was no way to stop it, except close the instance of the emulator. It still uses resourses and doing its job (ex. PinNoise is affecting pins) but had no tab window to see it.
@@ -14,9 +27,8 @@ Antonio Sanhueza B., July 15, 2014
 
 ================================================================
 
-Changes and corrections - V14.07.03
+V14.07.03
 ====================================
-Antonio Sanhueza B., July 3, 2014
 
 When I tried to test a modified Servo32v9 obex object in GEAR, I can see the PASM code use counters in "LOGIC always" mode to timming a group of 8 pins, and it didn't work well. So I propose a few changes in the C# code.
 

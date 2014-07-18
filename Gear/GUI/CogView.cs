@@ -43,7 +43,7 @@ namespace Gear.GUI
         private Bitmap BackBuffer;
         private uint[] InterpAddress;
         private int  StackMargin = 180;
-        private uint LastLine    = 0;       // ASB: added to hold last line in NativeCog view
+        private uint LastLine    = 0;       //!< @brief Last line in NativeCog view.
         private uint StringX;
         private uint StringY;
         private Brush StringBrush;
@@ -436,7 +436,7 @@ namespace Gear.GUI
             if (line > 0x1FF)
                 return;
 
-            // ASB: update tooltip only if line has change to prevent flickering
+            //Update tooltip only if line has change to prevent flickering
             if (line != LastLine)
             {
                 mem = host.ReadLong(line);

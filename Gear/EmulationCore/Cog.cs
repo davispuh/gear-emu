@@ -29,97 +29,100 @@ namespace Gear.EmulationCore
 {
     public enum CogRunState
     {
-        STATE_EXECUTE,          // Waiting for instruction to finish executing
+        STATE_EXECUTE,          //!< Waiting for instruction to finish executing
 
-        WAIT_LOAD_PROGRAM,      // Cog is loading program memory
-        WAIT_CYCLES,            // Cog is executing an instruction, and waiting an alloted ammount of cycles
-        WAIT_PREWAIT,           // Waits for an allotted number of cycles before changing to a new state
+        WAIT_LOAD_PROGRAM,      //!< %Cog is loading program memory
+        WAIT_CYCLES,            //!< %Cog is executing an instruction, and waiting an alloted ammount of cycles
+        WAIT_PREWAIT,           //!< Waits for an allotted number of cycles before changing to a new state
 
-        BOOT_INTERPRETER,       // Interpreter is booting up
-        WAIT_INTERPRETER,       // Interpreter is executing an instruction
-        EXEC_INTERPRETER,       // Interpreter is fetching instruction
+        BOOT_INTERPRETER,       //!< Interpreter is booting up
+        WAIT_INTERPRETER,       //!< Interpreter is executing an instruction
+        EXEC_INTERPRETER,       //!< Interpreter is fetching instruction
 
-        WAIT_PEQ,               // Waits for pins to match
-        WAIT_PNE,               // Waits for pins to NOT match
-        WAIT_CNT,               // Waits for count
-        WAIT_VID,               // Waits for video
+        WAIT_PEQ,               //!< Waits for pins to match
+        WAIT_PNE,               //!< Waits for pins to NOT match
+        WAIT_CNT,               //!< Waits for count
+        WAIT_VID,               //!< Waits for video
 
-        HUB_RDBYTE,             // Waiting to read byte
-        HUB_RDWORD,             // Waiting to read word
-        HUB_RDLONG,             // Waiting to read uint
-        HUB_HUBOP,              // Waiting to perform hub operation
+        HUB_RDBYTE,             //!< Waiting to read byte
+        HUB_RDWORD,             //!< Waiting to read word
+        HUB_RDLONG,             //!< Waiting to read uint
+        HUB_HUBOP,              //!< Waiting to perform hub operation
     }
 
+    /// @brief %Cog RAM Special Purpose Registers.
+    /// 
+    /// Source: Table 15 - %Cog RAM Special Purpose Registers, %Propeller P8X32A Datasheet V1.4.0.
     public enum CogSpecialAddress : uint
     {
-        COGID       = 0x1E9,
-        INITCOGID   = 0x1EF,
-        PAR         = 0x1F0,
-        CNT         = 0x1F1,
-        INA         = 0x1F2,
-        INB         = 0x1F3,
-        OUTA        = 0x1F4,
-        OUTB        = 0x1F5,
-        DIRA        = 0x1F6,
-        DIRB        = 0x1F7,
-        CNTA        = 0x1F8,
-        CNTB        = 0x1F9,
-        FRQA        = 0x1FA,
-        FRQB        = 0x1FB,
-        PHSA        = 0x1FC,
-        PHSB        = 0x1FD,
-        VCFG        = 0x1FE,
-        VSCL        = 0x1FF
+        COGID     = 0x1E9,    //!< 
+        INITCOGID = 0x1EF,    //!< 
+        PAR       = 0x1F0,    //!< Boot Parameter
+        CNT       = 0x1F1,    //!< System Counter
+        INA       = 0x1F2,    //!< Input States for P31 - P0.
+        INB       = 0x1F3,    //!< Input States for P63 - P32.
+        OUTA      = 0x1F4,    //!< Output States for P31 - P0.
+        OUTB      = 0x1F5,    //!< Output States for P63 - P32.
+        DIRA      = 0x1F6,    //!< Direction States for P31 - P0.
+        DIRB      = 0x1F7,    //!< Direction States for P63 - P32.
+        CNTA      = 0x1F8,    //!< Counter A Control.
+        CNTB      = 0x1F9,    //!< Counter B Control.
+        FRQA      = 0x1FA,    //!< Counter A Frequency.
+        FRQB      = 0x1FB,    //!< Counter B Frequency.
+        PHSA      = 0x1FC,    //!< Counter A Phase.
+        PHSB      = 0x1FD,    //!< Counter B Phase.
+        VCFG      = 0x1FE,    //!< Video Configuration.
+        VSCL      = 0x1FF     //!< Video Scale.
     }
 
     public enum CogConditionCodes : uint
     {
-        IF_NEVER        = 0x00,
-        IF_A            = 0x01,
-        IF_NC_AND_NZ    = 0x01,
-        IF_NZ_AND_NC    = 0x01,
-        IF_NC_AND_Z     = 0x02,
-        IF_Z_AND_NC     = 0x02,
-        IF_NC           = 0x03,
-        IF_AE           = 0x03,
-        IF_NZ_AND_C     = 0x04,
-        IF_C_AND_NZ     = 0x04,
-        IF_NZ           = 0x05,
-        IF_NE           = 0x05,
-        IF_C_NE_Z       = 0x06,
-        IF_Z_NE_C       = 0x06,
-        IF_NC_OR_NZ     = 0x07,
-        IF_NZ_OR_NC     = 0x07,
-        IF_C_AND_Z      = 0x08,
-        IF_Z_AND_C      = 0x08,
-        IF_C_EQ_Z       = 0x09,
-        IF_Z_EQ_C       = 0x09,
-        IF_E            = 0x0A,
-        IF_Z            = 0x0A,
-        IF_NC_OR_Z      = 0x0B,
-        IF_Z_OR_NC      = 0x0B,
-        IF_B            = 0x0C,
-        IF_C            = 0x0C,
-        IF_NZ_OR_C      = 0x0D,
-        IF_C_OR_NZ      = 0x0D,
-        IF_Z_OR_C       = 0x0E,
-        IF_BE           = 0x0E,
-        IF_C_OR_Z       = 0x0E,
-        IF_ALWAYS       = 0x0F
+        IF_NEVER        = 0x00, //!< Never execute
+        IF_A            = 0x01, //!< if above (!C & !Z)
+        IF_NC_AND_NZ    = 0x01, //!< if C clear and Z clear
+        IF_NZ_AND_NC    = 0x01, //!< if Z clear and C clear
+        IF_NC_AND_Z     = 0x02, //!< if C clear and Z set
+        IF_Z_AND_NC     = 0x02, //!< if C set and Z clear
+        IF_NC           = 0x03, //!< if C clear
+        IF_AE           = 0x03, //!< if above/equal (!C)
+        IF_NZ_AND_C     = 0x04, //!< if Z clear and C set
+        IF_C_AND_NZ     = 0x04, //!< if C set and Z clear
+        IF_NZ           = 0x05, //!< if Z clear
+        IF_NE           = 0x05, //!< if not equal (!Z)
+        IF_C_NE_Z       = 0x06, //!< if C not equal to Z
+        IF_Z_NE_C       = 0x06, //!< if Z not equal to C
+        IF_NC_OR_NZ     = 0x07, //!< if C clear or Z clear
+        IF_NZ_OR_NC     = 0x07, //!< if Z clear or C clear
+        IF_C_AND_Z      = 0x08, //!< if C set and Z set
+        IF_Z_AND_C      = 0x08, //!< if Z set and C set
+        IF_C_EQ_Z       = 0x09, //!< if C equal to Z
+        IF_Z_EQ_C       = 0x09, //!< if Z equal to C
+        IF_E            = 0x0A, //!< if equal (Z)
+        IF_Z            = 0x0A, //!< if Z set
+        IF_NC_OR_Z      = 0x0B, //!< if C clear or Z set
+        IF_Z_OR_NC      = 0x0B, //!< if Z set or C clear
+        IF_B            = 0x0C, //!< if below (C)
+        IF_C            = 0x0C, //!< if C set
+        IF_NZ_OR_C      = 0x0D, //!< if Z clear or C set
+        IF_C_OR_NZ      = 0x0D, //!< if C set or Z clear
+        IF_Z_OR_C       = 0x0E, //!< if Z set or C set
+        IF_BE           = 0x0E, //!< if below/equal (C | Z)
+        IF_C_OR_Z       = 0x0E, //!< if C set or Z set
+        IF_ALWAYS       = 0x0F  //!< Always execute
     }
 
     abstract public partial class Cog
     {
         // Runtime variables
-        protected uint[] Memory;            // Program Memory
+        protected uint[] Memory;            //!< Program Memory
 
-        protected Propeller Hub;            // Host processor
-        protected volatile uint PC;         // Program Cursor
-        protected volatile int BP;          // Breakpoint Address
+        protected Propeller Hub;            //!< Host processor
+        protected volatile uint PC;         //!< Program Cursor
+        protected volatile int BP;          //!< Breakpoint Address
 
-        protected int StateCount;           // Arguement for the current state
-        protected CogRunState State;        // Current COG state
-        protected CogRunState NextState;    // Next state COG state
+        protected int StateCount;           //!< Arguement for the current state
+        protected CogRunState State;        //!< Current COG state
+        protected CogRunState NextState;    //!< Next state COG state
 
         protected uint ProgramAddress;
         protected uint ParamAddress;
@@ -281,7 +284,7 @@ namespace Gear.EmulationCore
                 }
                 else
                 {
-                    // ASB: change to show special registers, because their values are in
+                    // show special registers, because their values are in
                     // variables in Cog object and not in memory array.
                     if (i >= (int)CogSpecialAddress.PAR)
                     {
@@ -289,7 +292,6 @@ namespace Gear.EmulationCore
                     }
                     else
                     {
-                        // ASB: end of change
                         return Memory[i];
                     }
                 }
@@ -411,8 +413,7 @@ namespace Gear.EmulationCore
 
         public uint ReadLong(uint address)
         {
-            // ASB: changed case values to use CogSpecialAddress enum, intead of direct hex values
-            // ASB: added (cast) to use CogSpecialAddress enum
+            // values using CogSpecialAddress enum, intead of direct hex values
             switch ((CogSpecialAddress)(address & 0x1FF))
             {
                 case CogSpecialAddress.CNT:
@@ -442,14 +443,21 @@ namespace Gear.EmulationCore
             }
         }
 
+        /// @brief Write cog RAM with a specified value
+        /// This method take care of special cog address that in this class aren't writed in memory array Cog.Memory.
+        /// @param[in] address Address to write
+        /// @param[in] data Data to write in address
+        /// @note PAR address is a special case, because unless Propeller Manual V1.2 specifications says it is a 
+        /// read-only register, there are claims that in reality it is writeable as explains
+        /// <a href="http://forums.parallax.com/showthread.php/115909-PASM-simulator-debugger)">Forum thread "PASM simulator / debugger?</a>.
+        /// They claims that some parallax video drivers in PASM changes the PAR register, and GEAR didn't emulate that.
         protected void WriteLong(uint address, uint data)
         {
-            // ASB: changed case values to use CogSpecialAddress enum, intead of direct hex values
-            // ASB: added (cast) to use CogSpecialAddress enum
+            // values using CogSpecialAddress enum, intead of direct hex values
             switch ((CogSpecialAddress)(address & 0x1FF))
             {
                 // Read only registers
-                // case CogSpecialAddress.PAR: // ASB: PAR register changed to writeable
+                // case CogSpecialAddress.PAR: // PAR register changed to writeable
                 case CogSpecialAddress.CNT:
                 case CogSpecialAddress.INA:
                 case CogSpecialAddress.INB:
@@ -485,6 +493,7 @@ namespace Gear.EmulationCore
         }
 
         abstract public bool DoInstruction();
+
         abstract public void Boot();
     }
 }

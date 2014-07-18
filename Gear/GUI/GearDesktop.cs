@@ -37,61 +37,84 @@ namespace Gear.GUI
     /// @todo Document Gear.GUI.GearDesktop class
     public partial class GearDesktop : Form
     {
+        /// @brief Last plugin succesfully opened or saved.
+        /// Include complete path and name.
+        /// @version V14.07.17 - Introduced.
+        static public string LastPlugin;
+        /// @brief Last bynary file succesfully opened.
+        /// Include complete path and name.
+        /// @version V14.07.17 - Introduced.
+        static public string LastBinary;
+        
         /// @todo Document Gear.GUI.GearDesktop()
         public GearDesktop()
         {
             InitializeComponent();
         }
 
-        /// @todo Document Gear.GUI.OpenFile()
-        private void OpenFile(object sender, EventArgs e)
+        /// @brief Load a new emulator from file.
+        /// Load an binary image into a new emulator, from user selected file, remembering last binary directory,
+        /// independently from last plugin directory.
+        private void OpenBinaryButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Propeller Runtime Image (*.binary;*.eeprom)|*.binary;*.eeprom|All Files (*.*)|*.*";
             openFileDialog.Title = "Open Propeller Binary...";
+            if (LastBinary != null)
+                openFileDialog.InitialDirectory = Path.GetDirectoryName(LastBinary);   //retrieve last binary location
+
             if (openFileDialog.ShowDialog(this) == DialogResult.OK)
             {
-                Emulator em = new Emulator(Path.GetFileName(openFileDialog.FileName));
-                if (em.OpenFile(openFileDialog.FileName))
+                Emulator emul = new Emulator(Path.GetFileName(openFileDialog.FileName));
+                if (emul.OpenFile(openFileDialog.FileName))   //if succesfully load binary in emulator
                 {
-                    em.MdiParent = this;
-                    em.WindowState = FormWindowState.Maximized;
-                    em.Show();
+                    //show emulator window
+                    emul.MdiParent = this;
+                    emul.WindowState = FormWindowState.Maximized;
+                    emul.Show();
+                    //remember last binary succesfully opened
+                    LastBinary = emul.GetLastBinary;
                 }
             }
         }
 
-        /// @todo Document Gear.GUI.ExitToolsStripMenuItem_Click()
+        /// @todo Document Gear.GUI.GearDesktop.ExitToolsStripMenuItem_Click().
+        /// 
         private void ExitToolsStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }
 
-        /// @todo Document Gear.GUI.CascadeToolStripMenuItem_Click()
+        /// @todo Document Gear.GUI.GearDesktop.CascadeToolStripMenuItem_Click()
+        /// 
         private void CascadeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LayoutMdi(MdiLayout.Cascade);
         }
 
-        /// @todo Document Gear.GUI.TileVerticleToolStripMenuItem_Click()
+        /// @todo Document Gear.GUI.GearDesktop.TileVerticleToolStripMenuItem_Click()
+        /// 
         private void TileVerticleToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LayoutMdi(MdiLayout.TileVertical);
         }
 
-        /// @todo Document Gear.GUI.TileHorizontalToolStripMenuItem_Click()
+        /// @todo Document Gear.GUI.GearDesktop.TileHorizontalToolStripMenuItem_Click()
+        /// 
         private void TileHorizontalToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LayoutMdi(MdiLayout.TileHorizontal);
         }
 
-        /// @todo Document Gear.GUI.ArrangeIconsToolStripMenuItem_Click()
+        /// @todo Document Gear.GUI.GearDesktop.ArrangeIconsToolStripMenuItem_Click()
+        /// 
         private void ArrangeIconsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LayoutMdi(MdiLayout.ArrangeIcons);
         }
 
-        /// @todo Document Gear.GUI.CloseAllToolStripMenuItem_Click()
+        /// @todo Document Gear.GUI.GearDesktop.CloseAllToolStripMenuItem_Click()
+        /// 
         private void CloseAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
             foreach (Form childForm in MdiChildren)
@@ -100,19 +123,24 @@ namespace Gear.GUI
             }
         }
 
-        /// @todo Document Gear.GUI.aboutToolStripMenuItem_Click()
+        /// @todo Document Gear.GUI.GearDesktop.aboutToolStripMenuItem_Click()
+        /// 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AboutGear about = new AboutGear();
             about.ShowDialog(this);
         }
 
-        /// @todo Document Gear.GUI.OpenPluginButton_Click()
+        /// @brief Load plugin editor from file.
+        /// Load a plugin definition into a new editor window, from user selected file, remembering last plugin directory,
+        /// independently from last binary directory.
         private void OpenPluginButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Gear plug-in component (*.xml)|*.xml|All Files (*.*)|*.*";
             openFileDialog.Title = "Open Gear Plug-in...";
+            if (LastPlugin != null)
+                openFileDialog.InitialDirectory = Path.GetDirectoryName(LastPlugin);
 
             if (openFileDialog.ShowDialog(this) == DialogResult.OK)
             {
@@ -120,20 +148,23 @@ namespace Gear.GUI
 
                 if (plugin.OpenFile(openFileDialog.FileName, false))
                 {
+                    //show plugin editor loaded with selected one
                     plugin.MdiParent = this;
                     plugin.Show();
+                    //remember plugin succesfully loaded
+                    LastPlugin = plugin.GetLastPlugin;
                 }
             }
         }
 
-        /// @todo Document Gear.GUI.newPlugin_Click()
-        private void newPlugin_Click(object sender, EventArgs e)
+        /// @todo Document Gear.GUI.GearDesktop.newPluginButton_Click()
+        /// 
+        private void newPluginButton_Click(object sender, EventArgs e)
         {
             PluginEditor plugin = new PluginEditor();
             plugin.MdiParent = this;
             plugin.Show();
         }
-
 
     }
 }
