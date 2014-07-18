@@ -62,6 +62,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Disassembler\DataUnpacker.cs" />
     <Compile Include="Disassembler\SpinAssignments.cs" />
     <Compile Include="Disassembler\SpinMathInstructions.cs" />
     <Compile Include="Disassembler\SpinInstructions.cs" />

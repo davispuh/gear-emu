@@ -108,49 +108,6 @@ namespace Gear.EmulationCore
             return text;
         }
 
-        private static uint GetPackedLiteral(MemoryManager memory)
-        {
-            byte op = memory.ReadByte();
-
-            if (op >= 0x80)
-                // TODO: COMPLAIN!
-                return 0x55555555;
-
-            uint data = (uint)2 << (op & 0x1F);
-
-            if ((op & 0x20) != 0)
-                data--;
-            if ((op & 0x40) != 0)
-                data = ~data;
-
-            return data;
-        }
-
-        private static int GetPackedOffset(MemoryManager memory)
-        {
-            ushort op = memory.ReadByte();
-
-            if ((op & 0x80) == 0)
-                return (op & 0x7F);
-
-            op &= 0x7F;
-
-            return (op << 8) | (memory.ReadByte());
-        }
-
-        private static short GetSignedPackedOffset(MemoryManager memory)
-        {
-            short op = memory.ReadByte();
-            bool extended = (op & 0x80) != 0;
-
-            op = (short)((op & 0x7F) | ((op << 1) & 0x80));
-
-            if (!extended)
-                return (short)(sbyte)op;
-
-            return (short)((op << 8) | memory.ReadByte());
-        }
-
         private static string GetEffectCode(MemoryManager memory, bool useShortOpcodes)
         {
             Spin.ParsedAssignment ParsedAssignment = new Spin.ParsedAssignment(memory.ReadByte());
@@ -174,7 +131,7 @@ namespace Gear.EmulationCore
                     case Spin.ArgumentMode.None:
                         break;
                     case Spin.ArgumentMode.SignedPackedOffset:
-                        effect += " " + GetSignedPackedOffset(memory);
+                        effect += " " + DataUnpacker.GetSignedPackedOffset(memory);
                         break;
                     default:
                         throw new Exception("Unexpected Spin Argument Mode: " + SubAssignment.ArgumentMode.ToString());
@@ -232,67 +189,23 @@ namespace Gear.EmulationCore
                 case Spin.ArgumentMode.None:
                     return Name;
                 case Spin.ArgumentMode.UnsignedOffset:
-                    return String.Format(format, Name, GetPackedOffset(memory));
+                    return String.Format(format, Name, DataUnpacker.GetPackedOffset(memory));
                 case Spin.ArgumentMode.UnsignedEffectedOffset:
-                    {
-                        int arg = GetPackedOffset(memory);
-                        format = "{0} {1} {2}";
-                        return String.Format(format, Name, arg, GetEffectCode(memory, useShortOpcodes));
-                    }
+                    return String.Format("{0} {1} {2}", Name, DataUnpacker.GetPackedOffset(memory), GetEffectCode(memory, useShortOpcodes));
                 case Spin.ArgumentMode.Effect:
                     return String.Format(format, Name, GetEffectCode(memory, useShortOpcodes));
                 case Spin.ArgumentMode.SignedOffset:
-                    {
-                        uint result = memory.ReadByte();
-
-                        if ((result & 0x80) == 0)
-                        {
-                            if ((result & 0x40) != 0)
-                                result |= 0xFFFFFF80;
-                        }
-                        else
-                        {
-                            result = (result << 8) | memory.ReadByte();
-
-                            if ((result & 0x4000) != 0)
-                                result |= 0xFFFF8000;
-                        }
-                        return String.Format(format, Name, (int)result);
-                    }
+                    return String.Format(format, Name, DataUnpacker.GetSignedOffset(memory));
                 case Spin.ArgumentMode.PackedLiteral:
-                    return String.Format(format, Name, GetPackedLiteral(memory));
+                    return String.Format(format, Name, DataUnpacker.GetPackedLiteral(memory));
                 case Spin.ArgumentMode.ByteLiteral:
                     return String.Format(format, Name, memory.ReadByte());
                 case Spin.ArgumentMode.WordLiteral:
-                    {
-                        int result = 0;
-                        for (int i = 0; i < 2; i++)
-                        {
-                            result <<= 8;
-                            result |= memory.ReadByte();
-                        }
-                        return String.Format(format, Name, result);
-                    }
+                    return String.Format(format, Name, DataUnpacker.GetWordLiteral(memory));
                 case Spin.ArgumentMode.NearLongLiteral:
-                    {
-                        int result = 0;
-                        for (int i = 0; i < 3; i++)
-                        {
-                            result <<= 8;
-                            result |= memory.ReadByte();
-                        }
-                        return String.Format(format, Name, result);
-                    }
+                    return String.Format(format, Name, DataUnpacker.GetNearLongLiteral(memory));
                 case Spin.ArgumentMode.LongLiteral:
-                    {
-                        int result = 0;
-                        for (int i = 0; i < 4; i++)
-                        {
-                            result <<= 8;
-                            result |= memory.ReadByte();
-                        }
-                        return String.Format(format, Name, result);
-                    }
+                    return String.Format(format, Name, DataUnpacker.GetLongLiteral(memory));
                 case Spin.ArgumentMode.ObjCallPair:
                     {
                         byte obj = memory.ReadByte();
