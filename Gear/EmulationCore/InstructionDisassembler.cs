@@ -108,7 +108,7 @@ namespace Gear.EmulationCore
             return text;
         }
 
-        private static string GetEffectCode(MemoryManager memory, bool useShortOpcodes)
+        private static string GetEffectCode(Propeller.MemoryManager memory, bool useShortOpcodes)
         {
             Spin.ParsedAssignment ParsedAssignment = new Spin.ParsedAssignment(memory.ReadByte());
 
@@ -141,7 +141,7 @@ namespace Gear.EmulationCore
             return effect;
         }
 
-        public static string GetMemoryOp(MemoryManager memory, bool useShortOpcodes)
+        public static string GetMemoryOp(Propeller.MemoryManager memory, bool useShortOpcodes)
         {
             Spin.ParsedMemoryOperation OP = new Spin.ParsedMemoryOperation(memory.ReadByte());
 
@@ -160,7 +160,7 @@ namespace Gear.EmulationCore
             }
         }
 
-        public static string InterpreterText(MemoryManager memory, bool displayAsHexadecimal, bool useShortOpcodes)
+        public static string InterpreterText(Propeller.MemoryManager memory, bool displayAsHexadecimal, bool useShortOpcodes)
         {
             string format;
             if (displayAsHexadecimal)

@@ -91,7 +91,7 @@ namespace Gear.Propeller
 
             public Assignment(AssignmentType Type, SubAssignment[] SubAssignments)
             {
-                this.Type = Type;
+                this.Type           = Type;
                 this.SubAssignments = SubAssignments;
             }
         }
@@ -100,7 +100,7 @@ namespace Gear.Propeller
         {
             public MathInstruction(string Name, string NameBrief)
             {
-                this.Name = Name;
+                this.Name      = Name;
                 this.NameBrief = NameBrief;
             }
         }

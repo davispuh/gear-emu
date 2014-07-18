@@ -220,7 +220,7 @@ namespace Gear.GUI
 
                     uint start = i;
 
-                    MemoryManager mem = new MemoryManager(Chip, i);
+                    Propeller.MemoryManager mem = new Propeller.MemoryManager(Chip, i);
                     string inst = InstructionDisassembler.InterpreterText(mem, displayAsHexadecimal, useShortOpcodes);
                     i = mem.Address;
                     display = String.Format("{0:X4}: ", start);

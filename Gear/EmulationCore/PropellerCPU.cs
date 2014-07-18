@@ -59,7 +59,7 @@ namespace Gear.EmulationCore
         INPUT_HI,   //!< Input Hi (3.3V)
     }
 
-    public partial class PropellerCPU : DirectMemory
+    public partial class PropellerCPU : Propeller.DirectMemory
     {
         static private string[] CLKSEL = new string[] {
             "RCFAST",
