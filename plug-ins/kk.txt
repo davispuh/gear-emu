@@ -1,8 +1,0 @@
-<plugin>
-  <instance class="" />
-  <code>akdjfasd
-as
-for
-
-</code>
-</plugin>
