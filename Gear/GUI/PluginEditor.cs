@@ -39,15 +39,12 @@ using System.Text.RegularExpressions;
 /// 
 namespace Gear.GUI
 {
-    /// @todo Document Gear.GUI.
+    /// @todo Document Gear.GUI.PluginEditor
     public partial class PluginEditor : Form
     {
         /// @brief File name of current plugin on editor window.
         /// @note Include full path and name to the file.
         private string m_SaveFileName;
-        /// @brief global file name of last plugin
-        /// @version V14.07.XX - Added.
-        private string global_saveFileName;
         /// @brief Default font for editor code.
         /// @version V14.07.03 - Added.
         private Font defaultFont;    
@@ -56,7 +53,7 @@ namespace Gear.GUI
         /// @version V14.07.17 - Added.
         private bool m_CodeChanged;
         /// @brief Enable or not change detection event.
-        /// @version V14.07.XX - Added.
+        /// @version V14.07.17 - Added.
         private bool changeDetectEnabled;
 
         /// @brief Default constructor.
@@ -64,7 +61,6 @@ namespace Gear.GUI
         public PluginEditor()
         {
             InitializeComponent();
-            ///@todo mandar todo a Setup() comun excepto global_saveFileName
             m_SaveFileName = null;
             changeDetectEnabled = true;
             CodeChanged = false;
@@ -85,35 +81,20 @@ namespace Gear.GUI
             errorListView.Columns.Add("Message", -2, HorizontalAlignment.Left);
         }
 
-        /// @brief Constructor with a location of last plugin
-        /// 
-        /// @param initialLocation Global last plugin opened or saved.
-        public PluginEditor(string initialLocation)
-        {
-            /// @todo agregar llamada a Setup() comun
-            global_saveFileName = initialLocation;
-        }
-
         /// @brief Return last plugin succesfully loaded o saved.
         /// Handy to remember last plugin directory.
-        /// @version V14.07.XX - Added.
+        /// @version V14.07.17 - Added.
         public string GetLastPlugin
         {
-            get
-            {
-                return m_SaveFileName;
-            }
+            get { return m_SaveFileName; }
         }
 
         /// @brief Attribute for changed plugin detection.
-        /// @version V14.07.XX - Added.
-        public bool CodeChanged
+        /// @version V14.07.17 - Added.
+        private bool CodeChanged
         {
-            get
-            {
-                return m_CodeChanged;
-            }
-            set 
+            get { return m_CodeChanged; }
+            set  
             {
                 m_CodeChanged = value;
                 UpdateTitle();
@@ -121,7 +102,7 @@ namespace Gear.GUI
         }
 
         /// @brief Complete Name for plugin, including path.
-        /// @version V14.07.XX - Added.
+        /// @version V14.07.17 - Added.
         private string SaveFileName
         {
             get
@@ -221,7 +202,7 @@ namespace Gear.GUI
             }
         }
 
-        /// @todo Document method PluginEditor::SaveFile()
+        /// @todo Document method PluginEditor.SaveFile()
         /// @todo Correct method to implement new plugin system.
         /// 
         /// Take care of update change state of the window. No need to do it in methods who call this.
@@ -255,8 +236,8 @@ namespace Gear.GUI
 
         /// @brief Method to compile C# source code to check errors on it.
         /// Actually call a C# compiler to determine errors, using references.
-        /// @param[in] sender Object who called this on event
-        /// @param[in] e <c>EventArgs</c> class with a list of argument to the event call
+        /// @param[in] sender Object who called this on event.
+        /// @param[in] e `EventArgs` class with a list of argument to the event call.
         private void CheckSource_Click(object sender, EventArgs e)
         {
             string[] refs = new string[referencesList.Items.Count];
@@ -275,7 +256,6 @@ namespace Gear.GUI
         }
 
         /// @brief Add error details on screen list.
-        /// 
         /// @param[in] e `CompileError` object.
         private void EnumErrors(CompilerError e)
         {
@@ -289,7 +269,6 @@ namespace Gear.GUI
         }
 
         /// @brief Show dialog to load a file with plugin information.
-        ///
         /// @param[in] sender Object who called this on event.
         /// @param[in] e `EventArgs` class with a list of argument to the event call.
         private void OpenButton_Click(object sender, EventArgs e)
@@ -307,7 +286,7 @@ namespace Gear.GUI
                 if (m_SaveFileName != null)
                     dialog.InitialDirectory = Path.GetDirectoryName(m_SaveFileName);   //retrieve from last plugin edited
                 else
-                    dialog.InitialDirectory = Path.GetDirectoryName(global_saveFileName);   //retrieve from global last plugin
+                    dialog.InitialDirectory = Path.GetDirectoryName(GearDesktop.LastPlugin);   //retrieve from global last plugin
 
                 if (dialog.ShowDialog(this) == DialogResult.OK)
                 {
@@ -317,7 +296,6 @@ namespace Gear.GUI
         }
 
         /// @brief Show dialog to save a plugin information into file, using GEAR plugin format.
-        ///
         /// @param[in] sender Object who called this on event.
         /// @param[in] e `EventArgs` class with a list of argument to the event call.
         private void SaveButton_Click(object sender, EventArgs e)
@@ -331,7 +309,6 @@ namespace Gear.GUI
         }
 
         /// @brief Show dialog to save a plugin information into file, using GEAR plugin format.
-        ///
         /// @param[in] sender Object who called this on event.
         /// @param[in] e `EventArgs` class with a list of argument to the event call.
         private void SaveAsButton_Click(object sender, EventArgs e)
@@ -342,7 +319,7 @@ namespace Gear.GUI
             if (m_SaveFileName != null)
                 dialog.InitialDirectory = Path.GetDirectoryName(m_SaveFileName);   //retrieve from last plugin edited
             else
-                dialog.InitialDirectory = Path.GetDirectoryName(global_saveFileName);    //retrieve from global last plugin
+                dialog.InitialDirectory = Path.GetDirectoryName(GearDesktop.LastPlugin);    //retrieve from global last plugin
 
             if (dialog.ShowDialog(this) == DialogResult.OK)
             {
@@ -352,7 +329,6 @@ namespace Gear.GUI
         }
 
         /// @brief Remove the selected reference of the list.
-        /// 
         /// @param[in] sender Object who called this on event.
         /// @param[in] e `EventArgs` class with a list of argument to the event call.
         private void RemoveButton_Click(object sender, EventArgs e)
@@ -364,8 +340,7 @@ namespace Gear.GUI
             }
         }
 
-        /// @todo Document method PluginEditor::ErrorView_SelectedIndexChanged() 
-        ///
+        /// @todo Document method PluginEditor.ErrorView_SelectedIndexChanged() 
         /// @param[in] sender Object who called this on event.
         /// @param[in] e `EventArgs` class with a list of argument to the event call.
         private void ErrorView_SelectedIndexChanged(object sender, EventArgs e)
@@ -394,7 +369,6 @@ namespace Gear.GUI
         }
 
         /// @brief Add a reference from the `ReferenceName`text box.
-        /// @todo add '\@version' tag to tell the change on the name of method from `toolStripButton1_Click()`
         /// @param[in] sender Object who called this on event.
         /// @param[in] e `EventArgs` class with a list of argument to the event call.
         private void addReferenceButton_Click(object sender, EventArgs e)
@@ -408,7 +382,6 @@ namespace Gear.GUI
         }
 
         /// @brief Check syntax on the C# source code
-        /// 
         /// @param[in] sender Object who called this on event.
         /// @param[in] e `EventArgs` class with a list of argument to the event call.
         /// @since V14.07.03 - Added.
@@ -433,11 +406,10 @@ namespace Gear.GUI
 
         /// @brief Auxiliary method to check syntax.
         /// Examines line by line, parsing reserved C# words.
-        /// In this
         /// @param[in] line Text line from the source code.
         /// @since V14.07.03 - Added.
         /// @note Experimental highlighting. Probably changes in the future.
-        // Parse line for sintax highlighting
+        // Parse line for sintax highlighting.
         private void ParseLine(string line)
         {
             Regex r = new Regex("([ \\t{}();:])", RegexOptions.Compiled);
@@ -497,9 +469,9 @@ namespace Gear.GUI
         }
 
         /// @brief Update changed state for plugin window.
-        /// 
         /// @param[in] sender Object who called this on event.
         /// @param[in] e `EventArgs` class with a list of argument to the event call.
+        /// @version V14.07.17 - Added.
         private void codeEditorView_TextChanged(object sender, EventArgs e)
         {
             if (changeDetectEnabled)
@@ -509,9 +481,9 @@ namespace Gear.GUI
         }
 
         /// @brief Update changed state for instance name.
-        /// 
         /// @param[in] sender Object who called this on event.
         /// @param[in] e `EventArgs` class with a list of argument to the event call.
+        /// @version V14.07.17 - Added.
         private void instanceName_TextChanged(object sender, EventArgs e)
         {
             CodeChanged = true;
@@ -522,6 +494,7 @@ namespace Gear.GUI
         /// the closing.
         /// @param[in] sender Object who called this on event.
         /// @param[in] e `FormClosingEventArgs` class with a list of argument to the event call.
+        /// @version V14.07.17 - Added.
         private void PluginEditor_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (CodeChanged)
@@ -533,9 +506,9 @@ namespace Gear.GUI
         }
 
         /// @brief Ask the user to not loose changes.
-        /// 
         /// @param fileName Filename to show in dialog
         /// @returns Boolean to close (true) or not (false)
+        /// @version V14.07.17 - Added.
         private bool CloseAnyway(string fileName)
         {
             //dialog to not lost changes

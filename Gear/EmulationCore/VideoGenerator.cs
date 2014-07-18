@@ -27,12 +27,16 @@ using System.Text;
 
 namespace Gear.EmulationCore
 {
+    /// @brief Video mode Field.
+    /// The 2-bit VMode (video mode) field selects the type and orientation of video output.
+    /// 
+    /// Source: Table 8 - The Video Mode Field, %Propeller P8X32A Datasheet V1.4.0.
     public enum VMode : int
     {
-        DISABLED        = 0x00000000,
-        VGA_MODE        = 0x20000000,
-        COMPOSITE_1     = 0x40000000,
-        COMPOSITE_2     = 0x60000000
+        DISABLED    = 0x00000000,   //!< Disabled, no video generated.
+        VGA_MODE    = 0x20000000,   //!< VGA mode; 8-bit parallel output on VPins 7:0
+        COMPOSITE_1 = 0x40000000,   //!< Composite Mode 1; broadcast on VPins 7:4, baseband on VPins 3:0
+        COMPOSITE_2 = 0x60000000    //!< Composite Mode 2; baseband on VPins 7:4, broadcast on VPins 3:0
     }
 
     public enum CMode : int

@@ -27,47 +27,50 @@ using System.Text;
 
 namespace Gear.EmulationCore
 {
+    /// @brief Counter Modes.
+    /// 
+    /// Source: Table 6 - Counter Modes (CTRMODE Field Values), %Propeller P8X32A Datasheet V1.4.0.
     public enum CounterMode : uint
     {
-        DISABLED,
+        DISABLED,                   //!< %00000 | Counter disabled (off)
 
-        PLL_INTERNAL,
-        PLL_SINGLE_ENDED,
-        PLL_DIFFERENTIAL,
+        PLL_INTERNAL,               //!< %00001 | %PLL internal (video mode)
+        PLL_SINGLE_ENDED,           //!< %00010 | %PLL single-ended
+        PLL_DIFFERENTIAL,           //!< %00011 | %PLL differential
 
-        NCO_SINGLE_ENDED,
-        NCO_DIFFERENTIAL,
+        NCO_SINGLE_ENDED,           //!< %00100 | NCO single-ended
+        NCO_DIFFERENTIAL,           //!< %00101 | NCO differential
 
-        DUTY_SINGLE_ENDED,
-        DUTY_DIFFERENTIAL,
+        DUTY_SINGLE_ENDED,          //!< %00110 | DUTY single-ended
+        DUTY_DIFFERENTIAL,          //!< %00111 | DUTY differential
 
-        POS_DETECTOR,
-        POS_DETECTOR_FEEDBACK,
-        POSEDGE_DETECTOR,
-        POSEDGE_DETECTOR_FEEDBACK,
+        POS_DETECTOR,               //!< %01000 | POS detector
+        POS_DETECTOR_FEEDBACK,      //!< %01001 | POS detector with feedback
+        POSEDGE_DETECTOR,           //!< %01010 | POSEDGE detector
+        POSEDGE_DETECTOR_FEEDBACK,  //!< %01011 | POSEDGE detector w/ feedback
 
-        NEG_DETECTOR,
-        NEG_DETECTOR_FEEDBACK,
-        NEGEDGE_DETECTOR,
-        NEGEDGE_DETECTOR_FEEDBACK,
+        NEG_DETECTOR,               //!< %01100 | NEG detector
+        NEG_DETECTOR_FEEDBACK,      //!< %01101 | NEG detector with feedback
+        NEGEDGE_DETECTOR,           //!< %01110 | NEGEDGE detector
+        NEGEDGE_DETECTOR_FEEDBACK,  //!< %01111 | NEGEDGE detector w/ feedback
 
-        // Logic modes not implemented on gear v1.11
-        LOGIC_NEVER,
-        LOGIC_NOTA_AND_NOTB,
-        LOGIC_A_AND_NOTB,
-        LOGIC_NOTB,
-        LOGIC_NOTA_AND_B,
-        LOGIC_NOTA,
-        LOGIC_A_DIFF_B,
-        LOGIC_NOTA_OR_NOTB,
-        LOGIC_A_AND_B,
-        LOGIC_A_EQ_B,
-        LOGIC_A,
-        LOGIC_A_OR_NOTB,
-        LOGIC_B,
-        LOGIC_NOTA_OR_B,
-        LOGIC_A_OR_B,
-        LOGIC_ALWAYS
+        // Logic modes implemented on gear v14.7.3
+        LOGIC_NEVER,                //!< %10000 | LOGIC never
+        LOGIC_NOTA_AND_NOTB,        //!< %10001 | LOGIC !A & !B
+        LOGIC_A_AND_NOTB,           //!< %10010 | LOGIC A & !B
+        LOGIC_NOTB,                 //!< %10011 | LOGIC !B
+        LOGIC_NOTA_AND_B,           //!< %10100 | LOGIC !A & B
+        LOGIC_NOTA,                 //!< %10101 | LOGIC !A
+        LOGIC_A_DIFF_B,             //!< %10110 | LOGIC A <> B
+        LOGIC_NOTA_OR_NOTB,         //!< %10111 | LOGIC !A | !B
+        LOGIC_A_AND_B,              //!< %11000 | LOGIC A & B
+        LOGIC_A_EQ_B,               //!< %11001 | LOGIC A == B
+        LOGIC_A,                    //!< %11010 | LOGIC A
+        LOGIC_A_OR_NOTB,            //!< %11011 | LOGIC A | !B
+        LOGIC_B,                    //!< %11100 | LOGIC B
+        LOGIC_NOTA_OR_B,            //!< %11101 | LOGIC !A | B
+        LOGIC_A_OR_B,               //!< %11110 | LOGIC A | B
+        LOGIC_ALWAYS                //!< %11111 | LOGIC always
     }
 
     public class FreqGenerator

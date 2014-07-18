@@ -2,11 +2,15 @@ V14.07.17
 ====================================
 +Usability improvement: Remember independently last binary & plugin locations for opening binary, and opening and saving plugin.
 
-	Corrections: 1) new attributes GearDesktop.LastPlugin and GearDesktop.LastBinary. 2) Using InitialDirectory in dialogs for open binary and create, open & save plugins. 3) Added constructor in PluginEditor(string) to pass InitialDirectory for a new plugin.
+	Corrections: 1) new attributes GearDesktop.LastPlugin and GearDesktop.LastBinary. 2) Using InitialDirectory in dialogs for open binary and create, open & save plugins. 3) Use initialDirectory en methods of class PluginEditor.
 
 +Detect changes not saved on plugin editor: if the user want to close or open plugin without saving, the program warning he or she that the modifications aren't saved.
 
 	Corrections: 1) new public attributes PluginEditor.GetLastPlugin and PluginEditor.CodeChanged. 2) update events detection for changes in plugin editor (code, reference or instance name).
+	
++Documenting some enums with Doxygen.
+
++Update 'About' information.
 
 V14.07.15
 ====================================

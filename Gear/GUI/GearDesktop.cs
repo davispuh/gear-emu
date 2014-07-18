@@ -78,42 +78,42 @@ namespace Gear.GUI
             }
         }
 
-        /// @todo Document Gear.GUI.ExitToolsStripMenuItem_Click().
+        /// @todo Document Gear.GUI.GearDesktop.ExitToolsStripMenuItem_Click().
         /// 
         private void ExitToolsStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }
 
-        /// @todo Document Gear.GUI.CascadeToolStripMenuItem_Click()
+        /// @todo Document Gear.GUI.GearDesktop.CascadeToolStripMenuItem_Click()
         /// 
         private void CascadeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LayoutMdi(MdiLayout.Cascade);
         }
 
-        /// @todo Document Gear.GUI.TileVerticleToolStripMenuItem_Click()
+        /// @todo Document Gear.GUI.GearDesktop.TileVerticleToolStripMenuItem_Click()
         /// 
         private void TileVerticleToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LayoutMdi(MdiLayout.TileVertical);
         }
 
-        /// @todo Document Gear.GUI.TileHorizontalToolStripMenuItem_Click()
+        /// @todo Document Gear.GUI.GearDesktop.TileHorizontalToolStripMenuItem_Click()
         /// 
         private void TileHorizontalToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LayoutMdi(MdiLayout.TileHorizontal);
         }
 
-        /// @todo Document Gear.GUI.ArrangeIconsToolStripMenuItem_Click()
+        /// @todo Document Gear.GUI.GearDesktop.ArrangeIconsToolStripMenuItem_Click()
         /// 
         private void ArrangeIconsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LayoutMdi(MdiLayout.ArrangeIcons);
         }
 
-        /// @todo Document Gear.GUI.CloseAllToolStripMenuItem_Click()
+        /// @todo Document Gear.GUI.GearDesktop.CloseAllToolStripMenuItem_Click()
         /// 
         private void CloseAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -123,7 +123,7 @@ namespace Gear.GUI
             }
         }
 
-        /// @todo Document Gear.GUI.aboutToolStripMenuItem_Click()
+        /// @todo Document Gear.GUI.GearDesktop.aboutToolStripMenuItem_Click()
         /// 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -157,7 +157,7 @@ namespace Gear.GUI
             }
         }
 
-        /// @todo Document Gear.GUI.newPluginButton_Click()
+        /// @todo Document Gear.GUI.GearDesktop.newPluginButton_Click()
         /// 
         private void newPluginButton_Click(object sender, EventArgs e)
         {
