@@ -42,19 +42,19 @@ namespace Gear.GUI
     /// 
     public partial class Emulator : Form
     {
-        private Propeller Chip;             //!< @brief Reference to the Propeller running instance.
-        private String Source;              //!< @brief Name of Binary program loaded.
-        private String LastFileName;        //!< @brief Last file name opened.
-        private List<Control> FloatControls;//!< @brief List of floating controls.
+        private PropellerCPU Chip;           //!< @brief Reference to the Propeller running instance.
+        private String Source;               //!< @brief Name of Binary program loaded.
+        private String LastFileName;         //!< @brief Last file name opened.
+        private List<Control> FloatControls; //!< @brief List of floating controls.
 
-        private Timer runTimer;             //!< @todo Document Gear.GUI.Emulator.runtimer member (what it is for???)
+        private Timer runTimer;              //!< @todo Document Gear.GUI.Emulator.runtimer member (what it is for???)
 
         /// @brief Default Constructor.
         /// @param[in] source Binary program loaded (path & name)
         /// 
         public Emulator(string source)
         {
-            Chip = new Propeller(this);
+            Chip = new PropellerCPU(this);
             Source = source;
             FloatControls = new List<Control>();
 
@@ -63,7 +63,7 @@ namespace Gear.GUI
             this.Text = "Propeller: " + source;
 
             // Create default layout
-            for (int i = 0; i < Propeller.TOTAL_COGS; i++)  //now using constant TOTAL_COGS
+            for (int i = 0; i < PropellerCPU.TOTAL_COGS; i++)  // now using constant TOTAL_COGS
                 AttachPlugin(new CogView(i));
 
             AttachPlugin(new MemoryView());

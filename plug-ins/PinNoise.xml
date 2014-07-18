@@ -6,7 +6,7 @@
 
     class PinNoise : PluginBase
     {
-        private Propeller Chip;
+        private PropellerCPU Chip;
         private int Drive;
         private bool Clock;
         private double last;
@@ -16,7 +16,7 @@
             get { return &quot;Pin Noise&quot;; }
         }
 
-        public override void PresentChip(Propeller host)
+        public override void PresentChip(PropellerCPU host)
         {
             last = 0;
             Chip = host;

@@ -133,7 +133,7 @@ namespace Gear.EmulationCore
             set { Zero = value; }
         }
 
-        public NativeCog(Propeller host,
+        public NativeCog(PropellerCPU host,
             uint programAddress, uint paramAddress, uint frequency,
             PLLGroup pll)
             : base(host, programAddress, paramAddress, frequency, pll)

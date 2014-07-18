@@ -116,7 +116,7 @@ namespace Gear.EmulationCore
         // Runtime variables
         protected uint[] Memory;            //!< Program Memory
 
-        protected Propeller Hub;            //!< Host processor
+        protected PropellerCPU Hub;         //!< Host processor
         protected volatile uint PC;         //!< Program Cursor
         protected volatile int BP;          //!< Breakpoint Address
 
@@ -132,7 +132,7 @@ namespace Gear.EmulationCore
         protected VideoGenerator Video;
         protected PLLGroup PhaseLockedLoop;
 
-        public Cog(Propeller host, uint programAddress, uint param, uint frequency, PLLGroup pll)
+        public Cog(PropellerCPU host, uint programAddress, uint param, uint frequency, PLLGroup pll)
         {
             Hub = host;
 

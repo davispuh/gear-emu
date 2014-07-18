@@ -11,7 +11,7 @@
 
     class Stimulus : PluginBase
     {
-        private Propeller Chip;
+        private PropellerCPU Chip;
         private int Drive;
         private bool clk;
         private double lastTime;
@@ -240,7 +240,7 @@
             fs.Close();
         }
 
-        public override void PresentChip(Propeller host)
+        public override void PresentChip(PropellerCPU host)
         {
             lastTime = 0;
             Chip = host;

@@ -83,7 +83,7 @@
     <Compile Include="EmulationCore\NativeCog.cs" />
     <Compile Include="EmulationCore\PLL.cs" />
     <Compile Include="EmulationCore\PLLGroup.cs" />
-    <Compile Include="EmulationCore\Propeller.cs" />
+    <Compile Include="EmulationCore\PropellerCPU.cs" />
     <Compile Include="EmulationCore\SystemXtal.cs" />
     <Compile Include="EmulationCore\VideoGenerator.cs" />
     <Compile Include="GUI\AboutGear.cs">

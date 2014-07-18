@@ -36,7 +36,7 @@ namespace Gear.GUI.LogicProbe
 {
     public partial class LogicView : PluginBase
     {
-        private Propeller Host;
+        private PropellerCPU Host;
         private Font MonoFont;
 
         private List<LogicRow> Pins;
@@ -98,7 +98,7 @@ namespace Gear.GUI.LogicProbe
             }
         }
 
-        public override void PresentChip(Propeller host)
+        public override void PresentChip(PropellerCPU host)
         {
             Host = host;
             Host.NotifyOnPins(this);
