@@ -36,7 +36,7 @@ namespace Gear.GUI
 {
     public partial class MemoryView : PluginBase
     {
-        private Propeller Host;
+        private PropellerCPU Host;
         private Font MonoFont;
         private Bitmap BackBuffer;
 
@@ -66,7 +66,7 @@ namespace Gear.GUI
             positionScrollBar.Minimum = 0;
         }
 
-        public override void PresentChip(Propeller host)
+        public override void PresentChip(PropellerCPU host)
         {
             Host = host;
         }

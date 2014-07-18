@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Gear.EmulationCore
+namespace Gear.Propeller
 {
     public class DirectMemory
     {
@@ -27,8 +27,7 @@ namespace Gear.EmulationCore
         public ushort DirectReadWord(uint address)
         {
             address &= 0xFFFFFFFE;
-            return (ushort)(Memory[(address++) & 0xFFFF]
-                | (Memory[(address++) & 0xFFFF] << 8));
+            return (ushort)(Memory[(address++) & 0xFFFF] | (Memory[(address++) & 0xFFFF] << 8));
         }
 
         public uint DirectReadLong(uint address)
@@ -50,7 +49,7 @@ namespace Gear.EmulationCore
         public void DirectWriteWord(uint address, ushort value)
         {
             address &= 0xFFFFFFFE;
-            DirectWriteByte(address++, (byte)value);
+            DirectWriteByte(address++, (byte) value);
             DirectWriteByte(address++, (byte)(value >> 8));
         }
 

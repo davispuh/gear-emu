@@ -34,7 +34,7 @@ namespace Gear.GUI
 {
     class SpinView : PluginBase
     {
-        private Propeller Host;
+        private PropellerCPU Host;
         private Font MonoSpace;
         private TreeView objectView;
         private Panel hexView;
@@ -76,7 +76,7 @@ namespace Gear.GUI
             }
         }
 
-        public override void PresentChip(Propeller host)
+        public override void PresentChip(PropellerCPU host)
         {
             Host = host;
         }

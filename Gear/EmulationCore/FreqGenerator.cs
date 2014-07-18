@@ -25,6 +25,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using Gear.Propeller;
+
 namespace Gear.EmulationCore
 {
     /// @brief Counter Modes.
@@ -83,7 +85,7 @@ namespace Gear.EmulationCore
         private ulong PinAMask;
         private ulong PinBMask;
 
-        private Propeller Host;
+        private PropellerCPU Host;
 
         private bool PinA;
         private bool PinA_;
@@ -188,7 +190,7 @@ namespace Gear.EmulationCore
             }
         }
 
-        public FreqGenerator(Propeller host, PLLGroup phaseLockLoop, bool freqA)
+        public FreqGenerator(PropellerCPU host, PLLGroup phaseLockLoop, bool freqA)
         {
             Host = host;
             OutA = false;
@@ -276,7 +278,7 @@ namespace Gear.EmulationCore
                     break;
                 default:
                     // changed to NOT ConditionCompare(.) to repair Logic Modes Counter
-                    if (!Cog.ConditionCompare((CogConditionCodes)((int)CtrMode - 16), PinA, PinB))
+                    if (!Cog.ConditionCompare((Assembly.ConditionCodes)((int)CtrMode - 16), PinA, PinB))
                     {
                         PHS += FRQ;
                     }

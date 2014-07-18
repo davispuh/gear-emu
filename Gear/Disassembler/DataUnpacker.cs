@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using Gear.EmulationCore;
+using Gear.Propeller;
 
 namespace Gear.Disassembler
 {

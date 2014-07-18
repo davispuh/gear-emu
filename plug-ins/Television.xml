@@ -60,7 +60,7 @@
             CreateGraphics().DrawImage(Picture, 0, 0);
         }
 
-        public override void PresentChip(Propeller host)
+        public override void PresentChip(PropellerCPU host)
         {
             host.NotifyOnPins(this);
         }

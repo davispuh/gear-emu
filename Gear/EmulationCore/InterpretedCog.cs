@@ -25,6 +25,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using Gear.Propeller;
+
 namespace Gear.EmulationCore
 {
     class InterpretedCog : Cog
@@ -68,7 +70,7 @@ namespace Gear.EmulationCore
             get { return VariableFrame; }
         }
 
-        public InterpretedCog(Propeller host,
+        public InterpretedCog(PropellerCPU host,
             uint paramAddress, uint frequency,
             PLLGroup pll)
             : base(host, 0xF004, paramAddress, frequency, pll)
@@ -105,9 +107,9 @@ namespace Gear.EmulationCore
             State = CogRunState.BOOT_INTERPRETER;
             StateCount = INTERPRETER_BOOT_TIME;
 
-            uint InitFrame = this[(int)CogSpecialAddress.PAR];
+            uint InitFrame = this[(int)Assembly.RegisterAddress.PAR];
 
-            this[(int)CogSpecialAddress.COGID] = Hub.CogID(this);
+            this[(int)Assembly.RegisterAddress.COGID] = Hub.CogID(this);
 
             InitFrame &= 0xFFFF;
 
@@ -118,7 +120,7 @@ namespace Gear.EmulationCore
             LocalFrame = InitFrame - (uint)4;
 
             // Clear CogID
-            this[(int)CogSpecialAddress.INITCOGID] = InitFrame - 4;
+            this[(int)Assembly.RegisterAddress.INITCOGID] = InitFrame - 4;
             Hub.DirectWriteLong(InitFrame - 8, 0xFFFFFFFF);
             Hub.DirectWriteLong(InitFrame - 4, 0);
         }
@@ -160,8 +162,8 @@ namespace Gear.EmulationCore
                 code = ((0xF004 & 0xFFFC) << 2) | (StackPointer << 16);
 
                 // Find which cog we will be booting
-                CogID = Hub.DirectReadLong(this[(int)CogSpecialAddress.INITCOGID] - 4);
-                Hub.DirectWriteLong(this[(int)CogSpecialAddress.INITCOGID] - 4, 0xFFFFFFFF);   // Clear CogID
+                CogID = Hub.DirectReadLong(this[(int)Assembly.RegisterAddress.INITCOGID] - 4);
+                Hub.DirectWriteLong(this[(int)Assembly.RegisterAddress.INITCOGID] - 4, 0xFFFFFFFF);   // Clear CogID
             }
             else
             {

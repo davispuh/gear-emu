@@ -51,7 +51,7 @@
             }
         }
 
-        private Propeller Chip;
+        private PropellerCPU Chip;
 
         private int rxPin;
         private int txPin;
@@ -248,7 +248,7 @@
         }
 
 
-        public override void PresentChip(Propeller host)
+        public override void PresentChip(PropellerCPU host)
         {
             Chip = host;
 

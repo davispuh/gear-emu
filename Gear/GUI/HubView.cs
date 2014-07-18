@@ -34,14 +34,14 @@ namespace Gear.GUI
 {
     public partial class HubView : UserControl
     {
-        private Propeller m_Host;
+        private PropellerCPU m_Host;
 
         public HubView()
         {
             InitializeComponent();
         }
 
-        public Propeller Host
+        public PropellerCPU Host
         {
             set
             {

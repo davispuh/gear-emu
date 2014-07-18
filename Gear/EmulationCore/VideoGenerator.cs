@@ -87,7 +87,7 @@ namespace Gear.EmulationCore
 
         // Misc Variables
 
-        private Propeller Chip;
+        private PropellerCPU Chip;
 
         public uint CFG
         {
@@ -151,7 +151,7 @@ namespace Gear.EmulationCore
             }
         }
 
-        public VideoGenerator(Propeller chip)
+        public VideoGenerator(PropellerCPU chip)
         {
             // Clear our phase accumulator
             PhaseAccumulator = 0;

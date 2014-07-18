@@ -34,7 +34,7 @@ using Gear.PluginSupport;
 using Gear.GUI;
 
 /// @todo Document Gear.EmulationCore namespace.
-/// 
+///
 namespace Gear.EmulationCore
 {
     public enum HubOperationCodes : uint
@@ -59,7 +59,7 @@ namespace Gear.EmulationCore
         INPUT_HI,   //!< Input Hi (3.3V)
     }
 
-    public partial class Propeller : DirectMemory
+    public partial class PropellerCPU : Propeller.DirectMemory
     {
         static private string[] CLKSEL = new string[] {
             "RCFAST",
@@ -105,7 +105,7 @@ namespace Gear.EmulationCore
         private List<PluginBase> PinNoiseHandlers;
         private List<PluginBase> PlugIns;
 
-        //Expose constants declarations to use on the project. 
+        // Expose constants declarations to use on the project.
         public const int TOTAL_COGS   = 8;
         public const int TOTAL_LOCKS  = 8;
         public const int TOTAL_PINS   = 64;
@@ -113,10 +113,10 @@ namespace Gear.EmulationCore
         public const int TOTAL_RAM    = 0x8000;
 
         /// @brief Propeller Constructor.
-        /// 
+        ///
         /// @param em Reference to the Gear.GUI.Emulator instance controlling this Propeller.
-        /// 
-        public Propeller(Emulator em)
+        ///
+        public PropellerCPU(Emulator em)
         {
             emulator = em;
             Cogs = new Cog[TOTAL_COGS];             // 8 general purpose cogs
@@ -397,7 +397,7 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Remove a plugin from the active plugin list of propeller instance
-        /// Only if the plugin exists on the list, this method removes from it. 
+        /// Only if the plugin exists on the list, this method removes from it.
         /// @param[in] mod Compiled plugin reference to remove
         public void RemovePlugin(PluginBase mod)
         {
@@ -415,7 +415,7 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Remove a plugin from the clock notify list
-        /// Only if the plugin exists on the list, this method removes from it. 
+        /// Only if the plugin exists on the list, this method removes from it.
         /// @param mod Compiled plugin reference to remove
         public void RemoveOnClock(PluginBase mod)
         {
@@ -433,7 +433,7 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Remove a plugin from the pin changed notify list
-        /// Only if the plugin exists on the list, this method removes from it. 
+        /// Only if the plugin exists on the list, this method removes from it.
         /// @param mod Compiled plugin reference to remove
         public void RemoveOnPins(PluginBase mod)
         {
