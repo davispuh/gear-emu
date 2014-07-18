@@ -25,6 +25,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using Gear.Propeller;
+
 namespace Gear.EmulationCore
 {
     /// @brief Counter Modes.
@@ -276,7 +278,7 @@ namespace Gear.EmulationCore
                     break;
                 default:
                     // changed to NOT ConditionCompare(.) to repair Logic Modes Counter
-                    if (!Cog.ConditionCompare((CogConditionCodes)((int)CtrMode - 16), PinA, PinB))
+                    if (!Cog.ConditionCompare((Assembly.ConditionCodes)((int)CtrMode - 16), PinA, PinB))
                     {
                         PHS += FRQ;
                     }

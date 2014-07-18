@@ -6,6 +6,31 @@ namespace Gear.Propeller
 {
     public partial class Assembly
     {
+        /// @brief %Cog RAM Special Purpose Registers.
+        ///
+        /// Source: Table 15 - %Cog RAM Special Purpose Registers, %Propeller P8X32A Datasheet V1.4.0.
+        public enum RegisterAddress : uint
+        {
+            COGID     = 0x1E9,    //!<
+            INITCOGID = 0x1EF,    //!<
+            PAR       = 0x1F0,    //!< Boot Parameter
+            CNT       = 0x1F1,    //!< System Counter
+            INA       = 0x1F2,    //!< Input States for P31 - P0.
+            INB       = 0x1F3,    //!< Input States for P63 - P32.
+            OUTA      = 0x1F4,    //!< Output States for P31 - P0.
+            OUTB      = 0x1F5,    //!< Output States for P63 - P32.
+            DIRA      = 0x1F6,    //!< Direction States for P31 - P0.
+            DIRB      = 0x1F7,    //!< Direction States for P63 - P32.
+            CNTA      = 0x1F8,    //!< Counter A Control.
+            CNTB      = 0x1F9,    //!< Counter B Control.
+            FRQA      = 0x1FA,    //!< Counter A Frequency.
+            FRQB      = 0x1FB,    //!< Counter B Frequency.
+            PHSA      = 0x1FC,    //!< Counter A Phase.
+            PHSB      = 0x1FD,    //!< Counter B Phase.
+            VCFG      = 0x1FE,    //!< Video Configuration.
+            VSCL      = 0x1FF     //!< Video Scale.
+        }
+
         public const int RegisterBaseAddress = 0x1F0;
 
         static public readonly Register[] Registers = new Register[] {
