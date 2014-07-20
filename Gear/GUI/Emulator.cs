@@ -50,8 +50,8 @@ namespace Gear.GUI
         private Timer runTimer;             //!< @todo Document Gear.GUI.Emulator.runtimer member (what it is for???)
 
         /// @brief Default Constructor.
-        /// @param[in] source Binary program loaded (path & name)
         /// 
+        /// @param[in] source Binary program loaded (path & name)
         public Emulator(string source)
         {
             Chip = new Propeller(this);
