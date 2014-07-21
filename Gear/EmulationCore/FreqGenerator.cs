@@ -83,7 +83,7 @@ namespace Gear.EmulationCore
         private ulong PinAMask;
         private ulong PinBMask;
 
-        private Propeller Host;
+        private PropellerCPU Host;
 
         private bool PinA;
         private bool PinA_;
@@ -188,7 +188,7 @@ namespace Gear.EmulationCore
             }
         }
 
-        public FreqGenerator(Propeller host, PLLGroup phaseLockLoop, bool freqA)
+        public FreqGenerator(PropellerCPU host, PLLGroup phaseLockLoop, bool freqA)
         {
             Host = host;
             OutA = false;

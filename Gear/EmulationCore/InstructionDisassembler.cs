@@ -108,7 +108,7 @@ namespace Gear.EmulationCore
             return text;
         }
 
-        private static uint GetPackedLiteral(Propeller chip, ref uint address)
+        private static uint GetPackedLiteral(PropellerCPU chip, ref uint address)
         {
             byte op = chip.ReadByte(address++);
 
@@ -126,7 +126,7 @@ namespace Gear.EmulationCore
             return data;
         }
 
-        private static int GetPackedOffset(Propeller chip, ref uint address)
+        private static int GetPackedOffset(PropellerCPU chip, ref uint address)
         {
             ushort op = chip.ReadByte(address++);
 
@@ -138,7 +138,7 @@ namespace Gear.EmulationCore
             return (op << 8) | (chip.ReadByte(address++));
         }
 
-        private static short GetSignedPackedOffset(Propeller chip, ref uint address)
+        private static short GetSignedPackedOffset(PropellerCPU chip, ref uint address)
         {
             short op = chip.ReadByte(address++);
             bool extended = (op & 0x80) != 0;
@@ -151,7 +151,7 @@ namespace Gear.EmulationCore
             return (short)((op << 8) | chip.ReadByte(address++));
         }
 
-        private static string GetEffectCode(Propeller chip, ref uint address, bool useShortOpcodes)
+        private static string GetEffectCode(PropellerCPU chip, ref uint address, bool useShortOpcodes)
         {
             Spin.ParsedAssignment ParsedAssignment = new Spin.ParsedAssignment(chip.ReadByte(address++));
 
@@ -184,7 +184,7 @@ namespace Gear.EmulationCore
             return effect;
         }
 
-        public static string GetMemoryOp(Propeller chip, ref uint address, bool useShortOpcodes)
+        public static string GetMemoryOp(PropellerCPU chip, ref uint address, bool useShortOpcodes)
         {
             Spin.ParsedMemoryOperation OP = new Spin.ParsedMemoryOperation(chip.ReadByte(address++));
 
@@ -203,7 +203,7 @@ namespace Gear.EmulationCore
             }
         }
 
-        public static string InterpreterText(Propeller chip, ref uint address, bool displayAsHexadecimal, bool useShortOpcodes)
+        public static string InterpreterText(PropellerCPU chip, ref uint address, bool displayAsHexadecimal, bool useShortOpcodes)
         {
             string format;
             if (displayAsHexadecimal)

@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+/// @copydoc Gear.EmulationCore
 namespace Gear.EmulationCore
 {
     public enum CogRunState
@@ -55,8 +56,8 @@ namespace Gear.EmulationCore
     /// Source: Table 15 - %Cog RAM Special Purpose Registers, %Propeller P8X32A Datasheet V1.4.0.
     public enum CogSpecialAddress : uint
     {
-        COGID     = 0x1E9,    //!< 
-        INITCOGID = 0x1EF,    //!< 
+        COGID     = 0x1E9,    //!< @todo Document enum value CogSpecialAddress.COGID.
+        INITCOGID = 0x1EF,    //!< @todo Document enum value CogSpecialAddress.INITCOGID.
         PAR       = 0x1F0,    //!< Boot Parameter
         CNT       = 0x1F1,    //!< System Counter
         INA       = 0x1F2,    //!< Input States for P31 - P0.
@@ -75,6 +76,8 @@ namespace Gear.EmulationCore
         VSCL      = 0x1FF     //!< Video Scale.
     }
 
+    /// @todo Document enum Gear.EmulationCore.CogConditionCodes
+    /// 
     public enum CogConditionCodes : uint
     {
         IF_NEVER        = 0x00, //!< Never execute
@@ -111,12 +114,14 @@ namespace Gear.EmulationCore
         IF_ALWAYS       = 0x0F  //!< Always execute
     }
 
+    /// @todo Document class Gear.EmulationCore.Cog. 
+    /// 
     abstract public partial class Cog
     {
         // Runtime variables
         protected uint[] Memory;            //!< Program Memory
 
-        protected Propeller Hub;            //!< Host processor
+        protected PropellerCPU Hub;            //!< Host processor
         protected volatile uint PC;         //!< Program Cursor
         protected volatile int BP;          //!< Breakpoint Address
 
@@ -124,15 +129,17 @@ namespace Gear.EmulationCore
         protected CogRunState State;        //!< Current COG state
         protected CogRunState NextState;    //!< Next state COG state
 
-        protected uint ProgramAddress;
-        protected uint ParamAddress;
+        protected uint ProgramAddress;      //!< @todo Document member Cog.ProgramAddress
+        protected uint ParamAddress;        //!< @todo Document member Cog.ParamAddress
 
-        protected FreqGenerator FreqA;
-        protected FreqGenerator FreqB;
-        protected VideoGenerator Video;
-        protected PLLGroup PhaseLockedLoop;
+        protected FreqGenerator FreqA;      //!< @todo Document member Cog.FreqA
+        protected FreqGenerator FreqB;      //!< @todo Document member Cog.FreqB
+        protected VideoGenerator Video;     //!< @todo Document member Cog.Video
+        protected PLLGroup PhaseLockedLoop; //!< @todo Document member Cog.PhaseLockedLoop
 
-        public Cog(Propeller host, uint programAddress, uint param, uint frequency, PLLGroup pll)
+        /// @todo Document constructor Gear.EmulationCore.Cog()
+        /// 
+        public Cog(PropellerCPU host, uint programAddress, uint param, uint frequency, PLLGroup pll)
         {
             Hub = host;
 
@@ -165,12 +172,17 @@ namespace Gear.EmulationCore
             SetClock(frequency);
         }
 
+        /// @todo Document property Gear.EmulationCore.Cog.BreakPoint
+        /// 
         public int BreakPoint
         {
             get { return BP; }
             set { BP = value; }
         }
 
+        /// @brief Property to return complete OUT pins (P0..P63)
+        /// Analyze all sources of pin changes in the cog: OUTA, OUTB, the two counters 
+        /// and the video generator.
         public ulong OUT
         {
             get
@@ -183,6 +195,9 @@ namespace Gear.EmulationCore
             }
         }
 
+        /// @brief Property to return only OUTA pins.
+        /// Analyze all sources of pin changes in the cog for OUTA pins (P31..P0): the two counters 
+        /// and the video generator.
         public uint OUTA
         {
             get
@@ -194,6 +209,9 @@ namespace Gear.EmulationCore
             }
         }
 
+        /// @brief Property to return only OUTB pins.
+        /// Analyze all sources of pin changes in the cog for OUTB pins (P63..P32): the two counters 
+        /// and the video generator.
         public uint OUTB
         {
             get
@@ -206,6 +224,8 @@ namespace Gear.EmulationCore
             }
         }
 
+        /// @todo Document property Gear.EmulationCore.Cog.DIR.
+        /// 
         public ulong DIR
         {
             get
@@ -215,6 +235,8 @@ namespace Gear.EmulationCore
             }
         }
 
+        /// @todo Document property Gear.EmulationCore.Cog.DIRA.
+        /// 
         public uint DIRA
         {
             get
@@ -223,6 +245,8 @@ namespace Gear.EmulationCore
             }
         }
 
+        /// @todo Document property Gear.EmulationCore.Cog.DIRB.
+        /// 
         public uint DIRB
         {
             get
@@ -231,12 +255,16 @@ namespace Gear.EmulationCore
             }
         }
 
+        /// @todo Document property Gear.EmulationCore.Cog.ProgramCursor.
+        /// 
         public uint ProgramCursor
         {
             get { return PC; }
             set { PC = value; }
         }
 
+        /// @todo Document property Gear.EmulationCore.Cog.CogState.
+        /// 
         public string CogState
         {
             get
@@ -274,6 +302,8 @@ namespace Gear.EmulationCore
             }
         }
 
+        /// @todo Document property Gear.EmulationCore.Cog.operator[].
+        /// 
         public uint this[int i]
         {
             get
@@ -306,6 +336,8 @@ namespace Gear.EmulationCore
             }
         }
 
+        /// @todo Document method Gear.EmulationCore.Cog.ConditionCompare.
+        /// 
         public static bool ConditionCompare(CogConditionCodes condition, bool a, bool b)
         {
             switch (condition)
@@ -361,6 +393,8 @@ namespace Gear.EmulationCore
             return true;
         }
 
+        /// @todo Document method Gear.EmulationCore.Cog.HubAccessable().
+        /// 
         public virtual void HubAccessable()
         {
             switch (State)
@@ -378,6 +412,8 @@ namespace Gear.EmulationCore
             }
         }
 
+        /// @todo Document method Gear.EmulationCore.Cog.DetachVideoHooks()
+        /// 
         public void DetachVideoHooks()
         {
             // Detach the video hook
@@ -386,6 +422,8 @@ namespace Gear.EmulationCore
             Video.DetachAural();
         }
 
+        /// @todo Document method Gear.EmulationCore.Cog.Step
+        /// 
         public bool Step()
         {
             bool result = DoInstruction();
@@ -395,12 +433,15 @@ namespace Gear.EmulationCore
             return result;    // false - we hit a breakpoint
         }
 
+        /// @todo Document method Gear.EmulationCore.Cog.SetClock().
+        /// 
         public void SetClock(uint freq)
         {
             FreqA.SetClock(freq);
             FreqB.SetClock(freq);
         }
 
+        /// @todo Document method Gear.EmulationCore.Cog.StepInstruction().
         public void StepInstruction()
         {
             int i = 0x2000;    // Maximum of 8k clocks (covers load instruction)
@@ -411,6 +452,8 @@ namespace Gear.EmulationCore
             while (State != CogRunState.EXEC_INTERPRETER && State != CogRunState.STATE_EXECUTE && --i > 0);
         }
 
+        /// @todo Document method Gear.EmulationCore.Cog.ReadLong().
+        /// 
         public uint ReadLong(uint address)
         {
             // values using CogSpecialAddress enum, intead of direct hex values
@@ -492,8 +535,10 @@ namespace Gear.EmulationCore
             }
         }
 
+        /// @todo Document method Gear.EmulationCore.Cog.DoInstruction()
         abstract public bool DoInstruction();
 
+        /// @todo Document method Gear.EmulationCore.Cog.Boot()
         abstract public void Boot();
     }
 }

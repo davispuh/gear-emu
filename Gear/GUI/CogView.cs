@@ -36,7 +36,7 @@ namespace Gear.GUI
 {
     public partial class CogView : PluginBase
     {
-        private Propeller Chip;
+        private PropellerCPU Chip;
         private int HostID;
         private Font MonoFont;
         private Font MonoFontBold;
@@ -89,7 +89,7 @@ namespace Gear.GUI
             return Chip.GetCog(HostID);
         }
 
-        public override void PresentChip(Propeller host)
+        public override void PresentChip(PropellerCPU host)
         {
             Chip = host;
         }

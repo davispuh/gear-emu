@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------------
- * Gear: Parallax Inc. Propeller Debugger
+ * Gear: Parallax Inc. PropellerCPU Debugger
  * Copyright 2007 - Robert Vandiver
  * --------------------------------------------------------------------------------
  * NativeCog.cs
@@ -133,7 +133,7 @@ namespace Gear.EmulationCore
             set { Zero = value; }
         }
 
-        public NativeCog(Propeller host,
+        public NativeCog(PropellerCPU host,
             uint programAddress, uint paramAddress, uint frequency,
             PLLGroup pll)
             : base(host, programAddress, paramAddress, frequency, pll)

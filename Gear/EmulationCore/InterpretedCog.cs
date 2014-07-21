@@ -68,7 +68,7 @@ namespace Gear.EmulationCore
             get { return VariableFrame; }
         }
 
-        public InterpretedCog(Propeller host,
+        public InterpretedCog(PropellerCPU host,
             uint paramAddress, uint frequency,
             PLLGroup pll)
             : base(host, 0xF004, paramAddress, frequency, pll)

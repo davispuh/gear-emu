@@ -54,9 +54,10 @@ namespace Gear.PluginSupport
         /// propeller chip (so you can drive the pins). 
         /// @note Source: <a href="http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment?p=625629&viewfull=1#post625629">API GEAR described on GEAR original Post</a>
         /// 
-        public virtual void PresentChip(Propeller host) { }    
+        public virtual void PresentChip(PropellerCPU host) { }    
 
         /// @brief Event when the chip is reset.
+        /// Handy to reset plugin's components or data, to their initial states.
         public virtual void OnReset() { }          
                      
         /// @brief Event when a clock tick is informed to the plugin.
