@@ -498,6 +498,7 @@ namespace Gear.EmulationCore
                 ClockSources[i] = null;
                 Cogs[i] = null;
                 LocksAvailable[i] = true;
+                LocksState[i] = false;
             }
 
             foreach (PluginBase mod in PlugIns)
@@ -527,7 +528,7 @@ namespace Gear.EmulationCore
 
         public void Stop(int cog)
         {
-            if (cog >= 8 || cog < 0)
+            if (cog >= TOTAL_COGS || cog < 0)
                 return;
 
             if (Cogs[cog] != null)
@@ -722,7 +723,7 @@ namespace Gear.EmulationCore
                         uint progm = (arguement >> 2) & 0xFFFC;
 
                         // Start a new cog?
-                        if ((arguement & 0x08) != 0)
+                        if ((arguement & TOTAL_COGS) != 0)
                         {
                             for (uint i = 0; i < Cogs.Length; i++)
                             {

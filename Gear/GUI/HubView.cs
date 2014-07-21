@@ -50,7 +50,7 @@ namespace Gear.GUI
             }
         }
 
-        /// @brief update screen data on event
+        /// @brief Update screen data on event.
         /// 
         public void DataChanged()
         {
