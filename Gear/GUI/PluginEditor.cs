@@ -385,10 +385,11 @@ namespace Gear.GUI
         /// @param[in] sender Object who called this on event.
         /// @param[in] e `EventArgs` class with a list of argument to the event call.
         /// @since V14.07.03 - Added.
-        /// @note Experimental highlighting. Probably changes in the future
+        /// @note Experimental highlighting. Probably changes in the future.
         // Sintax highlighting
         private void syntaxButton_Click(object sender, EventArgs e)
         {
+            int restore_pos = codeEditorView.SelectionStart;    //remember last position
             changeDetectEnabled = false;    //not enable change detection
             // Foreach line in input,
             // identify key words and format them when adding to the rich text box.
@@ -400,6 +401,8 @@ namespace Gear.GUI
             {
                 ParseLine(l);
             }
+            codeEditorView.SelectionStart = restore_pos;    //restore last position
+            codeEditorView.ScrollToCaret();                 //and scroll to it
             codeEditorView.Enabled = true;
             changeDetectEnabled = true; //restore change detection
         }
