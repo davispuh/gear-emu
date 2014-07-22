@@ -48,6 +48,7 @@ namespace Gear.GUI
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
             System.Windows.Forms.ToolStripLabel classNameLabel;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PluginEditor));
@@ -67,6 +68,7 @@ namespace Gear.GUI
             this.removeReferenceButton = new System.Windows.Forms.ToolStripButton();
             this.errorListView = new System.Windows.Forms.ListView();
             this.codeEditorView = new System.Windows.Forms.RichTextBox();
+            this.toolTipPluginEditor = new System.Windows.Forms.ToolTip(this.components);
             this.errorSplitter = new Gear.GUI.CollapsibleSplitter();
             this.referencesSplitter = new Gear.GUI.CollapsibleSplitter();
             toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -154,7 +156,8 @@ namespace Gear.GUI
             this.instanceName.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.instanceName.Name = "instanceName";
             this.instanceName.Size = new System.Drawing.Size(100, 25);
-            this.instanceName.ToolTipText = "Name of the Class for the plugin";
+            this.instanceName.ToolTipText = "Name of the Class for the plugin\r\nMust be the same as the class inherited from Pl" +
+    "uginBase.";
             this.instanceName.TextChanged += new System.EventHandler(this.instanceName_TextChanged);
             // 
             // toolStripSeparator2
@@ -240,6 +243,7 @@ namespace Gear.GUI
             this.errorListView.Location = new System.Drawing.Point(208, 345);
             this.errorListView.MultiSelect = false;
             this.errorListView.Name = "errorListView";
+            this.errorListView.ShowItemToolTips = true;
             this.errorListView.Size = new System.Drawing.Size(426, 97);
             this.errorListView.TabIndex = 5;
             this.errorListView.UseCompatibleStateImageBehavior = false;
@@ -335,5 +339,6 @@ namespace Gear.GUI
         private System.Windows.Forms.RichTextBox codeEditorView;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripButton syntaxButton;
+        private System.Windows.Forms.ToolTip toolTipPluginEditor;
     }
 }

@@ -619,8 +619,9 @@ namespace Gear.EmulationCore
             }
         }
 
-        /// @todo Document method Gear.EmulationCore.PropellerCPU.Step().
-        /// 
+        /// @brief Advance one clock step.
+        /// Inside it calls the OnClock() method for each plugin as clock advances. Also update the
+        /// pins, by efect of calling each cog and source of clocks.
         public bool Step()
         {
             ulong pins;
@@ -707,14 +708,15 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Update pin information when are changes.
-        /// Consider changes in DIRA, DIRB, 
+        /// Consider changes in DIRA and DIRB, and also generated in plugins.
+        /// Inside it calls the OnPinChange() method for each plugin.
         public void PinChanged()
         {
             ulong pinsState = OUT;  //get total pins (P63..P0) OUT state
 
             pinChange = false;
 
-            for (int i = 0; i < TOTAL_PINS; i++)
+            for (int i = 0; i < TOTAL_PINS; i++)    //loop for each pin of the chip
             {
                 if (((DIR >> i) & 1) == 0)  //if Pin i has direction set to INPUT
                 {
@@ -733,7 +735,7 @@ namespace Gear.EmulationCore
                         PinStates[i] = PinState.OUTPUT_LO;
                 }
             }
-            //traverse across plugins that use NotityOnPins
+            //traverse across plugins that use NotityOnPins()
             foreach (PluginBase mod in PinNoiseHandlers)
                 mod.OnPinChange(Time, PinStates);
         }
