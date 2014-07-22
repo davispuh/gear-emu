@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------------
- * Gear: Parallax Inc. Propeller Debugger
+ * Gear: Parallax Inc. PropellerCPU Debugger
  * Copyright 2007 - Robert Vandiver
  * --------------------------------------------------------------------------------
  * NativeCog.cs
