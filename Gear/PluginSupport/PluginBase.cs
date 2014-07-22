@@ -57,6 +57,7 @@ namespace Gear.PluginSupport
         public virtual void PresentChip(PropellerCPU host) { }
 
         /// @brief Event when the chip is reset.
+        /// Handy to reset plugin's components or data, to their initial states.
         public virtual void OnReset() { }          
                      
         /// @brief Event when a clock tick is informed to the plugin.

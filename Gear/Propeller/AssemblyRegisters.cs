@@ -33,23 +33,26 @@ namespace Gear.Propeller
 
         public const int RegisterBaseAddress = 0x1F0;
 
+        /// @brief %Cog RAM Special Purpose Registers.
+        /// 
+        /// Source: Table 15 - %Cog RAM Special Purpose Registers, %Propeller P8X32A Datasheet V1.4.0.
         static public readonly Register[] Registers = new Register[] {
-            new Register("PAR ", true, false),  //  $1F0
-            new Register("CNT ", true, false),  //  $1F1
-            new Register("INA ", true, false),  //  $1F2
-            new Register("INB ", true, false),  //  $1F3
-            new Register("OUTA", true, true ),  //  $1F4
-            new Register("OUTB", true, true ),  //  $1F5
-            new Register("DIRA", true, true ),  //  $1F6
-            new Register("DIRB", true, true ),  //  $1F7
-            new Register("CTRA", true, true ),  //  $1F8
-            new Register("CTRB", true, true ),  //  $1F9
-            new Register("FRQA", true, true ),  //  $1FA
-            new Register("FRQB", true, true ),  //  $1FB
-            new Register("PHSA", true, true ),  //  $1FC
-            new Register("PHSB", true, true ),  //  $1FD
-            new Register("VCFG", true, true ),  //  $1FE
-            new Register("VSCL", true, true ),  //  $1FF
+            new Register("PAR ", true, false),  //  $1F0 - Boot Parameter
+            new Register("CNT ", true, false),  //  $1F1 - System Counter
+            new Register("INA ", true, false),  //  $1F2 - Input States for P31-P0.
+            new Register("INB ", true, false),  //  $1F3 - Input States for P63-P32.
+            new Register("OUTA", true, true ),  //  $1F4 - Output States for P31-P0.
+            new Register("OUTB", true, true ),  //  $1F5 - Output States for P63-P32.
+            new Register("DIRA", true, true ),  //  $1F6 - Direction States for P31-P0.
+            new Register("DIRB", true, true ),  //  $1F7 - Direction States for P63-P32.
+            new Register("CTRA", true, true ),  //  $1F8 - Counter A Control.
+            new Register("CTRB", true, true ),  //  $1F9 - Counter B Control.
+            new Register("FRQA", true, true ),  //  $1FA - Counter A Frequency.
+            new Register("FRQB", true, true ),  //  $1FB - Counter B Frequency.
+            new Register("PHSA", true, true ),  //  $1FC - Counter A Phase.
+            new Register("PHSB", true, true ),  //  $1FD - Counter B Phase.
+            new Register("VCFG", true, true ),  //  $1FE - Video Configuration.
+            new Register("VSCL", true, true ),  //  $1FF - Video Scale.
         };
     }
 }

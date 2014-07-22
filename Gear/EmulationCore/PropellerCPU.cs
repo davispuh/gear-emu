@@ -2,7 +2,7 @@
  * Gear: Parallax Inc. Propeller Debugger
  * Copyright 2007 - Robert Vandiver
  * --------------------------------------------------------------------------------
- * Propeller.cs
+ * PropellerCPU.cs
  * Provides the body object of a propeller emulator
  * --------------------------------------------------------------------------------
  *  This program is free software; you can redistribute it and/or modify
@@ -37,19 +37,22 @@ using Gear.GUI;
 ///
 namespace Gear.EmulationCore
 {
+    /// @brief Identifiers for hub operations.
+    /// 
     public enum HubOperationCodes : uint
     {
-        HUBOP_CLKSET  = 0,
-        HUBOP_COGID   = 1,
-        HUBOP_COGINIT = 2,
-        HUBOP_COGSTOP = 3,
-        HUBOP_LOCKNEW = 4,
-        HUBOP_LOCKRET = 5,
-        HUBOP_LOCKSET = 6,
-        HUBOP_LOCKCLR = 7
+        HUBOP_CLKSET  = 0,  //!< Setting the clock
+        HUBOP_COGID   = 1,  //!< Getting the Cog ID
+        HUBOP_COGINIT = 2,  //!< Start or restart a Cog by ID
+        HUBOP_COGSTOP = 3,  //!< Stop Cog by its ID
+        HUBOP_LOCKNEW = 4,  //!< Check out new semaphore and get its ID
+        HUBOP_LOCKRET = 5,  //!< Return semaphore back to semaphore pool, releasing it for future LOCKNEW requests.
+        HUBOP_LOCKSET = 6,  //!< Set semaphore to true and get its previous state
+        HUBOP_LOCKCLR = 7   //!< Clear semaphore to false and get its previous state
     }
 
     /// @brief Possible pin states.
+    /// 
     public enum PinState
     {
         FLOATING,   //!< Pin Floating
@@ -59,63 +62,72 @@ namespace Gear.EmulationCore
         INPUT_HI,   //!< Input Hi (3.3V)
     }
 
+    /// @todo Document Gear.EmulationCore.PropellerCPU class.
+    /// 
     public partial class PropellerCPU : Propeller.DirectMemory
     {
+        /// @brief Name of Constants for setting Clock.
+        /// 
         static private string[] CLKSEL = new string[] {
-            "RCFAST",
-            "RCSLOW",
-            "XINPUT",
-            "PLL1X",
-            "PLL2X",
-            "PLL4X",
-            "PLL8X",
-            "PLL16X"
+            "RCFAST",   // Internal fast oscillator:    $00000001
+            "RCSLOW",   // Internal slow oscillator:    $00000002
+            "XINPUT",   // External clock/oscillator:   $00000004
+            "PLL1X",    // External frequency times 1:  $00000040
+            "PLL2X",    // External frequency times 2:  $00000080
+            "PLL4X",    // External frequency times 4:  $00000100
+            "PLL8X",    // External frequency times 8:  $00000200
+            "PLL16X"    // External frequency times 16: $00000400
         };
 
+        /// @brief Name of external clock constants.
+        /// 
         static private string[] OSCM = new string[] {
-            "XINPUT+", "XTAL1+", "XTAL2+", "XTAL3+"
+            "XINPUT+",  // External clock/oscillator:     $00000004
+            "XTAL1+",   // External low-speed crystal:    $00000008
+            "XTAL2+",   // External medium-speed crystal: $00000010 
+            "XTAL3+"    // External high-speed crystal:   $00000020
         };
 
-        private Cog[] Cogs;
-        private byte[] ResetMemory;
+        private Cog[] Cogs;         //!< @todo Document member Gear.EmulationCore.PropellerCPU.Cogs
+        private byte[] ResetMemory; //!< @todo Document member Gear.EmulationCore.PropellerCPU.ResetMemory
 
-        private bool[] LocksAvailable;
-        private bool[] LocksState;
+        private bool[] LocksAvailable;  //!< @todo Document member Gear.EmulationCore.PropellerCPU.LocksAvailable
+        private bool[] LocksState;      //!< @todo Document member Gear.EmulationCore.PropellerCPU.LocksState
 
-        private ClockSource[] ClockSources;
-        private SystemXtal CoreClockSource;
+        private ClockSource[] ClockSources; //!< @todo Document member Gear.EmulationCore.PropellerCPU.ClockSources
+        private SystemXtal CoreClockSource; //!< @todo Document member Gear.EmulationCore.PropellerCPU.CoreClockSource
 
-        private uint RingPosition;
-        private ulong PinHi;
-        private ulong PinFloat;
-        private uint SystemCounter;
+        private uint RingPosition;  //!< @todo Document member Gear.EmulationCore.PropellerCPU.RingPosition
+        private ulong PinHi;        //!< @todo Document member Gear.EmulationCore.PropellerCPU.PinHi
+        private ulong PinFloat;     //!< @todo Document member Gear.EmulationCore.PropellerCPU.PinFloat
+        private uint SystemCounter; //!< @todo Document member Gear.EmulationCore.PropellerCPU.SystemCounter
 
-        private uint XtalFreq;
-        private uint CoreFreq;
-        private byte ClockMode;
-        private PinState[] PinStates;
+        private uint XtalFreq;          //!< @todo Document member Gear.EmulationCore.PropellerCPU.XtalFreq
+        private uint CoreFreq;          //!< @todo Document member Gear.EmulationCore.PropellerCPU.CoreFreq
+        private byte ClockMode;         //!< @todo Document member Gear.EmulationCore.PropellerCPU.ClockMode
+        private PinState[] PinStates;   //!< @todo Document member Gear.EmulationCore.PropellerCPU.PinStates
 
-        private bool pinChange;
+        private bool pinChange;     //!< @todo Document member Gear.EmulationCore.PropellerCPU.pinChange    
 
-        private double Time;
+        private double Time;        //!< @todo Document member Gear.EmulationCore.PropellerCPU.Time
 
-        private Emulator emulator;
+        private Emulator emulator;  //!< @todo Document member Gear.EmulationCore.PropellerCPU.emulator
 
-        private List<PluginBase> TickHandlers;
-        private List<PluginBase> PinNoiseHandlers;
-        private List<PluginBase> PlugIns;
+        private List<PluginBase> TickHandlers;      //!< @todo Document member Gear.EmulationCore.PropellerCPU.TickHandlers
+        private List<PluginBase> PinNoiseHandlers;  //!< @todo Document member Gear.EmulationCore.PropellerCPU.PinNoiseHandlers
+        private List<PluginBase> PlugIns;           //!< @todo Document member Gear.EmulationCore.PropellerCPU.PlugIns
 
-        // Expose constants declarations to use on the project.
-        public const int TOTAL_COGS   = 8;
-        public const int TOTAL_LOCKS  = 8;
-        public const int TOTAL_PINS   = 64;
-        public const int TOTAL_MEMORY = 0x10000;
-        public const int TOTAL_RAM    = 0x8000;
+        //Expose constants declarations to use on the project. 
+        public const int TOTAL_COGS   = 8;          //!< @todo Document member Gear.EmulationCore.PropellerCPU.TOTAl_COGS
+        public const int TOTAL_LOCKS  = 8;          //!< @todo Document member Gear.EmulationCore.PropellerCPU.TOTAL_LOCKS
+        public const int TOTAL_PINS   = 64;         //!< @todo Document member Gear.EmulationCore.PropellerCPU.TOTAL_PINS
+        public const int TOTAL_MEMORY = 0x10000;    //!< @todo Document member Gear.EmulationCore.PropellerCPU.TOTAL_MEMORY
+        public const int TOTAL_RAM    = 0x8000;     //!< @todo Document member Gear.EmulationCore.PropellerCPU.TOTAL_RAM
 
-        /// @brief Propeller Constructor.
-        ///
-        /// @param em Reference to the Gear.GUI.Emulator instance controlling this Propeller.
-        ///
+        /// @brief PropellerCPU Constructor.
+        /// 
+        /// @param em Reference to the Gear.GUI.Emulator instance controlling this PropellerCPU.
+        /// 
         public PropellerCPU(Emulator em)
         {
             emulator = em;
@@ -147,11 +159,15 @@ namespace Gear.EmulationCore
             Resources.BiosImage.CopyTo(Memory, TOTAL_MEMORY - TOTAL_RAM);
         }
 
+        /// @todo Document method Gear.EmulationCore.PropellerBreakPoint().
+        /// 
         public void BreakPoint()
         {
             emulator.BreakPoint();
         }
 
+        /// @todo Document property Gear.EmulationCore.PropellerCPU.EmulatorTime
+        /// 
         public double EmulatorTime
         {
             get
@@ -160,6 +176,8 @@ namespace Gear.EmulationCore
             }
         }
 
+        /// @todo Document property Gear.EmulationCore.PropellerCPU.Counter
+        /// 
         public uint Counter
         {
             get
@@ -168,6 +186,8 @@ namespace Gear.EmulationCore
             }
         }
 
+        /// @todo Document property Gear.EmulationCore.PropellerCPU.Ring
+        /// 
         public uint Ring
         {
             get
@@ -176,6 +196,8 @@ namespace Gear.EmulationCore
             }
         }
 
+        /// @todo Document property Gear.EmulationCore.PropellerCPU.DIRA
+        /// 
         public uint DIRA
         {
             get
@@ -190,6 +212,8 @@ namespace Gear.EmulationCore
             }
         }
 
+        /// @todo Document property Gear.EmulationCore.PropellerCPU.DIRB
+        /// 
         public uint DIRB
         {
             get
@@ -202,6 +226,8 @@ namespace Gear.EmulationCore
             }
         }
 
+        /// @todo Document property Gear.EmulationCore.PropellerCPU.INA
+        /// 
         public uint INA
         {
             get
@@ -217,6 +243,8 @@ namespace Gear.EmulationCore
             }
         }
 
+        /// @todo Document property Gear.EmulationCore.PropellerCPU.INB
+        /// 
         public uint INB
         {
             get
@@ -232,6 +260,8 @@ namespace Gear.EmulationCore
             }
         }
 
+        /// @brief Property for total DIR of pins (P63..P0).
+        /// Only take Pin use of ACTIVES cogs, making OR between them.
         public ulong DIR
         {
             get
@@ -244,12 +274,14 @@ namespace Gear.EmulationCore
             }
         }
 
+        /// @brief Property for total IN of pins (P63..P0).
+        /// Only take Pin use of ACTIVES cogs.
         public ulong IN
         {
             get
             {
                 ulong localOut = 0;
-                ulong directionOut = DIR;
+                ulong directionOut = DIR;   //get total pins Dir (P63..P0)
 
                 for (int i = 0; i < Cogs.Length; i++)
                 {
@@ -262,6 +294,8 @@ namespace Gear.EmulationCore
             }
         }
 
+        /// @brief Property for total OUT of pins (P63..P0).
+        /// Only take Pin use of ACTIVES cogs, making OR between them.
         public ulong OUT
         {
             get
@@ -278,6 +312,8 @@ namespace Gear.EmulationCore
             }
         }
 
+        /// @todo Document property Gear.EmulationCore.PropellerCPU.Floating
+        /// 
         public ulong Floating
         {
             get
@@ -286,6 +322,8 @@ namespace Gear.EmulationCore
             }
         }
 
+        /// @todo Document property Gear.EmulationCore.PropellerCPU.Locks
+        /// 
         public byte Locks
         {
             get
@@ -299,6 +337,8 @@ namespace Gear.EmulationCore
             }
         }
 
+        /// @todo Document property Gear.EmulationCore.PropellerCPU.Clock
+        /// 
         public string Clock
         {
             get
@@ -316,16 +356,22 @@ namespace Gear.EmulationCore
             }
         }
 
+        /// @todo Document property Gear.EmulationCore.PropellerCPU.XtalFrequency
+        /// 
         public uint XtalFrequency
         {
             get { return XtalFreq; }
         }
 
+        /// @todo Document property Gear.EmulationCore.PropellerCPU.CoreFrequency
+        /// 
         public uint CoreFrequency
         {
             get { return CoreFreq; }
         }
 
+        /// @todo Document property Gear.EmulationCore.PropellerCPU.LocksFree
+        /// 
         public byte LocksFree
         {
             get
@@ -339,6 +385,8 @@ namespace Gear.EmulationCore
             }
         }
 
+        /// @todo Document method Gear.EmulationCore.PropellerCPU.Initialize().
+        /// 
         public void Initialize(byte[] program)
         {
             if (program.Length > TOTAL_RAM)
@@ -371,6 +419,8 @@ namespace Gear.EmulationCore
             Reset();
         }
 
+        /// @todo Document method Gear.EmulationCore.PropellerCPU.GetCog().
+        /// 
         public Cog GetCog(int id)
         {
             if (id > Cogs.Length)
@@ -379,6 +429,8 @@ namespace Gear.EmulationCore
             return Cogs[id];
         }
 
+        /// @todo Document method Gear.EmulationCore.PropellerCPU.GetPLL().
+        /// 
         public PLLGroup GetPLL(uint cog)
         {
             if (cog >= ClockSources.Length)
@@ -441,6 +493,8 @@ namespace Gear.EmulationCore
                 PinNoiseHandlers.Remove(mod);
         }
 
+        /// @todo Document method Gear.EmulationCore.PropellerCPU.SetClockMode().
+        /// 
         public void SetClockMode(byte mode)
         {
             ClockMode = mode;
@@ -486,6 +540,10 @@ namespace Gear.EmulationCore
             CoreClockSource.SetFrequency(CoreFreq);
         }
 
+        /// @brief Reset the propeller CPU to initial state.
+        /// 
+        /// Release cog instances, clock sources, clear locks and pins, and reset plugins.
+        /// @version 14.7.21 - Separate reset for clocksources, cogs and locks.
         public void Reset()
         {
             ResetMemory.CopyTo(Memory, 0);
@@ -493,10 +551,16 @@ namespace Gear.EmulationCore
             SystemCounter = 0;
             Time = 0;
             RingPosition = 0;
-            for (int i = 0; i < ClockSources.Length; i++)
+            for (int i = 0; i < ClockSources.Length; i++)   //clear clock source references
             {
                 ClockSources[i] = null;
+            }
+            for (int i = 0; i < TOTAL_COGS; i++)    //clear cog references
+            {
                 Cogs[i] = null;
+            }
+            for (int i = 0; i < TOTAL_LOCKS; i++)    //clear locks state
+            {
                 LocksAvailable[i] = true;
                 LocksState[i] = false;
             }
@@ -504,7 +568,7 @@ namespace Gear.EmulationCore
             foreach (PluginBase mod in PlugIns)
                 mod.OnReset();
 
-            PinChanged();
+            PinChanged();   //update situation of pins
 
             SetClockMode((byte)(ClockMode & 0x7F));
 
@@ -526,6 +590,9 @@ namespace Gear.EmulationCore
             Cogs[0] = new InterpretedCog(this, InitFrame, CoreFreq, (PLLGroup)ClockSources[0]);
         }
 
+        /// @brief Stop a %cog in the %propeller.
+        ///
+        /// @param[in] cog %Cog number to stop.
         public void Stop(int cog)
         {
             if (cog >= TOTAL_COGS || cog < 0)
@@ -539,6 +606,8 @@ namespace Gear.EmulationCore
             }
         }
 
+        /// @todo Document method Gear.EmulationCore.PropellerCPU.Step().
+        /// 
         public bool Step()
         {
             ulong pins;
@@ -624,15 +693,17 @@ namespace Gear.EmulationCore
             return result;
         }
 
+        /// @brief Update pin information when are changes.
+        /// Consider changes in DIRA, DIRB, 
         public void PinChanged()
         {
-            ulong pinsState = OUT;
+            ulong pinsState = OUT;  //get total pins (P63..P0) OUT state
 
             pinChange = false;
 
-            for (int i = 0; i < 64; i++)
+            for (int i = 0; i < TOTAL_PINS; i++)
             {
-                if (((DIR >> i) & 1) == 0)
+                if (((DIR >> i) & 1) == 0)  //if Pin i has direction set to INPUT
                 {
                     if (((PinFloat >> i) & 1) != 0)
                         PinStates[i] = PinState.FLOATING;
@@ -641,7 +712,7 @@ namespace Gear.EmulationCore
                     else
                         PinStates[i] = PinState.INPUT_LO;
                 }
-                else
+                else                     //then Pin i has direction set to OUTPUT
                 {
                     if (((pinsState >> i) & 1) != 0)
                         PinStates[i] = PinState.OUTPUT_HI;
@@ -649,11 +720,13 @@ namespace Gear.EmulationCore
                         PinStates[i] = PinState.OUTPUT_LO;
                 }
             }
-
+            //traverse across plugins that use NotityOnPins
             foreach (PluginBase mod in PinNoiseHandlers)
                 mod.OnPinChange(Time, PinStates);
         }
 
+        /// @todo Document method Gear.EmulationCore.PropellerCPU.DrivePin().
+        /// 
         public void DrivePin(int pin, bool Floating, bool Hi)
         {
             ulong mask = (ulong)1 << pin;
@@ -671,6 +744,8 @@ namespace Gear.EmulationCore
             pinChange = true;
         }
 
+        /// @todo Document method Gear.EmulationCore.PropellerCPU.LockSet().
+        /// 
         public uint LockSet(uint number, bool set)
         {
             bool oldSetting = LocksState[number & 0x7];
@@ -678,11 +753,15 @@ namespace Gear.EmulationCore
             return oldSetting ? 0xFFFFFFFF : 0;
         }
 
+        /// @todo Document method Gear.EmulationCore.PropellerCPU.LockReturn().
+        /// 
         public void LockReturn(uint number)
         {
             LocksAvailable[number & 0x7] = true;
         }
 
+        /// @todo Document method Gear.EmulationCore.PropellerCPU.NewLock().
+        /// 
         public uint NewLock()
         {
             for (uint i = 0; i < LocksAvailable.Length; i++)
@@ -695,6 +774,8 @@ namespace Gear.EmulationCore
             return 0xFFFFFFFF;
         }
 
+        /// @todo Document method Gear.EmulationCore.PropellerCPU.CogID().
+        /// 
         public uint CogID(Cog caller)
         {
             for (uint i = 0; i < Cogs.Length; i++)
@@ -704,6 +785,8 @@ namespace Gear.EmulationCore
             return 0;
         }
 
+        /// @todo Document method Gear.EmulationCore.PropellerCPU.HubOp().
+        /// 
         public uint HubOp(Cog caller, uint operation, uint arguement, ref bool carry)
         {
             switch ((HubOperationCodes)operation)

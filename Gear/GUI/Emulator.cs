@@ -38,11 +38,13 @@ using Gear.PluginSupport;
 /// 
 namespace Gear.GUI
 {
-    /// @todo Document Gear.GUI.Emulator class
+    /// @brief View class for PropellerCPU emulator instance.
     /// 
+    /// This class implements a view over a propeller emulator, with interface to control the chip, like start, 
+    /// go throgh steps, reset or reload.
     public partial class Emulator : Form
     {
-        private PropellerCPU Chip;           //!< @brief Reference to the Propeller running instance.
+        private PropellerCPU Chip;           //!< @brief Reference to the PropellerCPU running instance.
         private String Source;               //!< @brief Name of Binary program loaded.
         private String LastFileName;         //!< @brief Last file name opened.
         private List<Control> FloatControls; //!< @brief List of floating controls.
@@ -63,7 +65,7 @@ namespace Gear.GUI
             this.Text = "Propeller: " + source;
 
             // Create default layout
-            for (int i = 0; i < PropellerCPU.TOTAL_COGS; i++)  // now using constant TOTAL_COGS
+            for (int i = 0; i < PropellerCPU.TOTAL_COGS; i++)  //using constant TOTAL_COGS
                 AttachPlugin(new CogView(i));
 
             AttachPlugin(new MemoryView());
@@ -345,7 +347,7 @@ namespace Gear.GUI
 
         /// @brief Close the plugin window and terminate the plugin instance.
         /// 
-        /// Not only close the tab window, also detach the plugin from the Propeller what uses it.
+        /// Not only close the tab window, also detach the plugin from the PropellerCPU what uses it.
         /// @param[in] sender Reference to object where event was raised.
         /// @param[in] e Event data arguments.
         private void closeActiveTab_Click(object sender, EventArgs e)
