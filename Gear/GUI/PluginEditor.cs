@@ -132,7 +132,11 @@ namespace Gear.GUI
         /// in callings to it.
         public bool OpenFile(string FileName, bool displayErrors)
         {
-            XmlTextReader tr = new XmlTextReader(FileName);
+            XmlReaderSettings settings = new XmlReaderSettings();
+            settings.IgnoreComments = true;
+            settings.IgnoreProcessingInstructions = true;
+            settings.IgnoreWhitespace = true;
+            XmlReader tr = XmlReader.Create(FileName, settings);
             bool ReadText = false;
 
             if (referencesList.Items.Count > 0) 
@@ -155,7 +159,8 @@ namespace Gear.GUI
                     switch (tr.Name.ToLower())
                     {
                         case "reference":
-                            referencesList.Items.Add(tr.GetAttribute("name"));
+                            if (!tr.IsEmptyElement)     //prevent empty element generates error
+                                referencesList.Items.Add(tr.GetAttribute("name"));
                             break;
                         case "instance":
                             instanceName.Text = tr.GetAttribute("class");
