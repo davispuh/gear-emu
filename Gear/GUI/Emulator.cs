@@ -200,7 +200,11 @@ namespace Gear.GUI
         /// @returns Reference to the new plugin instance (on success) or NULL (on fail).
         public PluginBase LoadPlugin(string FileName)
         {
-            XmlTextReader tr = new XmlTextReader(FileName);
+            XmlReaderSettings settings = new XmlReaderSettings();
+            settings.IgnoreComments = true;
+            settings.IgnoreProcessingInstructions = true;
+            settings.IgnoreWhitespace = true;
+            XmlReader tr = XmlReader.Create(FileName, settings);
             bool ReadText = false;
 
             List<string> references = new List<string>();
@@ -221,7 +225,8 @@ namespace Gear.GUI
                     switch (tr.Name.ToLower())
                     {
                         case "reference":
-                            references.Add(tr.GetAttribute("name"));
+                            if (!tr.IsEmptyElement)     //prevent empty element generates error
+                                references.Add(tr.GetAttribute("name"));
                             break;
                         case "instance":
                             instanceName = tr.GetAttribute("class");

@@ -1,3 +1,14 @@
+V17.07.25
+====================================
++Validation on plugin editor to prevent name class inconsistency and avoid error message if the user tries to validate code without text. If there is this problem, the editor hightlight the code involved.
+
++Bug correction on Reset the propeller: Locks was not cleared.
+
++Correction in plugin editor when there are error in validating the code: now the complete text is shown in tooltip.
+
++More documentation on PropellerCPU.cs, Cog.cs, PluginEditor.cs, ModuleLoader.cs. Name change for Propeller Class to PropellerCPU (and file too).
+
+
 V14.07.17
 ====================================
 +Usability improvement: Remember independently last binary & plugin locations for opening binary, and opening and saving plugin.

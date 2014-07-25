@@ -102,7 +102,8 @@ namespace Gear.PluginSupport
             if (target == null)
             {
                 CompilerError c = new CompilerError("", 0, 0, "CS0103",
-                    "The name '" + module + "' does not exist in the current context");
+                    "The name '" + module + "' does not exist in the current context." +
+                    " Does the class name is the same that is declared in c# code?");
                 m_Errors = new CompilerErrorCollection(new CompilerError[] { c });
                 return null;
             }

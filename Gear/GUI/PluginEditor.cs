@@ -55,15 +55,34 @@ namespace Gear.GUI
         /// @brief Enable or not change detection event.
         /// @version V14.07.17 - Added.
         private bool changeDetectEnabled;
+        /// @brief Types of change detected.
+        /// To mantain consistency between class name in C# code and class name declared in the other field.
+        /// @version 14.07.25 - Added.
+        private enum ChangeType : byte
+        {
+            none = 0,   //!< @brief No change detected.
+            name,       //!< @brief Name class change detected.
+            code        //!< @brief Code change detected.
+        }
+        /// @brief Store the last change detected.
+        /// To determine changes, it includes only the C# code and class name.
+        /// @version 14.07.25 - Added.
+        private ChangeType LastChange;
+        /// @brief Store the last consistency problem detected.
+        /// @version 14.07.25 - Added.
+        private string LastProblem;
 
         /// @brief Default constructor.
         /// Init class, defines columns for error grid, setting changes detection initially.
         public PluginEditor()
         {
             InitializeComponent();
+
             m_SaveFileName = null;
             changeDetectEnabled = true;
             CodeChanged = false;
+            LastChange = ChangeType.none;
+            LastProblem = "None";
 
             // setting default font
             defaultFont = new Font(FontFamily.GenericMonospace, 10, FontStyle.Regular);
@@ -128,11 +147,14 @@ namespace Gear.GUI
         /// @brief Load a plugin from File.
         /// @todo Correct method to implement new plugin system
         /// 
-        /// @note This method take care of update change state of the window. No need to do it 
-        /// in callings to it.
+        /// @note This method take care of update change state of the window. 
         public bool OpenFile(string FileName, bool displayErrors)
         {
-            XmlTextReader tr = new XmlTextReader(FileName);
+            XmlReaderSettings settings = new XmlReaderSettings();
+            settings.IgnoreComments = true;
+            settings.IgnoreProcessingInstructions = true;
+            settings.IgnoreWhitespace = true;
+            XmlReader tr = XmlReader.Create(FileName, settings);
             bool ReadText = false;
 
             if (referencesList.Items.Count > 0) 
@@ -155,7 +177,8 @@ namespace Gear.GUI
                     switch (tr.Name.ToLower())
                     {
                         case "reference":
-                            referencesList.Items.Add(tr.GetAttribute("name"));
+                            if (!tr.IsEmptyElement)     //prevent empty element generates error
+                                referencesList.Items.Add(tr.GetAttribute("name"));
                             break;
                         case "instance":
                             instanceName.Text = tr.GetAttribute("class");
@@ -203,7 +226,7 @@ namespace Gear.GUI
         }
 
         /// @todo Document method PluginEditor.SaveFile()
-        /// @todo Correct method to implement new plugin system.
+        /// @todo Correct method to implement new versioning plugin system.
         /// 
         /// Take care of update change state of the window. No need to do it in methods who call this.
         public void SaveFile(string FileName)
@@ -240,18 +263,21 @@ namespace Gear.GUI
         /// @param[in] e `EventArgs` class with a list of argument to the event call.
         private void CheckSource_Click(object sender, EventArgs e)
         {
-            string[] refs = new string[referencesList.Items.Count];
-            int i = 0;
-
-            errorListView.Items.Clear();
-            foreach (string s in referencesList.Items)
-                refs[i++] = s;
-
-            if (ModuleLoader.LoadModule(codeEditorView.Text, instanceName.Text, refs) != null)
-                MessageBox.Show("Script compiled without errors.","Plugin Editor - Check source.");
-            else
+            if ((codeEditorView.TextLength > 0) && IsConsistent())
             {
-                ModuleLoader.EnumerateErrors(EnumErrors);
+                string[] refs = new string[referencesList.Items.Count];
+                int i = 0;
+
+                errorListView.Items.Clear();
+                foreach (string s in referencesList.Items)
+                    refs[i++] = s;
+
+                if (ModuleLoader.LoadModule(codeEditorView.Text, instanceName.Text, refs) != null)
+                    MessageBox.Show("Script compiled without errors.", "Plugin Editor - Check source.");
+                else
+                {
+                    ModuleLoader.EnumerateErrors(EnumErrors);
+                }
             }
         }
 
@@ -329,6 +355,7 @@ namespace Gear.GUI
         }
 
         /// @brief Remove the selected reference of the list.
+        /// Also update change state for the plugin module, marking as changed.
         /// @param[in] sender Object who called this on event.
         /// @param[in] e `EventArgs` class with a list of argument to the event call.
         private void RemoveButton_Click(object sender, EventArgs e)
@@ -369,6 +396,7 @@ namespace Gear.GUI
         }
 
         /// @brief Add a reference from the `ReferenceName`text box.
+        /// Also update change state for the plugin module, marking as changed.
         /// @param[in] sender Object who called this on event.
         /// @param[in] e `EventArgs` class with a list of argument to the event call.
         private void addReferenceButton_Click(object sender, EventArgs e)
@@ -471,7 +499,8 @@ namespace Gear.GUI
             codeEditorView.SelectedText = "\n";
         }
 
-        /// @brief Update changed state for plugin window.
+        /// @brief Update change state for code text box.
+        /// It marks as changed, to prevent unaverted loses at closure of the window.
         /// @param[in] sender Object who called this on event.
         /// @param[in] e `EventArgs` class with a list of argument to the event call.
         /// @version V14.07.17 - Added.
@@ -480,21 +509,134 @@ namespace Gear.GUI
             if (changeDetectEnabled)
             {
                 CodeChanged = true;
+                LastChange = ChangeType.code;
             }
         }
 
-        /// @brief Update changed state for instance name.
+        /// @brief Update change state for instance name.
+        /// When the text of the text box changes, marks the code as modified, to 
+        /// prevent unaverted loses at closure of the window.
         /// @param[in] sender Object who called this on event.
         /// @param[in] e `EventArgs` class with a list of argument to the event call.
         /// @version V14.07.17 - Added.
         private void instanceName_TextChanged(object sender, EventArgs e)
         {
             CodeChanged = true;
+            LastChange = ChangeType.name;
+        }
+
+
+        private void instanceName_Leave(object sender, EventArgs e)
+        {
+            instanceName.Text = instanceName.Text.Trim();   //trim spaces at both ends
+        }
+
+
+        /// @brief Inform user if there inconsistency in class name declared.
+        /// If the class name isn't the same that in class declaration in code, show the user a message,
+        /// and show the problem in code text box or class name text box.
+        /// @version V14.07.17 - Added.
+        private bool IsConsistent()
+        {
+            int start = 0, len = 0;
+            //Test if there is inconsistency in class name product of the change in this control...
+            if (DetectDiffClassName(instanceName.Text, codeEditorView.Text, ref start, ref len))
+            {
+                //...there is inconsistency
+                string Problem = "";
+                if ((instanceName.TextLength != 0) && (codeEditorView.TextLength != 0))
+                {
+                    switch (LastChange)
+                    {
+                        case ChangeType.none:
+                            Problem = "Lasting problem: " + LastProblem;
+                            break;
+                        case ChangeType.code:
+                            Problem = "Class name not found in changed code class definition.";
+                            LastProblem = Problem;
+                            break;
+                        case ChangeType.name:
+                            Problem = "Class Name changed but not found in code class definition:\n" +
+                                "    \"class <name> : PluginBase\".";
+                            LastProblem = Problem;
+                            break;
+                    }
+                    DialogResult confirm = MessageBox.Show(
+                        "Problem detected: class name \"" + instanceName.Text +
+                            "\" inconsistent with code.\n" + Problem,
+                        "Plugin Editor - Validation.",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+
+                    if ((LastChange == ChangeType.name) || (LastChange == ChangeType.code))
+                    {
+                        bool Selected = false;      //for detect if the pattern of class declaration was encountered
+                        if (len != 0)
+                        {
+                            codeEditorView.SelectionStart = start;
+                            codeEditorView.SelectionLength = len;
+                            Selected = true;        //signal that it was encountered
+                        }
+                        if (LastChange == ChangeType.name)
+                        {
+                            instanceName.SelectAll();
+                            instanceName.Focus();
+                        }
+                        else
+                        {
+                            if (!Selected)      //if not detected the pattern of class declararion
+                                codeEditorView.SelectAll();    //select all
+                            codeEditorView.Focus();
+                        }
+                    }
+                }
+                return false;   //not consistent
+            }
+            else
+            {
+                LastChange = ChangeType.none;
+                return true;    //the class name definition is consistent 
+            }
+        }
+
+        /// @brief Detect if class name is not defined the same in code text
+        /// This search in code a definition as "class <nameClass> : PluginBase" coherent
+        /// with the content "<nameClass>" on class name text box.
+        /// @param[in] name `string` with the class name
+        /// @param[in] code `string` with the c# code
+        /// @param[out] startPos Return the start position of class definition suspect.
+        /// @param[out] _length Return the lenght of class definition 'suspect' if found; =0 if not found.
+        /// @returns Differences encountered (=true) of class name are ok in both sides (=false).
+        private bool DetectDiffClassName(string name, string code, ref int startPos, ref int _length)
+        {
+            //look for class definition inside the code, with the name given
+            Regex r = new Regex(@"\bclass\s+" + name + @"\s*\:\s*PluginBase\b",
+                RegexOptions.Compiled);
+            Match m = r.Match(code);    //try to find matches in code text
+            if (!m.Success) //if not found
+            {
+                //Look for a 'suspect' for class definition to show it to user later.
+                //This time the pattern "[@]?[_]*[A-Z|a-z|0-9]+[A-Z|a-z|0-9|_]*" represent a C# identifier
+                Regex f = new Regex(@"\bclass\s+[@]?[_]*[A-Z|a-z|0-9]+[A-Z|a-z|0-9|_]*\s*\:\s*PluginBase\b",
+                    RegexOptions.Compiled);
+                Match n = f.Match(code);
+                if (n.Success)  //if a match is found
+                {               
+                    startPos = n.Index;
+                    _length = n.Length;
+                }
+                else     //match not found
+                {
+                    startPos = 0;
+                    _length = 0;    //check this on caller for no match found.
+                }
+            }
+            return (!m.Success);
         }
 
         /// @brief Event handler for closing plugin window.
-        /// If code have changed and it is not saved, a Dialog is presented to the user to proceed or abort 
-        /// the closing.
+        /// If code, references or class name have changed and them are not saved, a Dialog is 
+        /// presented to the user to proceed or abort the closing.
         /// @param[in] sender Object who called this on event.
         /// @param[in] e `FormClosingEventArgs` class with a list of argument to the event call.
         /// @version V14.07.17 - Added.
@@ -519,7 +661,8 @@ namespace Gear.GUI
                 "Are you sure to close plugin \"" + fileName + "\" without saving?\nYour changes will lost.",
                 "Save.",
                 MessageBoxButtons.OKCancel,
-                MessageBoxIcon.Exclamation
+                MessageBoxIcon.Exclamation,
+                MessageBoxDefaultButton.Button2
             );
             if (confirm == DialogResult.OK)
                 return true;
