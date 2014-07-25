@@ -158,6 +158,7 @@ namespace Gear.GUI
             this.instanceName.Size = new System.Drawing.Size(100, 25);
             this.instanceName.ToolTipText = "Name of the Class for the plugin\r\nMust be the same as the class inherited from Pl" +
     "uginBase.";
+            this.instanceName.Leave += new System.EventHandler(this.instanceName_Leave);
             this.instanceName.TextChanged += new System.EventHandler(this.instanceName_TextChanged);
             // 
             // toolStripSeparator2
@@ -256,6 +257,7 @@ namespace Gear.GUI
             this.codeEditorView.AcceptsTab = true;
             this.codeEditorView.DetectUrls = false;
             this.codeEditorView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.codeEditorView.HideSelection = false;
             this.codeEditorView.Location = new System.Drawing.Point(208, 25);
             this.codeEditorView.Name = "codeEditorView";
             this.codeEditorView.Size = new System.Drawing.Size(426, 312);
