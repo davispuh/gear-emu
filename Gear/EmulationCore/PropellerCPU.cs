@@ -556,7 +556,7 @@ namespace Gear.EmulationCore
         /// @brief Reset the propeller CPU to initial state.
         /// 
         /// Release cog instances, clock sources, clear locks and pins, and reset plugins.
-        /// @version 14.7.21 - Separate reset for clocksources, cogs and locks.
+        /// @version 14.7.21 - Separate reset loops for clocksources, cogs and locks.
         public void Reset()
         {
             ResetMemory.CopyTo(Memory, 0);

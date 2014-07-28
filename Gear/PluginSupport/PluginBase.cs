@@ -60,10 +60,18 @@ namespace Gear.PluginSupport
         /// Handy to reset plugin's components or data, to their initial states.
         public virtual void OnReset() { }          
                      
-        /// @brief Event when a clock tick is informed to the plugin.
+        /// @brief Event when a clock tick is informed to the plugin, in secounds units.
+        /// @param[in] time Time in secounds of the emulation.
         /// @note Asterisk's: occurs once every cycle, time is the current emulated time (in seconds).                                                                
         /// @note Source: <a href="http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment?p=625629&viewfull=1#post625629">API GEAR described on GEAR original Post</a>
         public virtual void OnClock(double time) { }
+
+        /// @brief Event when a clock tick is informed to the plugin, in clock units.
+        /// @param sysCounter Present system clock in ticks unit.
+        /// @warning If is used, the plugin designer have to take measures to detect and manage
+        ///  system counter rollover.
+        /// @version 14.7.27 - added.
+        public virtual void OnClock(uint sysCounter) { }
 
         /// @brief Event when some pin changed and is informed to the plugin.
         /// @note Asterisk's: occurs every time a pin has changed states. PinState tells you if either 
@@ -85,5 +93,6 @@ namespace Gear.PluginSupport
 
         /// @brief Attribute to allow the window to be closed (default) or not (like cog windows).
         public virtual Boolean IsClosable { get { return true; } }   
+
     }
 }

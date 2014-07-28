@@ -242,7 +242,7 @@ namespace Gear.GUI
 
                 if (bm == null)     //if it fails...
                 {
-                    PluginEditor pe = new PluginEditor();   // ...open plugin editor in other window
+                    PluginEditor pe = new PluginEditor(false);   // ...open plugin editor in other window
                     pe.OpenFile(FileName, true);
                     pe.MdiParent = this.MdiParent;
                     pe.Show();

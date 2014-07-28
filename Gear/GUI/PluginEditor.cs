@@ -73,10 +73,25 @@ namespace Gear.GUI
         private string LastProblem;
 
         /// @brief Default constructor.
-        /// Init class, defines columns for error grid, setting changes detection initially.
-        public PluginEditor()
+        /// Init class, defines columns for error grid, setting on changes detection initially, and 
+        /// try to load the default template for plugin.
+        /// @param[in] loadDefaultTemplate Indicate to load default template (=true) or no (=false).
+        /// @version 14.7.27 - Added parameter for loading default template for plugin.
+        public PluginEditor(bool loadDefaultTemplate)
         {
             InitializeComponent();
+
+            changeDetectEnabled = false;
+            if (loadDefaultTemplate)   //load default plugin template
+            {
+                try
+                {
+                    codeEditorView.LoadFile("PluginTemplate.cs", RichTextBoxStreamType.PlainText);
+                }
+                catch (IOException) { }         //do nothing, mantaining empty the code text box
+                catch (ArgumentException) { }   //
+                finally { }                     //
+            }
 
             m_SaveFileName = null;
             changeDetectEnabled = true;

@@ -144,7 +144,7 @@ namespace Gear.GUI
 
             if (openFileDialog.ShowDialog(this) == DialogResult.OK)
             {
-                PluginEditor plugin = new PluginEditor();
+                PluginEditor plugin = new PluginEditor(false);
 
                 if (plugin.OpenFile(openFileDialog.FileName, false))
                 {
@@ -161,7 +161,7 @@ namespace Gear.GUI
         /// 
         private void newPluginButton_Click(object sender, EventArgs e)
         {
-            PluginEditor plugin = new PluginEditor();
+            PluginEditor plugin = new PluginEditor(true);   //load default plugin template
             plugin.MdiParent = this;
             plugin.Show();
         }
