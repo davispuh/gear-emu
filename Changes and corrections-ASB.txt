@@ -1,4 +1,9 @@
-V17.07.25
+V14.7.27
+====================================
++Plugin template: When the user create a new plugin in plugin editor, a proposal of initial code is loaded from a template file. This code is commented and contains the most used methods.
++Begin of implementation of a new common method for PluginBase class: PluginBase.OnClock(uint sysCounter). To be completed.
+
+V14.07.25
 ====================================
 +Validation on plugin editor to prevent name class inconsistency and avoid error message if the user tries to validate code without text. If there is this problem, the editor hightlight the code involved.
 
