@@ -168,8 +168,8 @@ namespace Gear.GUI
             FloatControls.Remove(c.Parent);
         }
 
-        /// @todo Document Gear.GUI.Emulator.OpenFile()
-        /// 
+        /// @brief Load a binary image from file.
+        /// Generate a new instance of a `PropellerCPU` and load the program from the binary.
         public bool OpenFile(string FileName)
         {
             try

@@ -3,8 +3,8 @@
   <code>
     //
     // SerialIO v0.4
-    //    A Plugin to the Gear Propeller Simulator that allows connecting
-    //    to a FullDuplexSerial object running on the propeller chip.
+    //    A Plugin to the Gear PropellerCPU Simulator that allows connecting
+    //    to a FullDuplexSerial object running on the PropellerCPU chip.
     //
     // CHANGELOG
     // v0.4 - Fix tab order.  Clear transmit buffer on &quot;Clear Text&quot; button click.
@@ -51,7 +51,7 @@
             }
         }
 
-        private Propeller Chip;
+        private PropellerCPU Chip;
 
         private int rxPin;
         private int txPin;
@@ -248,7 +248,7 @@
         }
 
 
-        public override void PresentChip(Propeller host)
+        public override void PresentChip(PropellerCPU host)
         {
             Chip = host;
 

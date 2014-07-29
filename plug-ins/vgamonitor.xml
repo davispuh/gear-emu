@@ -15,7 +15,7 @@
 
     class VGAMonitor : PluginBase
     {
-        private Propeller Chip;
+        private PropellerCPU Chip;
         private Bitmap Screen;
 
         private double Minimum;
@@ -62,7 +62,7 @@
                     Screen.SetPixel(x, y, Output);
         }
 
-        public override void PresentChip(Propeller host)
+        public override void PresentChip(PropellerCPU host)
         {
             Chip = host;
             Chip.NotifyOnPins(this);
@@ -98,7 +98,7 @@
             HSync = pins[17] == PinState.OUTPUT_LO;
 
 
-            // Drive color off propeller demo board pins
+            // Drive color off PropellerCPU demo board pins
             int index = 0;
 
             for (int b = 0, p = 18; b &lt; 6; b++, p++)

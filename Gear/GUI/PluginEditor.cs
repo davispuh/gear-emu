@@ -540,7 +540,10 @@ namespace Gear.GUI
             LastChange = ChangeType.name;
         }
 
-
+        /// @brief Update the name on the text box after leave the control.
+        /// @param[in] sender Object who called this on event.
+        /// @param[in] e `EventArgs` class with a list of argument to the event call.
+        /// @version V14.07.17 - Added.
         private void instanceName_Leave(object sender, EventArgs e)
         {
             instanceName.Text = instanceName.Text.Trim();   //trim spaces at both ends
