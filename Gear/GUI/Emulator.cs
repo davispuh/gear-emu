@@ -106,8 +106,8 @@ namespace Gear.GUI
         /// @param[in] bm Instance of a Gear.PluginSupport.PluginBase class to be attached.
         private void AttachPlugin(PluginBase bm)
         {
-            Chip.IncludePlugin(bm);
-            bm.PresentChip(Chip);
+            Chip.IncludePlugin(bm);     //attach into plugin lists of PropellerCPU
+            bm.PresentChip(Chip);       //invoke initial setup of plugin.
 
             TabPage t = new TabPage(bm.Title);
             t.Parent = documentsTab;
@@ -250,7 +250,7 @@ namespace Gear.GUI
                 else               //if success compiling & instanciate the new class...
                 {
                     AttachPlugin(bm);   //...add the reference to the plugin list of the emulator instance
-                    GearDesktop.LastPlugin = FileName;  //update location of las plugin
+                    GearDesktop.LastPlugin = FileName;  //update location of last plugin
                 }
 
                 return bm;

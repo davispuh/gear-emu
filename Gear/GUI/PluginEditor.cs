@@ -579,7 +579,7 @@ namespace Gear.GUI
                             LastProblem = Problem;
                             break;
                     }
-                    DialogResult confirm = MessageBox.Show(
+                    MessageBox.Show(
                         "Problem detected: class name \"" + instanceName.Text +
                             "\" inconsistent with code.\n" + Problem,
                         "Plugin Editor - Validation.",

@@ -46,37 +46,45 @@ namespace Gear.PluginSupport
         /// Source: <a href="http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment?p=627190&viewfull=1#post627190">Post #32 from original GEAR post</a>
         /// It shows that the original name of the class was "BusModule". Changed to the new name of the class. 
         /// @version V14.07.17 - change on the default name 
-        /// 
         public virtual string Title { get { return "Plugin Base"; } }
 
         /// @brief Points to propeller instance.
         /// @note Asterisk's: Occurs once the plugin is loaded. It gives you a reference to the 
         /// propeller chip (so you can drive the pins). 
         /// @note Source: <a href="http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment?p=625629&viewfull=1#post625629">API GEAR described on GEAR original Post</a>
-        /// 
         public virtual void PresentChip(PropellerCPU host) { }    
 
         /// @brief Event when the chip is reset.
         /// Handy to reset plugin's components or data, to their initial states.
-        public virtual void OnReset() { }          
-                     
+        public virtual void OnReset() { }
+
+        /// @brief Event when the plugin is closing.
+        /// Useful to reset pins states or direction to initial state before loading the plugin, or 
+        /// to release pins drive by the plugin.
+        /// @version 14.8.5 - Added.
+        public virtual void OnClose() { }
+             
         /// @brief Event when a clock tick is informed to the plugin, in secounds units.
         /// @param[in] time Time in secounds of the emulation.
         /// @note Asterisk's: occurs once every cycle, time is the current emulated time (in seconds).                                                                
         /// @note Source: <a href="http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment?p=625629&viewfull=1#post625629">API GEAR described on GEAR original Post</a>
+        [VersionAttribute(0.0f, 1.0f, MemberType = VersionAttribute.memberTypeVersion.TickHandler)]
         public virtual void OnClock(double time) { }
 
         /// @brief Event when a clock tick is informed to the plugin, in clock units.
-        /// @param sysCounter Present system clock in ticks unit.
-        /// @warning If is used, the plugin designer have to take measures to detect and manage
+        /// @param[in] time Time in secounds of the emulation.
+		/// @param[in] sysCounter Present system clock in ticks unit.
+        /// @warning If sysCounter is used only, the plugin designer have to take measures to detect and manage
         ///  system counter rollover.
-        /// @version 14.7.27 - added.
-        public virtual void OnClock(uint sysCounter) { }
+        /// @version 14.7.27 - Added.
+        [VersionAttribute(1.0f, MemberType=VersionAttribute.memberTypeVersion.TickHandler)]
+        public virtual void OnClock(double time, uint sysCounter) { }
 
         /// @brief Event when some pin changed and is informed to the plugin.
         /// @note Asterisk's: occurs every time a pin has changed states. PinState tells you if either 
         /// the propeller or another component has set the pin Hi or Lo, or if the pin is floating.
         /// @note Source: <a href="http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment?p=625629&viewfull=1#post625629">API GEAR described on GEAR original Post</a>
+        [VersionAttribute(0.0f, MemberType=VersionAttribute.memberTypeVersion.PinHandler)]
         public virtual void OnPinChange(double time, PinState[] pins) { }
 
         /// @brief Event to repaint the plugin screen (if used).
@@ -92,7 +100,7 @@ namespace Gear.PluginSupport
         public virtual Boolean AllowHotKeys { get { return true; } }
 
         /// @brief Attribute to allow the window to be closed (default) or not (like cog windows).
-        public virtual Boolean IsClosable { get { return true; } }   
+        public virtual Boolean IsClosable { get { return true; } }
 
     }
 }

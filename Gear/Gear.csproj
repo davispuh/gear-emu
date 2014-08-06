@@ -164,6 +164,7 @@
     </Compile>
     <Compile Include="PluginSupport\ModuleLoader.cs" />
     <Compile Include="GearProgram.cs" />
+    <Compile Include="PluginSupport\PluginVersion.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="GUI\AboutGear.resx">
       <DependentUpon>AboutGear.cs</DependentUpon>

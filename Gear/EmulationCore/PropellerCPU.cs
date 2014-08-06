@@ -114,9 +114,11 @@ namespace Gear.EmulationCore
 
         private Emulator emulator;  //!< @todo Document member Gear.EmulationCore.PropellerCPU.emulator
 
-        private List<PluginBase> TickHandlers;      //!< @todo Document member Gear.EmulationCore.PropellerCPU.TickHandlers
-        private List<PluginBase> PinNoiseHandlers;  //!< @todo Document member Gear.EmulationCore.PropellerCPU.PinNoiseHandlers
-        private List<PluginBase> PlugIns;           //!< @todo Document member Gear.EmulationCore.PropellerCPU.PlugIns
+        //TODO [ASB] : modificar abajo por private List<Pepito> TickHandlers;
+        private List<PluginBase> TickHandlers;      //!< @brief List of Handlers for clock ticks on plugins
+        //TODO [ASB] : modificar abajo por private List<Pepito> PinNoiseHandlers;
+        private List<PluginBase> PinNoiseHandlers;  //!< @brief List of Handlers for Pin changes on plugins
+        private List<PluginBase> PlugIns;           //!< @brief List of active PlugIns (include system ones, like cog views, etc)
 
         //Expose constants declarations to use on the project. 
         public const int TOTAL_COGS   = 8;          //!< @todo Document member Gear.EmulationCore.PropellerCPU.TOTAl_COGS
@@ -452,9 +454,9 @@ namespace Gear.EmulationCore
             return (PLLGroup)ClockSources[cog];
         }
 
-        /// @brief Include a plugin in active plugin list of propeller instance
+        /// @brief Include a plugin in active plugin list of propeller instance.
         /// It see if the plugin exist already to insert or not.
-        /// @param[in] mod Compiled plugin reference to include
+        /// @param[in] mod Compiled plugin reference to include.
         public void IncludePlugin(PluginBase mod)
         {
             if (!(PlugIns.Contains(mod)))
@@ -463,11 +465,16 @@ namespace Gear.EmulationCore
 
         /// @brief Remove a plugin from the active plugin list of propeller instance
         /// Only if the plugin exists on the list, this method removes from it. 
+        /// Before detach, the `OnClose()` method of plugin is invoqued, to do
+        /// housekeeping, for example to clear pins managed by the plugin.
         /// @param[in] mod Compiled plugin reference to remove
         public void RemovePlugin(PluginBase mod)
         {
             if (PlugIns.Contains(mod))
+            {
+                mod.OnClose();      //call the event before remove 
                 PlugIns.Remove(mod);
+            }
         }
 
         /// @brief Add a plugin to be notified on clock ticks
@@ -700,6 +707,7 @@ namespace Gear.EmulationCore
             {
                 mod.OnClock(Time);
             }
+            //TODO [ASB] : cambiar lo de arriba por foreach (Pepito mod in TickHandlers) { mod.GetMember(VersionAttribute.memberTypeVersion.TickHandler, <version>) }
 
             if (pins != IN || dir != DIR || pinChange)
                 PinChanged();
