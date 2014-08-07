@@ -48,7 +48,6 @@ namespace Gear.GUI
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
             System.Windows.Forms.ToolStripLabel classNameLabel;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PluginEditor));
@@ -68,7 +67,6 @@ namespace Gear.GUI
             this.removeReferenceButton = new System.Windows.Forms.ToolStripButton();
             this.errorListView = new System.Windows.Forms.ListView();
             this.codeEditorView = new System.Windows.Forms.RichTextBox();
-            this.toolTipPluginEditor = new System.Windows.Forms.ToolTip(this.components);
             this.errorSplitter = new Gear.GUI.CollapsibleSplitter();
             this.referencesSplitter = new Gear.GUI.CollapsibleSplitter();
             toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -341,6 +339,5 @@ namespace Gear.GUI
         private System.Windows.Forms.RichTextBox codeEditorView;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripButton syntaxButton;
-        private System.Windows.Forms.ToolTip toolTipPluginEditor;
     }
 }

@@ -22,14 +22,10 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
 using System.Windows.Forms;
 
 using Gear.EmulationCore;
+
 
 ///@brief Plugin support Name space
 namespace Gear.PluginSupport
@@ -68,7 +64,7 @@ namespace Gear.PluginSupport
         /// @param[in] time Time in secounds of the emulation.
         /// @note Asterisk's: occurs once every cycle, time is the current emulated time (in seconds).                                                                
         /// @note Source: <a href="http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment?p=625629&viewfull=1#post625629">API GEAR described on GEAR original Post</a>
-        [VersionAttribute(0.0f, 1.0f, MemberType = VersionAttribute.memberTypeVersion.TickHandler)]
+        [VersionAttribute(0.0f, 1.0f, PluginVersioning.memberType.OnClock)]
         public virtual void OnClock(double time) { }
 
         /// @brief Event when a clock tick is informed to the plugin, in clock units.
@@ -77,14 +73,14 @@ namespace Gear.PluginSupport
         /// @warning If sysCounter is used only, the plugin designer have to take measures to detect and manage
         ///  system counter rollover.
         /// @version 14.7.27 - Added.
-        [VersionAttribute(1.0f, MemberType=VersionAttribute.memberTypeVersion.TickHandler)]
+        [VersionAttribute(1.0f, PluginVersioning.memberType.OnClock)]
         public virtual void OnClock(double time, uint sysCounter) { }
 
         /// @brief Event when some pin changed and is informed to the plugin.
         /// @note Asterisk's: occurs every time a pin has changed states. PinState tells you if either 
         /// the propeller or another component has set the pin Hi or Lo, or if the pin is floating.
         /// @note Source: <a href="http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment?p=625629&viewfull=1#post625629">API GEAR described on GEAR original Post</a>
-        [VersionAttribute(0.0f, MemberType=VersionAttribute.memberTypeVersion.PinHandler)]
+        [VersionAttribute(0.0f, PluginVersioning.memberType.OnPinChange)]
         public virtual void OnPinChange(double time, PinState[] pins) { }
 
         /// @brief Event to repaint the plugin screen (if used).

@@ -114,9 +114,9 @@ namespace Gear.EmulationCore
 
         private Emulator emulator;  //!< @todo Document member Gear.EmulationCore.PropellerCPU.emulator
 
-        //TODO [ASB] : modificar abajo por private List<Pepito> TickHandlers;
+        //TODO [ASB] : modificar abajo por private List<VersionatedPluginContainer> TickHandlers;
         private List<PluginBase> TickHandlers;      //!< @brief List of Handlers for clock ticks on plugins
-        //TODO [ASB] : modificar abajo por private List<Pepito> PinNoiseHandlers;
+        //TODO [ASB] : modificar abajo por private List<VersionatedPluginContainer> PinNoiseHandlers;
         private List<PluginBase> PinNoiseHandlers;  //!< @brief List of Handlers for Pin changes on plugins
         private List<PluginBase> PlugIns;           //!< @brief List of active PlugIns (include system ones, like cog views, etc)
 
@@ -707,7 +707,7 @@ namespace Gear.EmulationCore
             {
                 mod.OnClock(Time);
             }
-            //TODO [ASB] : cambiar lo de arriba por foreach (Pepito mod in TickHandlers) { mod.GetMember(VersionAttribute.memberTypeVersion.TickHandler, <version>) }
+            //TODO [ASB] : cambiar lo de arriba por foreach (VersionatedPluginContainer mod in TickHandlers) { mod.GetMember(VersionAttribute.memberTypeVersion.OnClock, <version>) }
 
             if (pins != IN || dir != DIR || pinChange)
                 PinChanged();
