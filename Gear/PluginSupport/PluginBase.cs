@@ -27,18 +27,18 @@ using System.Windows.Forms;
 using Gear.EmulationCore;
 
 
-///@brief Plugin support Name space
+///@brief Plugin support Name space.
 namespace Gear.PluginSupport
 {
-    /// @brief Base class for plugin support
-    /// Define basic methods and attributes for plugins in GEAR.
+    /// @brief Base class for plugin support.
+    /// @details Define basic methods and attributes for plugins in GEAR.
     /// Almost every window on GEAR is based on it.
     /// @note See Asterisk's comments:
     /// Source: <a href="http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment?p=636953&viewfull=1#post636953">Original thread on GEAR with explanation of plugin class</a>
     public class PluginBase : UserControl
     {
         /// @brief Title of the tab window.
-        /// Changed default name , based on a comment from Asterisk from propeller forum:
+        /// @note Changed default name , based on a comment from Asterisk from propeller forum:
         /// Source: <a href="http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment?p=627190&viewfull=1#post627190">Post #32 from original GEAR post</a>
         /// It shows that the original name of the class was "BusModule". Changed to the new name of the class. 
         /// @version V14.07.17 - change on the default name 
@@ -55,8 +55,8 @@ namespace Gear.PluginSupport
         public virtual void OnReset() { }
 
         /// @brief Event when the plugin is closing.
-        /// Useful to reset pins states or direction to initial state before loading the plugin, or 
-        /// to release pins drive by the plugin.
+        /// @details Useful to reset pins states or direction to initial state before loading the 
+        /// plugin, or to release pins drive by the plugin.
         /// @version 14.8.5 - Added.
         public virtual void OnClose() { }
              

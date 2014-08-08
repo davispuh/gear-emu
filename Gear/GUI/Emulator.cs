@@ -39,12 +39,11 @@ using Gear.PluginSupport;
 namespace Gear.GUI
 {
     /// @brief View class for PropellerCPU emulator instance.
-    /// 
-    /// This class implements a view over a propeller emulator, with interface to control the chip, like start, 
-    /// go throgh steps, reset or reload.
+    /// @details This class implements a view over a propeller emulator, with interface to control 
+    /// the chip, like start, go throgh steps, reset or reload.
     public partial class Emulator : Form
     {
-        private PropellerCPU Chip;             //!< @brief Reference to the PropellerCPU running instance.
+        private PropellerCPU Chip;          //!< @brief Reference to the PropellerCPU running instance.
         private String Source;              //!< @brief Name of Binary program loaded.
         private String LastFileName;        //!< @brief Last file name opened.
         private List<Control> FloatControls;//!< @brief List of floating controls.
@@ -169,7 +168,8 @@ namespace Gear.GUI
         }
 
         /// @brief Load a binary image from file.
-        /// Generate a new instance of a `PropellerCPU` and load the program from the binary.
+        /// @details Generate a new instance of a `PropellerCPU` and load the program from 
+        /// the binary.
         public bool OpenFile(string FileName)
         {
             try
@@ -191,11 +191,11 @@ namespace Gear.GUI
         }
 
         /// @brief Load a plugin from XML file.
-        /// 
-        /// Try to open the xml definition for the plugin from the file name given as parameter.
-        /// Then extract information from the XML (class name, auxiliary references and source code to compile), 
-        /// trying to compile the C# source code (based on Gear.PluginSupport.PluginBase class) and returning the new class instance.
-        /// If the compilation fails, then it opens the plugin editor to show errors and source code.
+        /// @details Try to open the xml definition for the plugin from the file name given as 
+        /// parameter. Then extract information from the XML (class name, auxiliary references 
+        /// and source code to compile), trying to compile the C# source code (based on 
+        /// Gear.PluginSupport.PluginBase class) and returning the new class instance. If the 
+        /// compilation fails, then it opens the plugin editor to show errors and source code.
         /// @param[in] FileName Name and path to the XML plugin file to open
         /// @returns Reference to the new plugin instance (on success) or NULL (on fail).
         public PluginBase LoadPlugin(string FileName)
@@ -238,7 +238,7 @@ namespace Gear.GUI
                 }
 
                 //Dynamic load and compile the plugin module as a class
-                PluginBase bm = ModuleLoader.LoadModule(code, instanceName, references.ToArray());
+                PluginBase bm = ModuleCompiler.LoadModule(code, instanceName, references.ToArray());
 
                 if (bm == null)     //if it fails...
                 {
@@ -495,10 +495,10 @@ namespace Gear.GUI
         }
 
         /// @brief Determine avalaibility of close plugin button when tab is changed.
-        /// 
-        /// Enable close plugin button based on if active tab is subclass of Gear.PluginSupport.PluginBase 
-        /// and if that class permit close the window. Tipically the user plugins enabled it; but 
-        /// the cog window, main memory, logic probe, etc, don't allow to close.
+        /// @details Enable close plugin button based on if active tab is subclass of 
+        /// Gear.PluginSupport.PluginBase and if that class permit close the window. Tipically 
+        /// the user plugins enabled it; but the cog window, main memory, logic probe, etc, 
+        /// don't allow to close.
         /// @param[in] sender Reference to object where event was raised.
         /// @param[in] e Event data arguments.
         /// @version V14.07.03 - Added.

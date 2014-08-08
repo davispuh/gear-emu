@@ -115,10 +115,10 @@ namespace Gear.EmulationCore
         private Emulator emulator;  //!< @todo Document member Gear.EmulationCore.PropellerCPU.emulator
 
         //TODO [ASB] : modificar abajo por private List<VersionatedPluginContainer> TickHandlers;
-        private List<PluginBase> TickHandlers;      //!< @brief List of Handlers for clock ticks on plugins
+        private List<PluginBase> TickHandlers;      //!< @brief List of Handlers for clock ticks on plugins.
         //TODO [ASB] : modificar abajo por private List<VersionatedPluginContainer> PinNoiseHandlers;
-        private List<PluginBase> PinNoiseHandlers;  //!< @brief List of Handlers for Pin changes on plugins
-        private List<PluginBase> PlugIns;           //!< @brief List of active PlugIns (include system ones, like cog views, etc)
+        private List<PluginBase> PinNoiseHandlers;  //!< @brief List of Handlers for Pin changes on plugins.
+        private List<PluginBase> PlugIns;           //!< @brief List of active PlugIns (include system ones, like cog views, etc).
 
         //Expose constants declarations to use on the project. 
         public const int TOTAL_COGS   = 8;          //!< @todo Document member Gear.EmulationCore.PropellerCPU.TOTAl_COGS
@@ -276,7 +276,7 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Property for total DIR of pins (P63..P0).
-        /// Only take Pin use of ACTIVES cogs, making OR between them.
+        /// @details Only take Pin use of ACTIVES cogs, making OR between them.
         public ulong DIR
         {
             get
@@ -290,7 +290,7 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Property for total IN of pins (P63..P0).
-        /// Only take Pin use of ACTIVES cogs.
+        /// @details Only take Pin use of ACTIVES cogs.
         public ulong IN
         {
             get
@@ -310,7 +310,7 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Property for total OUT of pins (P63..P0).
-        /// Only take Pin use of ACTIVES cogs, making OR between them.
+        /// @details Only take Pin use of ACTIVES cogs, making OR between them.
         public ulong OUT
         {
             get
@@ -455,7 +455,7 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Include a plugin in active plugin list of propeller instance.
-        /// It see if the plugin exist already to insert or not.
+        /// @details It see if the plugin exist already to insert or not.
         /// @param[in] mod Compiled plugin reference to include.
         public void IncludePlugin(PluginBase mod)
         {
@@ -464,7 +464,7 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Remove a plugin from the active plugin list of propeller instance
-        /// Only if the plugin exists on the list, this method removes from it. 
+        /// @details Only if the plugin exists on the list, this method removes from it. 
         /// Before detach, the `OnClose()` method of plugin is invoqued, to do
         /// housekeeping, for example to clear pins managed by the plugin.
         /// @param[in] mod Compiled plugin reference to remove
@@ -478,7 +478,7 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Add a plugin to be notified on clock ticks
-        /// It see if the plugin exist already to insert or not.
+        /// @details It see if the plugin exist already to insert or not.
         /// @param mod Compiled plugin reference to include
         public void NotifyOnClock(PluginBase mod)
         {
@@ -487,7 +487,7 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Remove a plugin from the clock notify list
-        /// Only if the plugin exists on the list, this method removes from it. 
+        /// @details Only if the plugin exists on the list, this method removes from it. 
         /// @param mod Compiled plugin reference to remove
         public void RemoveOnClock(PluginBase mod)
         {
@@ -496,7 +496,7 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Add a plugin to be notified on pin changes
-        /// It see if the plugin exist already to insert or not.
+        /// @details It see if the plugin exist already to insert or not.
         /// @param mod Compiled plugin reference to include
         public void NotifyOnPins(PluginBase mod)
         {
@@ -505,7 +505,7 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Remove a plugin from the pin changed notify list
-        /// Only if the plugin exists on the list, this method removes from it. 
+        /// @details Only if the plugin exists on the list, this method removes from it. 
         /// @param mod Compiled plugin reference to remove
         public void RemoveOnPins(PluginBase mod)
         {
@@ -561,8 +561,7 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Reset the propeller CPU to initial state.
-        /// 
-        /// Release cog instances, clock sources, clear locks and pins, and reset plugins.
+        /// @details Release cog instances, clock sources, clear locks and pins, and reset plugins.
         /// @version 14.7.21 - Separate reset loops for clocksources, cogs and locks.
         public void Reset()
         {
@@ -627,8 +626,8 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Advance one clock step.
-        /// Inside it calls the OnClock() method for each plugin as clock advances. Also update the
-        /// pins, by efect of calling each cog and source of clocks.
+        /// @details Inside it calls the OnClock() method for each plugin as clock advances. Also 
+        /// update the pins, by efect of calling each cog and source of clocks.
         public bool Step()
         {
             ulong pins;
@@ -716,7 +715,7 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Update pin information when are changes.
-        /// Consider changes in DIRA and DIRB, and also generated in plugins.
+        /// @details Consider changes in DIRA and DIRB, and also generated in plugins.
         /// Inside it calls the OnPinChange() method for each plugin.
         public void PinChanged()
         {

@@ -116,7 +116,7 @@ namespace Gear.GUI
         }
 
         /// @brief Return last plugin succesfully loaded o saved.
-        /// Handy to remember last plugin directory.
+        /// @details Handy to remember last plugin directory.
         /// @version V14.07.17 - Added.
         public string GetLastPlugin
         {
@@ -153,16 +153,16 @@ namespace Gear.GUI
         }
 
         /// @brief Update title window, considering modified state.
-        /// Considering name of the plugin and showing modified state, to tell the user if need to save.
+        /// @details Considering name of the plugin and showing modified state, to tell the user 
+        /// if need to save.
         private void UpdateTitle()
         {
             this.Text = ("Plugin Editor: " + SaveFileName +  (CodeChanged ? " *" : ""));
         }
 
         /// @brief Load a plugin from File.
-        /// @todo Correct method to implement new plugin system
-        /// 
         /// @note This method take care of update change state of the window. 
+        /// @todo Correct method to implement new plugin system.
         public bool OpenFile(string FileName, bool displayErrors)
         {
             XmlReaderSettings settings = new XmlReaderSettings();
@@ -209,7 +209,7 @@ namespace Gear.GUI
                 if (displayErrors)
                 {
                     errorListView.Items.Clear();
-                    ModuleLoader.EnumerateErrors(EnumErrors);
+                    ModuleCompiler.EnumerateErrors(EnumErrors);
                 }
 
                 return true;
@@ -240,10 +240,10 @@ namespace Gear.GUI
             }
         }
 
-        /// @todo Document method PluginEditor.SaveFile()
+        /// @brief Save a XML file with the plugin information.
+        /// @details Take care of update change state of the window. No need to do it in 
+        /// methods who call this.
         /// @todo Correct method to implement new versioning plugin system.
-        /// 
-        /// Take care of update change state of the window. No need to do it in methods who call this.
         public void SaveFile(string FileName)
         {
             XmlDocument xmlDoc = new XmlDocument();
@@ -287,11 +287,11 @@ namespace Gear.GUI
                 foreach (string s in referencesList.Items)
                     refs[i++] = s;
 
-                if (ModuleLoader.LoadModule(codeEditorView.Text, instanceName.Text, refs) != null)
+                if (ModuleCompiler.LoadModule(codeEditorView.Text, instanceName.Text, refs) != null)
                     MessageBox.Show("Script compiled without errors.", "Plugin Editor - Check source.");
                 else
                 {
-                    ModuleLoader.EnumerateErrors(EnumErrors);
+                    ModuleCompiler.EnumerateErrors(EnumErrors);
                 }
             }
         }

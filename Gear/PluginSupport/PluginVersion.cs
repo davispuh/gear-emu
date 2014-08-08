@@ -26,51 +26,46 @@ using System;
 namespace Gear.PluginSupport
 {
     /// @brief Versioning support for members of PluginBase.
-    /// This class have the definitions of which methods of `PluginBase` will be versionated, 
+    /// @details This class have the definitions of which methods of PluginBase will be versionated, 
     /// e.g. that have different parameters by the same method name and are controlled by a
     /// version number (ex. 0.0, 1.0, 1.1, etc.).
-    /// Each time a variant is generated, the developer have to modify this class:
-    /// Case 1 - new method to versionate not managed before : add a memberType enumeration 
-    /// value for a new method of PluginBase to versionate, and a versionatedMember 
-    /// enumeration value for each version added. Then apply the VersionAttribute attribute
-    /// to the method with the new memberType enumeration value added and appropriate 
-    /// version number (ex 0.0 if is a new method).
-    /// Case 2 - new version of a method already managed : add only a new versionatedMember 
-    /// enumeration value based on the corresponding memberType enumeration value that exists. 
-    /// Then apply the VersionAttribute attribute to the method with the same memberType 
-    /// enumeration value and appropriate version number.
+    /// @remark Each time a variant is generated, the developer have to modify this class:
+    /// @par
+    /// <b>Case 1 - new method to versionate not managed before :</b> add a 
+    /// PluginVersioning.memberType enumeration value for a new method of PluginBase to versionate,
+    /// and a PluginVersioning.versionatedMember enumeration value for each version added. Then 
+    /// apply the VersionAttribute attribute to the method with the new PluginVersioning.memberType 
+    /// enumeration value added and appropriate version number (ex 0.0 if is a new method).
+    /// @par
+    /// <b> Case 2 - new version of a method already managed :</b> add only a new 
+    /// PluginVersioning.versionatedMember enumeration value based on the corresponding 
+    /// PluginVersioning.memberType enumeration value that exists. Then apply the VersionAttribute 
+    /// attribute to the method with the same PluginVersioning.memberType enumeration value and 
+    /// appropriate version number.
     /// @version 14.8.7 - Added.
     public class PluginVersioning
     {
         /// @brief Type of member for version management on menbers of Plugins.
-        /// They should resemble the name of the method for mnemonics and easy coding.
-        /// <summary>
-        /// Type of member for version management on menbers of Plugins.
-        /// They should resemble the name of the method for mnemonics and easy coding.
-        /// </summary>
+        /// @details They should resemble the name of the method for mnemonics and easy coding.
         public enum memberType
         {
-            none = 0,
-            OnClock,        //notifies tick clocks 
-            OnPinChange     //notifies pin changes
+            none = 0,       //!< None
+            OnClock,        //!< Notifies tick clocks.
+            OnPinChange     //!< Notifies pin changes.
         }
 
         /// @brief Versions of members to identify.
-        /// When added a new member version, have to register a new value to manage it.
-        /// <summary>
-        /// Versions of members to identify. When added a new member version, have to register 
-        /// a new value to manage it.
-        /// </summary>
+        /// @details When added a new member version, have to register a new value to manage it.
         public enum versionatedMember
         {
-            none = 0,
-            OnClockV0_0,    //
-            OnClockV1_0,    //
-            OnPinChangeV0_0 //
+            none = 0,       //!< None
+            OnClockV0_0,    //!< Version 0.0 for OnClock
+            OnClockV1_0,    //!< Version 1.0 for OnClock
+            OnPinChangeV0_0 //!< Version 0.0 for OnPinChange
         }
 
-        ///=======================================================================
-        ///Declare in this section delegates for each version of members to manage.
+        //=======================================================================
+        //Declare in this section delegates for each version of members to manage.
         #region Delegates for each versionated member of PluginBase.
         /// @brief Delegate for version 0.0 for OnClock.
         [VersionAttribute(
@@ -84,20 +79,20 @@ namespace Gear.PluginSupport
             1.0f, 
             PluginVersioning.memberType.OnClock,
             CodeVersionatedMember = PluginVersioning.versionatedMember.OnClockV1_0)]
-        public delegate void TickHandlerV1_0(uint sysCounter, double time);
+        public delegate void TickHandlerV1_0(double time, uint sysCounter);
         /// @brief Delegate for version 0.0 for OnClock.
         [VersionAttribute(
             0.0f,
             PluginVersioning.memberType.OnPinChange,
             CodeVersionatedMember = PluginVersioning.versionatedMember.OnPinChangeV0_0)]
         public delegate void OnPinChangeV0_0(double time);
-        ///=======================================================================
+        //=======================================================================
         #endregion
         
 
     }
 
-    /// @brief
+    /// @brief Versioning range.
     public class VersRange
     {
         /// @brief Lower limit to validity.
@@ -112,11 +107,6 @@ namespace Gear.PluginSupport
         /// @brief Constructor with lower limit from a value (included).
         /// Assumed upper or equal from this value up to +infinity.
         /// @param versionFrom Lower limit for valid version.
-        /// <summary>
-        /// Constructor with lower limit from a value (included).
-        /// Assumed upper or equal from this value up to +infinity.
-        /// </summary>
-        /// <param name="versionFrom">Lower limit for valid version.</param>
         public VersRange(float versionFrom)
         {
             _verFrom = versionFrom;
@@ -128,12 +118,6 @@ namespace Gear.PluginSupport
         /// Assumed upper or equal from lower limit and lesser than upper limit.
         /// @param[in] versionFrom Lower limit for valid version (included).
         /// @param[in] versionTo Upper limit for valid version (not included).
-        /// <summary>
-        /// Constructor for validity between two values.
-        /// Assumed upper or equal from lower limit and lesser than upper limit.
-        /// </summary>
-        /// <param name="versionFrom">Lower limit for valid version (included).</param>
-        /// <param name="versionTo">Upper limit for valid version (not included).</param>
         public VersRange(float versionFrom, float versionTo)
         {
             //TODO [ASB] : throw exception if versionXXXX is out of range, ex. lower than 0.0
@@ -144,28 +128,16 @@ namespace Gear.PluginSupport
         }
 
         /// @brief Getter to include lower limit o not.
-        /// <summary>
-        /// Getter to include lower limit o not.
-        /// </summary>
         public float VersionFrom { get { return _verFrom; } }
         /// @brief Getter to include upper limit o not.
-        /// <summary>
-        /// Getter to include upper limit o not.
-        /// </summary>
         public float VersionTo { get { return _verTo; } }
         /// @brief Property to include or not the lower limit on validity.
-        /// <summary>
-        /// Property to include or not the lower limit on validity.
-        /// </summary>
         public bool IncludeLower
         {
             get { return _includeLower; }
             set { _includeLower = value; }
         }
         /// @brief Property to include or not the upper limit on validity.
-        /// <summary>
-        /// Property to include or not the upper limit on validity.
-        /// </summary>
         public bool IncludeUpper
         {
             get { return _includeUpper; }
@@ -175,11 +147,6 @@ namespace Gear.PluginSupport
         /// @brief Validate if atributte is valid beetween lower and upper limits.
         /// @param[in] version Version number to test validity.
         /// @returns True if between limits, false if not.
-        /// <summary>
-        /// Validate if atributte is valid beetween lower and upper limits.
-        /// </summary>
-        /// <param name="version">Version number to test validity.</param>
-        /// <returns>True if between limits, false if not.</returns>
         public bool ValidOn(float version)
         {
             return (
@@ -191,12 +158,8 @@ namespace Gear.PluginSupport
     }
 
     /// @brief Attribute class for manage versioning for members of PluginBase.
-    /// To be applied as attribute to members to have dinamic manage of versions.
+    /// @details To be applied as attribute to members to have dinamic manage of versions.
     /// @version 14.8.5 - Added.
-    /// <summary>
-    /// Attribute class for manage versioning for members of PluginBase.
-    /// To be applied as attribute to members to have dinamic manage of versions.
-    /// </summary>
     [AttributeUsage(
         AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Delegate, 
         AllowMultiple = false, Inherited = true)]
@@ -212,16 +175,10 @@ namespace Gear.PluginSupport
 
         #region Constructor for class VersionAttribute
         /// @brief Constructor with lower limit of validity.
-        /// Typically used by a new version of a method (upper range of validity).
+        /// @details Typically used by a new version of a method (upper range of validity).
         /// Assumed upper or equal from this value up to +infinity.
         /// @param[in] versionFrom Lower limit for valid version.
         /// @param[in] memberType Type of member to versioning.
-        /// <summary>
-        /// Constructor with lower limit from a value (included).
-        /// Assumed upper or equal from this value up to +infinity.
-        /// </summary>
-        /// <param name="versionFrom">Lower limit for valid version.</param>
-        /// <param name="memberType">Type of member to versioning.</param>
         public VersionAttribute(float versionFrom, PluginVersioning.memberType memberType)
         {
             //TODO [ASB] : add support for exceptions trowed by VersRange
@@ -231,17 +188,10 @@ namespace Gear.PluginSupport
         }
 
         /// @brief Constructor with both limits for validity.
-        /// Implies upper or equal from `lowerLimit` and less than `upperLimit`.
-        /// @param[in] versionFrom Lower limit for valid version.
+        /// @details Implies upper or equal from `lowerLimit` and less than `upperLimit`.
+        /// @param[in] lowerLimit Lower limit for valid version.
         /// @param[in] upperLimit Upper limit for valid version.
         /// @param[in] memberType Type of member to versioning.
-        /// <summary>
-        /// Constructor with lower limit from a value (included).
-        /// Assumed upper or equal from this value up to +infinity.
-        /// </summary>
-        /// <param name="versionFrom">Lower limit for valid version.</param>
-        /// <param name="upperLimit">Upper limit for valid version.</param>
-        /// <param name="memberType">Type of member to versioning.</param>
         public VersionAttribute(float lowerLimit, float upperLimit, PluginVersioning.memberType memberType)
         {
             //TODO [ASB] : add support for exceptions trowed by VersRange
@@ -253,9 +203,6 @@ namespace Gear.PluginSupport
 
         #region Properties of VersionAttribute class
         /// @brief Property for versionated member enumeration.
-        /// <summary>
-        /// Property for versionated member enumeration.
-        /// </summary>
         private PluginVersioning.versionatedMember AssignVersionedMember
         {
             get { return _versionatedMember; }
@@ -263,9 +210,6 @@ namespace Gear.PluginSupport
         }
 
         /// @brief Property for the code of a versionated member.
-        /// <summary>
-        /// Property for the code of a versionated member.
-        /// </summary>
         public PluginVersioning.versionatedMember CodeVersionatedMember
         {
             get { return _versionatedMember;  }
@@ -276,12 +220,7 @@ namespace Gear.PluginSupport
         /// @brief Validate if atributte is valid beetween lower and upper limits of permitted range.
         /// @param[in] version Version number to test validity.
         /// @returns True if between limits, false if not.
-        /// <summary>
-        /// Validate if atributte is valid beetween lower and upper limits of permitted range.
-        /// </summary>
-        /// <param name="version">Version number to test validity.</param>
-        /// <returns>True if between limits, false if not.</returns>
-        /// TODO [ASB] : define if it wolud be used only inside (=> change to private) or not.
+        // TODO [ASB] : define if it would be used only inside (=> change to private) or not.
         public bool ValidOnVersion(float version) 
         {
             return _range.ValidOn(version);
@@ -289,7 +228,7 @@ namespace Gear.PluginSupport
     }
 
     /// @brief Manages Versions of plugins.
-    /// Manages versions of plugins, to choose correct member signatures for each version
+    /// @details Manages versions of plugins, to choose correct member signatures for each version
     /// of plugin system.
     class VersionatedPluginContainer
     {
@@ -301,7 +240,7 @@ namespace Gear.PluginSupport
         private PluginVersioning.memberType _memType;
 
         /// @brief Constructor with member type specification.
-        /// By default every VersionatedPluginContainer has version =0.0
+        /// @details By default every VersionatedPluginContainer has version =0.0.
         public VersionatedPluginContainer(PluginBase plugin, float Version)
         {
             _plugin = plugin;
@@ -317,7 +256,6 @@ namespace Gear.PluginSupport
         }
 
         /// @brief Get member code by type and version.
-        /// To be used 
         private PluginVersioning.versionatedMember GetMember(PluginVersioning.memberType member)
         {
             PluginVersioning.versionatedMember vmemb = PluginVersioning.versionatedMember.none;

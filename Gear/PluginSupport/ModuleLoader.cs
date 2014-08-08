@@ -2,7 +2,7 @@
  * Gear: Parallax Inc. Propeller Debugger
  * Copyright 2007 - Robert Vandiver
  * --------------------------------------------------------------------------------
- * ModuleLoader.cs
+ * ModuleCompiler.cs
  * Provides the reflection base and compiler components for plugins
  * --------------------------------------------------------------------------------
  *  This program is free software; you can redistribute it and/or modify
@@ -35,19 +35,21 @@ namespace Gear.PluginSupport
 {
     public delegate void ErrorEnumProc(System.CodeDom.Compiler.CompilerError e);
 
-    /// @todo Document Gear.PluginSupport.ModuleLoader class.
+    /// @brief Compile a PluginBase Module, keeping the errors if they appeares.
     /// 
-    static class ModuleLoader
+    static class ModuleCompiler
     {
         static private CompilerErrorCollection m_Errors;    //!< @brief Collection for error list on compile a dynamic plugin.
 
-        /// @brief ModuleLoader Constructor.
-        /// Clear error list by default.
-        static ModuleLoader()
+        /// @brief ModuleCompiler Constructor.
+        /// @details Clear error list by default.
+        static ModuleCompiler()
         {
             m_Errors = null;
         }
 
+        /// @brief Enumerate errors from the compiling process.
+        /// @param[in] proc Method to invoke for each error.
         static public void EnumerateErrors(ErrorEnumProc proc)
         {
             if (m_Errors == null)
@@ -58,12 +60,13 @@ namespace Gear.PluginSupport
         }
 
         /// @brief Dynamic compiling & loading for a plugin.
-        /// Try to dynamically compile a module for the plugin, based on supplied C# code and other 
-        /// C# modules referenced. If the compiling fails, it gives a list of errors, intended to be 
-        /// showed in the plugin view.
-        /// @param[in] code C# Source code based on PluginBase class, to implement your plugin
-        /// @param[in] module Class name of the plugin
-        /// @param[in] references `string` array with auxiliary references used by your plugin. See notes for defaults used.
+        /// @details Try to dynamically compile a module for the plugin, based on supplied C# code
+        /// and other C# modules referenced. If the compiling fails, it gives a list of errors, 
+        /// intended to be showed in the plugin view.
+        /// @param[in] code C# Source code based on PluginBase class, to implement your plugin.
+        /// @param[in] module Class name of the plugin.
+        /// @param[in] references String array with auxiliary references used by your plugin. 
+        /// See notes for defaults used.
         /// @returns New Plugin class instance compiled (on sucess), or NULL (on fail).
         /// @note There are some references already added, so you don't need to include on your plugins: 
         /// @li `using System;` @li `using System.Data;` @li `using System.Drawing;`
