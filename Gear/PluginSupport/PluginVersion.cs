@@ -26,16 +26,17 @@ using System;
 namespace Gear.PluginSupport
 {
     /// @brief Versioning support for members of PluginBase.
-    /// @details This class have the definitions of which methods of PluginBase will be versionated, 
-    /// e.g. that have different parameters by the same method name and are controlled by a
-    /// version number (ex. 0.0, 1.0, 1.1, etc.).
+    /// @details This class have the definitions of which methods of PluginBase will be 
+    /// versionated, e.g. that have different parameters by the same method name and are 
+    /// controlled by a version number (ex. 0.0, 1.0, 1.1, etc.).
     /// @remark Each time a variant is generated, the developer have to modify this class:
     /// @par
     /// <b>Case 1 - new method to versionate not managed before :</b> add a 
     /// PluginVersioning.memberType enumeration value for a new method of PluginBase to versionate,
     /// and a PluginVersioning.versionatedMember enumeration value for each version added. Then 
-    /// apply the VersionAttribute attribute to the method with the new PluginVersioning.memberType 
-    /// enumeration value added and appropriate version number (ex 0.0 if is a new method).
+    /// apply the VersionAttribute attribute to the method with the new 
+    /// PluginVersioning.memberType enumeration value added and appropriate version number 
+    /// (ex. 0.0 if is a new method).
     /// @par
     /// <b> Case 2 - new version of a method already managed :</b> add only a new 
     /// PluginVersioning.versionatedMember enumeration value based on the corresponding 
@@ -120,7 +121,7 @@ namespace Gear.PluginSupport
         /// @param[in] versionTo Upper limit for valid version (not included).
         public VersRange(float versionFrom, float versionTo)
         {
-            //TODO [ASB] : throw exception if versionXXXX is out of range, ex. lower than 0.0
+            ///TODO [ASB] : throw exception if versionXXXX is out of range, ex. lower than 0.0
             _verFrom = versionFrom;
             _verTo = versionTo;
             _includeLower = true;
@@ -194,7 +195,7 @@ namespace Gear.PluginSupport
         /// @param[in] memberType Type of member to versioning.
         public VersionAttribute(float lowerLimit, float upperLimit, PluginVersioning.memberType memberType)
         {
-            //TODO [ASB] : add support for exceptions trowed by VersRange
+            ///TODO [ASB] : add support for exceptions trowed by VersRange
             _range = new VersRange(lowerLimit, upperLimit);
             _memberType = memberType;
             _versionatedMember = PluginVersioning.versionatedMember.none;
@@ -259,7 +260,8 @@ namespace Gear.PluginSupport
         private PluginVersioning.versionatedMember GetMember(PluginVersioning.memberType member)
         {
             PluginVersioning.versionatedMember vmemb = PluginVersioning.versionatedMember.none;
-            //TODO [ASB] : agregar lógica para determinar el tipo de miembro según versión, y ejecutarlo
+            ///TODO [ASB] : agregar lógica para determinar el tipo de miembro según versión, y 
+            //  ejecutarlo
             switch (member)
             {
                 case PluginVersioning.memberType.OnPinChange:

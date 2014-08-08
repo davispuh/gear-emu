@@ -46,7 +46,8 @@ namespace Gear.EmulationCore
         HUBOP_COGINIT = 2,  //!< Start or restart a Cog by ID
         HUBOP_COGSTOP = 3,  //!< Stop Cog by its ID
         HUBOP_LOCKNEW = 4,  //!< Check out new semaphore and get its ID
-        HUBOP_LOCKRET = 5,  //!< Return semaphore back to semaphore pool, releasing it for future LOCKNEW requests.
+        //!< Return semaphore back to semaphore pool, releasing it for future LOCKNEW requests.
+        HUBOP_LOCKRET = 5,  
         HUBOP_LOCKSET = 6,  //!< Set semaphore to true and get its previous state
         HUBOP_LOCKCLR = 7   //!< Clear semaphore to false and get its previous state
     }
@@ -88,49 +89,73 @@ namespace Gear.EmulationCore
             "XTAL3+"    // External high-speed crystal:   $00000020
         };
 
-        private Cog[] Cogs;         //!< @todo Document member Gear.EmulationCore.PropellerCPU.Cogs
-        private byte[] Memory;      //!< @todo Document member Gear.EmulationCore.PropellerCPU.Memory
-        private byte[] ResetMemory; //!< @todo Document member Gear.EmulationCore.PropellerCPU.ResetMemory
+        //!< @todo Document member Gear.EmulationCore.PropellerCPU.Cogs
+        private Cog[] Cogs;         
+        //!< @todo Document member Gear.EmulationCore.PropellerCPU.Memory
+        private byte[] Memory;      
+        //!< @todo Document member Gear.EmulationCore.PropellerCPU.ResetMemory
+        private byte[] ResetMemory;
 
-        private bool[] LocksAvailable;  //!< @todo Document member Gear.EmulationCore.PropellerCPU.LocksAvailable
-        private bool[] LocksState;      //!< @todo Document member Gear.EmulationCore.PropellerCPU.LocksState
+        //!< @todo Document member Gear.EmulationCore.PropellerCPU.LocksAvailable
+        private bool[] LocksAvailable;
+        //!< @todo Document member Gear.EmulationCore.PropellerCPU.LocksState
+        private bool[] LocksState;
 
-        private ClockSource[] ClockSources; //!< @todo Document member Gear.EmulationCore.PropellerCPU.ClockSources
-        private SystemXtal CoreClockSource; //!< @todo Document member Gear.EmulationCore.PropellerCPU.CoreClockSource
+        //!< @todo Document member Gear.EmulationCore.PropellerCPU.ClockSources
+        private ClockSource[] ClockSources;
+        //!< @todo Document member Gear.EmulationCore.PropellerCPU.CoreClockSource
+        private SystemXtal CoreClockSource; 
 
-        private uint RingPosition;  //!< @todo Document member Gear.EmulationCore.PropellerCPU.RingPosition
-        private ulong PinHi;        //!< @todo Document member Gear.EmulationCore.PropellerCPU.PinHi
-        private ulong PinFloat;     //!< @todo Document member Gear.EmulationCore.PropellerCPU.PinFloat
-        private uint SystemCounter; //!< @todo Document member Gear.EmulationCore.PropellerCPU.SystemCounter
+        //!< @todo Document member Gear.EmulationCore.PropellerCPU.RingPosition
+        private uint RingPosition;
+        //!< @todo Document member Gear.EmulationCore.PropellerCPU.PinHi
+        private ulong PinHi;
+        //!< @todo Document member Gear.EmulationCore.PropellerCPU.PinFloat
+        private ulong PinFloat;
+        //!< @todo Document member Gear.EmulationCore.PropellerCPU.SystemCounter
+        private uint SystemCounter;
 
-        private uint XtalFreq;          //!< @todo Document member Gear.EmulationCore.PropellerCPU.XtalFreq
-        private uint CoreFreq;          //!< @todo Document member Gear.EmulationCore.PropellerCPU.CoreFreq
-        private byte ClockMode;         //!< @todo Document member Gear.EmulationCore.PropellerCPU.ClockMode
-        private PinState[] PinStates;   //!< @todo Document member Gear.EmulationCore.PropellerCPU.PinStates
+        //!< @todo Document member Gear.EmulationCore.PropellerCPU.XtalFreq
+        private uint XtalFreq;
+        //!< @todo Document member Gear.EmulationCore.PropellerCPU.CoreFreq
+        private uint CoreFreq;
+        //!< @todo Document member Gear.EmulationCore.PropellerCPU.ClockMode
+        private byte ClockMode;
+        //!< @todo Document member Gear.EmulationCore.PropellerCPU.PinStates
+        private PinState[] PinStates;
 
-        private bool pinChange;     //!< @todo Document member Gear.EmulationCore.PropellerCPU.pinChange    
+        //!< @todo Document member Gear.EmulationCore.PropellerCPU.pinChange
+        private bool pinChange;
 
-        private double Time;        //!< @todo Document member Gear.EmulationCore.PropellerCPU.Time
+        //!< @todo Document member Gear.EmulationCore.PropellerCPU.Time
+        private double Time;
 
-        private Emulator emulator;  //!< @todo Document member Gear.EmulationCore.PropellerCPU.emulator
+        //!< @todo Document member Gear.EmulationCore.PropellerCPU.emulator
+        private Emulator emulator;
 
-        //TODO [ASB] : modificar abajo por private List<VersionatedPluginContainer> TickHandlers;
-        private List<PluginBase> TickHandlers;      //!< @brief List of Handlers for clock ticks on plugins.
-        //TODO [ASB] : modificar abajo por private List<VersionatedPluginContainer> PinNoiseHandlers;
-        private List<PluginBase> PinNoiseHandlers;  //!< @brief List of Handlers for Pin changes on plugins.
-        private List<PluginBase> PlugIns;           //!< @brief List of active PlugIns (include system ones, like cog views, etc).
+        ///TODO [ASB] : modificar abajo por private List<VersionatedPluginContainer> TickHandlers;
+        //!< @brief List of Handlers for clock ticks on plugins.
+        private List<PluginBase> TickHandlers;      
+        ///TODO [ASB] : modificar abajo a private List<VersionatedPluginContainer> PinNoiseHandlers;
+        //!< @brief List of Handlers for Pin changes on plugins.
+        private List<PluginBase> PinNoiseHandlers;
+        //!< @brief List of active PlugIns (include system ones, like cog views, etc).
+        private List<PluginBase> PlugIns;           
 
         //Expose constants declarations to use on the project. 
-        public const int TOTAL_COGS   = 8;          //!< @todo Document member Gear.EmulationCore.PropellerCPU.TOTAl_COGS
-        public const int TOTAL_LOCKS  = 8;          //!< @todo Document member Gear.EmulationCore.PropellerCPU.TOTAL_LOCKS
-        public const int TOTAL_PINS   = 64;         //!< @todo Document member Gear.EmulationCore.PropellerCPU.TOTAL_PINS
-        public const int TOTAL_MEMORY = 0x10000;    //!< @todo Document member Gear.EmulationCore.PropellerCPU.TOTAL_MEMORY
-        public const int TOTAL_RAM    = 0x8000;     //!< @todo Document member Gear.EmulationCore.PropellerCPU.TOTAL_RAM
+        //!< @todo Document member Gear.EmulationCore.PropellerCPU.TOTAl_COGS
+        public const int TOTAL_COGS   = 8;
+        //!< @todo Document member Gear.EmulationCore.PropellerCPU.TOTAL_LOCKS
+        public const int TOTAL_LOCKS  = 8;
+        //!< @todo Document member Gear.EmulationCore.PropellerCPU.TOTAL_PINS
+        public const int TOTAL_PINS   = 64;
+        //!< @todo Document member Gear.EmulationCore.PropellerCPU.TOTAL_MEMORY
+        public const int TOTAL_MEMORY = 0x10000;
+        //!< @todo Document member Gear.EmulationCore.PropellerCPU.TOTAL_RAM
+        public const int TOTAL_RAM    = 0x8000;     
 
         /// @brief PropellerCPU Constructor.
-        /// 
         /// @param em Reference to the Gear.GUI.Emulator instance controlling this PropellerCPU.
-        /// 
         public PropellerCPU(Emulator em)
         {
             emulator = em;
@@ -460,11 +485,11 @@ namespace Gear.EmulationCore
         public void IncludePlugin(PluginBase mod)
         {
             if (!(PlugIns.Contains(mod)))
-                PlugIns.Add(mod);
+                PlugIns.Add(mod);           
         }
 
         /// @brief Remove a plugin from the active plugin list of propeller instance
-        /// @details Only if the plugin exists on the list, this method removes from it. 
+        /// @details Only if the plugin exists on the list, this method removes from it.
         /// Before detach, the `OnClose()` method of plugin is invoqued, to do
         /// housekeeping, for example to clear pins managed by the plugin.
         /// @param[in] mod Compiled plugin reference to remove
@@ -702,11 +727,14 @@ namespace Gear.EmulationCore
             SystemCounter++;
 
             // Run our modules on time event
+            ///TODO [ASB] : cambiar lo de abajo por 
+            ///foreach (VersionatedPluginContainer mod in TickHandlers) { 
+            ///  mod.GetMember(VersionAttribute.memberTypeVersion.OnClock, \<version\>) }
             foreach (PluginBase mod in TickHandlers)
             {
                 mod.OnClock(Time);
             }
-            //TODO [ASB] : cambiar lo de arriba por foreach (VersionatedPluginContainer mod in TickHandlers) { mod.GetMember(VersionAttribute.memberTypeVersion.OnClock, <version>) }
+            
 
             if (pins != IN || dir != DIR || pinChange)
                 PinChanged();

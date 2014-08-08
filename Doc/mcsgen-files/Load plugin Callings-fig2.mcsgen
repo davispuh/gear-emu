@@ -1,0 +1,36 @@
+msc {
+#global settings
+hscale="1.25";
+
+#List of entities
+A [label="1"],
+B [label="2"],
+C [label="3"],
+D [label="4"],
+E [label="5"];
+
+#phase separation
+--- [label="Detail for Registering OnPinChange & OnClock Methods from the plugin class.", linecolor="indigo", textcolor="indigo"];
+
+#titles Phase
+A box A [label="Emulator.\nOpenPlugin_Click()", url="\ref Gear.GUI.Emulator.OpenPlugin_Click", textbgcolor="#DCE2EF"],
+B box B [label="Emulator.\nLoadPlugin()", url="\ref Gear.GUI.Emulator.LoadPlugin", textbgcolor="#DCE2EF"],
+C box C [label="PluginBase bm =", url="\ref Gear.PluginSupport.ModuleCompiler.LoadModule", textbgcolor="#DCE2EF"],
+D box D [label="ModuleCompiler.\nLoadModule()", url="\ref Gear.PluginSupport.ModuleCompiler.LoadModule", textbgcolor="#DCE2EF"];
+
+#Transicions Phase
+A => B; 
+B rbox B [label="Read XML file:\nextract code & refs"];
+B => C;
+C => D [label="Assign pointer to\nPluginBase."];
+D rbox D [label="Try to compile a\nnew instance."];
+C << D [label="Pointer to new\nPluginBase (or NULL)."];
+B <= C;
+B rbox B [label="Assure the plugin reference is valid or throw exception and abort."];
+
+#phase separation
+--- [label="", linecolor="indigo", textcolor="indigo"];
+
+
+
+}

@@ -1,0 +1,64 @@
+msc {
+#global settings
+hscale="1.25";
+
+#List of entities
+A [label="1"],
+B [label="2"],
+C [label="3"],
+D [label="4"],
+E [label="5"];
+
+#phase separation
+--- [label="Load from file, Compile the code and load the new instance of a plugin", linecolor="indigo", textcolor="indigo"];
+
+#titles Phase
+A box A [label="Emulator.\nOpenPlugin_Click()", url="\ref Gear.GUI.Emulator.OpenPlugin_Click", textbgcolor="#DCE2EF"],
+B box B [label="Emulator.\nLoadPlugin()", url="\ref Gear.GUI.Emulator.LoadPlugin", textbgcolor="#DCE2EF"],
+C box C [label="PluginBase bm =", url="\ref Gear.PluginSupport.ModuleCompiler.LoadModule", textbgcolor="#DCE2EF"],
+D box D [label="ModuleCompiler.\nLoadModule()", url="\ref Gear.PluginSupport.ModuleCompiler.LoadModule", textbgcolor="#DCE2EF"];
+
+#Transicions Phase
+A => B; 
+B rbox B [label="Read XML file:\nextract code & refs"];
+B => C;
+C => D [label="Assign pointer to\nPluginBase."];
+D rbox D [label="Try to compile a\nnew instance."];
+C << D [label="Pointer to new\nPluginBase (or NULL)."];
+B <= C;
+B rbox B [label="Assure the plugin reference is valid or throw exception and abort."];
+
+#phase separation
+--- [label="Register the plugin in the CPU", linecolor="indigo", textcolor="indigo"];
+
+#titles Phase
+C box C [label="Emulator.\nAttachPlugin(bm)", url="\ref Gear.GUI.Emulator.AttachPlugin", textbgcolor="#DCE2EF"],
+D box D [label="PropellerCPU.\nIncludePlugin(bm)", url="\ref Gear.EmulationCore.PropellerCPU.IncludePlugin", textbgcolor="#DCE2EF"],
+E box E [label="PropellerCPU.\nPlugIns.Add(bm)", url="\ref Gear.EmulationCore.PropellerCPU.IncludePlugin", textbgcolor="#DCE2EF"];
+
+#Transicions Phase
+B => C [label="From here bm is a\nvalid Plugin instance."];
+C => D;
+D => E;
+E rbox E [label="Add plugin ref to the general list of plugins of the CPU"];
+D <= E;
+
+#phase separation
+--- [label="Detail for Registering OnPinChange & OnClock Methods on Figure 2.", linecolor="indigo", textcolor="indigo"];
+
+#Transicions Phase
+D note E [label="\nMore details on\nFigure 2.\n", url="\ref PluginLoadingSequenceFig2", textbgcolor="#7FFF7F"];
+
+#phase separation
+--- [label="After registering OnPinChange & OnClock Methods.", linecolor="indigo", textcolor="indigo"];
+
+#Transicions Phase
+D rbox D [label="Other possible initialization here, by choice of plugin programmer."];
+C <= D;
+B <= C;
+A <= B;
+
+#phase separation
+--- [label="End: Plugin ready to running.", linecolor="indigo", textcolor="indigo"];
+
+}

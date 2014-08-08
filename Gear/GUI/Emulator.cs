@@ -43,12 +43,13 @@ namespace Gear.GUI
     /// the chip, like start, go throgh steps, reset or reload.
     public partial class Emulator : Form
     {
-        private PropellerCPU Chip;          //!< @brief Reference to the PropellerCPU running instance.
+        private PropellerCPU Chip;          //!< @brief Reference to PropellerCPU running instance.
         private String Source;              //!< @brief Name of Binary program loaded.
         private String LastFileName;        //!< @brief Last file name opened.
         private List<Control> FloatControls;//!< @brief List of floating controls.
 
-        private Timer runTimer;             //!< @todo Document Gear.GUI.Emulator.runtimer member (what it is for???)
+        //!< @todo Document Gear.GUI.Emulator.runtimer member (what it is for???)
+        private Timer runTimer;             
 
         /// @brief Default Constructor.
         /// 
@@ -99,9 +100,8 @@ namespace Gear.GUI
         }
 
         /// @brief Include a plugin to a propeller chip instance.
-        /// 
-        /// Attach a plugin, linking the propeller instance to the plugin, opening a new tab window and 
-        /// enabling the close button by plugin's closable property.
+        /// @details Attach a plugin, linking the propeller instance to the plugin, opening a new 
+        /// tab window and enabling the close button by plugin's closable property.
         /// @param[in] bm Instance of a Gear.PluginSupport.PluginBase class to be attached.
         private void AttachPlugin(PluginBase bm)
         {
@@ -126,8 +126,8 @@ namespace Gear.GUI
 
         /// @brief Delete a plugin from a propeller chip instance.
         /// 
-        /// Delete a plugin from the actives plugins of the propeller instance, efectibly stopping the plugin.
-        /// Remove also from pins and clock watch list.
+        /// Delete a plugin from the actives plugins of the propeller instance, efectibly stopping 
+        /// the plugin. Remove also from pins and clock watch list.
         /// @param bm Instance of a Gear.PluginSupport.PluginBase class to be detached.
         /// @version V14.07.17 - Added.
         //Added method to detach a plugin from the active plugin list of the propeller instance.
@@ -242,14 +242,16 @@ namespace Gear.GUI
 
                 if (bm == null)     //if it fails...
                 {
-                    PluginEditor pe = new PluginEditor(false);   // ...open plugin editor in other window
+                    // ...open plugin editor in other window
+                    PluginEditor pe = new PluginEditor(false);   
                     pe.OpenFile(FileName, true);
                     pe.MdiParent = this.MdiParent;
                     pe.Show();
                 }
                 else               //if success compiling & instanciate the new class...
                 {
-                    AttachPlugin(bm);   //...add the reference to the plugin list of the emulator instance
+                    //...add the reference to the plugin list of the emulator instance
+                    AttachPlugin(bm);   
                     GearDesktop.LastPlugin = FileName;  //update location of last plugin
                 }
 
@@ -288,7 +290,8 @@ namespace Gear.GUI
         private void openBinary_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Propeller Runtime Image (*.binary;*.eeprom)|*.binary;*.eeprom|All Files (*.*)|*.*";
+            openFileDialog.Filter = "Propeller Runtime Image (*.binary;*.eeprom)|*.binary;" + 
+                "*.eeprom|All Files (*.*)|*.*";
             openFileDialog.Title = "Open Propeller Binary...";
             openFileDialog.FileName = Source;
 
@@ -328,7 +331,8 @@ namespace Gear.GUI
             if (c != null)
                 ((PluginBase)c).Repaint(true);
 
-            if (documentsTab.SelectedTab != null && (c = documentsTab.SelectedTab.GetNextControl(null, true)) != null)
+            if ( (documentsTab.SelectedTab != null) && 
+                 ((c = documentsTab.SelectedTab.GetNextControl(null, true)) != null) )
                 ((PluginBase)c).Repaint(true);
 
             hubView.DataChanged();
@@ -366,9 +370,12 @@ namespace Gear.GUI
                 {
                     if (documentsTab.SelectedIndex > 0)
                     {
-                        documentsTab.SelectedIndex = documentsTab.SelectedIndex - 1;    //select the previous tab
-                        documentsTab_Click(this, e);    //tab changing housekeeping for plugin close button
-                        this.DetachPlugin(p);           //detach the plugin from the emulator
+                        //select the previous tab
+                        documentsTab.SelectedIndex = documentsTab.SelectedIndex - 1;
+                        //tab changing housekeeping for plugin close button
+                        documentsTab_Click(this, e);
+                        //detach the plugin from the emulator
+                        this.DetachPlugin(p);           
                         p.Dispose();
                     }
                     tp.Parent = null;   //delete the reference to plugin
@@ -544,3 +551,25 @@ namespace Gear.GUI
         }
     }
 }
+
+// vínculo a Referencia de MSCGEN: http://www.mcternan.me.uk/mscgen/
+// Vínculo a referencia de DOXYGEN commands: http://www.stack.nl/~dimitri/doxygen/manual/commands.html
+//
+/// @page PluginLoadingSequencePage Loading Sequence for a Plugin.
+/// @par Main Sequence.
+/// Sequence of plugin loading, since the user presses the button in the emulator window (ideal 
+/// flow case).
+/// @anchor PluginLoadingSequenceFig1
+/// @par
+/// @mscfile "Load plugin Callings-fig1.mcsgen" "Fig.1: Main sequence for a Plugin loading."
+/// @par Detail for Registering OnPinChange & OnClock Methods.
+/// This is a detail of main sequence of 
+/// @ref PluginLoadingSequenceFig1 "\"Fig.1: Main sequence for a Plugin loading.\"", to show 
+/// the possible flows of invocations when the program calls the Method `PresentChip()`, but not 
+/// from PluginBase; is the method defined in the plugin class derived by the loaded & compiled 
+/// plugin class. So the plugin programmer could choose to call or not either `OnClock()` and 
+/// `OnPinChange()` derived methods.
+/// @anchor PluginLoadingSequenceFig2
+/// @par
+/// @mscfile "Load plugin Callings-fig2.mcsgen" "Fig.2: details of invocation for Plugin members."
+/// 

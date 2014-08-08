@@ -33,8 +33,10 @@ namespace Gear.EmulationCore
         STATE_EXECUTE,          //!< Waiting for instruction to finish executing
 
         WAIT_LOAD_PROGRAM,      //!< %Cog is loading program memory
-        WAIT_CYCLES,            //!< %Cog is executing an instruction, and waiting an alloted ammount of cycles
-        WAIT_PREWAIT,           //!< Waits for an allotted number of cycles before changing to a new state
+        //!< %Cog is executing an instruction, and waiting an alloted ammount of cycles
+        WAIT_CYCLES,
+        //!< Waits for an allotted number of cycles before changing to a new state
+        WAIT_PREWAIT,           
 
         BOOT_INTERPRETER,       //!< Interpreter is booting up
         WAIT_INTERPRETER,       //!< Interpreter is executing an instruction
@@ -196,8 +198,8 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Property to return only OUTA pins.
-        /// Analyze all sources of pin changes in the cog for OUTA pins (P31..P0): the two counters 
-        /// and the video generator.
+        /// Analyze all sources of pin changes in the cog for OUTA pins (P31..P0): the two 
+        /// counters and the video generator.
         public uint OUTA
         {
             get
@@ -210,8 +212,8 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Property to return only OUTB pins.
-        /// Analyze all sources of pin changes in the cog for OUTB pins (P63..P32): the two counters 
-        /// and the video generator.
+        /// Analyze all sources of pin changes in the cog for OUTB pins (P63..P32): the 
+        /// two counters and the video generator.
         public uint OUTB
         {
             get
@@ -449,7 +451,8 @@ namespace Gear.EmulationCore
             {
                 Hub.Step();
             }
-            while (State != CogRunState.EXEC_INTERPRETER && State != CogRunState.STATE_EXECUTE && --i > 0);
+            while ( (State != CogRunState.EXEC_INTERPRETER) && 
+                (State != CogRunState.STATE_EXECUTE && --i > 0) );
         }
 
         /// @todo Document method Gear.EmulationCore.Cog.ReadLong().
@@ -487,13 +490,17 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Write cog RAM with a specified value
-        /// This method take care of special cog address that in this class aren't writed in memory array Cog.Memory.
+        /// This method take care of special cog address that in this class aren't writed in 
+        /// memory array Cog.Memory.
         /// @param[in] address Address to write
         /// @param[in] data Data to write in address
-        /// @note PAR address is a special case, because unless Propeller Manual V1.2 specifications says it is a 
-        /// read-only register, there are claims that in reality it is writeable as explains
-        /// <a href="http://forums.parallax.com/showthread.php/115909-PASM-simulator-debugger)">Forum thread "PASM simulator / debugger?</a>.
-        /// They claims that some parallax video drivers in PASM changes the PAR register, and GEAR didn't emulate that.
+        /// @note PAR address is a special case, because unless Propeller Manual V1.2 
+        /// specifications says it is a read-only register, there are claims that in reality it 
+        /// is writeable as explains 
+        /// <a href="http://forums.parallax.com/showthread.php/115909-PASM-simulator-debugger)">
+        /// Forum thread "PASM simulator / debugger?</a>.
+        /// @par They claims that some parallax video drivers in PASM changes the PAR register, 
+        /// and GEAR didn't emulate that.
         protected void WriteLong(uint address, uint data)
         {
             // values using CogSpecialAddress enum, intead of direct hex values
