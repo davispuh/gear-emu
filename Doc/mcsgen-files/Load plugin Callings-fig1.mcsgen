@@ -53,7 +53,6 @@ D note E [label="\nMore details on\nFigure 2.\n", url="\ref PluginLoadingSequenc
 --- [label="After registering OnPinChange & OnClock Methods.", linecolor="indigo", textcolor="indigo"];
 
 #Transicions Phase
-D rbox D [label="Other possible initialization here, by choice of plugin programmer."];
 C <= D;
 B <= C;
 A <= B;

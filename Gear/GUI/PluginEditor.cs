@@ -287,7 +287,7 @@ namespace Gear.GUI
                 foreach (string s in referencesList.Items)
                     refs[i++] = s;
 
-                if (ModuleCompiler.LoadModule(codeEditorView.Text, instanceName.Text, refs) != null)
+                if (ModuleCompiler.LoadModule(codeEditorView.Text, instanceName.Text, refs, null) != null)
                     MessageBox.Show("Script compiled without errors.", "Plugin Editor - Check source.");
                 else
                 {

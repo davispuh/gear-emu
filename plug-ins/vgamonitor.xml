@@ -15,7 +15,6 @@
 
     class VGAMonitor : PluginBase
     {
-        private PropellerCPU Chip;
         private Bitmap Screen;
 
         private double Minimum;
@@ -36,7 +35,7 @@
             get { return &quot;VGA Monitor&quot;; }
         }
 
-        public VGAMonitor()
+        public VGAMonitor(PropellerCPU chip) : base(chip)
         {
             Screen = new Bitmap(1300, 800);
             ScanLine = 0;
@@ -62,10 +61,9 @@
                     Screen.SetPixel(x, y, Output);
         }
 
-        public override void PresentChip(PropellerCPU host)
+        public override void PresentChip()
         {
-            Chip = host;
-            Chip.NotifyOnPins(this);
+            NotifyOnPins();
         }
 
         public override void OnPinChange(double time, PinState[] pins)

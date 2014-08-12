@@ -36,7 +36,6 @@ namespace Gear.GUI
 {
     public partial class CogView : PluginBase
     {
-        private PropellerCPU Chip;
         private int HostID;
         private Font MonoFont;
         private Font MonoFontBold;
@@ -66,7 +65,7 @@ namespace Gear.GUI
             }
         }
 
-        public CogView(int host)
+        public CogView(int host, PropellerCPU chip) : base (chip)
         {
             HostID = host;
 

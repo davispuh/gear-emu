@@ -38,6 +38,24 @@ namespace Gear.PluginSupport
     /// Original thread on GEAR with explanation of plugin class</a>
     public class PluginBase : UserControl
     {
+        /// @brief Reference to PropellerCPU for the plugin.
+        /// @version 14.8.10 - Added.
+        public PropellerCPU Chip;
+
+        /// @brief Constructor to initialize with the PropellerCPU reference.
+        /// This avoid to declare in each plugin the following example code:
+        /// @code{.cs}
+        /// class PinNoise : PluginBase
+        /// {
+        ///     private PropellerCPU Chip;  //<== this line will not be necesary to declare in every plugin anymore.
+        /// ...
+        /// @endcode
+        /// @version 14.8.10 - Added.
+        public PluginBase(PropellerCPU chip)
+        {
+            Chip = chip;
+        }
+
         /// @brief Title of the tab window.
         /// @note Changed default name , based on a comment from Asterisk from propeller forum:
         /// Source: <a href="http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment?p=627190&viewfull=1#post627190">
@@ -46,12 +64,31 @@ namespace Gear.PluginSupport
         /// @version V14.07.17 - change on the default name 
         public virtual string Title { get { return "Plugin Base"; } }
 
+        /// @brief Attribute to allow key press detecting on the plugin. 
+        /// @note Mirror's: allows hot keys to be disabled for a plugin.
+        /// @note Source: <a href="http://forums.parallax.com/showthread.php/100380-More-GEAR-Improved-Emulation-of-the-Propeller">
+        /// Mirror Post for Version V08_10_16 in propeller forums</a>
+        public virtual Boolean AllowHotKeys { get { return true; } }
+
+        /// @brief Attribute to allow the window to be closed (default) or not (like cog windows).
+        public virtual Boolean IsClosable { get { return true; } }
+
         /// @brief Points to propeller instance.
         /// @note Asterisk's: Occurs once the plugin is loaded. It gives you a reference to the 
         /// propeller chip (so you can drive the pins). 
         /// @note Source: <a href="http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment?p=625629&viewfull=1#post625629">
         /// API GEAR described on GEAR original Post</a>
-        public virtual void PresentChip(PropellerCPU host) { }    
+        [Version(0.0f, 1.0f, PluginVersioning.memberType.PresentChip)]
+        public virtual void PresentChip(PropellerCPU host) { }
+
+        /// @brief Points to propeller instance.
+        /// @note Asterisk's: Occurs once the plugin is loaded. It gives you a reference to the 
+        /// propeller chip (so you can drive the pins). 
+        /// @note Source: <a href="http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment?p=625629&viewfull=1#post625629">
+        /// API GEAR described on GEAR original Post</a>
+        /// @version 14.8.10 - Added method without parameters.
+        [Version(1.0f, PluginVersioning.memberType.PresentChip)]
+        public virtual void PresentChip() { }    
 
         /// @brief Event when the chip is reset.
         /// Handy to reset plugin's components or data, to their initial states.
@@ -69,7 +106,7 @@ namespace Gear.PluginSupport
         /// seconds).
         /// @note Source: <a href="http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment?p=625629&viewfull=1#post625629">
         /// API GEAR described on GEAR original Post</a>
-        [VersionAttribute(0.0f, 1.0f, PluginVersioning.memberType.OnClock)]
+        [Version(0.0f, 1.0f, PluginVersioning.memberType.OnClock)]
         public virtual void OnClock(double time) { }
 
         /// @brief Event when a clock tick is informed to the plugin, in clock units.
@@ -78,7 +115,7 @@ namespace Gear.PluginSupport
         /// @warning If sysCounter is used only, the plugin designer have to take measures to 
         /// detect and manage system counter rollover.
         /// @version 14.7.27 - Added.
-        [VersionAttribute(1.0f, PluginVersioning.memberType.OnClock)]
+        [Version(1.0f, PluginVersioning.memberType.OnClock)]
         public virtual void OnClock(double time, uint sysCounter) { }
 
         /// @brief Event when some pin changed and is informed to the plugin.
@@ -87,7 +124,7 @@ namespace Gear.PluginSupport
         /// floating.
         /// @note Source: <a href="http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment?p=625629&viewfull=1#post625629">
         /// API GEAR described on GEAR original Post</a>
-        [VersionAttribute(0.0f, PluginVersioning.memberType.OnPinChange)]
+        [Version(0.0f, PluginVersioning.memberType.OnPinChange)]
         public virtual void OnPinChange(double time, PinState[] pins) { }
 
         /// @brief Event to repaint the plugin screen (if used).
@@ -98,14 +135,43 @@ namespace Gear.PluginSupport
         /// API GEAR described on GEAR original Post</a>
         public virtual void Repaint(bool force) { }
 
-        /// @brief Attribute to allow key press detecting on the plugin. 
-        /// @note Mirror's: allows hot keys to be disabled for a plugin.
-        /// @note Source: <a href="http://forums.parallax.com/showthread.php/100380-More-GEAR-Improved-Emulation-of-the-Propeller">
-        /// Mirror Post for Version V08_10_16 in propeller forums</a>
-        public virtual Boolean AllowHotKeys { get { return true; } }
+        /// @brief Notifies that this plugin must be notified on pin changes.
+        /// This method is to isolate the access to the undeline Chip.
+        /// @version 14.8.10 - Added.
+        [Version(1.0f, PluginVersioning.memberType.NotifyOnPins)]
+        public void NotifyOnPins()
+        {
+            Chip.NotifyOnPins(this);
+        }
 
-        /// @brief Attribute to allow the window to be closed (default) or not (like cog windows).
-        public virtual Boolean IsClosable { get { return true; } }
+        /// @brief Notifies that this plugin must be notified on clock ticks.
+        /// This method is for isolate the access to the undeline Chip.
+        /// @version 14.8.10 - Added.
+        [Version(0.0f, PluginVersioning.memberType.NotifyOnClock)]
+        public void NotifyOnClock()
+        {
+            Chip.NotifyOnClock(this);
+        }
+
+        /// @brief Drive a pin of PropellerCPU
+        /// This method is for isolate the access to the undeline Chip.
+        /// @param[in] pin Pin number to drive
+        /// @param[in] Floating Boolean to left floating (=true) or to set on input/output (=false).
+        /// @param[in] Hi Boolean to set on Hi state (=true) or to set on Low (=false).
+        /// @version 14.8.10 - Added.
+        [Version(0.0f, PluginVersioning.memberType.DrivePin)]
+        public void DrivePin(int pin, bool Floating, bool Hi)
+        {
+            Chip.DrivePin(pin, Floating, Hi);
+        }
+        /// @brief Set an immediate breakpoint.
+        /// This method is for isolate the access to the undeline Chip.
+        /// @version 14.8.10 - Added.
+        [Version(0.0f, PluginVersioning.memberType.BreakPoint)]
+        public void BreakPoint()
+        {
+            Chip.BreakPoint();
+        }
 
     }
 }

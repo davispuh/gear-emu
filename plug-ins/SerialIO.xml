@@ -51,8 +51,6 @@
             }
         }
 
-        private PropellerCPU Chip;
-
         private int rxPin;
         private int txPin;
         private int baud;
@@ -90,7 +88,7 @@
         }
 
 
-        public SerialIO()
+        public SerialIO(PropellerCPU chip) : base(chip)
         {
             rxPin = 30;
             txPin = 31;
@@ -248,12 +246,10 @@
         }
 
 
-        public override void PresentChip(PropellerCPU host)
+        public override void PresentChip()
         {
-            Chip = host;
-
-            Chip.NotifyOnClock(this);
-            Chip.DrivePin(txPin, false, true);
+            NotifyOnClock();
+            DrivePin(txPin, false, true);
         }
 
 
@@ -332,7 +328,7 @@
         {
             if (txPhase == 1)
             {
-                Chip.DrivePin(txPin, false, false);
+                DrivePin(txPin, false, false);
                 txPhase = 2;
                 txLastTime = time;
                 return;
@@ -367,13 +363,13 @@
                 txBitPos = 0;
                 txPhase = 3;
                 txBuffer = txBuffer.Substring(1, txBuffer.Length - 1);
-                Chip.DrivePin(txPin, true, true);
+                DrivePin(txPin, true, true);
                 return;
             }
 
             int sendByte = (int)(txBuffer[0]);
             bool bit = ((sendByte &amp; (1 &lt;&lt; txBitPos)) != 0);
-            Chip.DrivePin(txPin, false, bit);
+            DrivePin(txPin, false, bit);
 
             txBitPos++;
         }

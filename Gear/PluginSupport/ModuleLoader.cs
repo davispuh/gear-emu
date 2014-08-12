@@ -71,7 +71,7 @@ namespace Gear.PluginSupport
         /// @note There are some references already added, so you don't need to include on your plugins: 
         /// @li `using System;` @li `using System.Data;` @li `using System.Drawing;`
         /// @li `using System.Windows.Forms;` @li `using System.Xml;`
-        static public PluginBase LoadModule(string code, string module, string[] references)
+        static public PluginBase LoadModule(string code, string module, string[] references, object obj)
         {
             CodeDomProvider provider = new Microsoft.CSharp.CSharpCodeProvider();
             CompilerParameters cp = new CompilerParameters();
@@ -94,13 +94,25 @@ namespace Gear.PluginSupport
 
             CompilerResults results = provider.CompileAssemblyFromSource(cp, code);
 
-            if (results.Errors.HasErrors)
+            if (results.Errors.HasErrors | results.Errors.HasWarnings)
             {
                 m_Errors = results.Errors;
                 return null;
             }
 
-            object target = results.CompiledAssembly.CreateInstance(module);
+            object target;
+            if (obj == null)    //compile without parameters
+                target = results.CompiledAssembly.CreateInstance(module);
+            else    //compile with parameters:
+                target = results.CompiledAssembly.CreateInstance(
+                    module,
+                    false,
+                    BindingFlags.Public | BindingFlags.Instance,
+                    null,
+                    new object[] { obj },
+                    null,
+                    null
+            );
 
             if (target == null)
             {

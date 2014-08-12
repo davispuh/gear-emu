@@ -51,8 +51,13 @@ namespace Gear.PluginSupport
         public enum memberType
         {
             none = 0,       //!< None
-            OnClock,        //!< Notifies tick clocks.
-            OnPinChange     //!< Notifies pin changes.
+            OnClock,        //!< Run on clock ticks.
+            OnPinChange,    //!< Run on pin changes.
+            PresentChip,    //!< Prepare the notifiers.
+            NotifyOnPins,   //!< Notify on pin changes.
+            NotifyOnClock,  //!< Notify on clock ticks.
+            DrivePin,       //!< Drive a pin.
+            BreakPoint      //!< Set an immediate breakpoint.
         }
 
         /// @brief Versions of members to identify.
@@ -110,6 +115,7 @@ namespace Gear.PluginSupport
         /// @param versionFrom Lower limit for valid version.
         public VersRange(float versionFrom)
         {
+            ///TODO [ASB] : throw exception if versionXXXX is out of range, ex. lower than 0.0
             _verFrom = versionFrom;
             _verTo = Single.MaxValue;
             _includeLower = true;
@@ -128,10 +134,10 @@ namespace Gear.PluginSupport
             _includeUpper = false;
         }
 
-        /// @brief Getter to include lower limit o not.
-        public float VersionFrom { get { return _verFrom; } }
-        /// @brief Getter to include upper limit o not.
-        public float VersionTo { get { return _verTo; } }
+        // @brief Getter to include lower limit o not.
+        //public float VersionFrom { get { return _verFrom; } }
+        // @brief Getter to include upper limit o not.
+        //public float VersionTo { get { return _verTo; } }
         /// @brief Property to include or not the lower limit on validity.
         public bool IncludeLower
         {

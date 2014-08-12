@@ -66,11 +66,11 @@ namespace Gear.GUI
 
             // Create default layout
             for (int i = 0; i < PropellerCPU.TOTAL_COGS; i++)  //using constant TOTAL_COGS
-                AttachPlugin(new CogView(i));
+                AttachPlugin(new CogView(i, Chip));
 
-            AttachPlugin(new MemoryView());
-            AttachPlugin(new LogicProbe.LogicView());
-            AttachPlugin(new SpinView());
+            AttachPlugin(new MemoryView(Chip));
+            AttachPlugin(new LogicProbe.LogicView(Chip));
+            AttachPlugin(new SpinView(Chip));
             documentsTab.SelectedIndex = 0;
 
             // TEMPORARY RUN FUNCTION
@@ -237,8 +237,14 @@ namespace Gear.GUI
                     }
                 }
 
-                //Dynamic load and compile the plugin module as a class
-                PluginBase bm = ModuleCompiler.LoadModule(code, instanceName, references.ToArray());
+                //Dynamic load and compile the plugin module as a class, giving the chip 
+                // instance as a parameter.
+                PluginBase bm = ModuleCompiler.LoadModule(
+                    code, 
+                    instanceName, 
+                    references.ToArray(), 
+                    Chip
+                );
 
                 if (bm == null)     //if it fails...
                 {

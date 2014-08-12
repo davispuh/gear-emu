@@ -133,12 +133,10 @@ namespace Gear.EmulationCore
         //!< @todo Document member Gear.EmulationCore.PropellerCPU.emulator
         private Emulator emulator;
 
-        ///TODO [ASB] : modificar abajo por private List<VersionatedPluginContainer> TickHandlers;
         //!< @brief List of Handlers for clock ticks on plugins.
-        private List<PluginBase> TickHandlers;      
-        ///TODO [ASB] : modificar abajo a private List<VersionatedPluginContainer> PinNoiseHandlers;
+        private List<VersionatedPluginContainer> TickHandlers;      
         //!< @brief List of Handlers for Pin changes on plugins.
-        private List<PluginBase> PinNoiseHandlers;
+        private List<VersionatedPluginContainer> PinNoiseHandlers;
         //!< @brief List of active PlugIns (include system ones, like cog views, etc).
         private List<PluginBase> PlugIns;           
 
@@ -167,8 +165,8 @@ namespace Gear.EmulationCore
             PinHi = 0;
             PinFloat = 0xFFFFFFFFFFFFFFFF;
 
-            TickHandlers = new List<PluginBase>();
-            PinNoiseHandlers = new List<PluginBase>();
+            TickHandlers = new List<VersionatedPluginContainer>();
+            PinNoiseHandlers = new List<VersionatedPluginContainer>();
             PlugIns = new List<PluginBase>();
 
             Time = 0;
@@ -728,7 +726,6 @@ namespace Gear.EmulationCore
 
             // Run our modules on time event
             ///TODO [ASB] : cambiar lo de abajo por 
-            ///foreach (VersionatedPluginContainer mod in TickHandlers) { 
             ///  mod.GetMember(VersionAttribute.memberTypeVersion.OnClock, \<version\>) }
             foreach (PluginBase mod in TickHandlers)
             {
@@ -775,23 +772,27 @@ namespace Gear.EmulationCore
                 mod.OnPinChange(Time, PinStates);
         }
 
-        /// @todo Document method Gear.EmulationCore.PropellerCPU.DrivePin().
-        /// 
+        /// @brief Drive a pin of Propeller.
+        /// It validates the pin range, or do nothing, to be safe on external plugin use.
+        /// @version 14.8.10 - Added validation for pin range.
         public void DrivePin(int pin, bool Floating, bool Hi)
         {
-            ulong mask = (ulong)1 << pin;
+            if ( (pin >= 0) & (pin < TOTAL_PINS) )  //prevent pin overflow.
+            {
+                ulong mask = (ulong)1 << pin;
 
-            if (Floating)
-                PinFloat |= mask;
-            else
-                PinFloat &= ~mask;
+                if (Floating)
+                    PinFloat |= mask;
+                else
+                    PinFloat &= ~mask;
 
-            if (Hi)
-                PinHi |= mask;
-            else
-                PinHi &= ~mask;
+                if (Hi)
+                    PinHi |= mask;
+                else
+                    PinHi &= ~mask;
 
-            pinChange = true;
+                pinChange = true;
+            };
         }
 
         /// @todo Document method Gear.EmulationCore.PropellerCPU.ReadByte().

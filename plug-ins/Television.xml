@@ -40,7 +40,7 @@
             get { return &quot;Television&quot;; }
         }
 
-        public Television()
+        public Television(PropellerCPU chip) : base(chip)
         {
             Picture = new Bitmap(910, 600, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
 
@@ -60,9 +60,9 @@
             CreateGraphics().DrawImage(Picture, 0, 0);
         }
 
-        public override void PresentChip(PropellerCPU host)
+        public override void PresentChip()
         {
-            host.NotifyOnPins(this);
+            NotifyOnPins();
         }
 
         private Color HSVtoRGB(double h, double s, double v)

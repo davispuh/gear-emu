@@ -193,3 +193,6 @@ Doc/[Mm]csgen-files/*.svg
 Doc/[Mm]csgen-files/*.eps
 Doc/[Mm]csgen-files/*.ismap
 !/*.[Mm]csgen
+
+#TestThings for GEAR
+TestThings/**

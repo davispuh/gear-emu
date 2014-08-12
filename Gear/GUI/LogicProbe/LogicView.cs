@@ -36,7 +36,6 @@ namespace Gear.GUI.LogicProbe
 {
     public partial class LogicView : PluginBase
     {
-        private PropellerCPU Host;
         private Font MonoFont;
 
         private List<LogicRow> Pins;
@@ -62,7 +61,7 @@ namespace Gear.GUI.LogicProbe
             }
         }
 
-        public LogicView()
+        public LogicView(PropellerCPU chip) : base(chip)
         {
             InitializeComponent();
 
@@ -98,10 +97,9 @@ namespace Gear.GUI.LogicProbe
             }
         }
 
-        public override void PresentChip(PropellerCPU host)
+        public override void PresentChip()
         {
-            Host = host;
-            Host.NotifyOnPins(this);
+            Chip.NotifyOnPins(this);
         }
 
         /// @brief Clean samples of LogicRow
@@ -124,7 +122,7 @@ namespace Gear.GUI.LogicProbe
 
         public override void Repaint(bool tick)
         {
-            if (Host == null)
+            if (Chip == null)
                 return;
 
             viewOffset.Maximum = Pins.Count - 1;
@@ -145,7 +143,7 @@ namespace Gear.GUI.LogicProbe
 
             if (timeAdjustBar.Value == timeAdjustBar.Maximum)
             {
-                maxTime = Host.EmulatorTime;
+                maxTime = Chip.EmulatorTime;
                 minTime = maxTime - TimeScale;
             }
             else
@@ -156,7 +154,7 @@ namespace Gear.GUI.LogicProbe
                     if (minimum < Pins[i].MinTime)
                         minimum = Pins[i].MinTime;
 
-                double range = (Host.EmulatorTime - minimum) - TimeScale;  // Only allow it to scale to the minimum time
+                double range = (Chip.EmulatorTime - minimum) - TimeScale;  // Only allow it to scale to the minimum time
 
                 if (range > 0)
                 {
@@ -166,7 +164,7 @@ namespace Gear.GUI.LogicProbe
                 }
                 else
                 {
-                    maxTime = Host.EmulatorTime;
+                    maxTime = Chip.EmulatorTime;
                     minTime = maxTime - TimeScale;
                 }
             }
@@ -335,11 +333,11 @@ namespace Gear.GUI.LogicProbe
             }
             catch (IndexOutOfRangeException)
             {
-                MessageBox.Show("You must specify a pin between 0 and 63");
+                MessageBox.Show(string.Format("You must specify a pin between 0 and {0}", PropellerCPU.TOTAL_PINS - 1));
             }
             catch (OverflowException)
             {
-                MessageBox.Show("You must specify a pin between 0 and 63");
+                MessageBox.Show(string.Format("You must specify a pin between 0 and {0}", PropellerCPU.TOTAL_PINS - 1));
             }
 
             Repaint(true);
@@ -386,12 +384,12 @@ namespace Gear.GUI.LogicProbe
                 }
                 catch (IndexOutOfRangeException)
                 {
-                    MessageBox.Show("You must specify a pin between 0 and 63");
+                    MessageBox.Show(string.Format("You must specify a pin between 0 and {0}", PropellerCPU.TOTAL_PINS - 1));
                     return;
                 }
                 catch (OverflowException)
                 {
-                    MessageBox.Show("You must specify a pin between 0 and 63");
+                    MessageBox.Show(string.Format("You must specify a pin between 0 and {0}", PropellerCPU.TOTAL_PINS - 1));
                     return;
                 }
             }
