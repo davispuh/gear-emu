@@ -138,7 +138,6 @@ namespace Gear.PluginSupport
         /// @brief Notifies that this plugin must be notified on pin changes.
         /// This method is to isolate the access to the undeline Chip.
         /// @version 14.8.10 - Added.
-        [Version(1.0f, PluginVersioning.memberType.NotifyOnPins)]
         public void NotifyOnPins()
         {
             Chip.NotifyOnPins(this);
@@ -147,7 +146,6 @@ namespace Gear.PluginSupport
         /// @brief Notifies that this plugin must be notified on clock ticks.
         /// This method is for isolate the access to the undeline Chip.
         /// @version 14.8.10 - Added.
-        [Version(0.0f, PluginVersioning.memberType.NotifyOnClock)]
         public void NotifyOnClock()
         {
             Chip.NotifyOnClock(this);
@@ -159,7 +157,6 @@ namespace Gear.PluginSupport
         /// @param[in] Floating Boolean to left floating (=true) or to set on input/output (=false).
         /// @param[in] Hi Boolean to set on Hi state (=true) or to set on Low (=false).
         /// @version 14.8.10 - Added.
-        [Version(0.0f, PluginVersioning.memberType.DrivePin)]
         public void DrivePin(int pin, bool Floating, bool Hi)
         {
             Chip.DrivePin(pin, Floating, Hi);
@@ -167,7 +164,6 @@ namespace Gear.PluginSupport
         /// @brief Set an immediate breakpoint.
         /// This method is for isolate the access to the undeline Chip.
         /// @version 14.8.10 - Added.
-        [Version(0.0f, PluginVersioning.memberType.BreakPoint)]
         public void BreakPoint()
         {
             Chip.BreakPoint();

@@ -23,12 +23,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
 using System.IO;
+using System.Windows.Forms;
 using System.Xml;
 
 using Gear.EmulationCore;
@@ -106,6 +102,7 @@ namespace Gear.GUI
         private void AttachPlugin(PluginBase bm)
         {
             Chip.IncludePlugin(bm);     //attach into plugin lists of PropellerCPU
+            // TODO [ASB] : change to select the appropiate version of method.
             bm.PresentChip(Chip);       //invoke initial setup of plugin.
 
             TabPage t = new TabPage(bm.Title);

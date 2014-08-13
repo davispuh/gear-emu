@@ -39,21 +39,21 @@ E box E [label="PropellerCPU.\nPlugIns.Add(bm)", url="\ref Gear.EmulationCore.Pr
 #Transicions Phase
 B => C [label="From here bm is a\nvalid Plugin instance."];
 C => D;
-D => E;
-E rbox E [label="Add plugin ref to the general list of plugins of the CPU"];
+D => E [label="Add plugin reference"];
+E rbox E [label="Plugin reference added to general list of plugins of the CPU."];
 D <= E;
+C <= D;
 
 #phase separation
 --- [label="Detail for Registering OnPinChange & OnClock Methods on Figure 2.", linecolor="indigo", textcolor="indigo"];
 
 #Transicions Phase
-D note E [label="\nMore details on\nFigure 2.\n", url="\ref PluginLoadingSequenceFig2", textbgcolor="#7FFF7F"];
+C note E [label="\nMore details on\nFigure 2.\n", url="\ref PluginLoadingSequenceFig2", textbgcolor="#7FFF7F"];
 
 #phase separation
 --- [label="After registering OnPinChange & OnClock Methods.", linecolor="indigo", textcolor="indigo"];
 
 #Transicions Phase
-C <= D;
 B <= C;
 A <= B;
 

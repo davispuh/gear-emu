@@ -134,9 +134,9 @@ namespace Gear.EmulationCore
         private Emulator emulator;
 
         //!< @brief List of Handlers for clock ticks on plugins.
-        private List<VersionatedPluginContainer> TickHandlers;      
+        private List<VersionatedContainer> TickHandlers;      
         //!< @brief List of Handlers for Pin changes on plugins.
-        private List<VersionatedPluginContainer> PinNoiseHandlers;
+        private List<VersionatedContainer> PinHandlers;
         //!< @brief List of active PlugIns (include system ones, like cog views, etc).
         private List<PluginBase> PlugIns;           
 
@@ -165,8 +165,8 @@ namespace Gear.EmulationCore
             PinHi = 0;
             PinFloat = 0xFFFFFFFFFFFFFFFF;
 
-            TickHandlers = new List<VersionatedPluginContainer>();
-            PinNoiseHandlers = new List<VersionatedPluginContainer>();
+            TickHandlers = new List<VersionatedContainer>();
+            PinHandlers = new List<VersionatedContainer>();
             PlugIns = new List<PluginBase>();
 
             Time = 0;
@@ -506,7 +506,10 @@ namespace Gear.EmulationCore
         public void NotifyOnClock(PluginBase mod)
         {
             if (!(TickHandlers.Contains(mod)))
+            {
+                
                 TickHandlers.Add(mod);
+            }
         }
 
         /// @brief Remove a plugin from the clock notify list
@@ -523,8 +526,8 @@ namespace Gear.EmulationCore
         /// @param mod Compiled plugin reference to include
         public void NotifyOnPins(PluginBase mod)
         {
-            if (!(PinNoiseHandlers.Contains(mod)))
-                PinNoiseHandlers.Add(mod);
+            if (!(PinHandlers.Contains(mod)))
+                PinHandlers.Add(mod);
         }
 
         /// @brief Remove a plugin from the pin changed notify list
@@ -532,8 +535,8 @@ namespace Gear.EmulationCore
         /// @param mod Compiled plugin reference to remove
         public void RemoveOnPins(PluginBase mod)
         {
-            if (PinNoiseHandlers.Contains(mod))
-                PinNoiseHandlers.Remove(mod);
+            if (PinHandlers.Contains(mod))
+                PinHandlers.Remove(mod);
         }
 
         /// @todo Document method Gear.EmulationCore.PropellerCPU.SetClockMode().
@@ -768,7 +771,7 @@ namespace Gear.EmulationCore
                 }
             }
             //traverse across plugins that use NotityOnPins()
-            foreach (PluginBase mod in PinNoiseHandlers)
+            foreach (PluginBase mod in PinHandlers)
                 mod.OnPinChange(Time, PinStates);
         }
 

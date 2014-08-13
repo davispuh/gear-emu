@@ -67,6 +67,8 @@ namespace Gear.PluginSupport
         /// @param[in] module Class name of the plugin.
         /// @param[in] references String array with auxiliary references used by your plugin. 
         /// See notes for defaults used.
+        /// @param[in] obj Reference to a PropellerCPU of this instance, to be passed as a 
+        /// parameter to the constructor of the new plugin class instance.
         /// @returns New Plugin class instance compiled (on sucess), or NULL (on fail).
         /// @note There are some references already added, so you don't need to include on your plugins: 
         /// @li `using System;` @li `using System.Data;` @li `using System.Drawing;`
@@ -100,18 +102,19 @@ namespace Gear.PluginSupport
                 return null;
             }
 
-            object target;
-            if (obj == null)    //compile without parameters
-                target = results.CompiledAssembly.CreateInstance(module);
-            else    //compile with parameters:
-                target = results.CompiledAssembly.CreateInstance(
-                    module,
-                    false,
-                    BindingFlags.Public | BindingFlags.Instance,
-                    null,
-                    new object[] { obj },
-                    null,
-                    null
+            object target = ( (obj == null) ?
+                //compile without parameters
+                target = results.CompiledAssembly.CreateInstance(module) :
+                //compile plugin with parameters
+                target = results.CompiledAssembly.CreateInstance(           
+                    module,                                         //name of class
+                    false,                                          //=false: case sensitive
+                    BindingFlags.Public | BindingFlags.Instance,    //flags to delimit the candidates
+                    null,                                           //default binder object
+                    new object[] { obj },                           //parameter lists
+                    null,                                           //default culture
+                    null                                            //default activation object
+                )
             );
 
             if (target == null)

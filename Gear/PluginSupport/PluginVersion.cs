@@ -22,6 +22,9 @@
  */
 
 using System;
+using System.Collections.Generic;
+
+using Gear.EmulationCore; 
 
 namespace Gear.PluginSupport
 {
@@ -47,54 +50,75 @@ namespace Gear.PluginSupport
     public class PluginVersioning
     {
         /// @brief Type of member for version management on menbers of Plugins.
-        /// @details They should resemble the name of the method for mnemonics and easy coding.
+        /// @details They must be equal to the name of the method to work, because the retrieving
+        /// mechanism use reflection based on names of PluginBase methods to versioning.
         public enum memberType
         {
-            none = 0,       //!< None
-            OnClock,        //!< Run on clock ticks.
+            none    = -1,   //!< None
+            OnClock = 0,    //!< Run on clock ticks.
             OnPinChange,    //!< Run on pin changes.
-            PresentChip,    //!< Prepare the notifiers.
-            NotifyOnPins,   //!< Notify on pin changes.
-            NotifyOnClock,  //!< Notify on clock ticks.
-            DrivePin,       //!< Drive a pin.
-            BreakPoint      //!< Set an immediate breakpoint.
+            PresentChip     //!< Prepare the notifiers.
         }
 
         /// @brief Versions of members to identify.
         /// @details When added a new member version, have to register a new value to manage it.
-        public enum versionatedMember
+        //public enum versionatedMember
+        //{
+        //    none = 0,       //!< None
+        //    OnClockV0_0,    //!< Version 0.0 for OnClock
+        //    OnClockV1_0,    //!< Version 1.0 for OnClock
+        //    OnPinChangeV0_0 //!< Version 0.0 for OnPinChange
+        //}
+
+
+
+        static public Dictionary<memberType, VersionatedContainer> ManagedVersions;
+
+        /// @brief Static default constructor
+        static PluginVersioning()
         {
-            none = 0,       //!< None
-            OnClockV0_0,    //!< Version 0.0 for OnClock
-            OnClockV1_0,    //!< Version 1.0 for OnClock
-            OnPinChangeV0_0 //!< Version 0.0 for OnPinChange
+            ManagedVersions = new Dictionary<memberType, VersionatedContainer> ();
+            ManagedVersions.Add(memberType.none, null);
+            ManagedVersions.Add(memberType.OnClock,
+                new VersionatedContainer(memberType.OnClock, 0.0f, typeof(OnClockV0_0)));
+            ManagedVersions.Add(memberType.OnClock,
+                new VersionatedContainer(memberType.OnClock, 1.0f, typeof(OnClockV1_0)));
+            ManagedVersions.Add(memberType.OnPinChange,
+                new VersionatedContainer(memberType.OnPinChange, 0.0f, typeof(OnPinChangeV0_0)));
+            ManagedVersions.Add(memberType.PresentChip,
+                new VersionatedContainer(memberType.PresentChip, 0.0f, typeof(PresentChipV0_0)));
+            ManagedVersions.Add(memberType.PresentChip,
+                new VersionatedContainer(memberType.PresentChip, 1.0f, typeof(PresentChipV1_0)));
         }
 
         //=======================================================================
         //Declare in this section delegates for each version of members to manage.
         #region Delegates for each versionated member of PluginBase.
+
         /// @brief Delegate for version 0.0 for OnClock.
-        [VersionAttribute(
-            0.0f, 
-            1.0f, 
-            PluginVersioning.memberType.OnClock,
-            CodeVersionatedMember = PluginVersioning.versionatedMember.OnClockV0_0)]
-        public delegate void TickHandlerV0_0(double time);
+        [VersionAttribute(0.0f, 1.0f, PluginVersioning.memberType.OnClock)]
+        public delegate void OnClockV0_0(double time);
+
         /// @brief Delegate for version 1.0 for OnClock.
-        [Version(
-            1.0f, 
-            PluginVersioning.memberType.OnClock,
-            CodeVersionatedMember = PluginVersioning.versionatedMember.OnClockV1_0)]
-        public delegate void TickHandlerV1_0(double time, uint sysCounter);
-        /// @brief Delegate for version 0.0 for OnClock.
-        [VersionAttribute(
-            0.0f,
-            PluginVersioning.memberType.OnPinChange,
-            CodeVersionatedMember = PluginVersioning.versionatedMember.OnPinChangeV0_0)]
+        [Version(1.0f, PluginVersioning.memberType.OnClock)]
+        public delegate void OnClockV1_0(double time, uint sysCounter);
+
+        /// @brief Delegate for version 0.0 for OnPinChange.
+        [VersionAttribute(0.0f,PluginVersioning.memberType.OnPinChange)]
         public delegate void OnPinChangeV0_0(double time);
+
+        /// @brief Delegate for version 0.0 for PresentChip.
+        [VersionAttribute(0.0f, 1.0f, PluginVersioning.memberType.PresentChip)]
+        public delegate void PresentChipV0_0(PropellerCPU host);
+
+        /// @brief Delegate for version 1.0 for PresentChip.
+        [Version(1.0f, PluginVersioning.memberType.PresentChip)]
+        public delegate void PresentChipV1_0();
+
         //=======================================================================
         #endregion
         
+
 
     }
 
@@ -178,7 +202,7 @@ namespace Gear.PluginSupport
         /// @brief Type of member to versioning.
         private PluginVersioning.memberType _memberType;
         /// @brief Code of a versionated member.
-        private PluginVersioning.versionatedMember _versionatedMember;
+        //private PluginVersioning.versionatedMember _versionatedMember;
 
         #region Constructor for class VersionAttribute
         /// @brief Constructor with lower limit of validity.
@@ -191,7 +215,7 @@ namespace Gear.PluginSupport
             //TODO [ASB] : add support for exceptions trowed by VersRange
             _range = new VersRange(versionFrom);
             _memberType = memberType;
-            _versionatedMember = PluginVersioning.versionatedMember.none;
+            //_versionatedMember = PluginVersioning.versionatedMember.none;
         }
 
         /// @brief Constructor with both limits for validity.
@@ -204,25 +228,25 @@ namespace Gear.PluginSupport
             ///TODO [ASB] : add support for exceptions trowed by VersRange
             _range = new VersRange(lowerLimit, upperLimit);
             _memberType = memberType;
-            _versionatedMember = PluginVersioning.versionatedMember.none;
+            //_versionatedMember = PluginVersioning.versionatedMember.none;
         }
         #endregion
 
-        #region Properties of VersionAttribute class
-        /// @brief Property for versionated member enumeration.
-        private PluginVersioning.versionatedMember AssignVersionedMember
-        {
-            get { return _versionatedMember; }
-            set { _versionatedMember = value; }
-        }
+        //#region Properties of VersionAttribute class
+        ///// @brief Property for versionated member enumeration.
+        //private PluginVersioning.versionatedMember AssignVersionedMember
+        //{
+        //    get { return _versionatedMember; }
+        //    set { _versionatedMember = value; }
+        //}
 
-        /// @brief Property for the code of a versionated member.
-        public PluginVersioning.versionatedMember CodeVersionatedMember
-        {
-            get { return _versionatedMember;  }
-            set { _versionatedMember = value; }
-        }
-        #endregion
+        ///// @brief Property for the code of a versionated member.
+        //public PluginVersioning.versionatedMember CodeVersionatedMember
+        //{
+        //    get { return _versionatedMember;  }
+        //    set { _versionatedMember = value; }
+        //}
+        //#endregion
 
         /// @brief Validate if atributte is valid beetween lower and upper limits of permitted range.
         /// @param[in] version Version number to test validity.
@@ -236,8 +260,10 @@ namespace Gear.PluginSupport
 
     /// @brief Manages Versions of plugins.
     /// @details Manages versions of plugins, to choose correct member signatures for each version
-    /// of plugin system.
-    class VersionatedPluginContainer
+    /// of plugin system. 
+    /// It is used on the definition of avalaible versions into PluginVersioning class, and also
+    /// to contain an instance of a compiled plugin with the reference to method to call.
+    class VersionatedContainer
     {
         /// @brief Pointer to plugin.
         private PluginBase _plugin;
@@ -245,14 +271,47 @@ namespace Gear.PluginSupport
         private float _version;
         /// @brief Type of member to select.
         private PluginVersioning.memberType _memType;
+        /// @brief Delegate type assigned to this container.
+        private System.Type _assignedTypeDel;
+        /// @brief Delegate assigned to this container
+        private object _assignedDel;
 
-        /// @brief Constructor with member type specification.
-        /// @details By default every VersionatedPluginContainer has version =0.0.
-        public VersionatedPluginContainer(PluginBase plugin, float Version)
+        /// @brief Constructor with PluginBase specification.
+        public VersionatedContainer(PluginBase plugin, float Version)
         {
             _plugin = plugin;
             _version = Version;
             _memType = PluginVersioning.memberType.none;
+            _assignedTypeDel = null;
+        }
+
+        /// @brief Constructor with member type specification and delegated.
+        public VersionatedContainer(
+            PluginVersioning.memberType MemType, 
+            float Version, 
+            System.Type asignatedDelegate)
+        {
+            _plugin = null;
+            _version = Version;
+            _memType = MemType;
+            _assignedTypeDel = asignatedDelegate;
+        }
+
+        /// @brief Attribute to PluginBase
+        public PluginBase Plugin
+        {
+            get { return _plugin; }
+            set 
+            {
+                if (value != null)
+                    _plugin = value;
+            }
+        }
+
+        /// @brief Determine if plugin is a valid reference (=true) or null (=false).
+        public bool IsValidPlugin()
+        {
+            return (_plugin != null);
         }
 
         /// @brief Attribute to hold target version
@@ -263,22 +322,28 @@ namespace Gear.PluginSupport
         }
 
         /// @brief Get member code by type and version.
-        private PluginVersioning.versionatedMember GetMember(PluginVersioning.memberType member)
+        private bool Invoke(PluginVersioning.memberType member)
         {
-            PluginVersioning.versionatedMember vmemb = PluginVersioning.versionatedMember.none;
+            bool success = false;
             ///TODO [ASB] : agregar lógica para determinar el tipo de miembro según versión, y 
             //  ejecutarlo
-            switch (member)
+            if (PluginVersioning.ManagedVersions.ContainsKey(member))
             {
-                case PluginVersioning.memberType.OnPinChange:
+                switch (member)
+                {
+                    case PluginVersioning.memberType.OnPinChange:
 
-                    break;
-                case PluginVersioning.memberType.OnClock:
+                        break;
+                    case PluginVersioning.memberType.OnClock:
 
-                    break;
-            };
+                        break;
+                    case PluginVersioning.memberType.PresentChip:
 
-            return vmemb;
+                        break;
+
+                };
+            }
+            return success;
         }
     }
 
