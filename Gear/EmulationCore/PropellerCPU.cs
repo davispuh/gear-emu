@@ -134,8 +134,10 @@ namespace Gear.EmulationCore
         private Emulator emulator;
 
         //!< @brief List of Handlers for clock ticks on plugins.
+        //TODO[ASB] : cambiar definición de TickHandlers desde List<.> a VersionatedContainerCollection
         private List<VersionatedContainer> TickHandlers;      
         //!< @brief List of Handlers for Pin changes on plugins.
+        //TODO[ASB] : cambiar definición de PinHandlers desde List<.> a VersionatedContainerCollection
         private List<VersionatedContainer> PinHandlers;
         //!< @brief List of active PlugIns (include system ones, like cog views, etc).
         private List<PluginBase> PlugIns;           
@@ -504,11 +506,10 @@ namespace Gear.EmulationCore
         /// @details It see if the plugin exist already to insert or not.
         /// @param mod Compiled plugin reference to include
         public void NotifyOnClock(PluginBase mod)
-        {
+        {   
             if (!(TickHandlers.Contains(mod)))
             {
-                
-                TickHandlers.Add(mod);
+                TickHandlers.Add(new VersionatedContainer(mod, PluginVersioning.memberType.OnClock));
             }
         }
 

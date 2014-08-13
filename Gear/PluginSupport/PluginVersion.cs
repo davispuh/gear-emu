@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 using Gear.EmulationCore; 
 
@@ -60,23 +61,12 @@ namespace Gear.PluginSupport
             PresentChip     //!< Prepare the notifiers.
         }
 
-        /// @brief Versions of members to identify.
-        /// @details When added a new member version, have to register a new value to manage it.
-        //public enum versionatedMember
-        //{
-        //    none = 0,       //!< None
-        //    OnClockV0_0,    //!< Version 0.0 for OnClock
-        //    OnClockV1_0,    //!< Version 1.0 for OnClock
-        //    OnPinChangeV0_0 //!< Version 0.0 for OnPinChange
-        //}
-
-
-
         static public Dictionary<memberType, VersionatedContainer> ManagedVersions;
 
         /// @brief Static default constructor
         static PluginVersioning()
         {
+            //TODO [ASB] : change this declaration for a dynamic evaluation with reflexion class
             ManagedVersions = new Dictionary<memberType, VersionatedContainer> ();
             ManagedVersions.Add(memberType.none, null);
             ManagedVersions.Add(memberType.OnClock,
@@ -158,6 +148,11 @@ namespace Gear.PluginSupport
             _includeUpper = false;
         }
 
+        public float LowerLimit
+        {
+            get { return _verFrom; }    
+        }   
+
         // @brief Getter to include lower limit o not.
         //public float VersionFrom { get { return _verFrom; } }
         // @brief Getter to include upper limit o not.
@@ -232,21 +227,14 @@ namespace Gear.PluginSupport
         }
         #endregion
 
-        //#region Properties of VersionAttribute class
-        ///// @brief Property for versionated member enumeration.
-        //private PluginVersioning.versionatedMember AssignVersionedMember
-        //{
-        //    get { return _versionatedMember; }
-        //    set { _versionatedMember = value; }
-        //}
+        public PluginVersioning.memberType MemberType
+        {
+            get { return _memberType; }
+        }
 
-        ///// @brief Property for the code of a versionated member.
-        //public PluginVersioning.versionatedMember CodeVersionatedMember
-        //{
-        //    get { return _versionatedMember;  }
-        //    set { _versionatedMember = value; }
-        //}
-        //#endregion
+        public float VersionFrom {
+            get { return _range.LowerLimit; } 
+        }
 
         /// @brief Validate if atributte is valid beetween lower and upper limits of permitted range.
         /// @param[in] version Version number to test validity.
@@ -277,11 +265,11 @@ namespace Gear.PluginSupport
         private object _assignedDel;
 
         /// @brief Constructor with PluginBase specification.
-        public VersionatedContainer(PluginBase plugin, float Version)
+        public VersionatedContainer(PluginBase plugin, PluginVersioning.memberType MemType)
         {
             _plugin = plugin;
-            _version = Version;
-            _memType = PluginVersioning.memberType.none;
+            _memType = MemType;
+            _version = GetVersion(plugin, MemType);
             _assignedTypeDel = null;
         }
 
@@ -321,6 +309,48 @@ namespace Gear.PluginSupport
             set { _memType = value; }
         }
 
+        /// @brief Get Version for the member type given of the Plugin instance.
+        /// @param plugin Plugin instance to obtain its version number.
+        /// @param memberType Type of versionated member to obtain its version.
+        /// @returns Version of plugin to declare
+        private float GetVersion(PluginBase plugin, PluginVersioning.memberType memberType)
+        {
+            float ver = 0.0f;
+            if (IsValidPlugin())
+            {
+                SortedList<float, MethodInfo> selected = GetVersionatedCandidates(plugin.GetType(), memberType);
+                //TODO [ASB] : seleccionar con cual version me quedo
+            }
+            return ver;
+        }
+
+        //TODO[ASB] : cambiar en SortedList<float, MethodInfo>, MethodInfo por un struct conteniendo MethodInfo y un atributo para cachar si es de clase base o derivada.
+        //ejemplo referencia para obtener atributos desde reflexion:
+        //http://stackoverflow.com/questions/6637679/reflection-get-attribute-name-and-value-on-property
+        //
+        private SortedList<float, MethodInfo> GetVersionatedCandidates(
+            Type tPlugin, PluginVersioning.memberType memberType)
+        {
+            SortedList<float, MethodInfo> selMeth = new SortedList<float, MethodInfo>();
+            MethodInfo[] meth = tPlugin.GetMethods(BindingFlags.Instance | BindingFlags.Public);
+            foreach (MethodInfo mInfo in meth)
+            {
+                Object[] attr = mInfo.GetCustomAttributes(typeof(VersionAttribute), true);
+                if (attr.Length > 0)
+                {
+                    foreach (Object obj in attr)
+                    {
+                        VersionAttribute vers = obj as VersionAttribute;
+                        if ((vers != null) && (vers.MemberType == memberType))
+                        {
+                            selMeth.Add(vers.VersionFrom, mInfo);
+                        }
+                    }
+                }
+            }
+            return selMeth;
+        }
+
         /// @brief Get member code by type and version.
         private bool Invoke(PluginVersioning.memberType member)
         {
@@ -346,5 +376,37 @@ namespace Gear.PluginSupport
             return success;
         }
     }
+
+    class VersionatedContainerCollection
+    {
+        private List<VersionatedContainer> _list;
+
+        public VersionatedContainerCollection()
+        {
+            _list = new List<VersionatedContainer>();
+        }
+
+        public bool Contains(PluginBase plugin)
+        {
+            bool exist = false;
+            foreach (VersionatedContainer vc in _list)
+            {
+                exist |= (vc.Plugin == plugin);
+                if (exist) break;
+            }
+            return exist;
+        }
+
+        public void Add(PluginBase plugin)
+        {
+            //TODO[ASB] : completar metodo Add()
+        }
+    }
+
+    //reference to implement generic collection con ICollect interface:
+    //http://www.codeproject.com/Articles/21241/Implementing-C-Generic-Collections-using-ICollecti
+    //
+    //reference on ICollection:
+    //http://msdn.microsoft.com/es-es/library/92t2ye13%28v=vs.110%29.aspx
 
 }
