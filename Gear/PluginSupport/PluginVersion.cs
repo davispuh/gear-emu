@@ -251,7 +251,7 @@ namespace Gear.PluginSupport
     /// of plugin system. 
     /// It is used on the definition of avalaible versions into PluginVersioning class, and also
     /// to contain an instance of a compiled plugin with the reference to method to call.
-    class VersionatedContainer
+    public class VersionatedContainer
     {
         /// @brief Pointer to plugin.
         private PluginBase _plugin;
@@ -318,7 +318,7 @@ namespace Gear.PluginSupport
             float ver = 0.0f;
             if (IsValidPlugin())
             {
-                SortedList<float, MethodInfo> selected = GetVersionatedCandidates(plugin.GetType(), memberType);
+                SortedList<float, VersionMemberInfo> selected = GetVersionatedCandidates(plugin.GetType(), memberType);
                 //TODO [ASB] : seleccionar con cual version me quedo
             }
             return ver;
@@ -328,25 +328,36 @@ namespace Gear.PluginSupport
         //ejemplo referencia para obtener atributos desde reflexion:
         //http://stackoverflow.com/questions/6637679/reflection-get-attribute-name-and-value-on-property
         //
-        private SortedList<float, MethodInfo> GetVersionatedCandidates(
-            Type tPlugin, PluginVersioning.memberType memberType)
+        private SortedList<float, VersionMemberInfo> 
+            GetVersionatedCandidates( Type tPlugin, PluginVersioning.memberType memberType)
         {
-            SortedList<float, MethodInfo> selMeth = new SortedList<float, MethodInfo>();
+            //prepare the sorted list of candidates to output
+            SortedList<float, VersionMemberInfo> selMeth = new SortedList<float, VersionMemberInfo>();
+            //get the methods list of the plugin
             MethodInfo[] meth = tPlugin.GetMethods(BindingFlags.Instance | BindingFlags.Public);
+            //browse the method list
             foreach (MethodInfo mInfo in meth)
             {
+                //get the custom attributes for the method
                 Object[] attr = mInfo.GetCustomAttributes(typeof(VersionAttribute), true);
+                //if there are custom attributes for it
                 if (attr.Length > 0)
-                {
+                {   //browse the attribute
                     foreach (Object obj in attr)
-                    {
-                        VersionAttribute vers = obj as VersionAttribute;
-                        if ((vers != null) && (vers.MemberType == memberType))
-                        {
-                            selMeth.Add(vers.VersionFrom, mInfo);
-                        }
+                    {   
+                        VersionAttribute vers = obj as VersionAttribute;    //cast as VersionAttribute
+                        //if it is a VersionAttribute type
+                        if (vers != null) 
+                            if (vers.MemberType == memberType)  //if it is of memberType type
+                            {   //create a entry on the sorted list
+                                selMeth.Add(vers.VersionFrom, 
+                                    new VersionMemberInfo(
+                                        vers.VersionFrom,
+                                        mInfo,
+                                        (mInfo.GetType() == typeof(PluginBase)) ? true : false) );
+                            }
                     }
-                }
+                } 
             }
             return selMeth;
         }
@@ -375,9 +386,24 @@ namespace Gear.PluginSupport
             }
             return success;
         }
+
+        /// @TODO [ASB] : leer que interfaz es requerida de implementar en VersionMemberInfo para ser utilizado dentro de container VersionatedContainerCollection (¿ICollection?)
+        private struct VersionMemberInfo
+        {
+            bool IsInherited;
+            float VersionLow;
+            MethodInfo MInfo;
+
+            public VersionMemberInfo(float versionLow, MethodInfo mInfo, bool isInherited)
+            {
+                IsInherited = isInherited;
+                VersionLow = versionLow;
+                MInfo = mInfo;
+            }
+        }
     }
 
-    class VersionatedContainerCollection
+    public class VersionatedContainerCollection
     {
         private List<VersionatedContainer> _list;
 
@@ -401,12 +427,17 @@ namespace Gear.PluginSupport
         {
             //TODO[ASB] : completar metodo Add()
         }
+
+        public void Remove(PluginBase plugin)
+        {
+            //TODO[ASB] : completar metodo Remove()
+        }
     }
 
     //reference to implement generic collection con ICollect interface:
     //http://www.codeproject.com/Articles/21241/Implementing-C-Generic-Collections-using-ICollecti
     //
     //reference on ICollection:
-    //http://msdn.microsoft.com/es-es/library/92t2ye13%28v=vs.110%29.aspx
+    //http://msdn.microsoft.com/es-es/library/92t2ye13%28v=vs.100%29.aspx
 
 }

@@ -134,11 +134,9 @@ namespace Gear.EmulationCore
         private Emulator emulator;
 
         //!< @brief List of Handlers for clock ticks on plugins.
-        //TODO[ASB] : cambiar definición de TickHandlers desde List<.> a VersionatedContainerCollection
-        private List<VersionatedContainer> TickHandlers;      
+        private VersionatedContainerCollection TickHandlers;      
         //!< @brief List of Handlers for Pin changes on plugins.
-        //TODO[ASB] : cambiar definición de PinHandlers desde List<.> a VersionatedContainerCollection
-        private List<VersionatedContainer> PinHandlers;
+        private VersionatedContainerCollection PinHandlers;
         //!< @brief List of active PlugIns (include system ones, like cog views, etc).
         private List<PluginBase> PlugIns;           
 
@@ -167,8 +165,8 @@ namespace Gear.EmulationCore
             PinHi = 0;
             PinFloat = 0xFFFFFFFFFFFFFFFF;
 
-            TickHandlers = new List<VersionatedContainer>();
-            PinHandlers = new List<VersionatedContainer>();
+            TickHandlers = new VersionatedContainerCollection();
+            PinHandlers = new VersionatedContainerCollection();
             PlugIns = new List<PluginBase>();
 
             Time = 0;
@@ -509,7 +507,7 @@ namespace Gear.EmulationCore
         {   
             if (!(TickHandlers.Contains(mod)))
             {
-                TickHandlers.Add(new VersionatedContainer(mod, PluginVersioning.memberType.OnClock));
+                TickHandlers.Add(mod);
             }
         }
 
