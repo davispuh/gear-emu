@@ -22,6 +22,7 @@
  */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -251,7 +252,7 @@ namespace Gear.PluginSupport
     /// of plugin system. 
     /// It is used on the definition of avalaible versions into PluginVersioning class, and also
     /// to contain an instance of a compiled plugin with the reference to method to call.
-    public class VersionatedContainer
+    public class VersionatedContainer : IEquatable<VersionatedContainer>
     {
         /// @brief Pointer to plugin.
         private PluginBase _plugin;
@@ -260,8 +261,10 @@ namespace Gear.PluginSupport
         /// @brief Type of member to select.
         private PluginVersioning.memberType _memType;
         /// @brief Delegate type assigned to this container.
+        /// @TODO [ASB] : revisar si se requerirán los delegados o no.
         private System.Type _assignedTypeDel;
         /// @brief Delegate assigned to this container
+        /// @TODO [ASB] : revisar si se requerirán los delegados o no.
         private object _assignedDel;
 
         /// @brief Constructor with PluginBase specification.
@@ -274,6 +277,7 @@ namespace Gear.PluginSupport
         }
 
         /// @brief Constructor with member type specification and delegated.
+        /// @TODO [ASB] : revisar si se requerirán los delegados o no; sino eliminar constructor.
         public VersionatedContainer(
             PluginVersioning.memberType MemType, 
             float Version, 
@@ -394,7 +398,6 @@ namespace Gear.PluginSupport
             return success;
         }
 
-        /// @TODO [ASB] : leer que interfaz es requerida de implementar en VersionMemberInfo para ser utilizado dentro de container VersionatedContainerCollection (¿ICollection?)
         private struct VersionMemberInfo
         {
             bool IsDeclaredInDerived;
@@ -410,15 +413,26 @@ namespace Gear.PluginSupport
         }
     }
 
-    public class VersionatedContainerCollection
+    /// @brief List of VersionatedContainer to handle plugins to call on clock tick or pin change
+    /// @version 14.8.7 Added.
+    public class VersionatedContainerCollection //: ICollection<VersionatedContainer>
     {
         private List<VersionatedContainer> _list;
 
+        /// @brief Default constructor
         public VersionatedContainerCollection()
         {
             _list = new List<VersionatedContainer>();
         }
 
+        /// @brief Only allowed read/write container.
+        public bool IsReadOnly { get { return false; } }
+
+        /// @brief Get number of elements in the container.
+        public int Count { get { return _list.Count; } }
+
+        /// @brief Determine if the Container have one reference of the plugin inside.
+        /// @returns True if exist one instance of the plugin, or False if not.
         public bool Contains(PluginBase plugin)
         {
             bool exist = false;
@@ -430,15 +444,63 @@ namespace Gear.PluginSupport
             return exist;
         }
 
-        public void Add(PluginBase plugin)
+        /// @brief Add a plugin of the container.
+        public void Add(PluginBase plugin, PluginVersioning.memberType MemType)
         {
-            //TODO[ASB] : completar metodo Add()
+            _list.Add(new VersionatedContainer(plugin, MemType));
         }
 
+        /// @brief Remove a plugin of the container.
         public void Remove(PluginBase plugin)
         {
-            //TODO[ASB] : completar metodo Remove()
+            foreach (VersionatedContainer vc in _list)
+            {
+                if (vc.Plugin == plugin)
+                {
+                    _list.Remove(vc);
+                    break;  //if found, exit the iteration
+                }
+            }
+
         }
+
+        /// @brief Clear all the contents of the container.
+        public void Clear()
+        {
+            _list.Clear();
+        }
+
+        public IEnumerator<VersionatedContainer> GetEnumerator()
+        {
+            return new VersionatedContainerEnumerator(this);
+        }
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return new VersionatedContainerEnumerator(this);
+        }
+
+        class VersionatedContainerEnumerator : IEnumerator<VersionatedContainer>
+        {
+            private VersionatedContainerCollection _collection;
+            private VersionatedContainer contRef;
+
+            VersionatedContainerEnumerator(VersionatedContainerCollection coll)
+            {
+                _collection = coll;
+            }
+
+            public VersionatedContainer Current
+            {
+                get { return contRef; }
+            }
+
+            object IEnumerator.Current
+            {
+                get { return Current; }
+            }
+
+        }
+
     }
 
     //reference to implement generic collection con ICollect interface:
@@ -446,5 +508,7 @@ namespace Gear.PluginSupport
     //
     //reference on ICollection:
     //http://msdn.microsoft.com/es-es/library/92t2ye13%28v=vs.100%29.aspx
+
+
 
 }

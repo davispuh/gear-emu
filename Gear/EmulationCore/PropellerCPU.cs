@@ -500,38 +500,38 @@ namespace Gear.EmulationCore
             }
         }
 
-        /// @brief Add a plugin to be notified on clock ticks
+        /// @brief Add a plugin to be notified on clock ticks.
         /// @details It see if the plugin exist already to insert or not.
-        /// @param mod Compiled plugin reference to include
+        /// @param mod Compiled plugin reference to include.
         public void NotifyOnClock(PluginBase mod)
         {   
             if (!(TickHandlers.Contains(mod)))
             {
-                TickHandlers.Add(mod);
+                TickHandlers.Add(mod, PluginVersioning.memberType.OnClock);
             }
         }
 
-        /// @brief Remove a plugin from the clock notify list
+        /// @brief Remove a plugin from the clock notify list.
         /// @details Only if the plugin exists on the list, this method removes from it. 
-        /// @param mod Compiled plugin reference to remove
+        /// @param mod Compiled plugin reference to remove.
         public void RemoveOnClock(PluginBase mod)
         {
             if (TickHandlers.Contains(mod))
                 TickHandlers.Remove(mod);
         }
 
-        /// @brief Add a plugin to be notified on pin changes
+        /// @brief Add a plugin to be notified on pin changes.
         /// @details It see if the plugin exist already to insert or not.
-        /// @param mod Compiled plugin reference to include
+        /// @param mod Compiled plugin reference to include.
         public void NotifyOnPins(PluginBase mod)
         {
             if (!(PinHandlers.Contains(mod)))
-                PinHandlers.Add(mod);
+                PinHandlers.Add(mod, PluginVersioning.memberType.OnPinChange);
         }
 
-        /// @brief Remove a plugin from the pin changed notify list
+        /// @brief Remove a plugin from the pin changed notify list.
         /// @details Only if the plugin exists on the list, this method removes from it. 
-        /// @param mod Compiled plugin reference to remove
+        /// @param mod Compiled plugin reference to remove.
         public void RemoveOnPins(PluginBase mod)
         {
             if (PinHandlers.Contains(mod))
