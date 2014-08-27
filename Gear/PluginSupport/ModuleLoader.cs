@@ -102,19 +102,15 @@ namespace Gear.PluginSupport
                 return null;
             }
 
-            object target = ( (obj == null) ?
-                //compile without parameters
-                target = results.CompiledAssembly.CreateInstance(module) :
-                //compile plugin with parameters
-                target = results.CompiledAssembly.CreateInstance(           
-                    module,                                         //name of class
-                    false,                                          //=false: case sensitive
-                    BindingFlags.Public | BindingFlags.Instance,    //flags to delimit the candidates
-                    null,                                           //default binder object
-                    new object[] { obj },                           //parameter lists
-                    null,                                           //default culture
-                    null                                            //default activation object
-                )
+            //compile plugin with parameters
+            object target = results.CompiledAssembly.CreateInstance(           
+                module,                                         //name of class
+                false,                                          //=false: case sensitive
+                BindingFlags.Public | BindingFlags.Instance,    //flags to delimit the candidates
+                null,                                           //default binder object
+                new object[] { obj },                           //parameter lists
+                null,                                           //default culture
+                null                                            //default activation object
             );
 
             if (target == null)

@@ -318,18 +318,22 @@ namespace Gear.PluginSupport
             float ver = 0.0f;
             if (IsValidPlugin())
             {
-                SortedList<float, VersionMemberInfo> selected = GetVersionatedCandidates(plugin.GetType(), memberType);
+                SortedList<float, VersionMemberInfo> selected = 
+                    GetVersionatedCandidates(plugin.GetType(), memberType);
                 //TODO [ASB] : seleccionar con cual version me quedo
             }
             return ver;
         }
 
-        //TODO[ASB] : cambiar en SortedList<float, MethodInfo>, MethodInfo por un struct conteniendo MethodInfo y un atributo para cachar si es de clase base o derivada.
         //ejemplo referencia para obtener atributos desde reflexion:
         //http://stackoverflow.com/questions/6637679/reflection-get-attribute-name-and-value-on-property
         //
+        /// @brief Obtain versionated list of members of the type.
+        /// @param tPlugin  Plugin Type.
+        /// @param memberType Type of member versionated.
+        /// @returns Sorted list by version of Members of memberType type.
         private SortedList<float, VersionMemberInfo> 
-            GetVersionatedCandidates( Type tPlugin, PluginVersioning.memberType memberType)
+            GetVersionatedCandidates(Type tPlugin, PluginVersioning.memberType memberType)
         {
             //prepare the sorted list of candidates to output
             SortedList<float, VersionMemberInfo> selMeth = new SortedList<float, VersionMemberInfo>();
@@ -348,13 +352,16 @@ namespace Gear.PluginSupport
                         VersionAttribute vers = obj as VersionAttribute;    //cast as VersionAttribute
                         //if it is a VersionAttribute type
                         if (vers != null) 
-                            if (vers.MemberType == memberType)  //if it is of memberType type
+                            if (vers.MemberType == memberType)  //if type is the same of given parameter
                             {   //create a entry on the sorted list
-                                selMeth.Add(vers.VersionFrom, 
+                                selMeth.Add(
+                                    vers.VersionFrom, 
                                     new VersionMemberInfo(
-                                        vers.VersionFrom,
-                                        mInfo,
-                                        (mInfo.GetType() == typeof(PluginBase)) ? true : false) );
+                                        vers.VersionFrom, 
+                                        mInfo, 
+                                        (mInfo.DeclaringType == tPlugin) ? true : false
+                                    ) 
+                                );
                             }
                     }
                 } 
@@ -390,13 +397,13 @@ namespace Gear.PluginSupport
         /// @TODO [ASB] : leer que interfaz es requerida de implementar en VersionMemberInfo para ser utilizado dentro de container VersionatedContainerCollection (¿ICollection?)
         private struct VersionMemberInfo
         {
-            bool IsInherited;
+            bool IsDeclaredInDerived;
             float VersionLow;
             MethodInfo MInfo;
 
             public VersionMemberInfo(float versionLow, MethodInfo mInfo, bool isInherited)
             {
-                IsInherited = isInherited;
+                IsDeclaredInDerived = isInherited;
                 VersionLow = versionLow;
                 MInfo = mInfo;
             }
