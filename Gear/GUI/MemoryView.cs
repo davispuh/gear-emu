@@ -34,7 +34,7 @@ using Gear.PluginSupport;
 
 namespace Gear.GUI
 {
-    public partial class MemoryView : PluginBase
+    public partial class MemoryView : Gear.PluginSupport.PluginBase
     {
         //private PropellerCPU Host;
         private Font MonoFont;

@@ -34,7 +34,7 @@ using Gear.PluginSupport;
 
 namespace Gear.GUI.LogicProbe
 {
-    public partial class LogicView : PluginBase
+    public partial class LogicView : Gear.PluginSupport.PluginBase
     {
         private Font MonoFont;
 

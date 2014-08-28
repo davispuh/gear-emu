@@ -34,7 +34,7 @@ using Gear.PluginSupport;
 
 namespace Gear.GUI
 {
-    public partial class CogView : PluginBase
+    public partial class CogView : Gear.PluginSupport.PluginBase
     {
         private int HostID;
         private Font MonoFont;

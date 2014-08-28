@@ -29,8 +29,7 @@ using System.Text;
 using System.CodeDom.Compiler;
 using System.Reflection;
 
-/// @todo Document Gear.PluginSupport namespace.
-/// 
+/// @copydoc Gear.PluginSupport
 namespace Gear.PluginSupport
 {
     public delegate void ErrorEnumProc(System.CodeDom.Compiler.CompilerError e);

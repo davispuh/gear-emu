@@ -27,7 +27,11 @@ using System.Windows.Forms;
 using Gear.EmulationCore;
 
 
-///@brief Plugin support Name space.
+///@brief Name space for Plugin support.
+/// Contains the classes that defines the plugin system: the plugin class structure itself, 
+/// the loading of plugins from XML files, the compiling and instantation of a plugin class, including
+/// versioning to manage changes in the methods as different parameters or results, and runtime
+/// information using C# Reflexion infrastructure. 
 namespace Gear.PluginSupport
 {
     /// @brief Base class for plugin support.

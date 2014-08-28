@@ -28,6 +28,7 @@ using System.Reflection;
 
 using Gear.EmulationCore; 
 
+/// @copydoc Gear.PluginSupport
 namespace Gear.PluginSupport
 {
     /// @brief Versioning support for members of PluginBase.
@@ -252,19 +253,21 @@ namespace Gear.PluginSupport
     /// of plugin system. 
     /// It is used on the definition of avalaible versions into PluginVersioning class, and also
     /// to contain an instance of a compiled plugin with the reference to method to call.
+    /// @note MSDN reference on IEquatable<T> Interface:
+    /// http://msdn.microsoft.com/es-es/library/ms131190%28v=vs.110%29.aspx
     public class VersionatedContainer : IEquatable<VersionatedContainer>
     {
         /// @brief Pointer to plugin.
         private PluginBase _plugin;
-        /// @brief version of plugin system to use
+        /// @brief Version of plugin system to use
         private float _version;
         /// @brief Type of member to select.
         private PluginVersioning.memberType _memType;
         /// @brief Delegate type assigned to this container.
-        /// @TODO [ASB] : revisar si se requerirán los delegados o no.
+        // todo [ASB] : revisar si se requerirán los delegados o no.
         private System.Type _assignedTypeDel;
         /// @brief Delegate assigned to this container
-        /// @TODO [ASB] : revisar si se requerirán los delegados o no.
+        // todo [ASB] : revisar si se requerirán los delegados o no.
         private object _assignedDel;
 
         /// @brief Constructor with PluginBase specification.
@@ -277,7 +280,7 @@ namespace Gear.PluginSupport
         }
 
         /// @brief Constructor with member type specification and delegated.
-        /// @TODO [ASB] : revisar si se requerirán los delegados o no; sino eliminar constructor.
+        // todo [ASB] : revisar si se requerirán los delegados o no; sino eliminar constructor.
         public VersionatedContainer(
             PluginVersioning.memberType MemType, 
             float Version, 
@@ -289,7 +292,7 @@ namespace Gear.PluginSupport
             _assignedTypeDel = asignatedDelegate;
         }
 
-        /// @brief Attribute to PluginBase
+        /// @brief Property for PluginBase.
         public PluginBase Plugin
         {
             get { return _plugin; }
@@ -306,7 +309,58 @@ namespace Gear.PluginSupport
             return (_plugin != null);
         }
 
-        /// @brief Attribute to hold target version
+        /// @brief Indicates if the current object is equal to another object of the same type,
+        /// to implement IEquatable<> interface.
+        public bool Equals(VersionatedContainer other)
+        {
+            if (other == null)
+                return false;
+            else
+            {
+                if ((this._plugin == other._plugin) &&
+                    (this._version == other._version) &&
+                    (this._memType == other._memType))
+                    return true;
+                else
+                    return false;
+            }
+        }
+
+        /// @brief Indicates if the current object is equal to another object of the same type,
+        /// to implement IEquatable<> interface, overriding the implementation for Object.
+        public override bool Equals(Object obj)
+        {
+            if (obj == null)
+                return false;
+
+            VersionatedContainer ContObj = obj as VersionatedContainer;
+            if (ContObj == null)
+                return false;
+            else
+                return Equals(ContObj);
+        }
+
+        /// @brief Serves as the default hash function for Object.
+        public override int GetHashCode()
+        {
+            return this._version.GetHashCode();
+        }
+
+        public static bool operator ==(VersionatedContainer cont1, VersionatedContainer cont2)
+        {
+            if ((object)cont1 == null || ((object)cont2 == null))
+                return Object.Equals(cont1, cont2);
+            return cont1.Equals(cont2);
+        }
+
+        public static bool operator !=(VersionatedContainer cont1, VersionatedContainer cont2)
+        {
+            if (cont1 == null || cont2 == null)
+                return !Object.Equals(cont1, cont2);
+            return !(cont1.Equals(cont2));
+        }
+
+        /// @brief  Property for hold target version.
         public PluginVersioning.memberType memberType
         {
             get { return _memType; }
@@ -316,7 +370,7 @@ namespace Gear.PluginSupport
         /// @brief Get Version for the member type given of the Plugin instance.
         /// @param plugin Plugin instance to obtain its version number.
         /// @param memberType Type of versionated member to obtain its version.
-        /// @returns Version of plugin to declare
+        /// @returns Version of plugin to declare.
         private float GetVersion(PluginBase plugin, PluginVersioning.memberType memberType)
         {
             float ver = 0.0f;
@@ -329,13 +383,12 @@ namespace Gear.PluginSupport
             return ver;
         }
 
-        //ejemplo referencia para obtener atributos desde reflexion:
-        //http://stackoverflow.com/questions/6637679/reflection-get-attribute-name-and-value-on-property
-        //
         /// @brief Obtain versionated list of members of the type.
         /// @param tPlugin  Plugin Type.
         /// @param memberType Type of member versionated.
         /// @returns Sorted list by version of Members of memberType type.
+        /// @note Example to obtain attributes from Reflexion:
+        /// http://stackoverflow.com/questions/6637679/reflection-get-attribute-name-and-value-on-property
         private SortedList<float, VersionMemberInfo> 
             GetVersionatedCandidates(Type tPlugin, PluginVersioning.memberType memberType)
         {
@@ -377,7 +430,7 @@ namespace Gear.PluginSupport
         private bool Invoke(PluginVersioning.memberType member)
         {
             bool success = false;
-            ///TODO [ASB] : agregar lógica para determinar el tipo de miembro según versión, y 
+            // TODO [ASB] : agregar lógica para determinar el tipo de miembro según versión, y 
             //  ejecutarlo
             if (PluginVersioning.ManagedVersions.ContainsKey(member))
             {
@@ -398,6 +451,7 @@ namespace Gear.PluginSupport
             return success;
         }
 
+        /// @brief Document Gear.PluginSupport.VersionatedContainer.VersionMemberInfo struct.
         private struct VersionMemberInfo
         {
             bool IsDeclaredInDerived;
@@ -415,7 +469,14 @@ namespace Gear.PluginSupport
 
     /// @brief List of VersionatedContainer to handle plugins to call on clock tick or pin change
     /// @version 14.8.7 Added.
-    public class VersionatedContainerCollection //: ICollection<VersionatedContainer>
+    /// @note MSDN reference on ICollection Interface:
+    /// http://msdn.microsoft.com/es-es/library/92t2ye13%28v=vs.100%29.aspx
+    /// MSDN reference on IEnumerator<T> Interface:
+    /// http://msdn.microsoft.com/es-es/library/78dfe2yb%28v=vs.110%29.aspx
+    ///
+    /// Example to implement generic collection con ICollect interface:
+    /// http://www.codeproject.com/Articles/21241/Implementing-C-Generic-Collections-using-ICollecti
+    public class VersionatedContainerCollection : ICollection<VersionatedContainer>
     {
         private List<VersionatedContainer> _list;
 
@@ -431,7 +492,15 @@ namespace Gear.PluginSupport
         /// @brief Get number of elements in the container.
         public int Count { get { return _list.Count; } }
 
+        /// @brief Reference an element of the collection at index position.
+        public VersionatedContainer this[int index]
+        {
+            get { return (VersionatedContainer)_list[index]; }
+            set { _list[index] = value; }
+        }
+
         /// @brief Determine if the Container have one reference of the plugin inside.
+        /// @note This method is thought to be used in the program.
         /// @returns True if exist one instance of the plugin, or False if not.
         public bool Contains(PluginBase plugin)
         {
@@ -444,71 +513,118 @@ namespace Gear.PluginSupport
             return exist;
         }
 
-        /// @brief Add a plugin of the container.
+        /// @brief Determine if the Container have one reference of the plugin inside.
+        /// @note This method is required by ICollection<> Interface, but not thought to be used.
+        /// @param verCont Container reference to check its precesence in the collection.
+        /// @returns True if exist one instance of the plugin, or False if not.
+        public bool Contains(VersionatedContainer verCont)
+        {
+            return _list.Contains(verCont);
+        }
+
+        /// @brief Add a plugin of the container, given some components.
+        /// @note This method is thought to be used in the program.
+        /// @param plugin Plugin to reference.
+        /// @param MemType Type of member.
         public void Add(PluginBase plugin, PluginVersioning.memberType MemType)
         {
             _list.Add(new VersionatedContainer(plugin, MemType));
         }
 
-        /// @brief Remove a plugin of the container.
-        public void Remove(PluginBase plugin)
+        /// @brief Add a plugin of the container, given some components.
+        /// @note This method is required by ICollection<> Interface, but not thought to be used.
+        /// @param verCont Container reference to add to collection.
+        public void Add(VersionatedContainer verCont)
         {
+            _list.Add(verCont);
+        }
+
+        /// @brief Remove a plugin of the container, given plugin reference.
+        /// @note This method is thought to be used in the program.
+        /// @param plugin Plugin reference to remove.
+        /// @returns True if item is successfully removed; otherwise, false. Also returns false if 
+        /// item was not found.
+        public bool Remove(PluginBase plugin)
+        {
+            bool removed = false;
             foreach (VersionatedContainer vc in _list)
             {
                 if (vc.Plugin == plugin)
                 {
                     _list.Remove(vc);
+                    removed = true;
                     break;  //if found, exit the iteration
                 }
             }
+            return removed;
+        }
 
+        /// @brief Remove a plugin of the container.
+        /// @note This method is required by ICollection<> Interface, but not thought to be used.
+        /// @param verCont Container reference to remove.
+        /// @returns True if item is successfully removed; otherwise, false. Also returns false if 
+        /// item was not found.
+        public bool Remove(VersionatedContainer verCont)
+        {
+            return _list.Remove(verCont);
         }
 
         /// @brief Clear all the contents of the container.
+        /// @note This method is required by ICollection<> Interface, but not thought to be used.
         public void Clear()
         {
             _list.Clear();
         }
 
+        /// @brief Document
+        /// @note This method is required by ICollection<> Interface.
         public IEnumerator<VersionatedContainer> GetEnumerator()
         {
             return new VersionatedContainerEnumerator(this);
         }
+
+        /// @brief 
+        /// @note This method is required by ICollection<> Interface.
         IEnumerator IEnumerable.GetEnumerator()
         {
             return new VersionatedContainerEnumerator(this);
         }
 
+        /// @brief Class to implement enumeration of VersionatedContainer objects.
+        /// @note This class is required by ICollection<> Interface of VersionatedContainerCollection,
+        /// and also it requires that implements IEnumerator<> Interface here too.
         class VersionatedContainerEnumerator : IEnumerator<VersionatedContainer>
         {
             private VersionatedContainerCollection _collection;
+            private int contIdx;
             private VersionatedContainer contRef;
 
-            VersionatedContainerEnumerator(VersionatedContainerCollection coll)
+            public VersionatedContainerEnumerator(VersionatedContainerCollection coll)
             {
                 _collection = coll;
+                contIdx = -1;
             }
 
-            public VersionatedContainer Current
+            public bool MoveNext()
             {
-                get { return contRef; }
+                if (++contIdx >= _collection.Count) //Avoids going beyond the end of the collection.
+                    return false;
+                else
+                    contRef = _collection[contIdx]; // Set current box to next item in collection.
+                return true;
             }
 
-            object IEnumerator.Current
-            {
-                get { return Current; }
-            }
+            public void Reset() { contIdx = -1; }
+
+            void IDisposable.Dispose() { }
+
+            public VersionatedContainer Current { get { return contRef; } }
+
+            object IEnumerator.Current { get { return Current; } }
 
         }
 
     }
-
-    //reference to implement generic collection con ICollect interface:
-    //http://www.codeproject.com/Articles/21241/Implementing-C-Generic-Collections-using-ICollecti
-    //
-    //reference on ICollection:
-    //http://msdn.microsoft.com/es-es/library/92t2ye13%28v=vs.100%29.aspx
-
 
 
 }
