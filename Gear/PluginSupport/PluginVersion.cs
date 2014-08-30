@@ -65,6 +65,23 @@ namespace Gear.PluginSupport
 
         static public Dictionary<memberType, VersionatedContainer> ManagedVersions;
 
+        /// @brief Document Gear.PluginSupport.PluginVersioning.VersionMemberInfo struct.
+        private struct VersionMemberInfo
+        {
+            public bool IsDeclaredInDerived;
+            public bool IsMandatory;
+            public float VersionLow;
+            public MethodInfo MInfo;
+
+            public VersionMemberInfo(float versionLow, MethodInfo mInfo, bool isInherited, bool isMandatory)
+            {
+                VersionLow = versionLow;
+                MInfo = mInfo;
+                IsDeclaredInDerived = isInherited;
+                IsMandatory = isMandatory;
+            }
+        }
+
         /// @brief Static default constructor
         static PluginVersioning()
         {
@@ -81,6 +98,106 @@ namespace Gear.PluginSupport
                 new VersionatedContainer(memberType.PresentChip, 0.0f, typeof(PresentChipV0_0)));
             ManagedVersions.Add(memberType.PresentChip,
                 new VersionatedContainer(memberType.PresentChip, 1.0f, typeof(PresentChipV1_0)));
+        }
+
+        /// @brief Obtain versionated list of members of the type, using reflexion on plugin type.
+        /// @param tPlugin  Plugin Type to obtain versionated methods implementation details.
+        /// @param memberType Type of versionated member.
+        /// @returns Sorted list of VersionMemberInfo by version of members of memberType type.
+        /// @note @internal Example to obtain attributes from Reflexion:
+        /// http://stackoverflow.com/questions/6637679/reflection-get-attribute-name-and-value-on-property
+        static private SortedList<float, VersionMemberInfo>
+            GetVersionatedCandidates(Type tPlugin, PluginVersioning.memberType memberType)
+        {
+            //prepare the sorted list of candidates to output
+            SortedList<float, VersionMemberInfo> selMeth = new SortedList<float, VersionMemberInfo>();
+            //get the methods list of the plugin
+            MethodInfo[] meth = tPlugin.GetMethods(BindingFlags.Instance | BindingFlags.Public);
+            //browse the method list
+            foreach (MethodInfo mInfo in meth)
+            {
+                //get the custom attributes for the method
+                Object[] attr = mInfo.GetCustomAttributes(typeof(VersionAttribute), true);
+                //if there are custom attributes for it
+                if (attr.Length > 0)
+                {   //browse the attribute
+                    foreach (Object obj in attr)
+                    {
+                        VersionAttribute vers = obj as VersionAttribute;    //cast as VersionAttribute
+                        //if it is a VersionAttribute type
+                        if (vers != null)
+                            if (vers.MemberType == memberType)  //if type is the same of given parameter
+                            {   //create a entry on the sorted list
+                                selMeth.Add(
+                                    vers.VersionFrom,
+                                    new VersionMemberInfo(
+                                        vers.VersionFrom,
+                                        mInfo,
+                                        (mInfo.DeclaringType == tPlugin) ? true : false,
+                                        vers.IsMandatory
+                                    )
+                                );
+                            }
+                    }
+                }
+            }
+            return selMeth;
+        }
+
+        /// @brief Get Version for the given member type of the Plugin instance.
+        /// @details As theorically a PluginBase descendent can have instanciated more than one 
+        /// version of each memberType, this method detects and returns the higher version available.
+        /// @param[in] plugin Plugin instance to obtain its version number.
+        /// @param[in] memberType Type of versionated member to obtain its version.
+        /// @param[out] ver Upper version instanciated of the plugin supplied as parameter.
+        /// @returns True if there is at least one versionated member of the type supplied as 
+        /// parameter, or False if there is not.
+        /// @note @internal reference on article "How to loop through a SortedList, getting both the key and the value"  http://stackoverflow.com/questions/14013261/how-to-loop-through-a-sortedlist-getting-both-the-key-and-the-value
+        static public bool GetImplementedVersion(PluginBase plugin,
+            PluginVersioning.memberType memberType, out float ver)
+        {
+            ver = -1.0f;
+            if (plugin == null)
+                return false;
+            else
+            {
+                //Get the list of avalaible versions of this member type.
+                SortedList<float, VersionMemberInfo> selected =
+                    GetVersionatedCandidates(plugin.GetType(), memberType);
+                if (selected.Count == 0)    //if there is no method of this type
+                    return false;
+                else    //if there at least one method of this type
+                {
+                    bool exists = false;
+                    //browse the candidates list looking for a method instanciated in derived plugin class
+                    foreach (KeyValuePair<float, VersionMemberInfo> pair in selected)
+                    {
+                        if (pair.Value.IsDeclaredInDerived)
+                        {
+                            //remember higher value
+                            ver = ((pair.Key >= ver) ? pair.Key : ver);
+                            exists = true;
+                        }
+                    }
+                    return exists;
+                }
+            }
+        }
+
+        /// @brief Check if the mandatory methods for each type are defined. If not, 
+        /// also returns an error list.
+        /// @todo agregar parametro para devolver una lista de errores compatible con el compilador de plugins.
+        /// @param plugin  Plugin instance to be checked.
+        /// @returns True if all the mandatory members are defined, of false if not.
+        static public bool MandatoryMembersDefined(PluginBase plugin) 
+        {
+            if (plugin == null)
+                return false;
+            else
+            {
+                /// @todo agregar lógica y devolver una lista de errores compatible con el compilador de plugins.
+                return true;
+            }
         }
 
         //=======================================================================
@@ -191,13 +308,15 @@ namespace Gear.PluginSupport
     [AttributeUsage(
         AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Delegate, 
         AllowMultiple = false, Inherited = true)]
-    public class VersionAttribute : Attribute
+    public class VersionAttribute : System.Attribute
     {
         
         /// @brief Range of versioning.
         private VersRange _range;
         /// @brief Type of member to versioning.
         private PluginVersioning.memberType _memberType;
+        /// @brief States if it is Mandatory (=true) or optional (=false) to declare in the plugin.
+        private bool isMandatory;
         /// @brief Code of a versionated member.
         //private PluginVersioning.versionatedMember _versionatedMember;
 
@@ -212,6 +331,7 @@ namespace Gear.PluginSupport
             //TODO [ASB] : add support for exceptions trowed by VersRange
             _range = new VersRange(versionFrom);
             _memberType = memberType;
+            isMandatory = false;
             //_versionatedMember = PluginVersioning.versionatedMember.none;
         }
 
@@ -225,15 +345,25 @@ namespace Gear.PluginSupport
             ///TODO [ASB] : add support for exceptions trowed by VersRange
             _range = new VersRange(lowerLimit, upperLimit);
             _memberType = memberType;
+            isMandatory = false;
             //_versionatedMember = PluginVersioning.versionatedMember.none;
         }
         #endregion
 
+        /// @brief Property for member type.
         public PluginVersioning.memberType MemberType
         {
             get { return _memberType; }
         }
 
+        /// @brief Property for mandatory or optional state of the member.
+        public bool IsMandatory
+        {
+            get { return isMandatory; }
+            set { isMandatory = value; }
+        }
+
+        /// @brief Get the version value witch the member is valid.
         public float VersionFrom {
             get { return _range.LowerLimit; } 
         }
@@ -253,9 +383,9 @@ namespace Gear.PluginSupport
     /// of plugin system. 
     /// It is used on the definition of avalaible versions into PluginVersioning class, and also
     /// to contain an instance of a compiled plugin with the reference to method to call.
-    /// @note MSDN reference on IEquatable<T> Interface:
+    /// @note @internal MSDN reference on IEquatable<T> Interface:
     /// http://msdn.microsoft.com/es-es/library/ms131190%28v=vs.110%29.aspx
-    public class VersionatedContainer : IEquatable<VersionatedContainer>
+    public class VersionatedContainer : System.IEquatable<VersionatedContainer>
     {
         /// @brief Pointer to plugin.
         private PluginBase _plugin;
@@ -275,7 +405,7 @@ namespace Gear.PluginSupport
         {
             _plugin = plugin;
             _memType = MemType;
-            _version = GetVersion(plugin, MemType);
+            SetVersion(); //this set _version property
             _assignedTypeDel = null;
         }
 
@@ -301,6 +431,19 @@ namespace Gear.PluginSupport
                 if (value != null)
                     _plugin = value;
             }
+        }
+
+        /// @brief Get property for Version.
+        public float Version
+        {
+            get { return _version; }
+        }
+
+        /// @brief  Property for hold target version.
+        public PluginVersioning.memberType memberType
+        {
+            get { return _memType; }
+            set { _memType = value; }
         }
 
         /// @brief Determine if plugin is a valid reference (=true) or null (=false).
@@ -360,72 +503,15 @@ namespace Gear.PluginSupport
             return !(cont1.Equals(cont2));
         }
 
-        /// @brief  Property for hold target version.
-        public PluginVersioning.memberType memberType
-        {
-            get { return _memType; }
-            set { _memType = value; }
-        }
 
-        /// @brief Get Version for the member type given of the Plugin instance.
-        /// @param plugin Plugin instance to obtain its version number.
-        /// @param memberType Type of versionated member to obtain its version.
-        /// @returns Version of plugin to declare.
-        private float GetVersion(PluginBase plugin, PluginVersioning.memberType memberType)
+        /// @brief Set the attribute _version, calling VersionatedContainer.GetImplementedVersion().
+        /// @details As theorically a PluginBase descendent can have instanciated more than one 
+        /// version of each memberType, this method detects and returns the higher version available.
+        private void SetVersion()
         {
-            float ver = 0.0f;
-            if (IsValidPlugin())
-            {
-                SortedList<float, VersionMemberInfo> selected = 
-                    GetVersionatedCandidates(plugin.GetType(), memberType);
-                //TODO [ASB] : seleccionar con cual version me quedo
-            }
-            return ver;
+            PluginVersioning.GetImplementedVersion(_plugin, _memType, out _version);
         }
-
-        /// @brief Obtain versionated list of members of the type.
-        /// @param tPlugin  Plugin Type.
-        /// @param memberType Type of member versionated.
-        /// @returns Sorted list by version of Members of memberType type.
-        /// @note Example to obtain attributes from Reflexion:
-        /// http://stackoverflow.com/questions/6637679/reflection-get-attribute-name-and-value-on-property
-        private SortedList<float, VersionMemberInfo> 
-            GetVersionatedCandidates(Type tPlugin, PluginVersioning.memberType memberType)
-        {
-            //prepare the sorted list of candidates to output
-            SortedList<float, VersionMemberInfo> selMeth = new SortedList<float, VersionMemberInfo>();
-            //get the methods list of the plugin
-            MethodInfo[] meth = tPlugin.GetMethods(BindingFlags.Instance | BindingFlags.Public);
-            //browse the method list
-            foreach (MethodInfo mInfo in meth)
-            {
-                //get the custom attributes for the method
-                Object[] attr = mInfo.GetCustomAttributes(typeof(VersionAttribute), true);
-                //if there are custom attributes for it
-                if (attr.Length > 0)
-                {   //browse the attribute
-                    foreach (Object obj in attr)
-                    {   
-                        VersionAttribute vers = obj as VersionAttribute;    //cast as VersionAttribute
-                        //if it is a VersionAttribute type
-                        if (vers != null) 
-                            if (vers.MemberType == memberType)  //if type is the same of given parameter
-                            {   //create a entry on the sorted list
-                                selMeth.Add(
-                                    vers.VersionFrom, 
-                                    new VersionMemberInfo(
-                                        vers.VersionFrom, 
-                                        mInfo, 
-                                        (mInfo.DeclaringType == tPlugin) ? true : false
-                                    ) 
-                                );
-                            }
-                    }
-                } 
-            }
-            return selMeth;
-        }
-
+        
         /// @brief Get member code by type and version.
         private bool Invoke(PluginVersioning.memberType member)
         {
@@ -451,32 +537,20 @@ namespace Gear.PluginSupport
             return success;
         }
 
-        /// @brief Document Gear.PluginSupport.VersionatedContainer.VersionMemberInfo struct.
-        private struct VersionMemberInfo
-        {
-            bool IsDeclaredInDerived;
-            float VersionLow;
-            MethodInfo MInfo;
-
-            public VersionMemberInfo(float versionLow, MethodInfo mInfo, bool isInherited)
-            {
-                IsDeclaredInDerived = isInherited;
-                VersionLow = versionLow;
-                MInfo = mInfo;
-            }
-        }
     }
 
     /// @brief List of VersionatedContainer to handle plugins to call on clock tick or pin change
     /// @version 14.8.7 Added.
-    /// @note MSDN reference on ICollection Interface:
+    /// @note @internal MSDN reference on ICollection Interface:
     /// http://msdn.microsoft.com/es-es/library/92t2ye13%28v=vs.100%29.aspx
+    /// @par
     /// MSDN reference on IEnumerator<T> Interface:
     /// http://msdn.microsoft.com/es-es/library/78dfe2yb%28v=vs.110%29.aspx
-    ///
+    /// @par
     /// Example to implement generic collection con ICollect interface:
     /// http://www.codeproject.com/Articles/21241/Implementing-C-Generic-Collections-using-ICollecti
-    public class VersionatedContainerCollection : ICollection<VersionatedContainer>
+    public class VersionatedContainerCollection : 
+        System.Collections.Generic.ICollection<VersionatedContainer>
     {
         private List<VersionatedContainer> _list;
 
@@ -576,14 +650,25 @@ namespace Gear.PluginSupport
             _list.Clear();
         }
 
-        /// @brief Document
+        /// @brief Copies elements from container to an Array, starting at a particular Array index.
+        /// @note This method is required by ICollection<> Interface, but not thought to be used.
+        public void CopyTo(VersionatedContainer[] array, int arrayIndex)
+        {
+            for (int i = 0; i < _list.Count; i++)
+            {
+
+                array[i] = (VersionatedContainer)_list[i];
+            }
+        }
+
+        /// @todo Document VersionatedContainerCollection.GetEnumerator()
         /// @note This method is required by ICollection<> Interface.
         public IEnumerator<VersionatedContainer> GetEnumerator()
         {
             return new VersionatedContainerEnumerator(this);
         }
 
-        /// @brief 
+        /// @todo  Document VersionatedContainerCollection.GetEnumerator()
         /// @note This method is required by ICollection<> Interface.
         IEnumerator IEnumerable.GetEnumerator()
         {
@@ -593,7 +678,8 @@ namespace Gear.PluginSupport
         /// @brief Class to implement enumeration of VersionatedContainer objects.
         /// @note This class is required by ICollection<> Interface of VersionatedContainerCollection,
         /// and also it requires that implements IEnumerator<> Interface here too.
-        class VersionatedContainerEnumerator : IEnumerator<VersionatedContainer>
+        class VersionatedContainerEnumerator : 
+            System.Collections.Generic.IEnumerator<VersionatedContainer>
         {
             private VersionatedContainerCollection _collection;
             private int contIdx;

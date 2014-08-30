@@ -82,7 +82,7 @@ namespace Gear.PluginSupport
         /// propeller chip (so you can drive the pins). 
         /// @note Source: <a href="http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment?p=625629&viewfull=1#post625629">
         /// API GEAR described on GEAR original Post</a>
-        [Version(0.0f, 1.0f, PluginVersioning.memberType.PresentChip)]
+        [Version(0.0f, 1.0f, PluginVersioning.memberType.PresentChip, IsMandatory=true)]
         public virtual void PresentChip(PropellerCPU host) { }
 
         /// @brief Points to propeller instance.
@@ -91,7 +91,7 @@ namespace Gear.PluginSupport
         /// @note Source: <a href="http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment?p=625629&viewfull=1#post625629">
         /// API GEAR described on GEAR original Post</a>
         /// @version 14.8.10 - Added method without parameters.
-        [Version(1.0f, PluginVersioning.memberType.PresentChip)]
+        [Version(1.0f, PluginVersioning.memberType.PresentChip, IsMandatory = true)]
         public virtual void PresentChip() { }    
 
         /// @brief Event when the chip is reset.

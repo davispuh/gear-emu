@@ -729,8 +729,9 @@ namespace Gear.EmulationCore
             // Run our modules on time event
             //TODO [ASB] : cambiar lo de abajo por 
             //  mod.GetMember(VersionAttribute.memberTypeVersion.OnClock, \<version\>) }
-            foreach (PluginBase mod in TickHandlers)
+            foreach (VersionatedContainer cont in TickHandlers)
             {
+                cont.Plugin
                 mod.OnClock(Time);
             }
             
@@ -770,7 +771,7 @@ namespace Gear.EmulationCore
                 }
             }
             //traverse across plugins that use NotityOnPins()
-            foreach (PluginBase mod in PinHandlers)
+            foreach (VersionatedContainer cont in PinHandlers)
                 mod.OnPinChange(Time, PinStates);
         }
 
