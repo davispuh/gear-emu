@@ -104,6 +104,7 @@ namespace Gear.GUI
             Chip.IncludePlugin(bm);     //attach into plugin lists of PropellerCPU
             // TODO [ASB] : change to select the appropiate version of method.
             bm.PresentChip(Chip);       //invoke initial setup of plugin.
+            // TODO [ASB] : agregar lógica para detectar si se define que si se usa NotifyOnClock(.) dentro de PresentChip() y no está implementado en derivada de pluginBase, se muestre el mensaje de error al usuario, se elimine de la lista de chip (usando Chip.RemovePlugin(.) y se abra la ventana del editor de plugins con un mensaje de error. La misma validación debe estar para el análogo de NotifyOnPins(.)
 
             TabPage t = new TabPage(bm.Title);
             t.Parent = documentsTab;

@@ -63,7 +63,7 @@ namespace Gear.PluginSupport
             PresentChip     //!< Prepare the notifiers.
         }
 
-        static public Dictionary<memberType, VersionatedContainer> ManagedVersions;
+        //static public Dictionary<memberType, VersionatedContainer> ManagedVersions;
 
         /// @brief Document Gear.PluginSupport.PluginVersioning.VersionMemberInfo struct.
         private struct VersionMemberInfo
@@ -85,19 +85,19 @@ namespace Gear.PluginSupport
         /// @brief Static default constructor
         static PluginVersioning()
         {
-            //TODO [ASB] : change this declaration for a dynamic evaluation with reflexion class
-            ManagedVersions = new Dictionary<memberType, VersionatedContainer> ();
-            ManagedVersions.Add(memberType.none, null);
-            ManagedVersions.Add(memberType.OnClock,
-                new VersionatedContainer(memberType.OnClock, 0.0f, typeof(OnClockV0_0)));
-            ManagedVersions.Add(memberType.OnClock,
-                new VersionatedContainer(memberType.OnClock, 1.0f, typeof(OnClockV1_0)));
-            ManagedVersions.Add(memberType.OnPinChange,
-                new VersionatedContainer(memberType.OnPinChange, 0.0f, typeof(OnPinChangeV0_0)));
-            ManagedVersions.Add(memberType.PresentChip,
-                new VersionatedContainer(memberType.PresentChip, 0.0f, typeof(PresentChipV0_0)));
-            ManagedVersions.Add(memberType.PresentChip,
-                new VersionatedContainer(memberType.PresentChip, 1.0f, typeof(PresentChipV1_0)));
+            ////TODO [ASB] : change this declaration for a dynamic evaluation with reflexion class
+            //ManagedVersions = new Dictionary<memberType, VersionatedContainer> ();
+            //ManagedVersions.Add(memberType.none, null);
+            //ManagedVersions.Add(memberType.OnClock,
+            //    new VersionatedContainer(memberType.OnClock, 0.0f, typeof(OnClockV0_0)));
+            //ManagedVersions.Add(memberType.OnClock,
+            //    new VersionatedContainer(memberType.OnClock, 1.0f, typeof(OnClockV1_0)));
+            //ManagedVersions.Add(memberType.OnPinChange,
+            //    new VersionatedContainer(memberType.OnPinChange, 0.0f, typeof(OnPinChangeV0_0)));
+            //ManagedVersions.Add(memberType.PresentChip,
+            //    new VersionatedContainer(memberType.PresentChip, 0.0f, typeof(PresentChipV0_0)));
+            //ManagedVersions.Add(memberType.PresentChip,
+            //    new VersionatedContainer(memberType.PresentChip, 1.0f, typeof(PresentChipV1_0)));
         }
 
         /// @brief Obtain versionated list of members of the type, using reflexion on plugin type.
@@ -164,9 +164,9 @@ namespace Gear.PluginSupport
                 //Get the list of avalaible versions of this member type.
                 SortedList<float, VersionMemberInfo> selected =
                     GetVersionatedCandidates(plugin.GetType(), memberType);
-                if (selected.Count == 0)    //if there is no method of this type
+                if (selected.Count == 0)    //if there is no method of this type implemented on plugin
                     return false;
-                else    //if there at least one method of this type
+                else    //if there at least one method of this type implemented on plugin
                 {
                     bool exists = false;
                     //browse the candidates list looking for a method instanciated in derived plugin class
@@ -184,12 +184,27 @@ namespace Gear.PluginSupport
             }
         }
 
+        /// @brief Determine if exist in the plugin a implemented member of the type given as parameter.
+        /// @details This method is used after the plugin is loaded in memory, to check if it is 
+        /// consistent: ex. when the derived plugin declare on PresentChip() that it use NotifyOnPins()
+        /// method, there must exist a definition for OnPinChange() method correspondly.
+        /// @param[in] plugin Plugin instance to check.
+        /// @param[in] memberType Type of versionated member to check.
+        /// @returns True if there is an implemented member, false if not.
+        static public bool IsMemberTypeImplemented(PluginBase plugin,
+            PluginVersioning.memberType memberType)
+        {
+            float temp;
+            return GetImplementedVersion(plugin, memberType, out temp);
+        }
+
         /// @brief Check if the mandatory methods for each type are defined. If not, 
         /// also returns an error list.
         /// @todo agregar parametro para devolver una lista de errores compatible con el compilador de plugins.
+        /// 
         /// @param plugin  Plugin instance to be checked.
         /// @returns True if all the mandatory members are defined, of false if not.
-        static public bool MandatoryMembersDefined(PluginBase plugin) 
+        static public bool IsMandatoryMembersDefined(PluginBase plugin) 
         {
             if (plugin == null)
                 return false;
@@ -204,25 +219,25 @@ namespace Gear.PluginSupport
         //Declare in this section delegates for each version of members to manage.
         #region Delegates for each versionated member of PluginBase.
 
-        /// @brief Delegate for version 0.0 for OnClock.
-        [VersionAttribute(0.0f, 1.0f, PluginVersioning.memberType.OnClock)]
-        public delegate void OnClockV0_0(double time);
+        ///// @brief Delegate for version 0.0 for OnClock.
+        //[VersionAttribute(0.0f, 1.0f, PluginVersioning.memberType.OnClock)]
+        //public delegate void OnClockV0_0(double time);
 
-        /// @brief Delegate for version 1.0 for OnClock.
-        [Version(1.0f, PluginVersioning.memberType.OnClock)]
-        public delegate void OnClockV1_0(double time, uint sysCounter);
+        ///// @brief Delegate for version 1.0 for OnClock.
+        //[Version(1.0f, PluginVersioning.memberType.OnClock)]
+        //public delegate void OnClockV1_0(double time, uint sysCounter);
 
-        /// @brief Delegate for version 0.0 for OnPinChange.
-        [VersionAttribute(0.0f,PluginVersioning.memberType.OnPinChange)]
-        public delegate void OnPinChangeV0_0(double time);
+        ///// @brief Delegate for version 0.0 for OnPinChange.
+        //[VersionAttribute(0.0f,PluginVersioning.memberType.OnPinChange)]
+        //public delegate void OnPinChangeV0_0(double time);
 
-        /// @brief Delegate for version 0.0 for PresentChip.
-        [VersionAttribute(0.0f, 1.0f, PluginVersioning.memberType.PresentChip)]
-        public delegate void PresentChipV0_0(PropellerCPU host);
+        ///// @brief Delegate for version 0.0 for PresentChip.
+        //[VersionAttribute(0.0f, 1.0f, PluginVersioning.memberType.PresentChip)]
+        //public delegate void PresentChipV0_0(PropellerCPU host);
 
-        /// @brief Delegate for version 1.0 for PresentChip.
-        [Version(1.0f, PluginVersioning.memberType.PresentChip)]
-        public delegate void PresentChipV1_0();
+        ///// @brief Delegate for version 1.0 for PresentChip.
+        //[Version(1.0f, PluginVersioning.memberType.PresentChip)]
+        //public delegate void PresentChipV1_0();
 
         //=======================================================================
         #endregion
@@ -392,35 +407,39 @@ namespace Gear.PluginSupport
         /// @brief Version of plugin system to use
         private float _version;
         /// @brief Type of member to select.
-        private PluginVersioning.memberType _memType;
-        /// @brief Delegate type assigned to this container.
-        // todo [ASB] : revisar si se requerirán los delegados o no.
-        private System.Type _assignedTypeDel;
-        /// @brief Delegate assigned to this container
-        // todo [ASB] : revisar si se requerirán los delegados o no.
-        private object _assignedDel;
+        private PluginVersioning.memberType _membType;
+        ///// @brief Delegate type assigned to this container.
+        //// todo [ASB] : revisar si se requerirán los delegados o no.
+        //private System.Type _assignedTypeDel;
+        ///// @brief Delegate assigned to this container
+        //// todo [ASB] : revisar si se requerirán los delegados o no.
+        //private object _assignedDel;
 
         /// @brief Constructor with PluginBase specification.
         public VersionatedContainer(PluginBase plugin, PluginVersioning.memberType MemType)
         {
             _plugin = plugin;
-            _memType = MemType;
-            SetVersion(); //this set _version property
-            _assignedTypeDel = null;
+            _membType = MemType;
+            //As theorically a PluginBase descendent can have instanciated more than one version of
+            //each memberType, below code detects and returns the higher version available.
+            _version = ((PluginVersioning.GetImplementedVersion(_plugin, _membType, out _version)) 
+                ? _version 
+                : -1.0f );
+            //_assignedTypeDel = null;
         }
 
-        /// @brief Constructor with member type specification and delegated.
-        // todo [ASB] : revisar si se requerirán los delegados o no; sino eliminar constructor.
-        public VersionatedContainer(
-            PluginVersioning.memberType MemType, 
-            float Version, 
-            System.Type asignatedDelegate)
-        {
-            _plugin = null;
-            _version = Version;
-            _memType = MemType;
-            _assignedTypeDel = asignatedDelegate;
-        }
+        ///// @brief Constructor with member type specification and delegated.
+        //// todo [ASB] : revisar si se requerirán los delegados o no; sino eliminar constructor.
+        //public VersionatedContainer(
+        //    PluginVersioning.memberType MemType, 
+        //    float Version, 
+        //    System.Type asignatedDelegate)
+        //{
+        //    _plugin = null;
+        //    _version = Version;
+        //    _membType = MemType;
+        //    _assignedTypeDel = asignatedDelegate;
+        //}
 
         /// @brief Property for PluginBase.
         public PluginBase Plugin
@@ -442,14 +461,21 @@ namespace Gear.PluginSupport
         /// @brief  Property for hold target version.
         public PluginVersioning.memberType memberType
         {
-            get { return _memType; }
-            set { _memType = value; }
+            get { return _membType; }
+            set { _membType = value; }
         }
 
         /// @brief Determine if plugin is a valid reference (=true) or null (=false).
         public bool IsValidPlugin()
         {
             return (_plugin != null);
+        }
+
+        /// @brief Determine if the container have a valid versionated member.
+        /// @returns True if the versionated member is valid, or false if not.
+        public bool IsValidMember()
+        {
+            return ((IsValidPlugin())&&(_version >= 0.0f) ? true : false);
         }
 
         /// @brief Indicates if the current object is equal to another object of the same type,
@@ -462,7 +488,7 @@ namespace Gear.PluginSupport
             {
                 if ((this._plugin == other._plugin) &&
                     (this._version == other._version) &&
-                    (this._memType == other._memType))
+                    (this._membType == other._membType))
                     return true;
                 else
                     return false;
@@ -501,15 +527,6 @@ namespace Gear.PluginSupport
             if (cont1 == null || cont2 == null)
                 return !Object.Equals(cont1, cont2);
             return !(cont1.Equals(cont2));
-        }
-
-
-        /// @brief Set the attribute _version, calling VersionatedContainer.GetImplementedVersion().
-        /// @details As theorically a PluginBase descendent can have instanciated more than one 
-        /// version of each memberType, this method detects and returns the higher version available.
-        private void SetVersion()
-        {
-            PluginVersioning.GetImplementedVersion(_plugin, _memType, out _version);
         }
         
         /// @brief Get member code by type and version.
@@ -552,7 +569,28 @@ namespace Gear.PluginSupport
     public class VersionatedContainerCollection : 
         System.Collections.Generic.ICollection<VersionatedContainer>
     {
+        /// @brief Internal list of containers of plugins and versionated members.
         private List<VersionatedContainer> _list;
+        /// @brief Collection for error list on loading of a plugin.
+        private CompilerErrorCollection m_Errors;    
+
+        /// @brief Exception class for versioning problems of members.
+        [Serializable]
+        public class VersMembPluginException : Exception
+        {
+            PluginBase _plugin;
+            public VersMembPluginException() { }
+            public VersMembPluginException(string message) : base(message) { }
+            public VersMembPluginException(string message, PluginBase plugin) : base(message) 
+            {
+                _plugin = plugin;
+            }
+            public VersMembPluginException(string message, Exception inner) : base(message, inner) { }
+            protected VersMembPluginException(
+              System.Runtime.Serialization.SerializationInfo info,
+              System.Runtime.Serialization.StreamingContext context)
+                : base(info, context) { }
+        }
 
         /// @brief Default constructor
         public VersionatedContainerCollection()
@@ -578,13 +616,18 @@ namespace Gear.PluginSupport
         /// @returns True if exist one instance of the plugin, or False if not.
         public bool Contains(PluginBase plugin)
         {
-            bool exist = false;
-            foreach (VersionatedContainer vc in _list)
+            if (plugin == null)
+                return false;
+            else
             {
-                exist |= (vc.Plugin == plugin);
-                if (exist) break;
+                bool exist = false;
+                foreach (VersionatedContainer vc in _list)
+                {
+                    exist |= (vc.Plugin == plugin);
+                    if (exist) break;
+                }
+                return exist;
             }
-            return exist;
         }
 
         /// @brief Determine if the Container have one reference of the plugin inside.
@@ -596,17 +639,30 @@ namespace Gear.PluginSupport
             return _list.Contains(verCont);
         }
 
-        /// @brief Add a plugin of the container, given some components.
-        /// @note This method is thought to be used in the program.
+        /// @brief Add a plugin of the container, given a plugin & versionated member type.
+        /// @pre The plugin was revised on requirement for mandatory members (using
+        /// PluginVersioning.MandatoryMembersDefined() static method) before call this method.
         /// @param plugin Plugin to reference.
         /// @param MemType Type of member.
+        /// @exception VersMembPluginException Problems encountered as versionated member not 
+        /// valid for the member type, or null plugin.
         public void Add(PluginBase plugin, PluginVersioning.memberType MemType)
         {
-            _list.Add(new VersionatedContainer(plugin, MemType));
+            VersionatedContainer cont = new VersionatedContainer(plugin, MemType);
+            if (!cont.IsValidPlugin())
+                throw new VersMembPluginException(
+                    "Plugin reference is NULL, for " + MemType.ToString() + "member type.");
+            else if (!cont.IsValidMember())
+                throw new VersMembPluginException(
+                    "There is no '" + MemType.ToString() + "' defined member in '" + 
+                    plugin.Name + "' plugin.", plugin);
+            else
+                this.Add(cont);
         }
 
-        /// @brief Add a plugin of the container, given some components.
-        /// @note This method is required by ICollection<> Interface, but not thought to be used.
+        /// @brief Add a plugin of the container, given a VersionatedContainer object reference.
+        /// @note This method is required by ICollection<> Interface, but used too 
+        /// by VersionatedContainerCollection.Add(VersionatedContainer verCont).
         /// @param verCont Container reference to add to collection.
         public void Add(VersionatedContainer verCont)
         {
@@ -625,7 +681,7 @@ namespace Gear.PluginSupport
             {
                 if (vc.Plugin == plugin)
                 {
-                    _list.Remove(vc);
+                    this.Remove(vc);
                     removed = true;
                     break;  //if found, exit the iteration
                 }

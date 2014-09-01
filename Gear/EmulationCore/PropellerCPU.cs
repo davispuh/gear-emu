@@ -505,10 +505,20 @@ namespace Gear.EmulationCore
         /// @param mod Compiled plugin reference to include.
         public void NotifyOnClock(PluginBase mod)
         {   
-            if (!(TickHandlers.Contains(mod)))
-            {
-                TickHandlers.Add(mod, PluginVersioning.memberType.OnClock);
-            }
+            if (mod != null)
+                if (!(TickHandlers.Contains(mod)))
+                    try
+                    {
+                        TickHandlers.Add(mod, PluginVersioning.memberType.OnClock);
+                    }
+                    catch (VersionatedContainerCollection.VersMembPluginException)
+                    {
+                        //TODO [ASB] : add a CompilerErrorCollection component with the error from the exception.
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
         }
 
         /// @brief Remove a plugin from the clock notify list.
@@ -525,8 +535,20 @@ namespace Gear.EmulationCore
         /// @param mod Compiled plugin reference to include.
         public void NotifyOnPins(PluginBase mod)
         {
-            if (!(PinHandlers.Contains(mod)))
-                PinHandlers.Add(mod, PluginVersioning.memberType.OnPinChange);
+            if (mod != null)
+                if (!(PinHandlers.Contains(mod)))
+                    try
+                    {
+                        PinHandlers.Add(mod, PluginVersioning.memberType.OnPinChange);
+                    }
+                    catch (VersionatedContainerCollection.VersMembPluginException)
+                    {
+                        //TODO [ASB] : add a CompilerErrorCollection component with the error from the exception.
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
         }
 
         /// @brief Remove a plugin from the pin changed notify list.
