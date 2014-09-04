@@ -632,7 +632,9 @@ namespace Gear.EmulationCore
             }
 
             foreach (PluginBase mod in PlugIns)
+            {
                 mod.OnReset();
+            }
 
             PinChanged();   //update situation of pins
 
@@ -794,7 +796,10 @@ namespace Gear.EmulationCore
             }
             //traverse across plugins that use NotityOnPins()
             foreach (VersionatedContainer cont in PinHandlers)
+            {
+                cont.Plugin
                 mod.OnPinChange(Time, PinStates);
+            }
         }
 
         /// @brief Drive a pin of Propeller.
