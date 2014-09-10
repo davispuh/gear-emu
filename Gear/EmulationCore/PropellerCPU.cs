@@ -133,10 +133,12 @@ namespace Gear.EmulationCore
         //!< @todo Document member Gear.EmulationCore.PropellerCPU.emulator
         private Emulator emulator;
 
-        //!< @brief List of Handlers for clock ticks on plugins.
+        //!< @brief Versionated List of Handlers for clock ticks on plugins.
         private VersionatedContainerCollection TickHandlers;      
-        //!< @brief List of Handlers for Pin changes on plugins.
+        //!< @brief Versionated List of Handlers for Pin changes on plugins.
         private VersionatedContainerCollection PinHandlers;
+        //!< @brief Versionated List of active PlugIns (include system ones, like cog views, etc).
+        private VersionatedContainerCollection PlugInsVer;           
         //!< @brief List of active PlugIns (include system ones, like cog views, etc).
         private List<PluginBase> PlugIns;           
 
@@ -167,6 +169,7 @@ namespace Gear.EmulationCore
 
             TickHandlers = new VersionatedContainerCollection();
             PinHandlers = new VersionatedContainerCollection();
+            PlugInsVer = new VersionatedContainerCollection();
             PlugIns = new List<PluginBase>();
 
             Time = 0;
@@ -483,7 +486,19 @@ namespace Gear.EmulationCore
         public void IncludePlugin(PluginBase mod)
         {
             if (!(PlugIns.Contains(mod)))
-                PlugIns.Add(mod);           
+                PlugIns.Add(mod);
+            if (!(PlugInsVer.Contains(mod, PluginVersioning.memberType.PresentChip)))
+                try
+                {
+                    PlugInsVer.Add(mod, PluginVersioning.memberType.PresentChip);
+                }
+                catch (VersioningPluginException e)
+                {
+                    MessageBox.Show(e.Message + "\r\n" + this.ToString() + ".IncludePlugin()",
+                        "Plugin Version Validation",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
+                }
         }
 
         /// @brief Remove a plugin from the active plugin list of propeller instance
@@ -493,10 +508,22 @@ namespace Gear.EmulationCore
         /// @param[in] mod Compiled plugin reference to remove
         public void RemovePlugin(PluginBase mod)
         {
+            if (PlugInsVer.Contains(mod, PluginVersioning.memberType.PresentChip))
+                PlugInsVer.Remove(mod);
             if (PlugIns.Contains(mod))
             {
                 mod.OnClose();      //call the event before remove 
                 PlugIns.Remove(mod);
+            }
+        }
+
+        public void InvokeVersionatedMethod(PluginBase p, PluginVersioning.memberType member, params SortedList<PluginVersioning.paramRecognized, object> parms)
+        {
+            switch (member)
+            {
+                case PluginVersioning.memberType.PresentChip :
+                    if (PlugIns.Contains(p,member))
+                        PlugIns
             }
         }
 
@@ -505,20 +532,18 @@ namespace Gear.EmulationCore
         /// @param mod Compiled plugin reference to include.
         public void NotifyOnClock(PluginBase mod)
         {   
-            if (mod != null)
-                if (!(TickHandlers.Contains(mod)))
-                    try
-                    {
-                        TickHandlers.Add(mod, PluginVersioning.memberType.OnClock);
-                    }
-                    catch (VersionatedContainerCollection.VersMembPluginException)
-                    {
-                        //TODO [ASB] : add a CompilerErrorCollection component with the error from the exception.
-                    }
-                    catch (Exception)
-                    {
-                        throw;
-                    }
+            if (!(TickHandlers.Contains(mod)))
+                try
+                {
+                    TickHandlers.Add(mod, PluginVersioning.memberType.OnClock);
+                }
+                catch (VersioningPluginException e)
+                {
+                    MessageBox.Show(e.Message + "\r\n" + this.ToString() + ".NotifyOnClock()",
+                        "Plugin Version Validation",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
+                }
         }
 
         /// @brief Remove a plugin from the clock notify list.
@@ -535,20 +560,18 @@ namespace Gear.EmulationCore
         /// @param mod Compiled plugin reference to include.
         public void NotifyOnPins(PluginBase mod)
         {
-            if (mod != null)
-                if (!(PinHandlers.Contains(mod)))
-                    try
-                    {
-                        PinHandlers.Add(mod, PluginVersioning.memberType.OnPinChange);
-                    }
-                    catch (VersionatedContainerCollection.VersMembPluginException)
-                    {
-                        //TODO [ASB] : add a CompilerErrorCollection component with the error from the exception.
-                    }
-                    catch (Exception)
-                    {
-                        throw;
-                    }
+            if (!(PinHandlers.Contains(mod)))
+                try
+                {
+                    PinHandlers.Add(mod, PluginVersioning.memberType.OnPinChange);
+                }
+                catch (VersioningPluginException e)
+                {
+                    MessageBox.Show(e.Message + "\r\n" + this.ToString() + ".NotifyOnPins()",
+                        "Plugin Version Validation",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
+                }
         }
 
         /// @brief Remove a plugin from the pin changed notify list.

@@ -56,6 +56,14 @@ namespace Gear.GUI
             }
         }
 
+        public override bool IsUserPlugin
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public MemoryView(PropellerCPU chip) : base(chip)
         {
             MonoFont = new Font(FontFamily.GenericMonospace, 10);

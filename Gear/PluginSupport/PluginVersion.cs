@@ -57,31 +57,51 @@ namespace Gear.PluginSupport
         /// mechanism use reflection based on names of PluginBase methods to versioning.
         public enum memberType
         {
-            none    = -1,   //!< None
             OnClock = 0,    //!< Run on clock ticks.
             OnPinChange,    //!< Run on pin changes.
             PresentChip     //!< Prepare the notifiers.
         }
 
-        /// @brief Document Gear.PluginSupport.PluginVersioning.VersionMemberInfo struct.
-        private struct VersionMemberInfo
+        /// @brief Parameters recognized of versionated members to pair them with the values when 
+        /// the invocation of methods is needed.
+        public enum paramRecognized
         {
+            Param_host = 1,     //!< key to "PropellerCPU host parameter"
+            Param_time,         //!< key to "double time"
+            Param_sysCounter,   //!< key to "uint sysCounter"
+            Param_pins          //!< key to "PinState[] pins"
+        }
+
+        /// @brief Document Gear.PluginSupport.PluginVersioning.VersionMemberInfo struct.
+        public struct VersionMemberInfo
+        {
+            /// @brief Hold validity of the information of the struct.
+            /// @details When created by default constructor,this will be =false; when in parametered 
+            /// constructor, this will be =true.
+            public bool Valid;
             public bool IsDeclaredInDerived;
             public bool IsMandatory;
             public float VersionLow;
             public MethodInfo MInfo;
+            public int NumParams;
 
-            public VersionMemberInfo(float versionLow, MethodInfo mInfo, bool isInherited, bool isMandatory)
+            public VersionMemberInfo(float versionLow, MethodInfo mInfo, bool isInherited,
+                bool isMandatory, int numParams)
             {
+                Valid = true;
                 VersionLow = versionLow;
                 MInfo = mInfo;
                 IsDeclaredInDerived = isInherited;
                 IsMandatory = isMandatory;
+                NumParams = numParams;
             }
         }
 
         /// @brief Static default constructor
-        static PluginVersioning() { }
+        static PluginVersioning() 
+        {
+            // todo [ASB] : add validation of methods of pluginBase having same memberType and version number, and throw an exception in runtime (as I don't know how to do that in compile time.
+        }
 
         /// @brief Obtain versionated list of members of the type, using reflexion on plugin type.
         /// @param tPlugin  Plugin Type to obtain versionated methods implementation details.
@@ -90,7 +110,7 @@ namespace Gear.PluginSupport
         /// @note @internal Example to obtain attributes from Reflexion:
         /// http://stackoverflow.com/questions/6637679/reflection-get-attribute-name-and-value-on-property
         static private SortedList<float, VersionMemberInfo>
-            GetVersionatedCandidates(Type tPlugin, PluginVersioning.memberType memberType)
+            VersionatedMemberCandidates(Type tPlugin, PluginVersioning.memberType memberType)
         {
             //prepare the sorted list of candidates to output
             SortedList<float, VersionMemberInfo> selMeth = new SortedList<float, VersionMemberInfo>();
@@ -110,14 +130,19 @@ namespace Gear.PluginSupport
                         //if it is a VersionAttribute type
                         if (vers != null)
                             if (vers.MemberType == memberType)  //if type is the same of given parameter
-                            {   //create a entry on the sorted list
+                            {
+                                //get parameter list to obtain their quantity
+                                ParameterInfo[] pars = mInfo.GetParameters();
+                                //create a entry on the sorted list
                                 selMeth.Add(
                                     vers.VersionFrom,
                                     new VersionMemberInfo(
                                         vers.VersionFrom,
                                         mInfo,
-                                        (mInfo.DeclaringType == tPlugin) ? true : false,
-                                        vers.IsMandatory
+                                        //does it is instanciated here, so not in base class?
+                                        (mInfo.DeclaringType == tPlugin), 
+                                        vers.IsMandatory, 
+                                        pars.Length
                                     )
                                 );
                             }
@@ -127,47 +152,57 @@ namespace Gear.PluginSupport
             return selMeth;
         }
 
-        /// @brief Get Version for the given member type of the Plugin instance.
+        /// @brief Get the implemented method for the given member type of the Plugin instance.
         /// @details As theorically a PluginBase descendent can have instanciated more than one 
         /// version of each memberType, this method detects and returns the higher version available.
+        /// @pre It assumes the version number of methods for member type are unique: a validation of that
+        /// is needed in the begining of the program or complile time.
         /// @param[in] plugin Plugin instance to obtain its version number.
         /// @param[in] memberType Type of versionated member to obtain its version.
-        /// @param[out] ver Upper version instanciated of the plugin supplied as parameter.
+        /// @param[out] meth Information about the upper version instanciated method to use. If exist 
+        /// it, return the only value; otherwise, a empty structure (filled with 0's and null).
         /// @returns True if there is at least one versionated member of the type supplied as 
         /// parameter, or False if there is not.
         /// @note @internal reference on article "How to loop through a SortedList, getting both the key and the value"  http://stackoverflow.com/questions/14013261/how-to-loop-through-a-sortedlist-getting-both-the-key-and-the-value
-        static public bool GetImplementedVersion(PluginBase plugin,
-            PluginVersioning.memberType memberType, out float ver)
+        static public bool GetImplementedMethod(PluginBase plugin,
+            PluginVersioning.memberType memberType, out PluginVersioning.VersionMemberInfo meth)
         {
-            ver = -1.0f;
+            meth = new PluginVersioning.VersionMemberInfo();
             if (plugin == null)
                 return false;
             else
             {
                 //Get the list of avalaible versions of this member type.
-                SortedList<float, VersionMemberInfo> selected =
-                    GetVersionatedCandidates(plugin.GetType(), memberType);
-                if (selected.Count == 0)    //if there is no method of this type implemented on plugin
+                SortedList<float, PluginVersioning.VersionMemberInfo> candidates =
+                    VersionatedMemberCandidates(plugin.GetType(), memberType);
+                if (candidates.Count == 0)    //if there is no method of this type implemented on plugin
                     return false;
                 else    //if there at least one method of this type implemented on plugin
                 {
+                    float ver = -1.0f;
                     bool exists = false;
                     //browse the candidates list looking for a method instanciated in derived plugin class
-                    foreach (KeyValuePair<float, VersionMemberInfo> pair in selected)
+                    foreach (KeyValuePair<float, PluginVersioning.VersionMemberInfo> pair in candidates)
                     {
                         if (pair.Value.IsDeclaredInDerived)
                         {
-                            //remember higher value
+                            //remember higher value of key, to update the out parameter with the 
+                            //corresponding struct later.
                             ver = ((pair.Key >= ver) ? pair.Key : ver);
                             exists = true;
                         }
                     }
+                    //if exists, and assuming the precondition of the method was validated, next call 
+                    //must retrieve exactly one object.
+                    if (exists)
+                        candidates.TryGetValue(ver, out meth);  //update meth parameter.
                     return exists;
                 }
             }
         }
 
-        /// @brief Determine if exist in the plugin a implemented member of the type given as parameter.
+        /// @brief Determine if exist into plugin, a implemented member of the type given as 
+        /// parameter.
         /// @details This method is used after the plugin is loaded in memory, to check if it is 
         /// consistent: ex. when the derived plugin declare on PresentChip() that it use NotifyOnPins()
         /// method, there must exist a definition for OnPinChange() method correspondly.
@@ -177,8 +212,8 @@ namespace Gear.PluginSupport
         static public bool IsMemberTypeImplemented(PluginBase plugin,
             PluginVersioning.memberType memberType)
         {
-            float temp;
-            return GetImplementedVersion(plugin, memberType, out temp);
+            PluginVersioning.VersionMemberInfo temp;
+            return GetImplementedMethod(plugin, memberType, out temp);
         }
 
         /// @brief Check if the mandatory methods for each type are defined. If not, 
@@ -275,8 +310,7 @@ namespace Gear.PluginSupport
     /// @details To be applied as attribute to members to have dinamic manage of versions.
     /// @version 14.8.5 - Added.
     [AttributeUsage(
-        AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Delegate, 
-        AllowMultiple = false, Inherited = true)]
+        AttributeTargets.Method | AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
     public class VersionAttribute : System.Attribute
     {
         
@@ -286,8 +320,6 @@ namespace Gear.PluginSupport
         private PluginVersioning.memberType _memberType;
         /// @brief States if it is Mandatory (=true) or optional (=false) to declare in the plugin.
         private bool isMandatory;
-        /// @brief Code of a versionated member.
-        //private PluginVersioning.versionatedMember _versionatedMember;
 
         #region Constructor for class VersionAttribute
         /// @brief Constructor with lower limit of validity.
@@ -301,7 +333,6 @@ namespace Gear.PluginSupport
             _range = new VersRange(versionFrom);
             _memberType = memberType;
             isMandatory = false;
-            //_versionatedMember = PluginVersioning.versionatedMember.none;
         }
 
         /// @brief Constructor with both limits for validity.
@@ -315,7 +346,6 @@ namespace Gear.PluginSupport
             _range = new VersRange(lowerLimit, upperLimit);
             _memberType = memberType;
             isMandatory = false;
-            //_versionatedMember = PluginVersioning.versionatedMember.none;
         }
         #endregion
 
@@ -347,6 +377,44 @@ namespace Gear.PluginSupport
         }
     }
 
+    ///@brief Attribute class to decorate the parameters of a versionated member of PluginBase.
+    [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = true)]
+    public class ParamVersionAttribute : System.Attribute
+    {
+        /// @brief Name of the parameter to associate 
+        private PluginVersioning.paramRecognized _name;
+
+        /// @brief Constructor
+        public ParamVersionAttribute(PluginVersioning.paramRecognized param)
+        {
+            _name = param;
+        }
+
+        /// @brief Property for parameter name
+        public PluginVersioning.paramRecognized ParameterName { get { return _name; } }
+
+    }
+
+    /// @brief Exception class for versioning problems of members or null plugin reference.
+    [Serializable]
+    public class VersioningPluginException : System.Exception
+    {
+        private PluginBase _plugin;
+        public VersioningPluginException() { }
+        public VersioningPluginException(string message) : base(message) { }
+        public VersioningPluginException(string message, PluginBase plugin)
+            : base(message)
+        {
+            _plugin = plugin;
+        }
+        public VersioningPluginException(string message, Exception inner) : base(message, inner) { }
+        protected VersioningPluginException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+        public bool IsNullPluginBase() { return (_plugin == null);}
+    }
+
     /// @brief Manages Versions of plugins.
     /// @details Manages versions of plugins, to choose correct member signatures for each version
     /// of plugin system. 
@@ -362,6 +430,8 @@ namespace Gear.PluginSupport
         private float _version;
         /// @brief Type of member to select.
         private PluginVersioning.memberType _membType;
+        /// @brief Information of versionated member to use for the member type.
+        private PluginVersioning.VersionMemberInfo _member;
 
         /// @brief Default constructor.
         /// @details The constructor determines also the version of the member, from the type class
@@ -369,16 +439,27 @@ namespace Gear.PluginSupport
         /// of system plugins (logic probe, cogs windows, etc).
         /// @param[in] plugin Reference to plugin.
         /// @param[in] MemType Type of member to select.
+        /// @exception VersioningPluginException Null plugin encountered.
         public VersionatedContainer(PluginBase plugin, PluginVersioning.memberType MemType)
         {
-            _plugin = plugin;
-            _membType = MemType;
-            //As theorically a PluginBase descendent can have instanciated more than one version of
-            //each memberType, below code detects and returns the higher version available.
-            _version = ((PluginVersioning.GetImplementedVersion(_plugin, _membType, out _version)) 
-                ? _version 
-                : -1.0f );
-            //_assignedTypeDel = null;
+            if (plugin == null)
+            {
+                throw new VersioningPluginException(
+                    "Plugin reference is NULL, for new VersionatedContainer() of \"" +
+                     MemType.ToString() + "\" member type.");
+            }
+            else
+            {
+                _plugin = plugin;
+                _membType = MemType;
+                //As theorically a PluginBase descendent can have instanciated more than one version
+                //of each memberType, below code detects and returns the higher version available.
+                //if there is none avalaible, the return value is false.
+                if (PluginVersioning.GetImplementedMethod(plugin, MemType, out _member))
+                    _version = _member.VersionLow;
+                else
+                    _version = -1.0f;
+            }
         }
 
         /// @brief Property for PluginBase.
@@ -405,22 +486,14 @@ namespace Gear.PluginSupport
             set { _membType = value; }
         }
 
-        /// @brief Determine if plugin is valid.
-        /// @returns True if the plugin is a valid reference, or False if not (=null). 
-        public bool IsValidPlugin()
-        {
-            return (_plugin != null);
-        }
-
         /// @brief Determine if the container have a valid versionated member.
-        /// @details To determine this, this method take in consideration if the plugin is valid (calling 
-        /// IsValidPlugin() ), if it is used to versioning, and also if the version of the method could 
-        /// be determined, expecting to be zero or higer to be considered valid.
+        /// @details To determine this, this method take in consideration if the version of and the 
+        /// versionated method itself could be determined, expecting to be zero or higher to be 
+        /// considered valid.
         /// @returns True if the versionated member is valid, or false if not.
         public bool IsValidMember()
         {
-            return ((IsValidPlugin()) && (_membType != PluginVersioning.memberType.none) && 
-                (_version >= 0.0f) ? true : false);
+            return ( (_version >= 0.0f) & (_member.Valid) );
         }
 
         /// @brief Indicates if the current object is equal to another object of the same type,
@@ -484,28 +557,13 @@ namespace Gear.PluginSupport
         }
         
         /// @brief Get member code by type and version.
-        private bool Invoke(PluginVersioning.memberType member, params Object[] parms)
+        private bool Invoke(params Object[] parms)
         {
-            
             bool success = false;
             // TODO [ASB] : agregar lógica para determinar el tipo de miembro según versión, y 
             //  ejecutarlo
-            if (PluginVersioning.ManagedVersions.ContainsKey(member))
-            {
-                switch (member)
-                {
-                    case PluginVersioning.memberType.OnPinChange:
 
-                        break;
-                    case PluginVersioning.memberType.OnClock:
-
-                        break;
-                    case PluginVersioning.memberType.PresentChip:
-
-                        break;
-
-                };
-            }
+            
             return success;
         }
 
@@ -526,26 +584,6 @@ namespace Gear.PluginSupport
     {
         /// @brief Internal list of containers of plugins and versionated members.
         private List<VersionatedContainer> _list;
-        /// @brief Collection for error list on loading of a plugin.
-        private CompilerErrorCollection m_Errors;    
-
-        /// @brief Exception class for versioning problems of members.
-        [Serializable]
-        public class VersMembPluginException : System.Exception
-        {
-            PluginBase _plugin;
-            public VersMembPluginException() { }
-            public VersMembPluginException(string message) : base(message) { }
-            public VersMembPluginException(string message, PluginBase plugin) : base(message) 
-            {
-                _plugin = plugin;
-            }
-            public VersMembPluginException(string message, Exception inner) : base(message, inner) { }
-            protected VersMembPluginException(
-              System.Runtime.Serialization.SerializationInfo info,
-              System.Runtime.Serialization.StreamingContext context)
-                : base(info, context) { }
-        }
 
         /// @brief Default constructor
         public VersionatedContainerCollection()
@@ -571,7 +609,7 @@ namespace Gear.PluginSupport
         /// @note This method is thought to be used in the program.
         /// @param[in] plugin Plugin reference to check its precesence in the collection.
         /// @returns True if exist one instance of the plugin, or False if not.
-        public bool Contains(PluginBase plugin)
+        public bool Contains(PluginBase plugin, PluginVersioning.memberType MemType)
         {
             if (plugin == null)
                 return false;
@@ -580,7 +618,7 @@ namespace Gear.PluginSupport
                 bool exist = false;
                 foreach (VersionatedContainer vc in _list)
                 {
-                    exist |= (vc.Plugin == plugin);
+                    exist |= ( (vc.Plugin == plugin) & (vc.memberType == MemType) );
                     if (exist) break;
                 }
                 return exist;
@@ -602,20 +640,29 @@ namespace Gear.PluginSupport
         /// PluginVersioning.MandatoryMembersDefined() static method) before call this method.
         /// @param[in] plugin Plugin to reference.
         /// @param[in] MemType Type of member.
-        /// @exception VersMembPluginException Problems encountered as versionated member not 
+        /// @exception VersioningPluginException Problems encountered as versionated member not 
         /// valid for the member type, or null plugin.
         public void Add(PluginBase plugin, PluginVersioning.memberType MemType)
         {
-            VersionatedContainer cont = new VersionatedContainer(plugin, MemType);
-            if (!cont.IsValidPlugin())
-                throw new VersMembPluginException(
-                    "Plugin reference is NULL, for " + MemType.ToString() + "member type.");
-            else if (!cont.IsValidMember())
-                throw new VersMembPluginException(
-                    "There is no '" + MemType.ToString() + "' defined member in '" + 
-                    plugin.Name + "' plugin.", plugin);
-            else
-                this.Add(cont);
+            try {
+                VersionatedContainer cont = new VersionatedContainer(plugin, MemType);
+                if (!cont.IsValidMember())
+                    throw new VersioningPluginException(
+                        "There is no '" + MemType.ToString() + "' defined member in '" +
+                        plugin.Name + "' plugin.", plugin);
+                else
+                    this.Add(cont);
+            }
+            catch (VersioningPluginException e)
+            {
+                if (e.IsNullPluginBase())
+                {
+                    throw new VersioningPluginException("Plugin reference is NULL, for " + MemType.ToString() + "member type.", e);
+                }
+                else {
+                    throw e;
+                }
+            }
         }
 
         /// @brief Add a plugin of the container, given a VersionatedContainer object reference.

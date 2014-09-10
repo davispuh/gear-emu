@@ -65,6 +65,14 @@ namespace Gear.GUI
             }
         }
 
+        public override bool IsUserPlugin
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public CogView(int host, PropellerCPU chip) : base (chip)
         {
             HostID = host;

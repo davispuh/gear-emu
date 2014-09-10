@@ -61,6 +61,14 @@ namespace Gear.GUI.LogicProbe
             }
         }
 
+        public override bool IsUserPlugin
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public LogicView(PropellerCPU chip) : base(chip)
         {
             InitializeComponent();

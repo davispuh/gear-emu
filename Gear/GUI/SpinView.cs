@@ -61,6 +61,14 @@ namespace Gear.GUI
             }
         }
 
+        public override bool IsUserPlugin
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public SpinView(PropellerCPU chip) : base(chip)
         {
             MonoSpace = new Font(FontFamily.GenericMonospace, 8);
