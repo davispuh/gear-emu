@@ -62,15 +62,18 @@ namespace Gear.PluginSupport
             PresentChip     //!< Prepare the notifiers.
         }
 
-        /// @brief Parameters recognized of versionated members to pair them with the values when 
-        /// the invocation of methods is needed.
-        public enum paramRecognized
-        {
-            Param_host = 1,     //!< key to "PropellerCPU host parameter"
-            Param_time,         //!< key to "double time"
-            Param_sysCounter,   //!< key to "uint sysCounter"
-            Param_pins          //!< key to "PinState[] pins"
-        }
+        ///// @brief Parameters recognized of versionated members to pair them with the values when 
+        ///// the invocation of methods is needed.
+        //public enum paramRecognized
+        //{
+        //    Param_host = 1,     //!< key to "PropellerCPU host parameter"
+        //    Param_time,         //!< key to "double time"
+        //    Param_sysCounter,   //!< key to "uint sysCounter"
+        //    Param_pins          //!< key to "PinState[] pins"
+        //}
+
+        /// @brief List of possible parameters for each memberType subject to versioning.
+        static public SortedList<memberType, SortedList<string, Type>> ParamsByType;
 
         /// @brief Document Gear.PluginSupport.PluginVersioning.VersionMemberInfo struct.
         public struct VersionMemberInfo
@@ -78,22 +81,22 @@ namespace Gear.PluginSupport
             /// @brief Hold validity of the information of the struct.
             /// @details When created by default constructor,this will be =false; when in parametered 
             /// constructor, this will be =true.
-            public bool Valid;
-            public bool IsDeclaredInDerived;
-            public bool IsMandatory;
-            public float VersionLow;
-            public MethodInfo MInfo;
-            public int NumParams;
+            public bool Valid { get; set; }
+            public bool IsDeclaredInDerived { get; set; }
+            public bool IsMandatory { get; set; }
+            public float VersionLow { get; set; }
+            public MethodInfo MInfo { get; set; }
+            public int NumParams { get; set; }
 
             public VersionMemberInfo(float versionLow, MethodInfo mInfo, bool isInherited,
-                bool isMandatory, int numParams)
+                bool isMandatory)
             {
                 Valid = true;
                 VersionLow = versionLow;
                 MInfo = mInfo;
                 IsDeclaredInDerived = isInherited;
                 IsMandatory = isMandatory;
-                NumParams = numParams;
+                NumParams = 0;
             }
         }
 
@@ -101,6 +104,40 @@ namespace Gear.PluginSupport
         static PluginVersioning() 
         {
             // todo [ASB] : add validation of methods of pluginBase having same memberType and version number, and throw an exception in runtime (as I don't know how to do that in compile time.
+
+            //build the list of possible parameters by memberType
+
+        }
+
+        /// @brief 
+        static private MethodInfo[] GetVersionatedMethods(Type tPlugin, 
+            PluginVersioning.memberType memberType)
+        {
+            MethodInfo[] result;
+            //get the methods list of the plugin
+             MethodInfo[] meth = tPlugin.GetMethods(BindingFlags.Instance | BindingFlags.Public);
+             //browse the method list
+            foreach (MethodInfo mInfo in meth)
+            {
+                int i = 0;
+                //get the custom attributes for the method
+                Object[] attr = mInfo.GetCustomAttributes(typeof(VersionAttribute), true);
+                //if there are custom attributes for it
+                if (attr.Length > 0)
+                {   //browse the attribute
+                    foreach (Object obj in attr)
+                    {
+                        VersionAttribute vers = obj as VersionAttribute;    //cast as VersionAttribute
+                        //if it is a VersionAttribute type
+                        if (vers != null)
+                            if (vers.MemberType == memberType)  //if type is the same of given parameter
+                            {
+                                result[i] = mInfo;
+                            }
+                    }
+                }
+            }
+            return result;
         }
 
         /// @brief Obtain versionated list of members of the type, using reflexion on plugin type.
@@ -113,9 +150,9 @@ namespace Gear.PluginSupport
             VersionatedMemberCandidates(Type tPlugin, PluginVersioning.memberType memberType)
         {
             //prepare the sorted list of candidates to output
-            SortedList<float, VersionMemberInfo> selMeth = new SortedList<float, VersionMemberInfo>();
-            //get the methods list of the plugin
-            MethodInfo[] meth = tPlugin.GetMethods(BindingFlags.Instance | BindingFlags.Public);
+            var selMeth = new SortedList<float, VersionMemberInfo>();
+            //obtain the versionated methods of the plugin
+            MethodInfo[] meth = GetVersionatedMethods(tPlugin, memberType);
             //browse the method list
             foreach (MethodInfo mInfo in meth)
             {
@@ -129,28 +166,66 @@ namespace Gear.PluginSupport
                         VersionAttribute vers = obj as VersionAttribute;    //cast as VersionAttribute
                         //if it is a VersionAttribute type
                         if (vers != null)
-                            if (vers.MemberType == memberType)  //if type is the same of given parameter
-                            {
-                                //get parameter list to obtain their quantity
-                                ParameterInfo[] pars = mInfo.GetParameters();
-                                //create a entry on the sorted list
-                                selMeth.Add(
+                        {
+                            //create a entry on the sorted list
+                            selMeth.Add(
+                                vers.VersionFrom,
+                                new VersionMemberInfo(
                                     vers.VersionFrom,
-                                    new VersionMemberInfo(
-                                        vers.VersionFrom,
-                                        mInfo,
-                                        //does it is instanciated here, so not in base class?
-                                        (mInfo.DeclaringType == tPlugin), 
-                                        vers.IsMandatory, 
-                                        pars.Length
-                                    )
-                                );
-                            }
+                                    mInfo,
+                                    //does it is instanciated here, so not in base class?
+                                    (mInfo.DeclaringType == tPlugin),
+                                    vers.IsMandatory
+                                )
+                            );
+                         }
                     }
                 }
             }
             return selMeth;
         }
+        //static private SortedList<float, VersionMemberInfo>
+        //    VersionatedMemberCandidates(Type tPlugin, PluginVersioning.memberType memberType)
+        //{
+        //    //prepare the sorted list of candidates to output
+        //    SortedList<float, VersionMemberInfo> selMeth = new SortedList<float, VersionMemberInfo>();
+        //    //get the methods list of the plugin
+        //    MethodInfo[] meth = tPlugin.GetMethods(BindingFlags.Instance | BindingFlags.Public);
+        //    //browse the method list
+        //    foreach (MethodInfo mInfo in meth)
+        //    {
+        //        //get the custom attributes for the method
+        //        Object[] attr = mInfo.GetCustomAttributes(typeof(VersionAttribute), true);
+        //        //if there are custom attributes for it
+        //        if (attr.Length > 0)
+        //        {   //browse the attribute
+        //            foreach (Object obj in attr)
+        //            {
+        //                VersionAttribute vers = obj as VersionAttribute;    //cast as VersionAttribute
+        //                //if it is a VersionAttribute type
+        //                if (vers != null)
+        //                    if (vers.MemberType == memberType)  //if type is the same of given parameter
+        //                    {
+        //                        //get parameter list to obtain their quantity
+        //                        ParameterInfo[] pars = mInfo.GetParameters();
+        //                        //create a entry on the sorted list
+        //                        selMeth.Add(
+        //                            vers.VersionFrom,
+        //                            new VersionMemberInfo(
+        //                                vers.VersionFrom,
+        //                                mInfo,
+        //                                //does it is instanciated here, so not in base class?
+        //                                (mInfo.DeclaringType == tPlugin), 
+        //                                vers.IsMandatory, 
+        //                                pars.Length
+        //                            )
+        //                        );
+        //                    }
+        //            }
+        //        }
+        //    }
+        //    return selMeth;
+        //}
 
         /// @brief Get the implemented method for the given member type of the Plugin instance.
         /// @details As theorically a PluginBase descendent can have instanciated more than one 
@@ -173,8 +248,7 @@ namespace Gear.PluginSupport
             else
             {
                 //Get the list of avalaible versions of this member type.
-                SortedList<float, PluginVersioning.VersionMemberInfo> candidates =
-                    VersionatedMemberCandidates(plugin.GetType(), memberType);
+                var candidates = VersionatedMemberCandidates(plugin.GetType(), memberType);
                 if (candidates.Count == 0)    //if there is no method of this type implemented on plugin
                     return false;
                 else    //if there at least one method of this type implemented on plugin
@@ -195,7 +269,10 @@ namespace Gear.PluginSupport
                     //if exists, and assuming the precondition of the method was validated, next call 
                     //must retrieve exactly one object.
                     if (exists)
+                    {
                         candidates.TryGetValue(ver, out meth);  //update meth parameter.
+                        meth.NumParams = 
+                    }
                     return exists;
                 }
             }
@@ -379,19 +456,19 @@ namespace Gear.PluginSupport
 
     ///@brief Attribute class to decorate the parameters of a versionated member of PluginBase.
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = true)]
-    public class ParamVersionAttribute : System.Attribute
+    public class ParamOrderAttribute : System.Attribute
     {
         /// @brief Name of the parameter to associate 
-        private PluginVersioning.paramRecognized _name;
+        private int _order;
 
         /// @brief Constructor
-        public ParamVersionAttribute(PluginVersioning.paramRecognized param)
+        public ParamOrderAttribute(int order)
         {
-            _name = param;
+            _order = order;
         }
 
-        /// @brief Property for parameter name
-        public PluginVersioning.paramRecognized ParameterName { get { return _name; } }
+        /// @brief Property for order.
+        public int Order { get { return _order; } }
 
     }
 
@@ -555,16 +632,27 @@ namespace Gear.PluginSupport
                 return !Object.Equals(cont1, cont2);
             return !(cont1.Equals(cont2));
         }
-        
-        /// @brief Get member code by type and version.
-        private bool Invoke(params Object[] parms)
-        {
-            bool success = false;
-            // TODO [ASB] : agregar lógica para determinar el tipo de miembro según versión, y 
-            //  ejecutarlo
 
-            
-            return success;
+        /// @brief Get member code by type and version using Reflexion, then and run it with the 
+        /// supplied parameter list.
+        public bool Invoke(params SortedList<string, object> parms)
+        {
+            if (!this.IsValidMember())
+                return false;
+            else
+            {
+                bool success = false;
+
+                // TODO [ASB] : validate the parms is not empty
+
+
+                // TODO [ASB] : validate there are enough parameters according to memberType
+
+                // TODO [ASB] : agregar lógica para determinar el tipo de miembro según versión, y 
+                //  ejecutarlo
+
+                return success;
+            }
         }
 
     }

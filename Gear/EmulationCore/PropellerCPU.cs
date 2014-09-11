@@ -137,8 +137,8 @@ namespace Gear.EmulationCore
         private VersionatedContainerCollection TickHandlers;      
         //!< @brief Versionated List of Handlers for Pin changes on plugins.
         private VersionatedContainerCollection PinHandlers;
-        //!< @brief Versionated List of active PlugIns (include system ones, like cog views, etc).
-        private VersionatedContainerCollection PlugInsVer;           
+//        //!< @brief Versionated List of active PlugIns (include system ones, like cog views, etc).
+//        private VersionatedContainerCollection PlugInsVer;           
         //!< @brief List of active PlugIns (include system ones, like cog views, etc).
         private List<PluginBase> PlugIns;           
 
@@ -169,7 +169,7 @@ namespace Gear.EmulationCore
 
             TickHandlers = new VersionatedContainerCollection();
             PinHandlers = new VersionatedContainerCollection();
-            PlugInsVer = new VersionatedContainerCollection();
+//            PlugInsVer = new VersionatedContainerCollection();
             PlugIns = new List<PluginBase>();
 
             Time = 0;
@@ -487,18 +487,18 @@ namespace Gear.EmulationCore
         {
             if (!(PlugIns.Contains(mod)))
                 PlugIns.Add(mod);
-            if (!(PlugInsVer.Contains(mod, PluginVersioning.memberType.PresentChip)))
-                try
-                {
-                    PlugInsVer.Add(mod, PluginVersioning.memberType.PresentChip);
-                }
-                catch (VersioningPluginException e)
-                {
-                    MessageBox.Show(e.Message + "\r\n" + this.ToString() + ".IncludePlugin()",
-                        "Plugin Version Validation",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Exclamation);
-                }
+            //if (!(PlugInsVer.Contains(mod, PluginVersioning.memberType.PresentChip)))
+            //    try
+            //    {
+            //        PlugInsVer.Add(mod, PluginVersioning.memberType.PresentChip);
+            //    }
+            //    catch (VersioningPluginException e)
+            //    {
+            //        MessageBox.Show(e.Message + "\r\n" + this.ToString() + ".IncludePlugin()",
+            //            "Plugin Version Validation",
+            //            MessageBoxButtons.OK,
+            //            MessageBoxIcon.Exclamation);
+            //    }
         }
 
         /// @brief Remove a plugin from the active plugin list of propeller instance
@@ -508,8 +508,8 @@ namespace Gear.EmulationCore
         /// @param[in] mod Compiled plugin reference to remove
         public void RemovePlugin(PluginBase mod)
         {
-            if (PlugInsVer.Contains(mod, PluginVersioning.memberType.PresentChip))
-                PlugInsVer.Remove(mod);
+            //if (PlugInsVer.Contains(mod, PluginVersioning.memberType.PresentChip))
+            //    PlugInsVer.Remove(mod);
             if (PlugIns.Contains(mod))
             {
                 mod.OnClose();      //call the event before remove 
@@ -517,15 +517,15 @@ namespace Gear.EmulationCore
             }
         }
 
-        public void InvokeVersionatedMethod(PluginBase p, PluginVersioning.memberType member, params SortedList<PluginVersioning.paramRecognized, object> parms)
-        {
-            switch (member)
-            {
-                case PluginVersioning.memberType.PresentChip :
-                    if (PlugIns.Contains(p,member))
-                        PlugIns
-            }
-        }
+        //public void InvokeVersionatedMethod(PluginBase p, PluginVersioning.memberType member, params SortedList<PluginVersioning.paramRecognized, object> parms)
+        //{
+        //    switch (member)
+        //    {
+        //        case PluginVersioning.memberType.PresentChip :
+        //            if (PlugIns.Contains(p,member))
+        //                PlugIns
+        //    }
+        //}
 
         /// @brief Add a plugin to be notified on clock ticks.
         /// @details It see if the plugin exist already to insert or not.
@@ -773,15 +773,15 @@ namespace Gear.EmulationCore
             // Advance the system counter
             SystemCounter++;
 
-            // Run our modules on time event
-            //TODO [ASB] : cambiar lo de abajo por 
-            //  mod.GetMember(VersionAttribute.memberTypeVersion.OnClock, \<version\>) }
+            //build the max parameter list needed for versions of PluginBase.OnClock() method.
+            var parms = new SortedList<string, object>  
+                { 
+                    { "time", Time }, 
+                    { "sysCounter", SystemCounter} 
+                };
+            // Run each module of the list on time event (calling the appropiate OnClock()).
             foreach (VersionatedContainer cont in TickHandlers)
-            {
-                cont.Plugin
-                mod.OnClock(Time);
-            }
-            
+                cont.Invoke(parms);
 
             if (pins != IN || dir != DIR || pinChange)
                 PinChanged();
@@ -817,12 +817,16 @@ namespace Gear.EmulationCore
                         PinStates[i] = PinState.OUTPUT_LO;
                 }
             }
-            //traverse across plugins that use NotityOnPins()
+
+            //build the max parameter list needed for versions of PluginBase.OnPinChange() method.
+            var parms = new SortedList<string, object> 
+                { 
+                    { "time", Time }, 
+                    { "pins", PinStates}
+                };
+            //traverse across plugins that use OnPinChange()
             foreach (VersionatedContainer cont in PinHandlers)
-            {
-                cont.Plugin
-                mod.OnPinChange(Time, PinStates);
-            }
+                cont.Invoke(parms);
         }
 
         /// @brief Drive a pin of Propeller.

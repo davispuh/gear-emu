@@ -101,14 +101,12 @@ namespace Gear.GUI
         /// @param[in] bm Instance of a Gear.PluginSupport.PluginBase class to be attached.
         private void AttachPlugin(PluginBase bm)
         {
-            Chip.IncludePlugin(bm);     //attach into plugin lists of PropellerCPU
-            //Create the params dictionary
-            var parms = new SortedList<PluginVersioning.paramRecognized, object>();
-            //adding the possible params
-            parms.Add(PluginVersioning.paramRecognized.Param_host, Chip);
-            //Invoke initial setup of plugin, taking care of the appropiate versioning.
-            Chip.InvokeVersionatedMethod(bm, PluginVersioning.memberType.PresentChip, parms);
-            //bm.PresentChip(Chip);       //invoke initial setup of plugin.
+            Chip.IncludePlugin(bm);     //include into plugin lists of a PropellerCPU instance
+            //instanciate object to handle the versioning of PresentChip()
+            var verObj = new VersionatedContainer(bm, PluginVersioning.memberType.PresentChip);
+            //Invoke the appropiate method for PresentChip()
+            verObj.Invoke(new SortedList<string, object> { {"host", Chip } });
+
             // TODO [ASB] : agregar lógica para detectar si se define que si se usa NotifyOnClock(.) dentro de PresentChip() y no está implementado en derivada de pluginBase, se muestre el mensaje de error al usuario, se elimine de la lista de chip (usando Chip.RemovePlugin(.) y se abra la ventana del editor de plugins con un mensaje de error. La misma validación debe estar para el análogo de NotifyOnPins(.)
 
             TabPage t = new TabPage(bm.Title);
