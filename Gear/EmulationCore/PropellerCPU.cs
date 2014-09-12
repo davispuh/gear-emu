@@ -133,14 +133,12 @@ namespace Gear.EmulationCore
         //!< @todo Document member Gear.EmulationCore.PropellerCPU.emulator
         private Emulator emulator;
 
-        //!< @brief Versionated List of Handlers for clock ticks on plugins.
+        /// @brief Versionated List of Handlers for clock ticks on plugins.
         private VersionatedContainerCollection TickHandlers;      
-        //!< @brief Versionated List of Handlers for Pin changes on plugins.
+        /// @brief Versionated List of Handlers for Pin changes on plugins.
         private VersionatedContainerCollection PinHandlers;
-//        //!< @brief Versionated List of active PlugIns (include system ones, like cog views, etc).
-//        private VersionatedContainerCollection PlugInsVer;           
-        //!< @brief List of active PlugIns (include system ones, like cog views, etc).
-        private List<PluginBase> PlugIns;           
+        /// @brief List of active PlugIns (include system ones, like cog views, etc).
+        private List<PluginBase> PlugIns;          
 
         //Expose constants declarations to use on the project. 
         //!< @todo Document member Gear.EmulationCore.PropellerCPU.TOTAl_COGS
@@ -486,19 +484,10 @@ namespace Gear.EmulationCore
         public void IncludePlugin(PluginBase mod)
         {
             if (!(PlugIns.Contains(mod)))
+            {
                 PlugIns.Add(mod);
-            //if (!(PlugInsVer.Contains(mod, PluginVersioning.memberType.PresentChip)))
-            //    try
-            //    {
-            //        PlugInsVer.Add(mod, PluginVersioning.memberType.PresentChip);
-            //    }
-            //    catch (VersioningPluginException e)
-            //    {
-            //        MessageBox.Show(e.Message + "\r\n" + this.ToString() + ".IncludePlugin()",
-            //            "Plugin Version Validation",
-            //            MessageBoxButtons.OK,
-            //            MessageBoxIcon.Exclamation);
-            //    }
+
+            }
         }
 
         /// @brief Remove a plugin from the active plugin list of propeller instance
@@ -532,7 +521,7 @@ namespace Gear.EmulationCore
         /// @param mod Compiled plugin reference to include.
         public void NotifyOnClock(PluginBase mod)
         {   
-            if (!(TickHandlers.Contains(mod)))
+            if (!(TickHandlers.Contains(mod,PluginVersioning.memberType.OnClock)))
                 try
                 {
                     TickHandlers.Add(mod, PluginVersioning.memberType.OnClock);
@@ -551,7 +540,7 @@ namespace Gear.EmulationCore
         /// @param mod Compiled plugin reference to remove.
         public void RemoveOnClock(PluginBase mod)
         {
-            if (TickHandlers.Contains(mod))
+            if (TickHandlers.Contains(mod,PluginVersioning.memberType.OnClock))
                 TickHandlers.Remove(mod);
         }
 
@@ -560,7 +549,7 @@ namespace Gear.EmulationCore
         /// @param mod Compiled plugin reference to include.
         public void NotifyOnPins(PluginBase mod)
         {
-            if (!(PinHandlers.Contains(mod)))
+            if (!(PinHandlers.Contains(mod, PluginVersioning.memberType.OnPinChange)))
                 try
                 {
                     PinHandlers.Add(mod, PluginVersioning.memberType.OnPinChange);
@@ -579,7 +568,7 @@ namespace Gear.EmulationCore
         /// @param mod Compiled plugin reference to remove.
         public void RemoveOnPins(PluginBase mod)
         {
-            if (PinHandlers.Contains(mod))
+            if (PinHandlers.Contains(mod, PluginVersioning.memberType.OnPinChange))
                 PinHandlers.Remove(mod);
         }
 
@@ -774,11 +763,10 @@ namespace Gear.EmulationCore
             SystemCounter++;
 
             //build the max parameter list needed for versions of PluginBase.OnClock() method.
-            var parms = new SortedList<string, object>  
-                { 
-                    { "time", Time }, 
-                    { "sysCounter", SystemCounter} 
-                };
+            PluginVersioning.ParamMemberInfo[] parms = { 
+                new PluginVersioning.ParamMemberInfo("time", Time), 
+                new PluginVersioning.ParamMemberInfo("sysCounter", SystemCounter) 
+            };
             // Run each module of the list on time event (calling the appropiate OnClock()).
             foreach (VersionatedContainer cont in TickHandlers)
                 cont.Invoke(parms);
@@ -819,11 +807,10 @@ namespace Gear.EmulationCore
             }
 
             //build the max parameter list needed for versions of PluginBase.OnPinChange() method.
-            var parms = new SortedList<string, object> 
-                { 
-                    { "time", Time }, 
-                    { "pins", PinStates}
-                };
+            PluginVersioning.ParamMemberInfo[] parms = { 
+                new PluginVersioning.ParamMemberInfo("time", Time), 
+                new PluginVersioning.ParamMemberInfo("pins", PinStates)
+            };
             //traverse across plugins that use OnPinChange()
             foreach (VersionatedContainer cont in PinHandlers)
                 cont.Invoke(parms);

@@ -104,8 +104,12 @@ namespace Gear.GUI
             Chip.IncludePlugin(bm);     //include into plugin lists of a PropellerCPU instance
             //instanciate object to handle the versioning of PresentChip()
             var verObj = new VersionatedContainer(bm, PluginVersioning.memberType.PresentChip);
+            //build the max parameter list needed for versions of PluginBase.OnClock() method.
+            PluginVersioning.ParamMemberInfo[] parms = { 
+                new PluginVersioning.ParamMemberInfo("host", Chip) 
+            };
             //Invoke the appropiate method for PresentChip()
-            verObj.Invoke(new SortedList<string, object> { {"host", Chip } });
+            verObj.Invoke(parms);
 
             // TODO [ASB] : agregar lógica para detectar si se define que si se usa NotifyOnClock(.) dentro de PresentChip() y no está implementado en derivada de pluginBase, se muestre el mensaje de error al usuario, se elimine de la lista de chip (usando Chip.RemovePlugin(.) y se abra la ventana del editor de plugins con un mensaje de error. La misma validación debe estar para el análogo de NotifyOnPins(.)
 
