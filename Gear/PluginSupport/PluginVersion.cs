@@ -50,7 +50,7 @@ namespace Gear.PluginSupport
     /// attribute to the method with the same PluginVersioning.memberType enumeration value and 
     /// appropriate version number.
     /// @version 14.8.7 - Added.
-    public class PluginVersioning
+    public class PluginVersioning : System.IDisposable 
     {
         /// @brief Type of member for version management on menbers of Plugins.
         /// @details They must be equal to the name of the method to work, because the retrieving
@@ -109,27 +109,71 @@ namespace Gear.PluginSupport
                 Name = name;
                 Parameter = parameter;
             }
+            /// @brief Determine if are compatible with the name and Type given
+            /// @param[in] name Name of the parameter to compare to.
+            /// @param[in] typ Type of the parameter to compare to.
+            /// @returns If they are compatible parameters (=true), else (=false).
+            public bool IsCompatible(string name, Type typ)
+            {
+                return ( (this.Name == name) && (this.Parameter.GetType() == typ) );
+            }
         }
 
         /// @brief List of possible parameters for each memberType subject to versioning.
+        /// @detail This list is filled with all the possibles parameters when the constructor is
+        /// called, because a plugin instance is needed (no static call).
         private SortedList<memberType, SortedList<string, Type>> ParamsByType;
-
         /// @brief Reference to plugin type
         private Type _pluginType;
+        public Type PluginType { 
+            get { return _pluginType; }
+            private set { _pluginType = value; }
+        }
 
         /// @brief Default constructor given a plugin class type.
-        public PluginVersioning(Type pluginType) 
+        public PluginVersioning(PluginBase plugin) 
         {
-            // todo [ASB] : add validation of methods of pluginBase having same memberType and version number, and throw an exception in runtime (as I don't know how to do that in compile time.
+            // todo [ASB] : add validation of methods of pluginBase having same memberType and version number, and throw an exception in runtime (as I don't know how to do that in compile time).
 
-            // todo [ASB] : build the list of possible parameters by memberType, taking the plugin type and storing in ParamsByType list.
-            
+            if (plugin == null)
+                throw new VersioningPluginException(
+                    "Plugin reference is NULL, for new PluginVersioning(null)");
+            else
+            {
+                PluginType = plugin.GetType();
+
+                ParamsByType = new SortedList<memberType, SortedList<string, Type>>();
+                //traverse across the member types to build the list of ParamsByType
+                foreach (memberType memTyp in (memberType[])Enum.GetValues(typeof(memberType)))
+                {
+                    //start with a empty list of parameters each time
+                    var paramsFound = new SortedList<string, Type>();
+                    //traverse across each versionated method
+                    foreach (Tuple<MethodInfo, ParameterInfo[]> eachMeth in GetVersionatedMethods(memTyp))
+                    {
+                        foreach (ParameterInfo paramInfo in eachMeth.Item2)
+                        {
+                            //if the list not contains the name & type of the parameter already...
+                            if (!paramsFound.ContainsKey(paramInfo.Name) &
+                                 !paramsFound.ContainsValue(paramInfo.ParameterType))
+                            {
+                                //...add it to the list
+                                paramsFound.Add(paramInfo.Name, paramInfo.ParameterType);
+                            }
+                        }
+                    }
+                    //if any parameter found...
+                    if (paramsFound.Count > 0)
+                        this.ParamsByType.Add(memTyp, paramsFound);    //... add to the list of parameters
+                }
+            }
         }
 
         /// @brief Get the maximum quantity of paramers for the versionated methods of the supplied 
         /// member type.
         /// @param memberType Type of versionated member.
-        public int ParametersQtyMax(PluginVersioning.memberType memberType)
+        /// @returns Quantity of parameters for the member type.
+        public int ParametersQty(PluginVersioning.memberType memberType)
         {
             if ((ParamsByType.Count == 0) | (!ParamsByType.ContainsKey(memberType)))
                 return 0;
@@ -140,6 +184,18 @@ namespace Gear.PluginSupport
                 return paramList.Count;
             }
         }
+
+        /// @brief Retrieve a list with all the possible parameters for the versionated methods of 
+        /// the supplied member type.
+        /// @param[in] memberType Type of versionated member.
+        /// @returns List of tuples name & type of the parameters.
+        public SortedList<string, Type> GetParameters(PluginVersioning.memberType memberType)
+        {
+            var list = new SortedList<string, Type>();
+            ParamsByType.TryGetValue(memberType, out list);
+            return list;
+        }
+
         /// @brief Auxiliary method to retrieve a list of versionated methods of a PluginBase instance
         /// of the specefied member type.
         /// @details It use Reflexion to obtain the information dinamically.
@@ -297,6 +353,12 @@ namespace Gear.PluginSupport
                 /// todo [ASB] : agregar lógica y devolver una lista de errores compatible con el compilador de plugins.
                 return true;
             }
+        }
+    
+        /// @brief Member of IDisposable interface
+        public void Dispose()
+        {
+            ParamsByType.Clear();
         }
 
     }
@@ -498,8 +560,6 @@ namespace Gear.PluginSupport
         private PluginVersioning.memberType _membType;
         /// @brief Information of versionated member to use for the member type.
         private PluginVersioning.VersionMemberInfo _member;
-        /// @brief Instance of Versioning for this plugin.
-        private PluginVersioning _instVers;
 
         /// @brief Default constructor.
         /// @details The constructor determines also the version of the member, from the type class
@@ -515,16 +575,21 @@ namespace Gear.PluginSupport
                 throw new VersioningPluginException(
                     "Plugin reference is NULL, for new VersionatedContainer() of \"" +
                      MemType.ToString() + "\" member type.");
+            };
+            if (!plugin.IsUserPlugin)
+            {
+                throw new VersioningPluginException(
+                    "Plugin \"" +
+                     plugin.Name + "\" is system plugin. Versioning is only allowed to user plugins.");
             }
             else
             {
                 _plugin = plugin;
                 _membType = MemType;
-                _instVers = new PluginVersioning(plugin.GetType());
                 //As theorically a PluginBase descendent can have instanciated more than one version
                 //of each memberType, below code detects and returns the higher version available.
                 //if there is none avalaible, the return value is false.
-                if (_instVers.GetImplementedMethod(MemType, out _member))
+                if (_plugin.Versioning.GetImplementedMethod(MemType, out _member))
                     _version = _member.VersionLow;
                 else
                     _version = -1.0f;
@@ -627,27 +692,47 @@ namespace Gear.PluginSupport
 
         /// @brief Get member code by type and version using Reflexion, then and run it with the 
         /// supplied parameter list.
+        /// @param[in] parms Parameter list to perform the invocation of a versionated member
         public bool Invoke(params PluginVersioning.ParamMemberInfo[] parms)
         {
             if (!this.IsValidMember())
                 return false;
             else
             {
-                bool success = false;
+                bool state = false;
                 //validate the given parameter list is not empty
                 if (parms.Length == 0)
                     return false;
                 else
                 {
-                    //validate if there are enough parameters according to memberType
-                    if (_instVers.ParametersQtyMax(_membType) <= parms.Length)
+                    //validate if there are not enough parameters according to memberType
+                    if (_plugin.Versioning.ParametersQty(_membType) > parms.Length)
                     {
-                        // TODO [ASB] : do a loop to match each parameter (supplied vs required) using Reflexion
+                        throw new VersioningPluginException(
+                            "There are not enough parameters supplied in plugin \"" + _plugin.Name + 
+                            "\" when invoking for \"" +  _membType.ToString() + "\" member type. Supplied " +
+                            parms.Length + ", but " + _plugin.Versioning.ParametersQty(_membType) +
+                            "required.");
                     }
-                    // TODO [ASB] : agregar lógica para determinar el tipo de miembro según versión, y 
-                    //  ejecutarlo
+                    else
+                    {
+                        //traverse across all the possible parameters accord to memberType
+                        foreach (KeyValuePair<string, Type> PossibleParam in _plugin.Versioning.GetParameters(_membType))
+                        {
+                            foreach (PluginVersioning.ParamMemberInfo givenParam in parms)
+                            {
+                                if (givenParam.IsCompatible(PossibleParam.Key, PossibleParam.Value))
+                                    //todo [ASB] : determinar el orden de los parametros a entregar a la llamada
+                            }
+                        }
+                        
+                        // TODO [ASB] : agregar lógica para determinar el tipo de miembro según versión, y 
+                        //  ejecutarlo
 
-                    return success;
+
+                        state = true;
+                    }
+                    return state;
                 }
             }
         }

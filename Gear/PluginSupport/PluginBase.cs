@@ -46,6 +46,9 @@ namespace Gear.PluginSupport
         /// @version 14.8.10 - Added.
         protected PropellerCPU Chip;
 
+        /// @brief Reference for handling versioning of the derived class
+        public PluginVersioning Versioning = null;
+
         /// @brief Constructor to initialize with the PropellerCPU reference.
         /// This avoid to declare in each plugin the following example code:
         /// @code{.cs}

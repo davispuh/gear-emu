@@ -480,13 +480,13 @@ namespace Gear.EmulationCore
 
         /// @brief Include a plugin in active plugin list of propeller instance.
         /// @details It see if the plugin exist already to insert or not.
-        /// @param[in] mod Compiled plugin reference to include.
-        public void IncludePlugin(PluginBase mod)
+        /// @param[in] plugin Compiled plugin reference to include.
+        public void IncludePlugin(PluginBase plugin)
         {
-            if (!(PlugIns.Contains(mod)))
+            if (!(PlugIns.Contains(plugin)))
             {
-                PlugIns.Add(mod);
-
+                PlugIns.Add(plugin);   //add to the list of plugins
+                plugin.Versioning = new PluginVersioning(plugin);   //save versioning run time info
             }
         }
 
@@ -494,37 +494,28 @@ namespace Gear.EmulationCore
         /// @details Only if the plugin exists on the list, this method removes from it.
         /// Before detach, the `OnClose()` method of plugin is invoqued, to do
         /// housekeeping, for example to clear pins managed by the plugin.
-        /// @param[in] mod Compiled plugin reference to remove
-        public void RemovePlugin(PluginBase mod)
+        /// @param[in] plugin Compiled plugin reference to remove
+        public void RemovePlugin(PluginBase plugin)
         {
-            //if (PlugInsVer.Contains(mod, PluginVersioning.memberType.PresentChip))
-            //    PlugInsVer.Remove(mod);
-            if (PlugIns.Contains(mod))
+            //if (PlugInsVer.Contains(plugin, PluginVersioning.memberType.PresentChip))
+            //    PlugInsVer.Remove(plugin);
+            if (PlugIns.Contains(plugin))
             {
-                mod.OnClose();      //call the event before remove 
-                PlugIns.Remove(mod);
+                plugin.OnClose();      //call the event of instanciated plugin before remove 
+                plugin.Versioning.Dispose();   //do some internal clean up
+                PlugIns.Remove(plugin);
             }
         }
 
-        //public void InvokeVersionatedMethod(PluginBase p, PluginVersioning.memberType member, params SortedList<PluginVersioning.paramRecognized, object> parms)
-        //{
-        //    switch (member)
-        //    {
-        //        case PluginVersioning.memberType.PresentChip :
-        //            if (PlugIns.Contains(p,member))
-        //                PlugIns
-        //    }
-        //}
-
         /// @brief Add a plugin to be notified on clock ticks.
         /// @details It see if the plugin exist already to insert or not.
-        /// @param mod Compiled plugin reference to include.
-        public void NotifyOnClock(PluginBase mod)
-        {   
-            if (!(TickHandlers.Contains(mod,PluginVersioning.memberType.OnClock)))
+        /// @param plugin Compiled plugin reference to include.
+        public void NotifyOnClock(PluginBase plugin)
+        {
+            if (!(TickHandlers.Contains(plugin, PluginVersioning.memberType.OnClock)))
                 try
                 {
-                    TickHandlers.Add(mod, PluginVersioning.memberType.OnClock);
+                    TickHandlers.Add(plugin, PluginVersioning.memberType.OnClock);
                 }
                 catch (VersioningPluginException e)
                 {
@@ -537,22 +528,22 @@ namespace Gear.EmulationCore
 
         /// @brief Remove a plugin from the clock notify list.
         /// @details Only if the plugin exists on the list, this method removes from it. 
-        /// @param mod Compiled plugin reference to remove.
-        public void RemoveOnClock(PluginBase mod)
+        /// @param plugin Compiled plugin reference to remove.
+        public void RemoveOnClock(PluginBase plugin)
         {
-            if (TickHandlers.Contains(mod,PluginVersioning.memberType.OnClock))
-                TickHandlers.Remove(mod);
+            if (TickHandlers.Contains(plugin, PluginVersioning.memberType.OnClock))
+                TickHandlers.Remove(plugin);
         }
 
         /// @brief Add a plugin to be notified on pin changes.
         /// @details It see if the plugin exist already to insert or not.
-        /// @param mod Compiled plugin reference to include.
-        public void NotifyOnPins(PluginBase mod)
+        /// @param plugin Compiled plugin reference to include.
+        public void NotifyOnPins(PluginBase plugin)
         {
-            if (!(PinHandlers.Contains(mod, PluginVersioning.memberType.OnPinChange)))
+            if (!(PinHandlers.Contains(plugin, PluginVersioning.memberType.OnPinChange)))
                 try
                 {
-                    PinHandlers.Add(mod, PluginVersioning.memberType.OnPinChange);
+                    PinHandlers.Add(plugin, PluginVersioning.memberType.OnPinChange);
                 }
                 catch (VersioningPluginException e)
                 {
@@ -565,11 +556,11 @@ namespace Gear.EmulationCore
 
         /// @brief Remove a plugin from the pin changed notify list.
         /// @details Only if the plugin exists on the list, this method removes from it. 
-        /// @param mod Compiled plugin reference to remove.
-        public void RemoveOnPins(PluginBase mod)
+        /// @param plugin Compiled plugin reference to remove.
+        public void RemoveOnPins(PluginBase plugin)
         {
-            if (PinHandlers.Contains(mod, PluginVersioning.memberType.OnPinChange))
-                PinHandlers.Remove(mod);
+            if (PinHandlers.Contains(plugin, PluginVersioning.memberType.OnPinChange))
+                PinHandlers.Remove(plugin);
         }
 
         /// @todo Document method Gear.EmulationCore.PropellerCPU.SetClockMode().
