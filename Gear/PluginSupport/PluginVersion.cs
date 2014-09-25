@@ -80,7 +80,7 @@ namespace Gear.PluginSupport
             /// @brief Information of the method, from Reflexion.
             public MethodInfo MInfo;
             /// @brief Array of parameters of the method.
-            public ParameterInfo[] ParamArr;
+            public SortedList<int,ParamMemberInfo> ParamListOfMethod;
 
             /// @brief Constructor with parameters.
             public VersionMemberInfo(float versionLow, MethodInfo mInfo, bool isInherited,
@@ -91,7 +91,27 @@ namespace Gear.PluginSupport
                 MInfo = mInfo;
                 IsDeclaredInDerived = isInherited;
                 IsMandatory = isMandatory;
-                ParamArr = paramArr;
+                //build the list of parameters for the method
+                ParamListOfMethod = new SortedList<int,ParamMemberInfo>();
+                foreach(ParameterInfo param in paramArr)
+                {
+                    //get attributes that decorates the parameter (if any)
+                    Object[] attr = param.GetCustomAttributes(typeof(ParamOrderAttribute), true);
+                    //if there are custom attributes for it
+                    if (attr.Length > 0)
+                    {   //browse the attribute
+                        foreach (Object obj in attr)
+                        {
+                            ParamOrderAttribute ord = obj as ParamOrderAttribute;    //cast 
+                            //if it is a ParamOrderAttribute type
+                            if (ord != null)
+                            {
+                                //TODO [ASB] : determinar si el orden en que ser entregan los parametros de un metodo es confiable o no. Si es confiable, 1) dejar a ParamListOfMethod como un array, 2) volar todo el código de atributos en el constructor, 3) eliminar la clase ParamOrderAttribute desde PluginVersion.cs, 4) eliminar la decoración con atributo ParamOrder en PluginBase.
+                            }
+                        }
+                    }
+
+                }
             }
         }
 
@@ -101,30 +121,54 @@ namespace Gear.PluginSupport
             /// @brief Holds the name of the target parameter.
             public string Name;
             /// @brief Holds the value (and type) of the parameter passed.
-            public Object Parameter;
+            /// @note If this have value, ParamType must be null.
+            public Object ParameterObj;
+            /// @brief Hold the type of the parameter.
+            /// @note If this have value, ParameterObj must be null.
+            public Type ParameterType;
+            /// @brief Hold the order of the parameter.
+            public int Order;
 
-            /// @brief Constructor with parameters.
+            /// @brief Constructor with a Object parameter: to be used with given parameters (with values).
+            /// @param[in] name Name of the given parameter.
+            /// @param[in] parameter Object reference to the value given as parameter.
             public ParamMemberInfo(string name, Object parameter)
             {
                 Name = name;
-                Parameter = parameter;
+                ParameterObj = parameter;
+                ParameterType = null;
+                Order = 0;
             }
+
+            /// @brief Constructor with a Type parameter: to be used with method's parameters (definitions).
+            /// @param[in] name Name of the parameter to be supplied.
+            /// @param[in] type Type of object required.
+            /// @param[in] order Order in the invocation.
+            public ParamMemberInfo(string name, Type type, int order)
+            {
+                Name = name;
+                ParameterType = type;
+                ParameterObj = null;
+                Order = order;
+            }
+
             /// @brief Determine if are compatible with the name and Type given
             /// @param[in] name Name of the parameter to compare to.
             /// @param[in] typ Type of the parameter to compare to.
             /// @returns If they are compatible parameters (=true), else (=false).
             public bool IsCompatible(string name, Type typ)
             {
-                return ( (this.Name == name) && (this.Parameter.GetType() == typ) );
+                return ((this.Name == name) && (this.ParameterObj.GetType() == typ));
             }
         }
 
         /// @brief List of possible parameters for each memberType subject to versioning.
-        /// @detail This list is filled with all the possibles parameters when the constructor is
+        /// @details This list is filled with all the possibles parameters when the constructor is
         /// called, because a plugin instance is needed (no static call).
         private SortedList<memberType, SortedList<string, Type>> ParamsByType;
         /// @brief Reference to plugin type
         private Type _pluginType;
+        /// @brief Property for type of plugin
         public Type PluginType { 
             get { return _pluginType; }
             private set { _pluginType = value; }
@@ -189,7 +233,7 @@ namespace Gear.PluginSupport
         /// the supplied member type.
         /// @param[in] memberType Type of versionated member.
         /// @returns List of tuples name & type of the parameters.
-        public SortedList<string, Type> GetParameters(PluginVersioning.memberType memberType)
+        public SortedList<string, Type> GetPossibleParams(PluginVersioning.memberType memberType)
         {
             var list = new SortedList<string, Type>();
             ParamsByType.TryGetValue(memberType, out list);
@@ -404,10 +448,6 @@ namespace Gear.PluginSupport
             get { return _verFrom; }    
         }   
 
-        // @brief Getter to include lower limit o not.
-        //public float VersionFrom { get { return _verFrom; } }
-        // @brief Getter to include upper limit o not.
-        //public float VersionTo { get { return _verTo; } }
         /// @brief Property to include or not the lower limit on validity.
         public bool IncludeLower
         {
@@ -716,18 +756,36 @@ namespace Gear.PluginSupport
                     }
                     else
                     {
-                        //traverse across all the possible parameters accord to memberType
-                        foreach (KeyValuePair<string, Type> PossibleParam in _plugin.Versioning.GetParameters(_membType))
+                        //get the possible parameters for this member type
+                        var possibleParamList = _plugin.Versioning.GetPossibleParams(_membType);
+                        //traverse the given parameters
+                        foreach (PluginVersioning.ParamMemberInfo givenParam in parms)
                         {
-                            foreach (PluginVersioning.ParamMemberInfo givenParam in parms)
-                            {
-                                if (givenParam.IsCompatible(PossibleParam.Key, PossibleParam.Value))
-                                    //todo [ASB] : determinar el orden de los parametros a entregar a la llamada
-                            }
+                            Type correspType;
+                            //check if this given parameter exists in the possibles parameter list
+                            if (! possibleParamList.TryGetValue(givenParam.Name, out correspType))
+                                throw new VersioningPluginException(
+                                    "Given parameter \"" + givenParam.ParameterObj.GetType().ToString() + 
+                                    " " + givenParam.Name + 
+                                    "\" not found in the possibles parameter list for \"" +
+                                    _membType.ToString() + "\" member type in plugin \"" + _plugin.Name + 
+                                    "\".");
+                            //check if the given parameter is compatible (name & type) with the possible one
+                            if (! givenParam.IsCompatible(givenParam.Name, correspType))
+                                throw new VersioningPluginException(
+                                    "Given parameter \"" + givenParam.ParameterObj.GetType().ToString() + 
+                                    " " + givenParam.Name + 
+                                    "\" not matched with the possibles parameter list for \"" + 
+                                    _membType.ToString() + "\" member type in plugin \"" + _plugin.Name + 
+                                    "\".");
+                            //
+                            //TODO [ASB] : determinar el orden de los parametros a entregar a la llamada
+                            _member.ParamListOfMethod
+
                         }
                         
-                        // TODO [ASB] : agregar lógica para determinar el tipo de miembro según versión, y 
-                        //  ejecutarlo
+                        // TODO [ASB] : agregar lógica para invocar el método (nombre: _member.MInfo.Name)
+                        
 
 
                         state = true;

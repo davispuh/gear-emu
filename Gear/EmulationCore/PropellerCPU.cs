@@ -486,7 +486,8 @@ namespace Gear.EmulationCore
             if (!(PlugIns.Contains(plugin)))
             {
                 PlugIns.Add(plugin);   //add to the list of plugins
-                plugin.Versioning = new PluginVersioning(plugin);   //save versioning run time info
+                //save versioning run time info for this plugin
+                plugin.Versioning = new PluginVersioning(plugin);   
             }
         }
 
