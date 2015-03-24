@@ -327,7 +327,8 @@ namespace Gear.GUI
                 if (m_SaveFileName != null)
                     dialog.InitialDirectory = Path.GetDirectoryName(m_SaveFileName);   //retrieve from last plugin edited
                 else
-                    if (Properties.Settings.Default.LastPlugin.Length > 0)
+                    if ((Properties.Settings.Default.LastPlugin != null) &&
+                        (Properties.Settings.Default.LastPlugin.Length > 0))
                         //retrieve from global last plugin
                         dialog.InitialDirectory = 
                             Path.GetDirectoryName(Properties.Settings.Default.LastPlugin);   
@@ -363,7 +364,8 @@ namespace Gear.GUI
             if (m_SaveFileName != null)
                 dialog.InitialDirectory = Path.GetDirectoryName(m_SaveFileName);   //retrieve from last plugin edited
             else
-                if (Properties.Settings.Default.LastPlugin.Length > 0)
+                if ((Properties.Settings.Default.LastPlugin != null) &&
+                    (Properties.Settings.Default.LastPlugin.Length > 0))
                     //retrieve from global last plugin
                     dialog.InitialDirectory = 
                         Path.GetDirectoryName(Properties.Settings.Default.LastPlugin);    
@@ -422,7 +424,7 @@ namespace Gear.GUI
         /// @param[in] e `EventArgs` class with a list of argument to the event call.
         private void addReferenceButton_Click(object sender, EventArgs e)
         {
-            if (referenceName.Text != null)
+            if ((referenceName.Text != null) && (referenceName.Text.Length > 0))
             {
                 referencesList.Items.Add(referenceName.Text);
                 referenceName.Text = "";

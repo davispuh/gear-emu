@@ -494,7 +494,8 @@ namespace Gear.GUI
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Filter = "Gear Plug-in (*.xml)|*.xml|All Files (*.*)|*.*";
             dialog.Title = "Open Gear Plug-in...";
-            if (Properties.Settings.Default.LastPlugin.Length > 0)
+            if ((Properties.Settings.Default.LastPlugin != null) &&
+                (Properties.Settings.Default.LastPlugin.Length > 0))
                 dialog.InitialDirectory = Path.GetDirectoryName(Properties.Settings.Default.LastPlugin);
 
             if (dialog.ShowDialog(this) == DialogResult.OK)
