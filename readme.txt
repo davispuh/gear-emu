@@ -14,7 +14,12 @@ mirror
 Antonio Sanhueza (gatuno)
 Ben Levitt (benjie)
 
+Last Changes:
+
+See changelog.md for last changes.
+
 Contributed code by:
 
 Windows Forms Collapsible Splitter Control for .Net
 (c)Copyright 2002-2003 NJF (furty74@yahoo.com). All rights reserved.
+
