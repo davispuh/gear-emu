@@ -1,9 +1,38 @@
-
-
 Read more in forum threads:
 * [Improved GEAR Emulator](http://forums.parallax.com/showthread.php/156347-Improved-GEAR-Emulator)
 * [More GEAR - Improved Emulation of the Propeller](http://forums.parallax.com/showthread.php/100380-More-GEAR-Improved-Emulation-of-the-Propeller)
 * [GEAR: Propeller Debugging Environment](http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment)
+
+## V15.03.31
+
+* Corrections on all the effects for PASM hub operations (zero, carry and return): CLKSET. COGID, COGINIT, COGSTOP, LOCKNEW, LOCKRET, LOCKSET, LOCKCLR. There was some missing values for carry & zero flags.
+
+* Algorithm optimization for PropellerCPU.PinChanged() to determinate the pin state faster for DIR and OUT.
+
+* Corrected reset events invocations, affecting pins & lock state, and logic view. Now all of them are reset effectively.
+
+* Improvements on LogicView, to show more helpful messages on errors, labels on buttons and text boxes.
+
+* In Plugin Editor now you can start with a default plugin template (new default) or empty window (old default style). The program recovers it from "Resource\PluginTemplate.cs.
+
+* Updated PluginBase class structure, so all the old plugins have to be updated:
+    -Constructor invocation must call Base constructor.
+	-Extra parameter on OnClock() method for current clock number in tick clocks.
+	-Method PresentChip() with no param, beacuse Chip reference now is included in plugin base class definition.
+	-New method OnClose() is called for every plugin before closing the emulator (to perform cleanup).
+
+* Added program settings to remember them between sessions (stored in "Gear.exe.config" file in this version): 
+	-TimeFrame and TickMarkGrid on logic view.
+	-LastBinary & LastPlugin on Emulator, GearDesktop & PluginEditor.
+	-UpdateEachSteps to enable changes on the screen refresh rate.
+	-Added "UseNoTemplate" program setting to enable load plugin editor empty (old default style).
+
+* Changed names and tooltips on buttons "open plugin", "load plugin", "open binary" on GearDesktop & Emulator.
+
+* Memory leaks prevention: Corrections for Disposable members in CogView, LogicView, MemoryView & PluginEditor.
+
+* Improved general documentation of source code, including specific pages for sequence of callings for PropellerCPU.Step() and loading a plugin in memory after compilation.
+
 
 ## V14.07.03
 
