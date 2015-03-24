@@ -29,9 +29,7 @@ using Gear.EmulationCore;
 
 ///@brief Name space for Plugin support.
 /// Contains the classes that defines the plugin system: the plugin class structure itself, 
-/// the loading of plugins from XML files, the compiling and instantation of a plugin class, including
-/// versioning to manage changes in the methods as different parameters or results, and runtime
-/// information using C# Reflexion infrastructure. 
+/// the loading of plugins from XML files, the compiling and instantation of a plugin class. 
 namespace Gear.PluginSupport
 {
     /// @brief Base class for plugin support.
@@ -43,11 +41,12 @@ namespace Gear.PluginSupport
     public class PluginBase : UserControl
     {
         /// @brief Reference to PropellerCPU for the plugin.
-        /// @version 14.8.10 - Added.
+        /// @version 14.8.10 - Added reference to keep PropellerCPU internal to class.
         protected PropellerCPU Chip;
 
-        /// @brief Reference for handling versioning of the derived class
-        public PluginVersioning Versioning = null;
+        /// @brief Default constructor.
+        /// @note Not to be used by plugin derived class, only by the Designer in MVSC.
+        protected PluginBase() { }
 
         /// @brief Constructor to initialize with the PropellerCPU reference.
         /// This avoid to declare in each plugin the following example code:
@@ -89,17 +88,7 @@ namespace Gear.PluginSupport
         /// propeller chip (so you can drive the pins). 
         /// @note Source: <a href="http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment?p=625629&viewfull=1#post625629">
         /// API GEAR described on GEAR original Post</a>
-        /// @version 14.8.10 - Added the attribute decoration.
-        [Version(0.0f, 1.0f, PluginVersioning.memberType.PresentChip, IsMandatory=true)]
-        public virtual void PresentChip([ParamOrder(1)] PropellerCPU host) { }
-
-        /// @brief Points to propeller instance.
-        /// @note Asterisk's: Occurs once the plugin is loaded. It gives you a reference to the 
-        /// propeller chip (so you can drive the pins). 
-        /// @note Source: <a href="http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment?p=625629&viewfull=1#post625629">
-        /// API GEAR described on GEAR original Post</a>
-        /// @version 14.8.10 - Added method without parameters and attribute decoration.
-        [Version(1.0f, PluginVersioning.memberType.PresentChip, IsMandatory = true)]
+        /// @version 14.9.25 - Changed to method without parameters.
         public virtual void PresentChip() { }    
 
         /// @brief Event when the chip is reset.
@@ -112,23 +101,13 @@ namespace Gear.PluginSupport
         /// @version 14.8.5 - Added.
         public virtual void OnClose() { }
              
-        /// @brief Event when a clock tick is informed to the plugin, in secounds units.
-        /// @param[in] time Time in secounds of the emulation.
-        /// @note Asterisk's: occurs once every cycle, time is the current emulated time (in 
-        /// seconds).
-        /// @note Source: <a href="http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment?p=625629&viewfull=1#post625629">
-        /// API GEAR described on GEAR original Post</a>
-        [Version(0.0f, 1.0f, PluginVersioning.memberType.OnClock)]
-        public virtual void OnClock([ParamOrder(1)] double time) { }
-
         /// @brief Event when a clock tick is informed to the plugin, in clock units.
         /// @param[in] time Time in secounds of the emulation.
 		/// @param[in] sysCounter Present system clock in ticks unit.
         /// @warning If sysCounter is used only, the plugin designer have to take measures to 
         /// detect and manage system counter rollover.
-        /// @version 14.7.27 - Added.
-        [Version(1.0f, PluginVersioning.memberType.OnClock)]
-        public virtual void OnClock([ParamOrder(1)] double time, [ParamOrder(2)] uint sysCounter) { }
+        /// @version 14.9.25 - Changed to method with two parameters.
+        public virtual void OnClock(double time, uint sysCounter) { }
 
         /// @brief Event when some pin changed and is informed to the plugin.
         /// @note Asterisk's: occurs every time a pin has changed states. PinState tells you if 
@@ -136,8 +115,7 @@ namespace Gear.PluginSupport
         /// floating.
         /// @note Source: <a href="http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment?p=625629&viewfull=1#post625629">
         /// API GEAR described on GEAR original Post</a>
-        [Version(0.0f, PluginVersioning.memberType.OnPinChange)]
-        public virtual void OnPinChange([ParamOrder(1)] double time, [ParamOrder(2)] PinState[] pins) { }
+        public virtual void OnPinChange(double time, PinState[] pins) { }
 
         /// @brief Event to repaint the plugin screen (if used).
         /// @note Asterisk's: occurs when the GUI has finished executing a emulation 'frame' 
@@ -173,6 +151,7 @@ namespace Gear.PluginSupport
         {
             Chip.DrivePin(pin, Floating, Hi);
         }
+
         /// @brief Set an immediate breakpoint.
         /// This method is for isolate the access to the undeline Chip.
         /// @version 14.8.10 - Added.

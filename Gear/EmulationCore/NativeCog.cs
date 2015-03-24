@@ -170,7 +170,8 @@ namespace Gear.EmulationCore
             switch (State)
             {
                 case CogRunState.HUB_HUBOP:
-                    DataResult = Hub.HubOp(this, SourceValue, DestinationValue, ref CarryResult);
+                    DataResult = Hub.HubOp(this, SourceValue, DestinationValue, ref CarryResult, 
+                        ref ZeroResult);
                     WriteBackResult();
                     return;
                 case CogRunState.HUB_RDBYTE:
@@ -656,7 +657,7 @@ namespace Gear.EmulationCore
             // Prefetch instruction
             Operation = ReadLong(PC);
             // Check if it's time to trigger a breakpoint
-            return PC != BP;
+            return PC != BreakPointCogCursor;
         }
 
         private void InstructionRCR()

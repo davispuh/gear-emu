@@ -34,19 +34,10 @@ using System.IO;
 /// @namespace Gear.GUI
 namespace Gear.GUI
 {
-    /// @todo Document Gear.GUI.GearDesktop class
+    /// @brief Implements the graphical Desktop to the emulator, plugin editor and related windows.
     public partial class GearDesktop : Form
     {
-        /// @brief Last plugin succesfully opened or saved.
-        /// Include complete path and name.
-        /// @version V14.07.17 - Introduced.
-        static public string LastPlugin;
-        /// @brief Last bynary file succesfully opened.
-        /// Include complete path and name.
-        /// @version V14.07.17 - Introduced.
-        static public string LastBinary;
-        
-        /// @todo Document Gear.GUI.GearDesktop()
+        /// @brief Gear.GUI.GearDesktop Constructor.
         public GearDesktop()
         {
             InitializeComponent();
@@ -60,8 +51,10 @@ namespace Gear.GUI
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Propeller Runtime Image (*.binary;*.eeprom)|*.binary;*.eeprom|All Files (*.*)|*.*";
             openFileDialog.Title = "Open Propeller Binary...";
-            if (LastBinary != null)
-                openFileDialog.InitialDirectory = Path.GetDirectoryName(LastBinary);   //retrieve last binary location
+            if (Properties.Settings.Default.LastBinary.Length > 0)
+                //retrieve last binary location
+                openFileDialog.InitialDirectory = 
+                    Path.GetDirectoryName(Properties.Settings.Default.LastBinary);   
 
             if (openFileDialog.ShowDialog(this) == DialogResult.OK)
             {
@@ -73,48 +66,43 @@ namespace Gear.GUI
                     emul.WindowState = FormWindowState.Maximized;
                     emul.Show();
                     //remember last binary succesfully opened
-                    LastBinary = emul.GetLastBinary;
+                    Properties.Settings.Default.LastBinary = emul.GetLastBinary;
+                    Properties.Settings.Default.Save();
                 }
             }
         }
 
-        /// @todo Document Gear.GUI.GearDesktop.ExitToolsStripMenuItem_Click().
-        /// 
+        /// @brief Close the application.
         private void ExitToolsStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }
 
-        /// @todo Document Gear.GUI.GearDesktop.CascadeToolStripMenuItem_Click()
-        /// 
+        /// @brief Arrange the emulator windows in cascade layout.
         private void CascadeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LayoutMdi(MdiLayout.Cascade);
         }
 
-        /// @todo Document Gear.GUI.GearDesktop.TileVerticleToolStripMenuItem_Click()
-        /// 
+        /// @brief Arrange the emulator windows in Verticle Tiles.
         private void TileVerticleToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LayoutMdi(MdiLayout.TileVertical);
         }
 
-        /// @todo Document Gear.GUI.GearDesktop.TileHorizontalToolStripMenuItem_Click()
-        /// 
+        /// @brief Arrange the emulator windows in Horizontal Tiles. 
         private void TileHorizontalToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LayoutMdi(MdiLayout.TileHorizontal);
         }
 
-        /// @todo Document Gear.GUI.GearDesktop.ArrangeIconsToolStripMenuItem_Click()
-        /// 
+        /// @brief Arrange the emulator windows in icons layout.
         private void ArrangeIconsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LayoutMdi(MdiLayout.ArrangeIcons);
         }
 
-        /// @todo Document Gear.GUI.GearDesktop.CloseAllToolStripMenuItem_Click()
-        /// 
+        /// @brief Close all the Emulators windows.
         private void CloseAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
             foreach (Form childForm in MdiChildren)
@@ -123,8 +111,7 @@ namespace Gear.GUI
             }
         }
 
-        /// @todo Document Gear.GUI.GearDesktop.aboutToolStripMenuItem_Click()
-        /// 
+        /// @brief Show the details about the GEAR Emulator.
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AboutGear about = new AboutGear();
@@ -132,15 +119,16 @@ namespace Gear.GUI
         }
 
         /// @brief Load plugin editor from file.
-        /// Load a plugin definition into a new editor window, from user selected file, remembering last plugin directory,
-        /// independently from last binary directory.
+        /// @details Load a plugin definition into a new editor window, from user selected file, 
+        /// remembering independently from last binary directory.
         private void OpenPluginButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Gear plug-in component (*.xml)|*.xml|All Files (*.*)|*.*";
             openFileDialog.Title = "Open Gear Plug-in...";
-            if (LastPlugin != null)
-                openFileDialog.InitialDirectory = Path.GetDirectoryName(LastPlugin);
+            if (Properties.Settings.Default.LastPlugin.Length > 0)
+                openFileDialog.InitialDirectory = 
+                    Path.GetDirectoryName(Properties.Settings.Default.LastPlugin);
 
             if (openFileDialog.ShowDialog(this) == DialogResult.OK)
             {
@@ -152,16 +140,17 @@ namespace Gear.GUI
                     plugin.MdiParent = this;
                     plugin.Show();
                     //remember plugin succesfully loaded
-                    LastPlugin = plugin.GetLastPlugin;
+                    Properties.Settings.Default.LastPlugin = plugin.GetLastPlugin;
+                    Properties.Settings.Default.Save();
                 }
             }
         }
 
-        /// @todo Document Gear.GUI.GearDesktop.newPluginButton_Click()
-        /// 
+        /// @brief Open a window with the plugin editor to create a new plugin.
         private void newPluginButton_Click(object sender, EventArgs e)
         {
-            PluginEditor plugin = new PluginEditor(true);   //load default plugin template
+            //load default plugin template
+            PluginEditor plugin = new PluginEditor(! Properties.Settings.Default.UseNoTemplate);   
             plugin.MdiParent = this;
             plugin.Show();
         }

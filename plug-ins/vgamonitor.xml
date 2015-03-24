@@ -32,7 +32,7 @@
 
         public override string Title
         {
-            get { return &quot;VGA Monitor&quot;; }
+            get { return "VGA Monitor"; }
         }
 
         public VGAMonitor(PropellerCPU chip) : base(chip)
@@ -116,5 +116,6 @@
             e.Graphics.DrawImage(Screen, 0, 0);
         }
     }
-  </code>
+  
+</code>
 </plugin>

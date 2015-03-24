@@ -37,6 +37,8 @@ namespace Gear.GUI
             {
                 components.Dispose();
             }
+            this.MonoFont.Dispose();
+            this.BackBuffer.Dispose();
             base.Dispose(disposing);
         }
 

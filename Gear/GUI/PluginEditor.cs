@@ -86,7 +86,7 @@ namespace Gear.GUI
             {
                 try
                 {
-                    codeEditorView.LoadFile("PluginTemplate.cs", RichTextBoxStreamType.PlainText);
+                    codeEditorView.LoadFile("Resources\\PluginTemplate.cs", RichTextBoxStreamType.PlainText);
                 }
                 catch (IOException) { }         //do nothing, mantaining empty the code text box
                 catch (ArgumentException) { }   //
@@ -327,7 +327,10 @@ namespace Gear.GUI
                 if (m_SaveFileName != null)
                     dialog.InitialDirectory = Path.GetDirectoryName(m_SaveFileName);   //retrieve from last plugin edited
                 else
-                    dialog.InitialDirectory = Path.GetDirectoryName(GearDesktop.LastPlugin);   //retrieve from global last plugin
+                    if (Properties.Settings.Default.LastPlugin.Length > 0)
+                        //retrieve from global last plugin
+                        dialog.InitialDirectory = 
+                            Path.GetDirectoryName(Properties.Settings.Default.LastPlugin);   
 
                 if (dialog.ShowDialog(this) == DialogResult.OK)
                 {
@@ -360,7 +363,10 @@ namespace Gear.GUI
             if (m_SaveFileName != null)
                 dialog.InitialDirectory = Path.GetDirectoryName(m_SaveFileName);   //retrieve from last plugin edited
             else
-                dialog.InitialDirectory = Path.GetDirectoryName(GearDesktop.LastPlugin);    //retrieve from global last plugin
+                if (Properties.Settings.Default.LastPlugin.Length > 0)
+                    //retrieve from global last plugin
+                    dialog.InitialDirectory = 
+                        Path.GetDirectoryName(Properties.Settings.Default.LastPlugin);    
 
             if (dialog.ShowDialog(this) == DialogResult.OK)
             {
@@ -665,7 +671,8 @@ namespace Gear.GUI
                 if (!CloseAnyway(SaveFileName)) //ask the user to not loose changes
                     e.Cancel = true;    //cancel the closing event
             }
-            GearDesktop.LastPlugin = GetLastPlugin;
+            Properties.Settings.Default.LastPlugin = GetLastPlugin;
+            Properties.Settings.Default.Save();
         }
 
         /// @brief Ask the user to not loose changes.

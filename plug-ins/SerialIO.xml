@@ -7,7 +7,7 @@
     //    to a FullDuplexSerial object running on the PropellerCPU chip.
     //
     // CHANGELOG
-    // v0.4 - Fix tab order.  Clear transmit buffer on &quot;Clear Text&quot; button click.
+    // v0.4 - Fix tab order.  Clear transmit buffer on "Clear Text" button click.
     // v0.3 - Adds a scrollbar and automatically scrolls down as text comes in.
     // v0.2 - Fixes a bug in handling receiving a 0 byte.
     // v0.1 - Initial release.
@@ -78,7 +78,7 @@
 
         public override string Title
         {
-            get { return &quot;Serial&quot;; }
+            get { return "Serial"; }
         }
 
 
@@ -93,7 +93,7 @@
             rxPin = 30;
             txPin = 31;
             baud = 57600;
-            displayBuffer = &quot;&quot;;
+            displayBuffer = "";
 
             this.BuildGui();
             this.OnReset();
@@ -108,7 +108,7 @@
             rxBitPos = 0;
             rxCurrentByte = 0;
 
-            txBuffer = &quot;&quot;;
+            txBuffer = "";
             txLastTime = 0;
             txPhase = 0;
             txBitPos = 0;
@@ -162,77 +162,77 @@
 
             tableLayoutPanel.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.FixedSize;
             tableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            tableLayoutPanel.Name = &quot;tableLayoutPanel&quot;;
+            tableLayoutPanel.Name = "tableLayoutPanel";
             tableLayoutPanel.RowCount = 2;
             tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             tableLayoutPanel.TabIndex = 6;
 
-            rxPinLabel.Text = &quot;Rx Pin:&quot;;
+            rxPinLabel.Text = "Rx Pin:";
             rxPinLabel.TextAlign = ContentAlignment.MiddleRight;
             rxPinLabel.Dock = System.Windows.Forms.DockStyle.Fill;
 
-            txPinLabel.Text = &quot;Tx Pin:&quot;;
+            txPinLabel.Text = "Tx Pin:";
             txPinLabel.TextAlign = ContentAlignment.MiddleRight;
             txPinLabel.Dock = System.Windows.Forms.DockStyle.Fill;
 
-            baudLabel.Text = &quot;Baud Rate:&quot;;
+            baudLabel.Text = "Baud Rate:";
             baudLabel.TextAlign = ContentAlignment.MiddleRight;
             baudLabel.Dock = System.Windows.Forms.DockStyle.Fill;
 
             this.rxPinField.BackColor = System.Drawing.SystemColors.Window;
-            this.rxPinField.Font = new System.Drawing.Font(&quot;Courier New&quot;, 9.75F,
+            this.rxPinField.Font = new System.Drawing.Font("Courier New", 9.75F,
                  System.Drawing.FontStyle.Regular,
                  System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rxPinField.Multiline = false;
             this.rxPinField.Text = Convert.ToString(rxPin);
             this.rxPinField.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rxPinField.Name = &quot;rxPinField&quot;;
+            this.rxPinField.Name = "rxPinField";
             this.rxPinField.TabIndex = 2;
 
             this.txPinField.BackColor = System.Drawing.SystemColors.Window;
-            this.txPinField.Font = new System.Drawing.Font(&quot;Courier New&quot;, 9.75F,
+            this.txPinField.Font = new System.Drawing.Font("Courier New", 9.75F,
                  System.Drawing.FontStyle.Regular,
                  System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txPinField.Multiline = false;
             this.txPinField.Text = Convert.ToString(txPin);
             this.txPinField.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txPinField.Name = &quot;txPinField&quot;;
+            this.txPinField.Name = "txPinField";
             this.txPinField.TabIndex = 3;
 
             this.baudField.BackColor = System.Drawing.SystemColors.Window;
-            this.baudField.Font = new System.Drawing.Font(&quot;Courier New&quot;, 9.75F,
+            this.baudField.Font = new System.Drawing.Font("Courier New", 9.75F,
                  System.Drawing.FontStyle.Regular,
                  System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.baudField.Multiline = false;
             this.baudField.Text = Convert.ToString(baud);
             this.baudField.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.baudField.Name = &quot;baudField&quot;;
+            this.baudField.Name = "baudField";
             this.baudField.TabIndex = 4;
 
             this.bodyField.BackColor = System.Drawing.SystemColors.Window;
-            this.bodyField.Font = new System.Drawing.Font(&quot;Courier New&quot;, 9.75F,
+            this.bodyField.Font = new System.Drawing.Font("Courier New", 9.75F,
                  System.Drawing.FontStyle.Regular,
                  System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             //this.bodyField.ReadOnly = true;
             this.bodyField.Multiline = true;
             this.bodyField.WordWrap = true;
-            this.bodyField.Name = &quot;bodyField&quot;;
+            this.bodyField.Name = "bodyField";
             this.bodyField.ScrollBars = ScrollBars.Vertical;
             this.bodyField.TabIndex = 0;
             this.bodyField.Dock = System.Windows.Forms.DockStyle.Fill;
             this.bodyField.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txt_KeyPress);
             this.bodyField.serial = this;
 
-            resetButton.Text = &quot;Reset Serial&quot;;
+            resetButton.Text = "Reset Serial";
             resetButton.TabIndex = 5;
-            resetButton.Name = &quot;resetButton&quot;;
+            resetButton.Name = "resetButton";
             resetButton.Dock = System.Windows.Forms.DockStyle.Fill;
             resetButton.Click += new System.EventHandler(this.reset_Click);
 
-            clearButton.Text = &quot;Clear Text&quot;;
+            clearButton.Text = "Clear Text";
             clearButton.TabIndex = 1;
-            clearButton.Name = &quot;clearButton&quot;;
+            clearButton.Name = "clearButton";
             clearButton.Dock = System.Windows.Forms.DockStyle.Fill;
             clearButton.Click += new System.EventHandler(this.clear_Click);
 
@@ -253,7 +253,7 @@
         }
 
 
-        public override void OnClock(double time)
+        public override void OnClock(double time,uint sysCounter)
         {
             this.HandleRx(time);
             this.HandleTx(time);
@@ -309,7 +309,7 @@
 
                 if (rxCurrentByte == 13 || rxCurrentByte == 10)
                 {
-                    displayBuffer += &quot;\r\n&quot;;
+                    displayBuffer += "\r\n";
                 }
                 else if (rxCurrentByte &gt; 0)
                 {
@@ -393,7 +393,7 @@
 
         private void ClearText()
         {
-            displayBuffer = &quot;&quot;;
+            displayBuffer = "";
             this.bodyField.Text = displayBuffer;
             if (txBuffer.Length &gt; 0)
             {
@@ -415,7 +415,7 @@
 
             if (e.KeyChar == '\n' || e.KeyChar == '\r')
             {
-                displayBuffer += &quot;\r\n&quot;;
+                displayBuffer += "\r\n";
             }
             else
             {

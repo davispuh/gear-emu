@@ -38,7 +38,8 @@ namespace Gear.PluginSupport
     /// 
     static class ModuleCompiler
     {
-        static private CompilerErrorCollection m_Errors;    //!< @brief Collection for error list on compile a dynamic plugin.
+        /// @brief Collection for error list on compile a dynamic plugin.
+        static private CompilerErrorCollection m_Errors;    
 
         /// @brief ModuleCompiler Constructor.
         /// @details Clear error list by default.

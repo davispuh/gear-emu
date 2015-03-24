@@ -22,6 +22,8 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Text;
 
 /// @copydoc Gear.EmulationCore
 namespace Gear.EmulationCore
@@ -119,11 +121,11 @@ namespace Gear.EmulationCore
     abstract public partial class Cog
     {
         // Runtime variables
-        protected uint[] Memory;            //!< Program Memory
+        protected uint[] Memory;            //!< Cog Memory.
 
-        protected PropellerCPU Hub;            //!< Host processor
+        protected PropellerCPU Hub;         //!< Host processor
         protected volatile uint PC;         //!< Program Cursor
-        protected volatile int BP;          //!< Breakpoint Address
+        protected volatile int BreakPointCogCursor; //!< Breakpoint Address
 
         protected int StateCount;           //!< Arguement for the current state
         protected CogRunState State;        //!< Current COG state
@@ -156,7 +158,7 @@ namespace Gear.EmulationCore
             PhaseLockedLoop.SetupPLL(Video);
 
             PC = 0;
-            BP = -1;    // Breakpoint disabled
+            BreakPointCogCursor = -1;    // Breakpoint disabled
 
             // We are in boot time load
             Memory[(int)CogSpecialAddress.PAR] = param;
@@ -176,8 +178,8 @@ namespace Gear.EmulationCore
         /// 
         public int BreakPoint
         {
-            get { return BP; }
-            set { BP = value; }
+            get { return BreakPointCogCursor; }
+            set { BreakPointCogCursor = value; }
         }
 
         /// @brief Property to return complete OUT pins (P0..P63)

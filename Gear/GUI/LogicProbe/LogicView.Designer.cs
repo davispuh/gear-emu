@@ -37,6 +37,8 @@ namespace Gear.GUI.LogicProbe
             {
                 components.Dispose();
             }
+            this.MonoFont.Dispose();
+            this.BackBuffer.Dispose();
             base.Dispose(disposing);
         }
 
@@ -56,9 +58,10 @@ namespace Gear.GUI.LogicProbe
             this.timeFrameBox = new System.Windows.Forms.ToolStripTextBox();
             this.tickMarkBox = new System.Windows.Forms.ToolStripTextBox();
             this.updateGridButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripLabel3 = new System.Windows.Forms.ToolStripLabel();
+            this.pinsTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.analogButton = new System.Windows.Forms.ToolStripButton();
             this.digitalButton = new System.Windows.Forms.ToolStripButton();
-            this.pinsTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.viewOffset = new System.Windows.Forms.VScrollBar();
             this.waveView = new System.Windows.Forms.Panel();
             this.timeAdjustBar = new System.Windows.Forms.HScrollBar();
@@ -67,26 +70,26 @@ namespace Gear.GUI.LogicProbe
             toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
-            //
+            // 
             // toolStripLabel1
-            //
+            // 
             toolStripLabel1.Name = "toolStripLabel1";
-            toolStripLabel1.Size = new System.Drawing.Size(124, 22);
-            toolStripLabel1.Text = "Time Frame (seconds)";
-            //
+            toolStripLabel1.Size = new System.Drawing.Size(101, 22);
+            toolStripLabel1.Text = "Time Frame (sec):";
+            // 
             // toolStripLabel2
-            //
+            // 
             toolStripLabel2.Name = "toolStripLabel2";
-            toolStripLabel2.Size = new System.Drawing.Size(138, 22);
-            toolStripLabel2.Text = "Tick Mark Grid (seconds)";
-            //
+            toolStripLabel2.Size = new System.Drawing.Size(115, 22);
+            toolStripLabel2.Text = "Tick Mark Grid (sec):";
+            // 
             // toolStripSeparator2
-            //
+            // 
             toolStripSeparator2.Name = "toolStripSeparator2";
             toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
-            //
+            // 
             // toolStrip1
-            //
+            // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             toolStripLabel1,
             this.timeFrameBox,
@@ -94,27 +97,28 @@ namespace Gear.GUI.LogicProbe
             this.tickMarkBox,
             this.updateGridButton,
             toolStripSeparator2,
+            this.toolStripLabel3,
+            this.pinsTextBox,
             this.analogButton,
-            this.digitalButton,
-            this.pinsTextBox});
+            this.digitalButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(697, 25);
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
-            //
+            // 
             // timeFrameBox
-            //
+            // 
             this.timeFrameBox.Name = "timeFrameBox";
             this.timeFrameBox.Size = new System.Drawing.Size(75, 25);
-            //
+            // 
             // tickMarkBox
-            //
+            // 
             this.tickMarkBox.Name = "tickMarkBox";
             this.tickMarkBox.Size = new System.Drawing.Size(75, 25);
-            //
+            // 
             // updateGridButton
-            //
+            // 
             this.updateGridButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.updateGridButton.Image = ((System.Drawing.Image)(resources.GetObject("updateGridButton.Image")));
             this.updateGridButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -122,44 +126,52 @@ namespace Gear.GUI.LogicProbe
             this.updateGridButton.Size = new System.Drawing.Size(49, 22);
             this.updateGridButton.Text = "Update";
             this.updateGridButton.Click += new System.EventHandler(this.updateGridButton_Click);
-            //
+            // 
+            // toolStripLabel3
+            // 
+            this.toolStripLabel3.Name = "toolStripLabel3";
+            this.toolStripLabel3.Size = new System.Drawing.Size(52, 22);
+            this.toolStripLabel3.Text = "Add pin:";
+            // 
+            // pinsTextBox
+            // 
+            this.pinsTextBox.Name = "pinsTextBox";
+            this.pinsTextBox.Size = new System.Drawing.Size(30, 25);
+            this.pinsTextBox.ToolTipText = "Pin number or range (ex. 2..5) to add.";
+            // 
             // analogButton
-            //
+            // 
             this.analogButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.analogButton.Image = ((System.Drawing.Image)(resources.GetObject("analogButton.Image")));
             this.analogButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.analogButton.Name = "analogButton";
             this.analogButton.Size = new System.Drawing.Size(57, 22);
             this.analogButton.Text = "+Analog";
+            this.analogButton.ToolTipText = "Add a Analog view on pin selected.";
             this.analogButton.Click += new System.EventHandler(this.analogButton_Click);
-            //
+            // 
             // digitalButton
-            //
+            // 
             this.digitalButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.digitalButton.Image = ((System.Drawing.Image)(resources.GetObject("digitalButton.Image")));
             this.digitalButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.digitalButton.Name = "digitalButton";
             this.digitalButton.Size = new System.Drawing.Size(53, 22);
             this.digitalButton.Text = "+Digital";
+            this.digitalButton.ToolTipText = "Add a Digitalview on pin selected.";
             this.digitalButton.Click += new System.EventHandler(this.digitalButton_Click);
-            //
-            // pinsTextBox
-            //
-            this.pinsTextBox.Name = "pinsTextBox";
-            this.pinsTextBox.Size = new System.Drawing.Size(75, 25);
-            this.pinsTextBox.ToolTipText = "Pin number to add (analog or Digital)";
-            //
+            // 
             // viewOffset
-            //
+            // 
             this.viewOffset.Dock = System.Windows.Forms.DockStyle.Right;
             this.viewOffset.Location = new System.Drawing.Point(680, 25);
             this.viewOffset.Name = "viewOffset";
             this.viewOffset.Size = new System.Drawing.Size(17, 411);
             this.viewOffset.TabIndex = 1;
             this.viewOffset.Scroll += new System.Windows.Forms.ScrollEventHandler(this.ScrollChanged);
-            //
+            // 
             // waveView
-            //
+            // 
             this.waveView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.waveView.Location = new System.Drawing.Point(0, 25);
             this.waveView.Name = "waveView";
@@ -169,9 +181,9 @@ namespace Gear.GUI.LogicProbe
             this.waveView.Click += new System.EventHandler(this.OnClick);
             this.waveView.Paint += new System.Windows.Forms.PaintEventHandler(this.WaveView_Paint);
             this.waveView.DoubleClick += new System.EventHandler(this.OnDblClick);
-            //
+            // 
             // timeAdjustBar
-            //
+            // 
             this.timeAdjustBar.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.timeAdjustBar.Location = new System.Drawing.Point(0, 436);
             this.timeAdjustBar.Maximum = 1000;
@@ -180,9 +192,9 @@ namespace Gear.GUI.LogicProbe
             this.timeAdjustBar.TabIndex = 0;
             this.timeAdjustBar.Value = 1000;
             this.timeAdjustBar.Scroll += new System.Windows.Forms.ScrollEventHandler(this.TimeChanged);
-            //
+            // 
             // LogicView
-            //
+            // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.waveView);
@@ -210,5 +222,6 @@ namespace Gear.GUI.LogicProbe
         private System.Windows.Forms.ToolStripButton digitalButton;
         private System.Windows.Forms.ToolStripButton analogButton;
         private System.Windows.Forms.ToolStripTextBox pinsTextBox;
+        private System.Windows.Forms.ToolStripLabel toolStripLabel3;
     }
 }
