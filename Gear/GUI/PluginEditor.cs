@@ -50,14 +50,14 @@ namespace Gear.GUI
         private Font defaultFont;    
         /// @brief Flag if the plugin definition has changed.
         /// To determine changes, it includes not only the C# code, but also class name and reference list.
-        /// @version V14.07.17 - Added.
+        /// @version V15.03.31 - Added.
         private bool m_CodeChanged;
         /// @brief Enable or not change detection event.
-        /// @version V14.07.17 - Added.
+        /// @version V15.03.31 - Added.
         private bool changeDetectEnabled;
         /// @brief Types of change detected.
-        /// To mantain consistency between class name in C# code and class name declared in the other field.
-        /// @version 14.07.25 - Added.
+        /// To maintain consistency between class name in C# code and class name declared in the other field.
+        /// @version V15.03.31 - Added.
         private enum ChangeType : byte
         {
             none = 0,   //!< @brief No change detected.
@@ -66,17 +66,17 @@ namespace Gear.GUI
         }
         /// @brief Store the last change detected.
         /// To determine changes, it includes only the C# code and class name.
-        /// @version 14.07.25 - Added.
+        /// @version V15.03.31 - Added.
         private ChangeType LastChange;
         /// @brief Store the last consistency problem detected.
-        /// @version 14.07.25 - Added.
+        /// @version V15.03.31 - Added.
         private string LastProblem;
 
         /// @brief Default constructor.
         /// Init class, defines columns for error grid, setting on changes detection initially, and 
         /// try to load the default template for plugin.
         /// @param[in] loadDefaultTemplate Indicate to load default template (=true) or no (=false).
-        /// @version 14.7.27 - Added parameter for loading default template for plugin.
+        /// @version V15.03.31 - Added parameter for loading default template for plugin.
         public PluginEditor(bool loadDefaultTemplate)
         {
             InitializeComponent();
@@ -88,7 +88,7 @@ namespace Gear.GUI
                 {
                     codeEditorView.LoadFile("Resources\\PluginTemplate.cs", RichTextBoxStreamType.PlainText);
                 }
-                catch (IOException) { }         //do nothing, mantaining empty the code text box
+                catch (IOException) { }         //do nothing, maintaining empty the code text box
                 catch (ArgumentException) { }   //
                 finally { }                     //
             }
@@ -115,16 +115,16 @@ namespace Gear.GUI
             errorListView.Columns.Add("Message", -2, HorizontalAlignment.Left);
         }
 
-        /// @brief Return last plugin succesfully loaded o saved.
+        /// @brief Return last plugin successfully loaded o saved.
         /// @details Handy to remember last plugin directory.
-        /// @version V14.07.17 - Added.
+        /// @version V15.03.31 - Added.
         public string GetLastPlugin
         {
             get { return m_SaveFileName; }
         }
 
         /// @brief Attribute for changed plugin detection.
-        /// @version V14.07.17 - Added.
+        /// @version V15.03.31 - Added.
         private bool CodeChanged
         {
             get { return m_CodeChanged; }
@@ -136,7 +136,7 @@ namespace Gear.GUI
         }
 
         /// @brief Complete Name for plugin, including path.
-        /// @version V14.07.17 - Added.
+        /// @version V15.03.31 - Added.
         private string SaveFileName
         {
             get
@@ -463,7 +463,7 @@ namespace Gear.GUI
         /// @param[in] line Text line from the source code.
         /// @since V14.07.03 - Added.
         /// @note Experimental highlighting. Probably changes in the future.
-        // Parse line for sintax highlighting.
+        // Parse line for syntax highlighting.
         private void ParseLine(string line)
         {
             Regex r = new Regex("([ \\t{}();:])", RegexOptions.Compiled);
@@ -526,7 +526,7 @@ namespace Gear.GUI
         /// It marks as changed, to prevent unaverted loses at closure of the window.
         /// @param[in] sender Object who called this on event.
         /// @param[in] e `EventArgs` class with a list of argument to the event call.
-        /// @version V14.07.17 - Added.
+        /// @version V15.03.31 - Added.
         private void codeEditorView_TextChanged(object sender, EventArgs e)
         {
             if (changeDetectEnabled)
@@ -541,7 +541,7 @@ namespace Gear.GUI
         /// prevent unaverted loses at closure of the window.
         /// @param[in] sender Object who called this on event.
         /// @param[in] e `EventArgs` class with a list of argument to the event call.
-        /// @version V14.07.17 - Added.
+        /// @version V15.03.31 - Added.
         private void instanceName_TextChanged(object sender, EventArgs e)
         {
             CodeChanged = true;
@@ -551,7 +551,7 @@ namespace Gear.GUI
         /// @brief Update the name on the text box after leave the control.
         /// @param[in] sender Object who called this on event.
         /// @param[in] e `EventArgs` class with a list of argument to the event call.
-        /// @version V14.07.17 - Added.
+        /// @version V15.03.31 - Added.
         private void instanceName_Leave(object sender, EventArgs e)
         {
             instanceName.Text = instanceName.Text.Trim();   //trim spaces at both ends
@@ -561,7 +561,7 @@ namespace Gear.GUI
         /// @brief Inform user if there inconsistency in class name declared.
         /// If the class name isn't the same that in class declaration in code, show the user a message,
         /// and show the problem in code text box or class name text box.
-        /// @version V14.07.17 - Added.
+        /// @version V15.03.31 - Added.
         private bool IsConsistent()
         {
             int start = 0, len = 0;
@@ -631,7 +631,7 @@ namespace Gear.GUI
         /// @param[in] name `string` with the class name
         /// @param[in] code `string` with the c# code
         /// @param[out] startPos Return the start position of class definition suspect.
-        /// @param[out] _length Return the lenght of class definition 'suspect' if found; =0 if not found.
+        /// @param[out] _length Return the length of class definition 'suspect' if found; =0 if not found.
         /// @returns Differences encountered (=true) of class name are ok in both sides (=false).
         private bool DetectDiffClassName(string name, string code, ref int startPos, ref int _length)
         {
@@ -665,7 +665,7 @@ namespace Gear.GUI
         /// presented to the user to proceed or abort the closing.
         /// @param[in] sender Object who called this on event.
         /// @param[in] e `FormClosingEventArgs` class with a list of argument to the event call.
-        /// @version V14.07.17 - Added.
+        /// @version V15.03.31 - Added.
         private void PluginEditor_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (CodeChanged)
@@ -680,7 +680,7 @@ namespace Gear.GUI
         /// @brief Ask the user to not loose changes.
         /// @param fileName Filename to show in dialog
         /// @returns Boolean to close (true) or not (false)
-        /// @version V14.07.17 - Added.
+        /// @version V15.03.31 - Added.
         private bool CloseAnyway(string fileName)
         {
             //dialog to not lost changes

@@ -29,7 +29,7 @@ class YourClassName : PluginBase
         
     }
 
-    //Title to be shown in tab, change the string as you needings.
+    //Title to be shown in tab, change the string as you needing.
     public override string Title
     { 
         get { return "PluginBase"; }    //change to your plugin name
@@ -81,7 +81,7 @@ class YourClassName : PluginBase
     {
         //For initial setup of the plugin (but not the creation of interface 
         //objects), you can add your code here. The idea if you have to reset
-        //the pins state, youcan use here the DrivePin() method. Example:
+        //the pins state, you can use here the DrivePin() method. Example:
         //  DrivePin(int pin_number, bool Floating, bool Hi);
         //
         //Put your code here.

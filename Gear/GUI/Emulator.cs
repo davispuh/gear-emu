@@ -36,7 +36,7 @@ namespace Gear.GUI
 {
     /// @brief View class for PropellerCPU emulator instance.
     /// @details This class implements a view over a propeller emulator, with interface to control 
-    /// the chip, like start, go throgh steps, reset or reload.
+    /// the chip, like start, go through steps, reset or reload.
     public partial class Emulator : Form
     {
         private PropellerCPU Chip;          //!< @brief Reference to PropellerCPU running instance.
@@ -76,7 +76,7 @@ namespace Gear.GUI
             hubView.Host = Chip;
         }
 
-        /// @brief Get the last binary opened succesfully.
+        /// @brief Get the last binary opened successfully.
         /// 
         public string GetLastBinary
         {
@@ -122,10 +122,10 @@ namespace Gear.GUI
 
         /// @brief Delete a plugin from a propeller chip instance.
         /// 
-        /// Delete a plugin from the actives plugins of the propeller instance, efectibly stopping 
+        /// Delete a plugin from the actives plugins of the propeller instance, effectively stopping 
         /// the plugin. Remove also from pins and clock watch list.
         /// @param plugin Instance of a Gear.PluginSupport.PluginBase class to be detached.
-        /// @version V14.07.17 - Added.
+        /// @version V15.03.31 - Added.
         //Added method to detach a plugin from the active plugin list of the propeller instance.
         private void DetachPlugin(PluginBase plugin)
         {
@@ -254,7 +254,7 @@ namespace Gear.GUI
                     pe.MdiParent = this.MdiParent;
                     pe.Show();
                 }
-                else               //if success compiling & instanciate the new class...
+                else               //if success compiling & instantiate the new class...
                 {
                     //...add the reference to the plugin list of the emulator instance
                     AttachPlugin(plugin);   
@@ -460,7 +460,7 @@ namespace Gear.GUI
         }
 
         /// @brief Stop the emulation.
-        /// @version V14.09.29 - Added the refresh of the screen.
+        /// @version V15.03.31 - Added the refresh of the screen.
         private void stopEmulator_Click(object sender, EventArgs e)
         {
             runTimer.Stop();
@@ -516,9 +516,9 @@ namespace Gear.GUI
             runTimer.Stop();
         }
 
-        /// @brief Determine avalaibility of close plugin button when tab is changed.
+        /// @brief Determine availability of close plugin button when tab is changed.
         /// @details Enable close plugin button based on if active tab is subclass of 
-        /// Gear.PluginSupport.PluginBase and if that class permit close the window. Tipically 
+        /// Gear.PluginSupport.PluginBase and if that class permit close the window. Typically 
         /// the user plugins enabled it; but the cog window, main memory, logic probe, etc, 
         /// don't allow to close.
         /// @param[in] sender Reference to object where event was raised.

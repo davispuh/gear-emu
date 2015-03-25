@@ -253,7 +253,7 @@ namespace Gear.EmulationCore
                 StepMaskedMemoryOp(op);
                 return true;
             }
-            // Inplicit Location Memory Ops
+            // Implicit Location Memory Ops
             else if (op >= 0x40)
             {
                 StepImplicitMemoryOp(op);

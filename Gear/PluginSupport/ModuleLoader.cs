@@ -34,7 +34,7 @@ namespace Gear.PluginSupport
 {
     public delegate void ErrorEnumProc(System.CodeDom.Compiler.CompilerError e);
 
-    /// @brief Compile a PluginBase Module, keeping the errors if they appeares.
+    /// @brief Compile a PluginBase Module, keeping the errors if they appears.
     /// 
     static class ModuleCompiler
     {
@@ -69,7 +69,7 @@ namespace Gear.PluginSupport
         /// See notes for defaults used.
         /// @param[in] obj Reference to a PropellerCPU of this instance, to be passed as a 
         /// parameter to the constructor of the new plugin class instance.
-        /// @returns New Plugin class instance compiled (on sucess), or NULL (on fail).
+        /// @returns New Plugin class instance compiled (on success), or NULL (on fail).
         /// @note There are some references already added, so you don't need to include on your plugins: 
         /// @li `using System;` @li `using System.Data;` @li `using System.Drawing;`
         /// @li `using System.Windows.Forms;` @li `using System.Xml;`
