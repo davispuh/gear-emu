@@ -31,23 +31,21 @@
         /// @property LastPlugin
         /// @brief Last plugin succesfully opened or saved.
         /// @details Include complete path and name.
-        /// @version V14.09.29 - Moved to a User property of the program.
-        /// @version V14.07.17 - Introduced in Gear.GUI.GearDesktop as member.
+        /// @version V15.03.31 - Introduced in a User property of the program.
 
         /// @property LastBinary
         /// @brief Last binary file succesfully opened.
         /// @details Include complete path and name.
-        /// @version V14.09.29 - Moved to a User property of the program.
-        /// @version V14.07.17 - Introduced in Gear.GUI.GearDesktop as member.
+        /// @version V15.03.31 - Introduced in a User property of the program.
 
         /// @property UseNoTemplate
         /// @brief Indicates to use the default template on the creation of a new plugin (=false), or to 
         /// do not use a template (blank content intially) (=true).
-        /// @version V14.09.29 - Added in a User property of the program.
+        /// @version V15.03.31 - Added in a User property of the program.
 
         /// @property UpdateEachSteps
         /// @brief Number of steps before update the windows and tabs.
-        /// @version V14.09.29 - Added in a User property of the program.
+        /// @version V15.03.31 - Added in a User property of the program.
 
     }
 }
