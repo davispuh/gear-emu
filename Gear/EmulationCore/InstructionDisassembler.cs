@@ -3,7 +3,7 @@
  * Copyright 2007 - Robert Vandiver
  * --------------------------------------------------------------------------------
  * InstructionDisassembler.cs
- * Provides a method for creating the string equlivilent of a propeller operation
+ * Provides a method for creating the string equivalent of a propeller operation
  * --------------------------------------------------------------------------------
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by

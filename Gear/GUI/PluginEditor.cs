@@ -50,14 +50,14 @@ namespace Gear.GUI
         private Font defaultFont;    
         /// @brief Flag if the plugin definition has changed.
         /// To determine changes, it includes not only the C# code, but also class name and reference list.
-        /// @version V14.07.17 - Added.
+        /// @version V15.03.26 - Added.
         private bool m_CodeChanged;
         /// @brief Enable or not change detection event.
-        /// @version V14.07.17 - Added.
+        /// @version V15.03.26 - Added.
         private bool changeDetectEnabled;
         /// @brief Types of change detected.
-        /// To mantain consistency between class name in C# code and class name declared in the other field.
-        /// @version 14.07.25 - Added.
+        /// To maintain consistency between class name in C# code and class name declared in the other field.
+        /// @version V15.03.26 - Added.
         private enum ChangeType : byte
         {
             none = 0,   //!< @brief No change detected.
@@ -66,17 +66,32 @@ namespace Gear.GUI
         }
         /// @brief Store the last change detected.
         /// To determine changes, it includes only the C# code and class name.
-        /// @version 14.07.25 - Added.
+        /// @version V15.03.26 - Added.
         private ChangeType LastChange;
         /// @brief Store the last consistency problem detected.
-        /// @version 14.07.25 - Added.
+        /// @version V15.03.26 - Added.
         private string LastProblem;
 
         /// @brief Default constructor.
-        /// Init class, defines columns for error grid, setting changes detection initially.
-        public PluginEditor()
+        /// Init class, defines columns for error grid, setting on changes detection initially, and 
+        /// try to load the default template for plugin.
+        /// @param[in] loadDefaultTemplate Indicate to load default template (=true) or no (=false).
+        /// @version V15.03.26 - Added parameter for loading default template for plugin.
+        public PluginEditor(bool loadDefaultTemplate)
         {
             InitializeComponent();
+
+            changeDetectEnabled = false;
+            if (loadDefaultTemplate)   //load default plugin template
+            {
+                try
+                {
+                    codeEditorView.LoadFile("Resources\\PluginTemplate.cs", RichTextBoxStreamType.PlainText);
+                }
+                catch (IOException) { }         //do nothing, maintaining empty the code text box
+                catch (ArgumentException) { }   //
+                finally { }                     //
+            }
 
             m_SaveFileName = null;
             changeDetectEnabled = true;
@@ -100,16 +115,16 @@ namespace Gear.GUI
             errorListView.Columns.Add("Message", -2, HorizontalAlignment.Left);
         }
 
-        /// @brief Return last plugin succesfully loaded o saved.
-        /// Handy to remember last plugin directory.
-        /// @version V14.07.17 - Added.
+        /// @brief Return last plugin successfully loaded o saved.
+        /// @details Handy to remember last plugin directory.
+        /// @version V15.03.26 - Added.
         public string GetLastPlugin
         {
             get { return m_SaveFileName; }
         }
 
         /// @brief Attribute for changed plugin detection.
-        /// @version V14.07.17 - Added.
+        /// @version V15.03.26 - Added.
         private bool CodeChanged
         {
             get { return m_CodeChanged; }
@@ -121,7 +136,7 @@ namespace Gear.GUI
         }
 
         /// @brief Complete Name for plugin, including path.
-        /// @version V14.07.17 - Added.
+        /// @version V15.03.26 - Added.
         private string SaveFileName
         {
             get
@@ -138,16 +153,16 @@ namespace Gear.GUI
         }
 
         /// @brief Update title window, considering modified state.
-        /// Considering name of the plugin and showing modified state, to tell the user if need to save.
+        /// @details Considering name of the plugin and showing modified state, to tell the user 
+        /// if need to save.
         private void UpdateTitle()
         {
             this.Text = ("Plugin Editor: " + SaveFileName +  (CodeChanged ? " *" : ""));
         }
 
         /// @brief Load a plugin from File.
-        /// @todo Correct method to implement new plugin system
-        /// 
         /// @note This method take care of update change state of the window. 
+        /// @todo Correct method to implement new plugin system.
         public bool OpenFile(string FileName, bool displayErrors)
         {
             XmlReaderSettings settings = new XmlReaderSettings();
@@ -194,7 +209,7 @@ namespace Gear.GUI
                 if (displayErrors)
                 {
                     errorListView.Items.Clear();
-                    ModuleLoader.EnumerateErrors(EnumErrors);
+                    ModuleCompiler.EnumerateErrors(EnumErrors);
                 }
 
                 return true;
@@ -225,10 +240,10 @@ namespace Gear.GUI
             }
         }
 
-        /// @todo Document method PluginEditor.SaveFile()
+        /// @brief Save a XML file with the plugin information.
+        /// @details Take care of update change state of the window. No need to do it in 
+        /// methods who call this.
         /// @todo Correct method to implement new versioning plugin system.
-        /// 
-        /// Take care of update change state of the window. No need to do it in methods who call this.
         public void SaveFile(string FileName)
         {
             XmlDocument xmlDoc = new XmlDocument();
@@ -272,11 +287,11 @@ namespace Gear.GUI
                 foreach (string s in referencesList.Items)
                     refs[i++] = s;
 
-                if (ModuleLoader.LoadModule(codeEditorView.Text, instanceName.Text, refs) != null)
+                if (ModuleCompiler.LoadModule(codeEditorView.Text, instanceName.Text, refs, null) != null)
                     MessageBox.Show("Script compiled without errors.", "Plugin Editor - Check source.");
                 else
                 {
-                    ModuleLoader.EnumerateErrors(EnumErrors);
+                    ModuleCompiler.EnumerateErrors(EnumErrors);
                 }
             }
         }
@@ -312,7 +327,11 @@ namespace Gear.GUI
                 if (m_SaveFileName != null)
                     dialog.InitialDirectory = Path.GetDirectoryName(m_SaveFileName);   //retrieve from last plugin edited
                 else
-                    dialog.InitialDirectory = Path.GetDirectoryName(GearDesktop.LastPlugin);   //retrieve from global last plugin
+                    if ((Properties.Settings.Default.LastPlugin != null) &&
+                        (Properties.Settings.Default.LastPlugin.Length > 0))
+                        //retrieve from global last plugin
+                        dialog.InitialDirectory = 
+                            Path.GetDirectoryName(Properties.Settings.Default.LastPlugin);   
 
                 if (dialog.ShowDialog(this) == DialogResult.OK)
                 {
@@ -345,7 +364,11 @@ namespace Gear.GUI
             if (m_SaveFileName != null)
                 dialog.InitialDirectory = Path.GetDirectoryName(m_SaveFileName);   //retrieve from last plugin edited
             else
-                dialog.InitialDirectory = Path.GetDirectoryName(GearDesktop.LastPlugin);    //retrieve from global last plugin
+                if ((Properties.Settings.Default.LastPlugin != null) &&
+                    (Properties.Settings.Default.LastPlugin.Length > 0))
+                    //retrieve from global last plugin
+                    dialog.InitialDirectory = 
+                        Path.GetDirectoryName(Properties.Settings.Default.LastPlugin);    
 
             if (dialog.ShowDialog(this) == DialogResult.OK)
             {
@@ -401,7 +424,7 @@ namespace Gear.GUI
         /// @param[in] e `EventArgs` class with a list of argument to the event call.
         private void addReferenceButton_Click(object sender, EventArgs e)
         {
-            if (referenceName.Text != null)
+            if ((referenceName.Text != null) && (referenceName.Text.Length > 0))
             {
                 referencesList.Items.Add(referenceName.Text);
                 referenceName.Text = "";
@@ -440,7 +463,7 @@ namespace Gear.GUI
         /// @param[in] line Text line from the source code.
         /// @since V14.07.03 - Added.
         /// @note Experimental highlighting. Probably changes in the future.
-        // Parse line for sintax highlighting.
+        // Parse line for syntax highlighting.
         private void ParseLine(string line)
         {
             Regex r = new Regex("([ \\t{}();:])", RegexOptions.Compiled);
@@ -503,7 +526,7 @@ namespace Gear.GUI
         /// It marks as changed, to prevent unaverted loses at closure of the window.
         /// @param[in] sender Object who called this on event.
         /// @param[in] e `EventArgs` class with a list of argument to the event call.
-        /// @version V14.07.17 - Added.
+        /// @version V15.03.26 - Added.
         private void codeEditorView_TextChanged(object sender, EventArgs e)
         {
             if (changeDetectEnabled)
@@ -518,14 +541,17 @@ namespace Gear.GUI
         /// prevent unaverted loses at closure of the window.
         /// @param[in] sender Object who called this on event.
         /// @param[in] e `EventArgs` class with a list of argument to the event call.
-        /// @version V14.07.17 - Added.
+        /// @version V15.03.26 - Added.
         private void instanceName_TextChanged(object sender, EventArgs e)
         {
             CodeChanged = true;
             LastChange = ChangeType.name;
         }
 
-
+        /// @brief Update the name on the text box after leave the control.
+        /// @param[in] sender Object who called this on event.
+        /// @param[in] e `EventArgs` class with a list of argument to the event call.
+        /// @version V15.03.26 - Added.
         private void instanceName_Leave(object sender, EventArgs e)
         {
             instanceName.Text = instanceName.Text.Trim();   //trim spaces at both ends
@@ -535,7 +561,7 @@ namespace Gear.GUI
         /// @brief Inform user if there inconsistency in class name declared.
         /// If the class name isn't the same that in class declaration in code, show the user a message,
         /// and show the problem in code text box or class name text box.
-        /// @version V14.07.17 - Added.
+        /// @version V15.03.26 - Added.
         private bool IsConsistent()
         {
             int start = 0, len = 0;
@@ -561,7 +587,7 @@ namespace Gear.GUI
                             LastProblem = Problem;
                             break;
                     }
-                    DialogResult confirm = MessageBox.Show(
+                    MessageBox.Show(
                         "Problem detected: class name \"" + instanceName.Text +
                             "\" inconsistent with code.\n" + Problem,
                         "Plugin Editor - Validation.",
@@ -605,7 +631,7 @@ namespace Gear.GUI
         /// @param[in] name `string` with the class name
         /// @param[in] code `string` with the c# code
         /// @param[out] startPos Return the start position of class definition suspect.
-        /// @param[out] _length Return the lenght of class definition 'suspect' if found; =0 if not found.
+        /// @param[out] _length Return the length of class definition 'suspect' if found; =0 if not found.
         /// @returns Differences encountered (=true) of class name are ok in both sides (=false).
         private bool DetectDiffClassName(string name, string code, ref int startPos, ref int _length)
         {
@@ -639,7 +665,7 @@ namespace Gear.GUI
         /// presented to the user to proceed or abort the closing.
         /// @param[in] sender Object who called this on event.
         /// @param[in] e `FormClosingEventArgs` class with a list of argument to the event call.
-        /// @version V14.07.17 - Added.
+        /// @version V15.03.26 - Added.
         private void PluginEditor_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (CodeChanged)
@@ -647,13 +673,14 @@ namespace Gear.GUI
                 if (!CloseAnyway(SaveFileName)) //ask the user to not loose changes
                     e.Cancel = true;    //cancel the closing event
             }
-            GearDesktop.LastPlugin = GetLastPlugin;
+            Properties.Settings.Default.LastPlugin = GetLastPlugin;
+            Properties.Settings.Default.Save();
         }
 
         /// @brief Ask the user to not loose changes.
         /// @param fileName Filename to show in dialog
         /// @returns Boolean to close (true) or not (false)
-        /// @version V14.07.17 - Added.
+        /// @version V15.03.26 - Added.
         private bool CloseAnyway(string fileName)
         {
             //dialog to not lost changes

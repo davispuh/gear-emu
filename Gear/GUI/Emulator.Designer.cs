@@ -225,9 +225,9 @@ namespace Gear.GUI
             this.openPluginButton.Image = ((System.Drawing.Image)(resources.GetObject("openPluginButton.Image")));
             this.openPluginButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.openPluginButton.Name = "openPluginButton";
-            this.openPluginButton.Size = new System.Drawing.Size(77, 22);
-            this.openPluginButton.Text = "Open Plugin";
-            this.openPluginButton.ToolTipText = "Open Plugin to this emulator session";
+            this.openPluginButton.Size = new System.Drawing.Size(70, 22);
+            this.openPluginButton.Text = "Add Plugin";
+            this.openPluginButton.ToolTipText = "Add a Plugin to this emulator";
             this.openPluginButton.Click += new System.EventHandler(this.OpenPlugin_Click);
             // 
             // AboutPluginButton
@@ -247,7 +247,7 @@ namespace Gear.GUI
             this.closeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.closeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.closeButton.Name = "closeButton";
-            this.closeButton.Size = new System.Drawing.Size(40, 19);
+            this.closeButton.Size = new System.Drawing.Size(40, 22);
             this.closeButton.Text = "Close";
             this.closeButton.ToolTipText = "Close the tab window (if permitted)";
             this.closeButton.Click += new System.EventHandler(this.closeActiveTab_Click);
@@ -332,6 +332,7 @@ namespace Gear.GUI
             this.Name = "Emulator";
             this.Text = "Emulator";
             this.Deactivate += new System.EventHandler(this.OnDeactivate);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Emulator_FormClosing);
             this.controlBar.ResumeLayout(false);
             this.controlBar.PerformLayout();
             this.ResumeLayout(false);

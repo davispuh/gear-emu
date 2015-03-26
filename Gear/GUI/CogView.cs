@@ -32,11 +32,12 @@ using System.Windows.Forms;
 using Gear.EmulationCore;
 using Gear.PluginSupport;
 
+/// @copydoc Gear.GUI
+/// 
 namespace Gear.GUI
 {
-    public partial class CogView : PluginBase
+    public partial class CogView : Gear.PluginSupport.PluginBase
     {
-        private PropellerCPU Chip;
         private int HostID;
         private Font MonoFont;
         private Font MonoFontBold;
@@ -66,9 +67,17 @@ namespace Gear.GUI
             }
         }
 
-        public CogView(int host)
+        public override bool IsUserPlugin
         {
-            HostID = host;
+            get
+            {
+                return false;
+            }
+        }
+
+        public CogView(int hostId, PropellerCPU chip) : base (chip)
+        {
+            HostID = hostId;
 
             InterpAddress = new uint[80];   // Allow for up to 80 lines of displayed interpreted text
 
@@ -89,11 +98,6 @@ namespace Gear.GUI
             return Chip.GetCog(HostID);
         }
 
-        public override void PresentChip(PropellerCPU host)
-        {
-            Chip = host;
-        }
-
         private void DrawString(Graphics g, string s)
         {
             g.DrawString(s, MonoFont, StringBrush, StringX, StringY);
@@ -108,8 +112,8 @@ namespace Gear.GUI
 
             OpcodeSize.Visible = false;
             DisplayUnits.Visible = false;
-            zeroFlagLable.Text = "Zero: " + (host.ZeroFlag ? "True" : "False");
-            carryFlagLable.Text = "Carry: " + (host.CarryFlag ? "True" : "False");
+            zeroFlagLabel.Text = "Zero: " + (host.ZeroFlag ? "True" : "False");
+            carryFlagLabel.Text = "Carry: " + (host.CarryFlag ? "True" : "False");
 
             String display;
             uint topLine, bottomLine;
@@ -173,8 +177,8 @@ namespace Gear.GUI
             topLine = 5;
             bottomLine = (uint)((ClientRectangle.Height / MonoFont.Height) - 5);
 
-            zeroFlagLable.Text = "";
-            carryFlagLable.Text = "";
+            zeroFlagLabel.Text = "";
+            carryFlagLabel.Text = "";
             OpcodeSize.Visible = true;
             DisplayUnits.Visible = true;
 
@@ -276,7 +280,9 @@ namespace Gear.GUI
             }
         }
 
-        public override void Repaint(bool tick)
+        /// @brief Repaint the Cog state and data.
+        /// @param force 
+        public override void Repaint(bool force)
         {
             if (Chip == null)
                 return;
@@ -285,10 +291,10 @@ namespace Gear.GUI
 
             if (Host == null)
             {
-                processorStateLable.Text = "CPU State: Cog is stopped.";
-                programCounterLable.Text = "";
-                zeroFlagLable.Text = "";
-                carryFlagLable.Text = "";
+                processorStateLabel.Text = "CPU State: Cog is stopped.";
+                programCounterLabel.Text = "";
+                zeroFlagLabel.Text = "";
+                carryFlagLabel.Text = "";
                 return;
             }
 
@@ -321,11 +327,11 @@ namespace Gear.GUI
                     positionScroll.Value = (int)Host.ProgramCursor;
             }
 
-            if (Host is NativeCog) Repaint(tick, (NativeCog)Host);
-            else if (Host is InterpretedCog) Repaint(tick, (InterpretedCog)Host);
+            if (Host is NativeCog) Repaint(force, (NativeCog)Host);
+            else if (Host is InterpretedCog) Repaint(force, (InterpretedCog)Host);
 
-            programCounterLable.Text = "PC: " + String.Format("{0:X8}", Host.ProgramCursor);
-            processorStateLable.Text = "CPU State: " + Host.CogState;
+            programCounterLabel.Text = "PC: " + String.Format("{0:X8}", Host.ProgramCursor);
+            processorStateLabel.Text = "CPU State: " + Host.CogState;
 
             assemblyPanel.CreateGraphics().DrawImageUnscaled(BackBuffer, 0, 0);
         }

@@ -34,9 +34,9 @@ using Gear.PluginSupport;
 
 namespace Gear.GUI
 {
-    public partial class MemoryView : PluginBase
+    public partial class MemoryView : Gear.PluginSupport.PluginBase
     {
-        private PropellerCPU Host;
+        //private PropellerCPU Host;
         private Font MonoFont;
         private Bitmap BackBuffer;
 
@@ -56,7 +56,15 @@ namespace Gear.GUI
             }
         }
 
-        public MemoryView()
+        public override bool IsUserPlugin
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        public MemoryView(PropellerCPU chip) : base(chip)
         {
             MonoFont = new Font(FontFamily.GenericMonospace, 10);
             if (MonoFont == null)
@@ -66,9 +74,9 @@ namespace Gear.GUI
             positionScrollBar.Minimum = 0;
         }
 
-        public override void PresentChip(PropellerCPU host)
+        public override void PresentChip()
         {
-            Host = host;
+
         }
 
         public override void Repaint(bool tick)
@@ -76,13 +84,13 @@ namespace Gear.GUI
             Graphics g = Graphics.FromImage((Image)BackBuffer);
             byte[] b = new byte[4];
 
-            if (Host == null)
+            if (Chip == null)
                 return;
 
             for (int i = positionScrollBar.Value, p = 0; p < memoryPanel.Height && i < 0x10000; i += 4, p += MonoFont.Height)
             {
                 for (int bi = 0; bi < 4; bi++)
-                    b[bi] = Host[i + bi];
+                    b[bi] = Chip[i + bi];
 
                 ushort s1 = (ushort)(b[0] | (b[1] << 8));
                 ushort s2 = (ushort)(b[2] | (b[3] << 8));

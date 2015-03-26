@@ -48,7 +48,6 @@ namespace Gear.GUI
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GearDesktop));
@@ -70,7 +69,6 @@ namespace Gear.GUI
             this.openPluginButton = new System.Windows.Forms.ToolStripButton();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.ToolTip = new System.Windows.Forms.ToolTip(this.components);
             toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip.SuspendLayout();
@@ -222,7 +220,7 @@ namespace Gear.GUI
             this.newPluginButton.Name = "newPluginButton";
             this.newPluginButton.Size = new System.Drawing.Size(72, 22);
             this.newPluginButton.Text = "New Plugin";
-            this.newPluginButton.ToolTipText = "New Plugin in editor window";
+            this.newPluginButton.ToolTipText = "Create a New Plugin in editor window";
             this.newPluginButton.Click += new System.EventHandler(this.newPluginButton_Click);
             // 
             // openPluginButton
@@ -231,9 +229,9 @@ namespace Gear.GUI
             this.openPluginButton.Image = ((System.Drawing.Image)(resources.GetObject("openPluginButton.Image")));
             this.openPluginButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.openPluginButton.Name = "openPluginButton";
-            this.openPluginButton.Size = new System.Drawing.Size(77, 22);
-            this.openPluginButton.Text = "Open Plugin";
-            this.openPluginButton.ToolTipText = "Open Plugin in editor window";
+            this.openPluginButton.Size = new System.Drawing.Size(68, 22);
+            this.openPluginButton.Text = "Edit Plugin";
+            this.openPluginButton.ToolTipText = "Edit Plugin in editor window";
             this.openPluginButton.Click += new System.EventHandler(this.OpenPluginButton_Click);
             // 
             // statusStrip
@@ -288,7 +286,6 @@ namespace Gear.GUI
         private System.Windows.Forms.ToolStripMenuItem closeAllToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem arrangeIconsToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton openBinaryButton;
-        private System.Windows.Forms.ToolTip ToolTip;
         private System.Windows.Forms.ToolStripMenuItem helpMenu;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem fileMenu;

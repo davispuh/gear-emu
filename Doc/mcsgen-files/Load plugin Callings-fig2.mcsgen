@@ -1,0 +1,69 @@
+msc {
+#global settings
+hscale="1.25";
+
+#List of entities
+A [label="1"],
+B [label="2"],
+C [label="3"],
+D [label="4"],
+E [label="5"];
+
+#phase separation
+--- [label="Detail for Registering OnPinChange & OnClock Methods from the plugin class.", linecolor="indigo", textcolor="indigo"];
+
+#titles Phase
+A box A [label="Emulator.\nAttachPlugin(plugin)", url="\ref Gear.GUI.Emulator.AttachPlugin", textbgcolor="#DCE2EF"],
+B box B [label="plugin.PresentChip()", url="\ref Gear.GUI.Emulator.LoadPlugin", textbgcolor="#DCE2EF"];
+
+#Transicions Phase
+A => B [label="Invoking the compiled\nplugin method."];
+
+#phase separation
+--- [label="Optional calling, defined by the contents of PresentChip() method.", linecolor="indigo", textcolor="indigo"];
+
+#titles Phase
+C box C [label="plugin.NotifyOnPins()", url="\ref Gear.EmulationCore.PropellerCPU.NotifyOnPins", textbgcolor="#DCE2EF"],
+D box D [label="Chip.NotifyOnPins(plugin)", url="\ref Gear.EmulationCore.PropellerCPU.NotifyOnPins", textbgcolor="#DCE2EF"],
+E box E [label="Chip.PinHandlers.Add(plugin)", url="\ref Gear.EmulationCore.PropellerCPU.PinHandlers", textbgcolor="#DCE2EF"];
+
+#Transicions phase
+B rbox B [label="Method contains calling to NotifyOnPins()."];
+B => C;
+C => D;
+D => E [label="Add plugin reference."];
+E rbox E [label="Plugin reference added to general list of pin handlers of the CPU."];
+D <= E;
+C <= D;
+B <= C;
+
+#phase separation
+--- [label="Optional calling, defined by the contents of PresentChip() method.", linecolor="indigo", textcolor="indigo"];
+
+#titles Phase
+C box C [label="plugin.NotifyOnClock()", url="\ref Gear.EmulationCore.PropellerCPU.NotifyOnClock", textbgcolor="#DCE2EF"],
+D box D [label="Chip.NotifyOnClock(plugin)", url="\ref Gear.EmulationCore.PropellerCPU.NotifyOnClock", textbgcolor="#DCE2EF"],
+E box E [label="Chip.TickHandlers.Add(plugin)", url="\ref Gear.EmulationCore.PropellerCPU.TickHandlers", textbgcolor="#DCE2EF"];
+
+#Transicions phase
+B rbox B [label="Method contains calling to NotifyOnClock()."];
+B => C;
+C => D;
+D => E [label="Add plugin reference."];
+E rbox E [label="Plugin reference added to general list of tick handlers of the CPU."];
+D <= E;
+C <= D;
+B <= C;
+
+#phase separation
+--- [label="Optional calling, defined by the contents of PresentChip() method.", linecolor="indigo", textcolor="indigo"];
+
+#Transicions phase
+B rbox B [label="Other possible initialization here, by choice of plugin programmer."];
+A <= B;
+
+#phase separation
+--- [label="", linecolor="indigo", textcolor="indigo"];
+A note A [label="\nReturn to\nDiagram 1.\n", url="\ref PluginLoadingSequenceFig1", textbgcolor="#7FFF7F"];
+
+}

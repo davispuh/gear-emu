@@ -169,6 +169,10 @@
     <Compile Include="PluginSupport\ModuleLoader.cs" />
     <Compile Include="GearProgram.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Content Include="Resources\PluginTemplate.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Compile Include="Settings.cs" />
     <EmbeddedResource Include="GUI\AboutGear.resx">
       <DependentUpon>AboutGear.cs</DependentUpon>
       <SubType>Designer</SubType>

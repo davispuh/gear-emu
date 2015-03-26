@@ -25,8 +25,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-using Gear.Propeller;
-
 /// @copydoc Gear.EmulationCore
 namespace Gear.EmulationCore
 {
@@ -35,8 +33,10 @@ namespace Gear.EmulationCore
         STATE_EXECUTE,          //!< Waiting for instruction to finish executing
 
         WAIT_LOAD_PROGRAM,      //!< %Cog is loading program memory
-        WAIT_CYCLES,            //!< %Cog is executing an instruction, and waiting an alloted ammount of cycles
-        WAIT_PREWAIT,           //!< Waits for an allotted number of cycles before changing to a new state
+        //!< %Cog is executing an instruction, and waiting an alloted ammount of cycles
+        WAIT_CYCLES,
+        //!< Waits for an allotted number of cycles before changing to a new state
+        WAIT_PREWAIT,           
 
         BOOT_INTERPRETER,       //!< Interpreter is booting up
         WAIT_INTERPRETER,       //!< Interpreter is executing an instruction
@@ -53,16 +53,79 @@ namespace Gear.EmulationCore
         HUB_HUBOP,              //!< Waiting to perform hub operation
     }
 
+    /// @brief %Cog RAM Special Purpose Registers.
+    /// 
+    /// Source: Table 15 - %Cog RAM Special Purpose Registers, %Propeller P8X32A Datasheet V1.4.0.
+    public enum CogSpecialAddress : uint
+    {
+        COGID     = 0x1E9,    //!< @todo Document enum value CogSpecialAddress.COGID.
+        INITCOGID = 0x1EF,    //!< @todo Document enum value CogSpecialAddress.INITCOGID.
+        PAR       = 0x1F0,    //!< Boot Parameter
+        CNT       = 0x1F1,    //!< System Counter
+        INA       = 0x1F2,    //!< Input States for P31 - P0.
+        INB       = 0x1F3,    //!< Input States for P63 - P32.
+        OUTA      = 0x1F4,    //!< Output States for P31 - P0.
+        OUTB      = 0x1F5,    //!< Output States for P63 - P32.
+        DIRA      = 0x1F6,    //!< Direction States for P31 - P0.
+        DIRB      = 0x1F7,    //!< Direction States for P63 - P32.
+        CNTA      = 0x1F8,    //!< Counter A Control.
+        CNTB      = 0x1F9,    //!< Counter B Control.
+        FRQA      = 0x1FA,    //!< Counter A Frequency.
+        FRQB      = 0x1FB,    //!< Counter B Frequency.
+        PHSA      = 0x1FC,    //!< Counter A Phase.
+        PHSB      = 0x1FD,    //!< Counter B Phase.
+        VCFG      = 0x1FE,    //!< Video Configuration.
+        VSCL      = 0x1FF     //!< Video Scale.
+    }
+
+    /// @todo Document enum Gear.EmulationCore.CogConditionCodes
+    /// 
+    public enum CogConditionCodes : uint
+    {
+        IF_NEVER        = 0x00, //!< Never execute
+        IF_A            = 0x01, //!< if above (!C & !Z)
+        IF_NC_AND_NZ    = 0x01, //!< if C clear and Z clear
+        IF_NZ_AND_NC    = 0x01, //!< if Z clear and C clear
+        IF_NC_AND_Z     = 0x02, //!< if C clear and Z set
+        IF_Z_AND_NC     = 0x02, //!< if C set and Z clear
+        IF_NC           = 0x03, //!< if C clear
+        IF_AE           = 0x03, //!< if above/equal (!C)
+        IF_NZ_AND_C     = 0x04, //!< if Z clear and C set
+        IF_C_AND_NZ     = 0x04, //!< if C set and Z clear
+        IF_NZ           = 0x05, //!< if Z clear
+        IF_NE           = 0x05, //!< if not equal (!Z)
+        IF_C_NE_Z       = 0x06, //!< if C not equal to Z
+        IF_Z_NE_C       = 0x06, //!< if Z not equal to C
+        IF_NC_OR_NZ     = 0x07, //!< if C clear or Z clear
+        IF_NZ_OR_NC     = 0x07, //!< if Z clear or C clear
+        IF_C_AND_Z      = 0x08, //!< if C set and Z set
+        IF_Z_AND_C      = 0x08, //!< if Z set and C set
+        IF_C_EQ_Z       = 0x09, //!< if C equal to Z
+        IF_Z_EQ_C       = 0x09, //!< if Z equal to C
+        IF_E            = 0x0A, //!< if equal (Z)
+        IF_Z            = 0x0A, //!< if Z set
+        IF_NC_OR_Z      = 0x0B, //!< if C clear or Z set
+        IF_Z_OR_NC      = 0x0B, //!< if Z set or C clear
+        IF_B            = 0x0C, //!< if below (C)
+        IF_C            = 0x0C, //!< if C set
+        IF_NZ_OR_C      = 0x0D, //!< if Z clear or C set
+        IF_C_OR_NZ      = 0x0D, //!< if C set or Z clear
+        IF_Z_OR_C       = 0x0E, //!< if Z set or C set
+        IF_BE           = 0x0E, //!< if below/equal (C | Z)
+        IF_C_OR_Z       = 0x0E, //!< if C set or Z set
+        IF_ALWAYS       = 0x0F  //!< Always execute
+    }
+
     /// @todo Document class Gear.EmulationCore.Cog. 
     /// 
     abstract public partial class Cog
     {
         // Runtime variables
-        protected uint[] Memory;            //!< Program Memory
+        protected uint[] Memory;            //!< Cog Memory.
 
         protected PropellerCPU Hub;         //!< Host processor
         protected volatile uint PC;         //!< Program Cursor
-        protected volatile int BP;          //!< Breakpoint Address
+        protected volatile int BreakPointCogCursor; //!< Breakpoint Address
 
         protected int StateCount;           //!< Arguement for the current state
         protected CogRunState State;        //!< Current COG state
@@ -95,15 +158,15 @@ namespace Gear.EmulationCore
             PhaseLockedLoop.SetupPLL(Video);
 
             PC = 0;
-            BP = -1;    // Breakpoint disabled
+            BreakPointCogCursor = -1;    // Breakpoint disabled
 
             // We are in boot time load
-            Memory[(int)Assembly.RegisterAddress.PAR] = param;
+            Memory[(int)CogSpecialAddress.PAR] = param;
             State = CogRunState.WAIT_LOAD_PROGRAM;
             StateCount = 0;
 
             // Clear the special purpose registers
-            for (int i = (int)Assembly.RegisterAddress.CNT; i <= 0x1FF; i++)
+            for (int i = (int)CogSpecialAddress.CNT; i <= 0x1FF; i++)
             {
                 this[i] = 0;
             }
@@ -115,19 +178,19 @@ namespace Gear.EmulationCore
         /// 
         public int BreakPoint
         {
-            get { return BP; }
-            set { BP = value; }
+            get { return BreakPointCogCursor; }
+            set { BreakPointCogCursor = value; }
         }
 
         /// @brief Property to return complete OUT pins (P0..P63)
-        /// Analyze all sources of pin changes in the cog: OUTA, OUTB, the two counters 
+        /// Analyse all sources of pin changes in the cog: OUTA, OUTB, the two counters 
         /// and the video generator.
         public ulong OUT
         {
             get
             {
-                return Memory[(int)Assembly.RegisterAddress.OUTA] |
-                    (Memory[(int)Assembly.RegisterAddress.OUTB] << 32) |
+                return Memory[(int)CogSpecialAddress.OUTA] |
+                    (Memory[(int)CogSpecialAddress.OUTB] << 32) |
                     FreqA.Output |
                     FreqB.Output |
                     Video.Output;
@@ -135,13 +198,13 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Property to return only OUTA pins.
-        /// Analyze all sources of pin changes in the cog for OUTA pins (P31..P0): the two counters 
-        /// and the video generator.
+        /// Analyse all sources of pin changes in the cog for OUTA pins (P31..P0): the two 
+        /// counters and the video generator.
         public uint OUTA
         {
             get
             {
-                return Memory[(int)Assembly.RegisterAddress.OUTA] |
+                return Memory[(int)CogSpecialAddress.OUTA] |
                     ((uint)FreqA.Output |
                     (uint)FreqB.Output |
                     (uint)Video.Output);
@@ -149,8 +212,8 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Property to return only OUTB pins.
-        /// Analyze all sources of pin changes in the cog for OUTB pins (P63..P32): the two counters 
-        /// and the video generator.
+        /// Analyse all sources of pin changes in the cog for OUTB pins (P63..P32): the 
+        /// two counters and the video generator.
         public uint OUTB
         {
             get
@@ -159,7 +222,7 @@ namespace Gear.EmulationCore
                     (uint)((FreqA.Output |
                     FreqB.Output |
                     Video.Output) >> 32) |
-                    Memory[(int)Assembly.RegisterAddress.OUTB];
+                    Memory[(int)CogSpecialAddress.OUTB];
             }
         }
 
@@ -169,8 +232,8 @@ namespace Gear.EmulationCore
         {
             get
             {
-                return (Memory[(int)Assembly.RegisterAddress.DIRB] << 32) |
-                    Memory[(int)Assembly.RegisterAddress.DIRA];
+                return (Memory[(int)CogSpecialAddress.DIRB] << 32) |
+                    Memory[(int)CogSpecialAddress.DIRA];
             }
         }
 
@@ -180,7 +243,7 @@ namespace Gear.EmulationCore
         {
             get
             {
-                return Memory[(int)Assembly.RegisterAddress.DIRA];
+                return Memory[(int)CogSpecialAddress.DIRA];
             }
         }
 
@@ -190,7 +253,7 @@ namespace Gear.EmulationCore
         {
             get
             {
-                return Memory[(int)Assembly.RegisterAddress.DIRB];
+                return Memory[(int)CogSpecialAddress.DIRB];
             }
         }
 
@@ -255,7 +318,7 @@ namespace Gear.EmulationCore
                 {
                     // show special registers, because their values are in
                     // variables in Cog object and not in memory array.
-                    if (i >= (int)Assembly.RegisterAddress.PAR)
+                    if (i >= (int)CogSpecialAddress.PAR)
                     {
                         return ReadLong((uint)i);
                     }
@@ -277,55 +340,55 @@ namespace Gear.EmulationCore
 
         /// @todo Document method Gear.EmulationCore.Cog.ConditionCompare.
         /// 
-        public static bool ConditionCompare(Assembly.ConditionCodes condition, bool a, bool b)
+        public static bool ConditionCompare(CogConditionCodes condition, bool a, bool b)
         {
             switch (condition)
             {
-                case Assembly.ConditionCodes.IF_NEVER:
+                case CogConditionCodes.IF_NEVER:
                     break;
-                case Assembly.ConditionCodes.IF_NZ_AND_NC:
+                case CogConditionCodes.IF_NZ_AND_NC:
                     if (!a && !b) return false;
                     break;
-                case Assembly.ConditionCodes.IF_NC_AND_Z:
+                case CogConditionCodes.IF_NC_AND_Z:
                     if (a && !b) return false;
                     break;
-                case Assembly.ConditionCodes.IF_NC:
+                case CogConditionCodes.IF_NC:
                     if (!b) return false;
                     break;
-                case Assembly.ConditionCodes.IF_C_AND_NZ:
+                case CogConditionCodes.IF_C_AND_NZ:
                     if (!a && b) return false;
                     break;
-                case Assembly.ConditionCodes.IF_NZ:
+                case CogConditionCodes.IF_NZ:
                     if (!a) return false;
                     break;
-                case Assembly.ConditionCodes.IF_C_NE_Z:
+                case CogConditionCodes.IF_C_NE_Z:
                     if (a != b) return false;
                     break;
-                case Assembly.ConditionCodes.IF_NC_OR_NZ:
+                case CogConditionCodes.IF_NC_OR_NZ:
                     if (!a || !b) return false;
                     break;
-                case Assembly.ConditionCodes.IF_C_AND_Z:
+                case CogConditionCodes.IF_C_AND_Z:
                     if (a && b) return false;
                     break;
-                case Assembly.ConditionCodes.IF_C_EQ_Z:
+                case CogConditionCodes.IF_C_EQ_Z:
                     if (a == b) return false;
                     break;
-                case Assembly.ConditionCodes.IF_Z:
+                case CogConditionCodes.IF_Z:
                     if (a) return false;
                     break;
-                case Assembly.ConditionCodes.IF_NC_OR_Z:
+                case CogConditionCodes.IF_NC_OR_Z:
                     if (a || !b) return false;
                     break;
-                case Assembly.ConditionCodes.IF_C:
+                case CogConditionCodes.IF_C:
                     if (b) return false;
                     break;
-                case Assembly.ConditionCodes.IF_C_OR_NZ:
+                case CogConditionCodes.IF_C_OR_NZ:
                     if (!a || b) return false;
                     break;
-                case Assembly.ConditionCodes.IF_Z_OR_C:
+                case CogConditionCodes.IF_Z_OR_C:
                     if (a || b) return false;
                     break;
-                case Assembly.ConditionCodes.IF_ALWAYS:
+                case CogConditionCodes.IF_ALWAYS:
                     return false;
             }
 
@@ -339,7 +402,7 @@ namespace Gear.EmulationCore
             switch (State)
             {
                 case CogRunState.WAIT_LOAD_PROGRAM:
-                    Memory[StateCount++] = Hub.DirectReadLong(ProgramAddress);
+                    Memory[StateCount++] = Hub.ReadLong(ProgramAddress);
                     ProgramAddress += 4;
 
                     if (StateCount == 0x1F0)
@@ -388,37 +451,38 @@ namespace Gear.EmulationCore
             {
                 Hub.Step();
             }
-            while (State != CogRunState.EXEC_INTERPRETER && State != CogRunState.STATE_EXECUTE && --i > 0);
+            while ( (State != CogRunState.EXEC_INTERPRETER) && 
+                (State != CogRunState.STATE_EXECUTE && --i > 0) );
         }
 
         /// @todo Document method Gear.EmulationCore.Cog.ReadLong().
         /// 
         public uint ReadLong(uint address)
         {
-            // values using CogSpecialAddress enum, intead of direct hex values
-            switch ((Assembly.RegisterAddress)(address & 0x1FF))
+            // values using CogSpecialAddress enum, instead of direct hex values
+            switch ((CogSpecialAddress)(address & 0x1FF))
             {
-                case Assembly.RegisterAddress.CNT:
+                case CogSpecialAddress.CNT:
                     return Hub.Counter;
-                case Assembly.RegisterAddress.INA:
+                case CogSpecialAddress.INA:
                     return Hub.INA;
-                case Assembly.RegisterAddress.INB:
+                case CogSpecialAddress.INB:
                     return Hub.INB;
-                case Assembly.RegisterAddress.CNTA:
+                case CogSpecialAddress.CNTA:
                     return FreqA.CTR;
-                case Assembly.RegisterAddress.CNTB:
+                case CogSpecialAddress.CNTB:
                     return FreqB.CTR;
-                case Assembly.RegisterAddress.FRQA:
+                case CogSpecialAddress.FRQA:
                     return FreqA.FRQ;
-                case Assembly.RegisterAddress.FRQB:
+                case CogSpecialAddress.FRQB:
                     return FreqB.FRQ;
-                case Assembly.RegisterAddress.PHSA:
+                case CogSpecialAddress.PHSA:
                     return FreqA.PHS;
-                case Assembly.RegisterAddress.PHSB:
+                case CogSpecialAddress.PHSB:
                     return FreqB.PHS;
-                case Assembly.RegisterAddress.VCFG:
+                case CogSpecialAddress.VCFG:
                     return Video.CFG;
-                case Assembly.RegisterAddress.VSCL:
+                case CogSpecialAddress.VSCL:
                     return Video.SCL;
                 default:
                     return Memory[address & 0x1FF];
@@ -426,46 +490,50 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Write cog RAM with a specified value
-        /// This method take care of special cog address that in this class aren't writed in memory array Cog.Memory.
+        /// This method take care of special cog address that in this class aren't write in 
+        /// memory array Cog.Memory.
         /// @param[in] address Address to write
         /// @param[in] data Data to write in address
-        /// @note PAR address is a special case, because unless Propeller Manual V1.2 specifications says it is a 
-        /// read-only register, there are claims that in reality it is writeable as explains
-        /// <a href="http://forums.parallax.com/showthread.php/115909-PASM-simulator-debugger)">Forum thread "PASM simulator / debugger?</a>.
-        /// They claims that some parallax video drivers in PASM changes the PAR register, and GEAR didn't emulate that.
+        /// @note PAR address is a special case, because unless Propeller Manual V1.2 
+        /// specifications says it is a read-only register, there are claims that in reality it 
+        /// is writeable as explains 
+        /// <a href="http://forums.parallax.com/showthread.php/115909-PASM-simulator-debugger)">
+        /// Forum thread "PASM simulator / debugger?</a>.
+        /// @par They claims that some parallax video drivers in PASM changes the PAR register, 
+        /// and GEAR didn't emulate that.
         protected void WriteLong(uint address, uint data)
         {
-            // values using CogSpecialAddress enum, intead of direct hex values
-            switch ((Assembly.RegisterAddress)(address & 0x1FF))
+            // values using CogSpecialAddress enum, instead of direct hex values
+            switch ((CogSpecialAddress)(address & 0x1FF))
             {
                 // Read only registers
                 // case CogSpecialAddress.PAR: // PAR register changed to writeable
-                case Assembly.RegisterAddress.CNT:
-                case Assembly.RegisterAddress.INA:
-                case Assembly.RegisterAddress.INB:
+                case CogSpecialAddress.CNT:
+                case CogSpecialAddress.INA:
+                case CogSpecialAddress.INB:
                     return;
-                case Assembly.RegisterAddress.CNTA:
+                case CogSpecialAddress.CNTA:
                     FreqA.CTR = data;
                     break;
-                case Assembly.RegisterAddress.CNTB:
+                case CogSpecialAddress.CNTB:
                     FreqB.CTR = data;
                     break;
-                case Assembly.RegisterAddress.FRQA:
+                case CogSpecialAddress.FRQA:
                     FreqA.FRQ = data;
                     break;
-                case Assembly.RegisterAddress.FRQB:
+                case CogSpecialAddress.FRQB:
                     FreqB.FRQ = data;
                     break;
-                case Assembly.RegisterAddress.PHSA:
+                case CogSpecialAddress.PHSA:
                     FreqA.PHS = data;
                     break;
-                case Assembly.RegisterAddress.PHSB:
+                case CogSpecialAddress.PHSB:
                     FreqB.PHS = data;
                     break;
-                case Assembly.RegisterAddress.VCFG:
+                case CogSpecialAddress.VCFG:
                     Video.CFG = data;
                     break;
-                case Assembly.RegisterAddress.VSCL:
+                case CogSpecialAddress.VSCL:
                     Video.SCL = data;
                     break;
                 default:

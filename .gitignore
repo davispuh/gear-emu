@@ -186,5 +186,13 @@ UpgradeLog*.htm
 # Microsoft Fakes
 FakesAssemblies/
 
-#doxygen documentation
-Doc/**
+#doxygen & mcsgen documentation
+Doc/html/**
+Doc/[Mm]csgen-files/*.png
+Doc/[Mm]csgen-files/*.svg
+Doc/[Mm]csgen-files/*.eps
+Doc/[Mm]csgen-files/*.ismap
+!/*.[Mm]csgen
+
+#TestThings for GEAR
+TestThings/**

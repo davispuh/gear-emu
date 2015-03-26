@@ -34,9 +34,8 @@ using Gear.PluginSupport;
 
 namespace Gear.GUI.LogicProbe
 {
-    public partial class LogicView : PluginBase
+    public partial class LogicView : Gear.PluginSupport.PluginBase
     {
-        private PropellerCPU Host;
         private Font MonoFont;
 
         private List<LogicRow> Pins;
@@ -62,7 +61,17 @@ namespace Gear.GUI.LogicProbe
             }
         }
 
-        public LogicView()
+        public override bool IsUserPlugin
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        /// @brief Default Constructor.
+        /// @param chip CPU to reference the view.
+        public LogicView(PropellerCPU chip) : base(chip)
         {
             InitializeComponent();
 
@@ -75,11 +84,11 @@ namespace Gear.GUI.LogicProbe
             viewOffset.LargeChange = 1;
 
             //Set international localized text for timeFrame & tickMark text boxes
-            double timeFrame = 0.0001,
-                   tickMark  = 0.0000032;
+            double timeFrame = Properties.Settings.Default.LastTimeFrame,
+                   tickMark = Properties.Settings.Default.LastTickMarkGrid;
 
-            timeFrameBox.Text = timeFrame.ToString("0.0000");
-            tickMarkBox.Text = tickMark.ToString("0.0000000") ;
+            timeFrameBox.Text = timeFrame.ToString("0.00000000");
+            tickMarkBox.Text = tickMark.ToString("0.00000000") ;
 
             TimeScale = 0.0001;
             Marker = 256.0 / 80000000.0;
@@ -98,10 +107,11 @@ namespace Gear.GUI.LogicProbe
             }
         }
 
-        public override void PresentChip(PropellerCPU host)
+        /// @todo document Gear.GUI.LogicProbe.PresentChip()
+        /// 
+        public override void PresentChip()
         {
-            Host = host;
-            Host.NotifyOnPins(this);
+            Chip.NotifyOnPins(this);
         }
 
         /// @brief Clean samples of LogicRow
@@ -114,6 +124,19 @@ namespace Gear.GUI.LogicProbe
             }
         }
 
+        /// @brief Save the last used settings before close.
+        /// @version V15.03.26 - added.
+        public override void OnClose()
+        {
+            double aux;
+            if (Double.TryParse(timeFrameBox.Text,out aux))
+                Properties.Settings.Default.LastTimeFrame = aux;
+            if (Double.TryParse(tickMarkBox.Text, out aux))
+                Properties.Settings.Default.LastTickMarkGrid = aux;
+        }
+
+        /// @todo document Gear.GUI.LogicProbe.OnPinChange()
+        /// 
         public override void OnPinChange(double time, PinState[] states)
         {
             for (int i = 0; i < states.Length; i++)
@@ -122,9 +145,11 @@ namespace Gear.GUI.LogicProbe
             }
         }
 
+        /// @todo document Gear.GUI.LogicProbe.Repaint()
+        ///
         public override void Repaint(bool tick)
         {
-            if (Host == null)
+            if (Chip == null)
                 return;
 
             viewOffset.Maximum = Pins.Count - 1;
@@ -145,7 +170,7 @@ namespace Gear.GUI.LogicProbe
 
             if (timeAdjustBar.Value == timeAdjustBar.Maximum)
             {
-                maxTime = Host.EmulatorTime;
+                maxTime = Chip.EmulatorTime;
                 minTime = maxTime - TimeScale;
             }
             else
@@ -156,7 +181,7 @@ namespace Gear.GUI.LogicProbe
                     if (minimum < Pins[i].MinTime)
                         minimum = Pins[i].MinTime;
 
-                double range = (Host.EmulatorTime - minimum) - TimeScale;  // Only allow it to scale to the minimum time
+                double range = (Chip.EmulatorTime - minimum) - TimeScale;  // Only allow it to scale to the minimum time
 
                 if (range > 0)
                 {
@@ -166,7 +191,7 @@ namespace Gear.GUI.LogicProbe
                 }
                 else
                 {
-                    maxTime = Host.EmulatorTime;
+                    maxTime = Chip.EmulatorTime;
                     minTime = maxTime - TimeScale;
                 }
             }
@@ -199,6 +224,8 @@ namespace Gear.GUI.LogicProbe
             waveView.CreateGraphics().DrawImageUnscaled(BackBuffer, 0, 0);
         }
 
+        /// @todo document Gear.GUI.LogicProbe.OnSized()
+        ///
         private void OnSized(object sender, EventArgs e)
         {
             if (waveView.Width > 0 && waveView.Height > 0)
@@ -211,16 +238,22 @@ namespace Gear.GUI.LogicProbe
             Repaint(true);
         }
 
+        /// @todo document Gear.GUI.LogicProbe.ScrollChanged()
+        ///
         private void ScrollChanged(object sender, ScrollEventArgs e)
         {
             Repaint(false);
         }
 
+        /// @todo document Gear.GUI.LogicProbe.WaveView_Paint()
+        ///
         private void WaveView_Paint(object sender, PaintEventArgs e)
         {
             e.Graphics.DrawImageUnscaled(BackBuffer, 0, 0);
         }
 
+        /// @todo document Gear.GUI.LogicProbe.updateGridButton_Click()
+        ///
         private void updateGridButton_Click(object sender, EventArgs e)
         {
             try
@@ -244,11 +277,15 @@ namespace Gear.GUI.LogicProbe
             Repaint(true);
         }
 
+        /// @todo document Gear.GUI.LogicProbe.TimeChanged()
+        ///
         private void TimeChanged(object sender, ScrollEventArgs e)
         {
             Repaint(false);
         }
 
+        /// @todo document Gear.GUI.LogicProbe.OnClick()
+        ///
         private void OnClick(object sender, EventArgs e)
         {
             if (Pins.Count == 0)
@@ -272,6 +309,8 @@ namespace Gear.GUI.LogicProbe
             }
         }
 
+        /// @todo document Gear.GUI.LogicProbe.OnDblClick()
+        ///
         private void OnDblClick(object sender, EventArgs e)
         {
             if (Pins.Count == 0)
@@ -296,6 +335,8 @@ namespace Gear.GUI.LogicProbe
 
         }
 
+        /// @todo document Gear.GUI.LogicProbe.digitalButton_Click()
+        ///
         private void digitalButton_Click(object sender, EventArgs e)
         {
             try
@@ -308,7 +349,8 @@ namespace Gear.GUI.LogicProbe
 
                         if (range.Length < 2)
                         {
-                            MessageBox.Show("Invalid range value");
+                            MessageBox.Show("Invalid range value", "Pin value Problem", 
+                                MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         }
 
                         int start = Convert.ToUInt16(range[0]);
@@ -331,20 +373,28 @@ namespace Gear.GUI.LogicProbe
             }
             catch (FormatException)
             {
-                MessageBox.Show("Value needs to be a valid number.");
+                MessageBox.Show(string.Format("Value needs to be a valid number between 0 and {0}.",
+                        PropellerCPU.TOTAL_PINS - 1),
+                        "Pin value Problem", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
             catch (IndexOutOfRangeException)
             {
-                MessageBox.Show("You must specify a pin between 0 and 63");
+                MessageBox.Show(string.Format("You must specify a pin between 0 and {0}",
+                    PropellerCPU.TOTAL_PINS - 1),
+                    "Pin value Problem", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
             catch (OverflowException)
             {
-                MessageBox.Show("You must specify a pin between 0 and 63");
+                MessageBox.Show(string.Format("You must specify a pin between 0 and {0}",
+                    PropellerCPU.TOTAL_PINS - 1), 
+                    "Pin value Problem", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
 
             Repaint(true);
         }
 
+        /// @todo document Gear.GUI.LogicProbe.analogButton_Click()
+        ///
         private void analogButton_Click(object sender, EventArgs e)
         {
             string[] numbers = pinsTextBox.Text.Split(',');
@@ -360,7 +410,8 @@ namespace Gear.GUI.LogicProbe
 
                         if (range.Length < 2)
                         {
-                            MessageBox.Show("Invalid range value");
+                            MessageBox.Show("Invalid range value", "Pin value Problem", 
+                                MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         }
 
                         int start = Convert.ToUInt16(range[0]);
@@ -381,17 +432,23 @@ namespace Gear.GUI.LogicProbe
                 }
                 catch (FormatException)
                 {
-                    MessageBox.Show("Value needs to be a valid number.");
+                    MessageBox.Show(string.Format("Pin Value needs to be a valid number between 0 and {0}.",
+                        PropellerCPU.TOTAL_PINS - 1), 
+                        "Pin value Problem", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     return;
                 }
                 catch (IndexOutOfRangeException)
                 {
-                    MessageBox.Show("You must specify a pin between 0 and 63");
+                    MessageBox.Show(string.Format("You must specify a pin between 0 and {0}",
+                        PropellerCPU.TOTAL_PINS - 1),
+                        "Pin value Problem", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     return;
                 }
                 catch (OverflowException)
                 {
-                    MessageBox.Show("You must specify a pin between 0 and 63");
+                    MessageBox.Show(string.Format("You must specify a pin between 0 and {0}",
+                        PropellerCPU.TOTAL_PINS - 1),
+                        "Pin value Problem", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     return;
                 }
             }
@@ -400,5 +457,6 @@ namespace Gear.GUI.LogicProbe
             Pins.Add(new LogicAnalog(pins.ToArray()));
             Repaint(true);
         }
+
     }
 }

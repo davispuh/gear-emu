@@ -183,10 +183,12 @@ namespace Gear.EmulationCore
             // New cog if ID is not valid
             code |= ((CogID < 8) ? CogID : 0x8);
 
-            bool temp = false;  // Provided for hub op carry
-            return Hub.HubOp(this, (uint)HubOperationCodes.HUBOP_COGINIT, code, ref temp);
+            bool temp = false, temp2 = false;  // Provided for hub op carry
+            return Hub.HubOp(this, (uint)HubOperationCodes.HUBOP_COGINIT, code, ref temp, ref temp2);
         }
 
+        /// @todo document Gear.EmulationCore.DoInstruction()
+        /// 
         override public bool DoInstruction()
         {
             switch (State)
@@ -253,7 +255,7 @@ namespace Gear.EmulationCore
                 StepMaskedMemoryOp(op);
                 return true;
             }
-            // Inplicit Location Memory Ops
+            // Implicit Location Memory Ops
             else if (op >= 0x40)
             {
                 StepImplicitMemoryOp(op);
@@ -810,7 +812,7 @@ namespace Gear.EmulationCore
                         break;
                 }
             }
-            return PC != BP;
+            return PC != BreakPointCogCursor;
         }
 
         private void ReturnFromSub(uint value, bool abort)

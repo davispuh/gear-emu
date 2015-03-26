@@ -1,4 +1,16 @@
-V17.07.25
+V14.8.5
+====================================
++Continuing implementation of new methods for PluginBase class: PluginBase.OnClose(). Added calling when close button is pressed.
++New file "PluginVersion.cs" with class VersionAttribute. Prospect class to detect version of methods in runtime. - experimental -
++Corrected some warnings in GEAR code, for compiling in MONO. Some more left...
++Corrected "compileMONO.Bat" to clear unnecesaries directives (changed by "-pkg:dotnet" option). Simplified to run under MONO Command Prompt, not normal CMD.
+
+V14.7.27
+====================================
++Plugin template: When the user create a new plugin in plugin editor, a proposal of initial code is loaded from a template file. This code is commented and contains the most used methods.
++Begin of implementation of new methods for PluginBase class: PluginBase.OnClock(double time, uint sysCounter). To be completed.
+
+V14.07.25
 ====================================
 +Validation on plugin editor to prevent name class inconsistency and avoid error message if the user tries to validate code without text. If there is this problem, the editor hightlight the code involved.
 
