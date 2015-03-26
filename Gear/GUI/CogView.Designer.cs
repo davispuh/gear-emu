@@ -37,6 +37,10 @@ namespace Gear.GUI
             {
                 components.Dispose();
             }
+            this.MonoFont.Dispose();
+            this.MonoFontBold.Dispose();
+            this.BackBuffer.Dispose();
+
             base.Dispose(disposing);
         }
 
@@ -59,10 +63,10 @@ namespace Gear.GUI
             this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.memoryViewButton = new System.Windows.Forms.ToolStripButton();
             this.followPCButton = new System.Windows.Forms.ToolStripButton();
-            this.programCounterLable = new System.Windows.Forms.ToolStripLabel();
-            this.zeroFlagLable = new System.Windows.Forms.ToolStripLabel();
-            this.carryFlagLable = new System.Windows.Forms.ToolStripLabel();
-            this.processorStateLable = new System.Windows.Forms.ToolStripLabel();
+            this.programCounterLabel = new System.Windows.Forms.ToolStripLabel();
+            this.zeroFlagLabel = new System.Windows.Forms.ToolStripLabel();
+            this.carryFlagLabel = new System.Windows.Forms.ToolStripLabel();
+            this.processorStateLabel = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.DisplayUnits = new System.Windows.Forms.ToolStripDropDownButton();
             this.decimalUnits = new System.Windows.Forms.ToolStripMenuItem();
@@ -130,13 +134,13 @@ namespace Gear.GUI
             this.memoryViewButton,
             this.followPCButton,
             toolStripSeparator4,
-            this.programCounterLable,
+            this.programCounterLabel,
             toolStripSeparator1,
-            this.zeroFlagLable,
+            this.zeroFlagLabel,
             toolStripSeparator2,
-            this.carryFlagLable,
+            this.carryFlagLabel,
             toolStripSeparator3,
-            this.processorStateLable,
+            this.processorStateLabel,
             this.toolStripSeparator5,
             this.DisplayUnits,
             this.toolStripSeparator6,
@@ -171,29 +175,29 @@ namespace Gear.GUI
             this.followPCButton.Text = "Follow PC";
             this.followPCButton.Click += new System.EventHandler(this.followPCButton_Click);
             //
-            // programCounterLable
+            // programCounterLabel
             //
-            this.programCounterLable.Name = "programCounterLable";
-            this.programCounterLable.Size = new System.Drawing.Size(19, 22);
-            this.programCounterLable.Text = "---";
+            this.programCounterLabel.Name = "programCounterLabel";
+            this.programCounterLabel.Size = new System.Drawing.Size(19, 22);
+            this.programCounterLabel.Text = "---";
             //
-            // zeroFlagLable
+            // zeroFlagLabel
             //
-            this.zeroFlagLable.Name = "zeroFlagLable";
-            this.zeroFlagLable.Size = new System.Drawing.Size(19, 22);
-            this.zeroFlagLable.Text = "---";
+            this.zeroFlagLabel.Name = "zeroFlagLabel";
+            this.zeroFlagLabel.Size = new System.Drawing.Size(19, 22);
+            this.zeroFlagLabel.Text = "---";
             //
-            // carryFlagLable
+            // carryFlagLabel
             //
-            this.carryFlagLable.Name = "carryFlagLable";
-            this.carryFlagLable.Size = new System.Drawing.Size(19, 22);
-            this.carryFlagLable.Text = "---";
+            this.carryFlagLabel.Name = "carryFlagLabel";
+            this.carryFlagLabel.Size = new System.Drawing.Size(19, 22);
+            this.carryFlagLabel.Text = "---";
             //
-            // processorStateLable
+            // processorStateLabel
             //
-            this.processorStateLable.Name = "processorStateLable";
-            this.processorStateLable.Size = new System.Drawing.Size(19, 22);
-            this.processorStateLable.Text = "---";
+            this.processorStateLabel.Name = "processorStateLabel";
+            this.processorStateLabel.Size = new System.Drawing.Size(19, 22);
+            this.processorStateLabel.Text = "---";
             //
             // toolStripSeparator5
             //
@@ -282,10 +286,10 @@ namespace Gear.GUI
         private System.Windows.Forms.Panel assemblyPanel;
         private System.Windows.Forms.VScrollBar positionScroll;
         private System.Windows.Forms.ToolStrip toolStrip;
-        private System.Windows.Forms.ToolStripLabel programCounterLable;
-        private System.Windows.Forms.ToolStripLabel zeroFlagLable;
-        private System.Windows.Forms.ToolStripLabel carryFlagLable;
-        private System.Windows.Forms.ToolStripLabel processorStateLable;
+        private System.Windows.Forms.ToolStripLabel programCounterLabel;
+        private System.Windows.Forms.ToolStripLabel zeroFlagLabel;
+        private System.Windows.Forms.ToolStripLabel carryFlagLabel;
+        private System.Windows.Forms.ToolStripLabel processorStateLabel;
         private System.Windows.Forms.ToolStripButton memoryViewButton;
         private System.Windows.Forms.ToolStripButton followPCButton;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;

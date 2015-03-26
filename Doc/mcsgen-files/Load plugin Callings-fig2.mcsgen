@@ -13,50 +13,46 @@ E [label="5"];
 --- [label="Detail for Registering OnPinChange & OnClock Methods from the plugin class.", linecolor="indigo", textcolor="indigo"];
 
 #titles Phase
-A box A [label="Emulator.\nAttachPlugin(bm)", url="\ref Gear.GUI.Emulator.AttachPlugin", textbgcolor="#DCE2EF"],
-B box B [label="bm.PresentChip(Chip) or bm.PresentChip()", url="\ref Gear.GUI.Emulator.LoadPlugin", textbgcolor="#DCE2EF"];
+A box A [label="Emulator.\nAttachPlugin(plugin)", url="\ref Gear.GUI.Emulator.AttachPlugin", textbgcolor="#DCE2EF"],
+B box B [label="plugin.PresentChip()", url="\ref Gear.GUI.Emulator.LoadPlugin", textbgcolor="#DCE2EF"];
 
 #Transicions Phase
-A => B [label="Invoking the compiled\nplugin method."]; 
+A => B [label="Invoking the compiled\nplugin method."];
 
 #phase separation
 --- [label="Optional calling, defined by the contents of PresentChip() method.", linecolor="indigo", textcolor="indigo"];
 
 #titles Phase
-C box C [label="bm.NotifyOnPins() v1.0", url="\ref Gear.EmulationCore.PropellerCPU.NotifyOnPins", textbgcolor="#DCE2EF"],
-D box D [label="Chip.NotifyOnPins(bm)", url="\ref Gear.EmulationCore.PropellerCPU.NotifyOnPins", textbgcolor="#DCE2EF"],
-E box E [label="Chip.PinHandlers.Add(bm)", url="\ref Gear.EmulationCore.PropellerCPU.PinHandlers", textbgcolor="#DCE2EF"];
+C box C [label="plugin.NotifyOnPins()", url="\ref Gear.EmulationCore.PropellerCPU.NotifyOnPins", textbgcolor="#DCE2EF"],
+D box D [label="Chip.NotifyOnPins(plugin)", url="\ref Gear.EmulationCore.PropellerCPU.NotifyOnPins", textbgcolor="#DCE2EF"],
+E box E [label="Chip.PinHandlers.Add(plugin)", url="\ref Gear.EmulationCore.PropellerCPU.PinHandlers", textbgcolor="#DCE2EF"];
 
 #Transicions phase
 B rbox B [label="Method contains calling to NotifyOnPins()."];
-B => C [label="Version 1.0 of\nNotifyOnPins()"],
-C => D [label="Version 1.0 of\nNotifyOnPins()"];
-B => D [label="Version 0.0 of NotifyOnPins()"];
+B => C;
+C => D;
 D => E [label="Add plugin reference."];
 E rbox E [label="Plugin reference added to general list of pin handlers of the CPU."];
-D <= E [label="Version 1.0"],
-C <= D [label="Version 1.0"];
-C <= E [label="Version 0.0"];
+D <= E;
+C <= D;
 B <= C;
 
 #phase separation
 --- [label="Optional calling, defined by the contents of PresentChip() method.", linecolor="indigo", textcolor="indigo"];
 
 #titles Phase
-C box C [label="bm.NotifyOnClock() v1.0", url="\ref Gear.EmulationCore.PropellerCPU.NotifyOnClock", textbgcolor="#DCE2EF"],
-D box D [label="Chip.NotifyOnClock(bm)", url="\ref Gear.EmulationCore.PropellerCPU.NotifyOnClock", textbgcolor="#DCE2EF"],
-E box E [label="Chip.TickHandlers.Add(bm)", url="\ref Gear.EmulationCore.PropellerCPU.TickHandlers", textbgcolor="#DCE2EF"];
+C box C [label="plugin.NotifyOnClock()", url="\ref Gear.EmulationCore.PropellerCPU.NotifyOnClock", textbgcolor="#DCE2EF"],
+D box D [label="Chip.NotifyOnClock(plugin)", url="\ref Gear.EmulationCore.PropellerCPU.NotifyOnClock", textbgcolor="#DCE2EF"],
+E box E [label="Chip.TickHandlers.Add(plugin)", url="\ref Gear.EmulationCore.PropellerCPU.TickHandlers", textbgcolor="#DCE2EF"];
 
 #Transicions phase
 B rbox B [label="Method contains calling to NotifyOnClock()."];
-B => C [label="Version 1.0 of\nNotifyOnClock()"],
-C => D [label="Version 1.0 of\nNotifyOnClock()"];
-B => D [label="Version 0.0 of NotifyOnClock()"];
+B => C;
+C => D;
 D => E [label="Add plugin reference."];
 E rbox E [label="Plugin reference added to general list of tick handlers of the CPU."];
-D <= E [label="Version 1.0"],
-C <= D [label="Version 1.0"];
-C <= E [label="Version 0.0"];
+D <= E;
+C <= D;
 B <= C;
 
 #phase separation
@@ -69,7 +65,5 @@ A <= B;
 #phase separation
 --- [label="", linecolor="indigo", textcolor="indigo"];
 A note A [label="\nReturn to\nDiagram 1.\n", url="\ref PluginLoadingSequenceFig1", textbgcolor="#7FFF7F"];
-
-
 
 }
