@@ -105,7 +105,7 @@ namespace Gear.EmulationCore
         private Cog[] Cogs;
         /// @brief Number of cogs Running in the CPU.
         /// @details Helpful to detect when all the cogs are stopped so you can stop the emulator.
-        /// @version 15.03.31 - Added to help detecting the complete stop of the CPU. 
+        /// @version 15.03.26 - Added to help detecting the complete stop of the CPU. 
         private uint CogsRunning;
         //!< @todo Document member Gear.EmulationCore.PropellerCPU.Memory
         private byte[] Memory;      
@@ -607,7 +607,7 @@ namespace Gear.EmulationCore
 
         /// @brief Reset the propeller CPU to initial state.
         /// @details Release cog instances, clock sources, clear locks and pins, and reset plugins.
-        /// @version 15.03.31 - Separate reset loops for clocksources, cogs and locks.
+        /// @version 15.03.26 - Separate reset loops for clocksources, cogs and locks.
         public void Reset()
         {
             ResetMemory.CopyTo(Memory, 0);
@@ -800,7 +800,7 @@ namespace Gear.EmulationCore
 
         /// @brief Drive a pin of Propeller.
         /// It validates the pin range, or do nothing, to be safe on external plugin use.
-        /// @version 15.03.31 - Added validation for pin range.
+        /// @version 15.03.26 - Added validation for pin range.
         public void DrivePin(int pin, bool Floating, bool Hi)
         {
             if ( (pin >= 0) & (pin < TOTAL_PINS) )  //prevent pin overflow.
@@ -922,7 +922,7 @@ namespace Gear.EmulationCore
 
         /// @brief Execute the hub operations.
         /// @details This method is called from a cog to do the operations related to all the CPU.
-        /// @version 15.03.31 - corrected problem in COGSTOP return.
+        /// @version 15.03.26 - corrected problem in COGSTOP return.
         /// @param caller Reference to the caller Cog of this method.
         /// @param operation Hub operation to execute.
         /// @param argument Parameter given to the opcode (destination field in PASM).
@@ -1049,7 +1049,7 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Notify all the plugins about the closing event.
-        /// @version 15.03.31 - added.
+        /// @version 15.03.26 - added.
         public void OnClose(object sender, FormClosingEventArgs e)
         { 
             foreach(PluginBase plugin in PlugIns)

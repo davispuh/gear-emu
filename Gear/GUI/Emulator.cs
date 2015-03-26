@@ -125,7 +125,7 @@ namespace Gear.GUI
         /// Delete a plugin from the actives plugins of the propeller instance, effectively stopping 
         /// the plugin. Remove also from pins and clock watch list.
         /// @param plugin Instance of a Gear.PluginSupport.PluginBase class to be detached.
-        /// @version V15.03.31 - Added.
+        /// @version V15.03.26 - Added.
         //Added method to detach a plugin from the active plugin list of the propeller instance.
         private void DetachPlugin(PluginBase plugin)
         {
@@ -460,7 +460,7 @@ namespace Gear.GUI
         }
 
         /// @brief Stop the emulation.
-        /// @version V15.03.31 - Added the refresh of the screen.
+        /// @version V15.03.26 - Added the refresh of the screen.
         private void stopEmulator_Click(object sender, EventArgs e)
         {
             runTimer.Stop();

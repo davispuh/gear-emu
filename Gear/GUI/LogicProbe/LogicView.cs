@@ -125,7 +125,7 @@ namespace Gear.GUI.LogicProbe
         }
 
         /// @brief Save the last used settings before close.
-        /// @version V15.03.31 - added.
+        /// @version V15.03.26 - added.
         public override void OnClose()
         {
             double aux;
