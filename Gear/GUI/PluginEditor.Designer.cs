@@ -37,6 +37,7 @@ namespace Gear.GUI
             {
                 components.Dispose();
             }
+            this.defaultFont.Dispose();
             base.Dispose(disposing);
         }
 

@@ -220,7 +220,7 @@ namespace Gear.GUI
             this.newPluginButton.Name = "newPluginButton";
             this.newPluginButton.Size = new System.Drawing.Size(72, 22);
             this.newPluginButton.Text = "New Plugin";
-            this.newPluginButton.ToolTipText = "New Plugin in editor window";
+            this.newPluginButton.ToolTipText = "Create a New Plugin in editor window";
             this.newPluginButton.Click += new System.EventHandler(this.newPluginButton_Click);
             // 
             // openPluginButton
@@ -229,9 +229,9 @@ namespace Gear.GUI
             this.openPluginButton.Image = ((System.Drawing.Image)(resources.GetObject("openPluginButton.Image")));
             this.openPluginButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.openPluginButton.Name = "openPluginButton";
-            this.openPluginButton.Size = new System.Drawing.Size(77, 22);
-            this.openPluginButton.Text = "Open Plugin";
-            this.openPluginButton.ToolTipText = "Open Plugin in editor window";
+            this.openPluginButton.Size = new System.Drawing.Size(68, 22);
+            this.openPluginButton.Text = "Edit Plugin";
+            this.openPluginButton.ToolTipText = "Edit Plugin in editor window";
             this.openPluginButton.Click += new System.EventHandler(this.OpenPluginButton_Click);
             // 
             // statusStrip

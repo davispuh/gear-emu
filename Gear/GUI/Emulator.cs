@@ -36,7 +36,7 @@ namespace Gear.GUI
 {
     /// @brief View class for PropellerCPU emulator instance.
     /// @details This class implements a view over a propeller emulator, with interface to control 
-    /// the chip, like start, go throgh steps, reset or reload.
+    /// the chip, like start, go through steps, reset or reload.
     public partial class Emulator : Form
     {
         private PropellerCPU Chip;          //!< @brief Reference to PropellerCPU running instance.
@@ -48,7 +48,6 @@ namespace Gear.GUI
         private Timer runTimer;             
 
         /// @brief Default Constructor.
-        /// 
         /// @param[in] source Binary program loaded (path & name)
         public Emulator(string source)
         {
@@ -65,8 +64,8 @@ namespace Gear.GUI
                 AttachPlugin(new CogView(i, Chip));
 
             AttachPlugin(new MemoryView(Chip));
-            AttachPlugin(new LogicProbe.LogicView(Chip));
             AttachPlugin(new SpinView(Chip));
+            AttachPlugin(new LogicProbe.LogicView(Chip));   //changed to logicprobe be the last tab
             documentsTab.SelectedIndex = 0;
 
             // TEMPORARY RUN FUNCTION
@@ -77,7 +76,7 @@ namespace Gear.GUI
             hubView.Host = Chip;
         }
 
-        /// @brief Get the last binary opened succesfully.
+        /// @brief Get the last binary opened successfully.
         /// 
         public string GetLastBinary
         {
@@ -87,8 +86,9 @@ namespace Gear.GUI
             }
         }
 
-        /// @todo Document Gear.GUI.Emulator.BreakPoint()
-        /// 
+        /// @brief Make a stop on the emulation.
+        /// @details This method would be called when a plug in determine to stop, for example
+        /// when a breakpoint condition is satisfied.
         public void BreakPoint()
         {
             runTimer.Stop();
@@ -98,28 +98,19 @@ namespace Gear.GUI
         /// @brief Include a plugin to a propeller chip instance.
         /// @details Attach a plugin, linking the propeller instance to the plugin, opening a new 
         /// tab window and enabling the close button by plugin's closable property.
-        /// @param[in] bm Instance of a Gear.PluginSupport.PluginBase class to be attached.
-        private void AttachPlugin(PluginBase bm)
+        /// @param[in] plugin Instance of a Gear.PluginSupport.PluginBase class to be attached.
+        private void AttachPlugin(PluginBase plugin)
         {
-            Chip.IncludePlugin(bm);     //include into plugin lists of a PropellerCPU instance
-            //instanciate object to handle the versioning of PresentChip()
-            var verObj = new VersionatedContainer(bm, PluginVersioning.memberType.PresentChip);
-            //build the max parameter list needed for versions of PluginBase.OnClock() method.
-            PluginVersioning.ParamMemberInfo[] parms = { 
-                new PluginVersioning.ParamMemberInfo("host", Chip) 
-            };
-            //Invoke the appropiate method for PresentChip()
-            verObj.Invoke(parms);
+            Chip.IncludePlugin(plugin);     //include into plugin lists of a PropellerCPU instance
+            plugin.PresentChip();       //invoke initial setup of plugin.
 
-            // TODO [ASB] : agregar lógica para detectar si se define que si se usa NotifyOnClock(.) dentro de PresentChip() y no está implementado en derivada de pluginBase, se muestre el mensaje de error al usuario, se elimine de la lista de chip (usando Chip.RemovePlugin(.) y se abra la ventana del editor de plugins con un mensaje de error. La misma validación debe estar para el análogo de NotifyOnPins(.)
-
-            TabPage t = new TabPage(bm.Title);
+            TabPage t = new TabPage(plugin.Title);
             t.Parent = documentsTab;
-            bm.Dock = DockStyle.Fill;
-            bm.Parent = t;
+            plugin.Dock = DockStyle.Fill;
+            plugin.Parent = t;
             documentsTab.SelectedTab = t;
             //Mantain the close button availability
-            if (bm.IsClosable)
+            if (plugin.IsClosable)
             {
                 closeButton.Enabled = true;
             }
@@ -131,26 +122,30 @@ namespace Gear.GUI
 
         /// @brief Delete a plugin from a propeller chip instance.
         /// 
-        /// Delete a plugin from the actives plugins of the propeller instance, efectibly stopping 
+        /// Delete a plugin from the actives plugins of the propeller instance, effectively stopping 
         /// the plugin. Remove also from pins and clock watch list.
-        /// @param bm Instance of a Gear.PluginSupport.PluginBase class to be detached.
-        /// @version V14.07.17 - Added.
+        /// @param plugin Instance of a Gear.PluginSupport.PluginBase class to be detached.
+        /// @version V15.03.26 - Added.
         //Added method to detach a plugin from the active plugin list of the propeller instance.
-        private void DetachPlugin(PluginBase bm)
+        private void DetachPlugin(PluginBase plugin)
         {
-            if (bm.IsClosable)      //check if the plugin is closable, then remove...
+            if (plugin.IsClosable)      //check if the plugin is closable, then remove...
             {
-                Chip.RemoveOnPins(bm);  //from pins watch list
-                Chip.RemoveOnClock(bm); //from clock watch list
-                Chip.RemovePlugin(bm);  //from the plugins registered to the propeller emulator
+                Chip.RemoveOnPins(plugin);  //from pins watch list
+                Chip.RemoveOnClock(plugin); //from clock watch list
+                Chip.RemovePlugin(plugin);  //from the plugins registered to the propeller emulator
             };
         }
 
-        /// @todo Document Gear.GUI.Emulator.RunEmulatorStep
-        /// 
+        /// @brief Run the emulator updating the screen between a number of steps.
+        /// @details The program property "UpdateEachSteps" gives the number of steps before screen repaint.
+        /// Adjusting this number in configuration (like increasing the number) enable to obtain faster 
+        /// execution at expense of less screen responsiveness.
+        /// @param[in] sender Reference to object where event was raised.
+        /// @param[in] e Event data arguments.
         private void RunEmulatorStep(object sender, EventArgs e)
         {
-            for (int i = 0; i < 1024; i++)
+            for (uint i = 0; i < Properties.Settings.Default.UpdateEachSteps; i++)
                 if (!Chip.Step())
                 {
                     runTimer.Stop();
@@ -244,14 +239,14 @@ namespace Gear.GUI
 
                 //Dynamic load and compile the plugin module as a class, giving the chip 
                 // instance as a parameter.
-                PluginBase bm = ModuleCompiler.LoadModule(
+                PluginBase plugin = ModuleCompiler.LoadModule(
                     code, 
                     instanceName, 
                     references.ToArray(), 
                     Chip
                 );
 
-                if (bm == null)     //if it fails...
+                if (plugin == null)     //if it fails...
                 {
                     // ...open plugin editor in other window
                     PluginEditor pe = new PluginEditor(false);   
@@ -259,14 +254,15 @@ namespace Gear.GUI
                     pe.MdiParent = this.MdiParent;
                     pe.Show();
                 }
-                else               //if success compiling & instanciate the new class...
+                else               //if success compiling & instantiate the new class...
                 {
                     //...add the reference to the plugin list of the emulator instance
-                    AttachPlugin(bm);   
-                    GearDesktop.LastPlugin = FileName;  //update location of last plugin
+                    AttachPlugin(plugin);   
+                    Properties.Settings.Default.LastPlugin = FileName;  //update location of last plugin
+                    Properties.Settings.Default.Save();
                 }
 
-                return bm;
+                return plugin;
             }
             catch (IOException ioe)
             {
@@ -295,7 +291,6 @@ namespace Gear.GUI
         }
 
         /// @brief Select binary propeller image to load.
-        /// 
         /// @param[in] sender Reference to object where event was raised.
         /// @param[in] e Event data arguments.
         private void openBinary_Click(object sender, EventArgs e)
@@ -330,8 +325,7 @@ namespace Gear.GUI
             base.OnClosed(e);
         }
 
-        /// @todo Document Gear.GUI.Emulator.RepaintViews()
-        /// 
+        /// @brief Repaint the Views, including float windows.
         private void RepaintViews()
         {
             foreach (Control s in FloatControls)
@@ -357,8 +351,9 @@ namespace Gear.GUI
             RepaintViews();
         }
 
-        /// @todo Document Gear.GUI.Emulator.stepEmulator_Click()
-        /// 
+        /// @brief Run only one instruction of the active cog, stopping after executed.
+        /// @param[in] sender Reference to object where event was raised.
+        /// @param[in] e Event data arguments.
         private void stepEmulator_Click(object sender, EventArgs e)
         {
             Chip.Step();
@@ -366,8 +361,8 @@ namespace Gear.GUI
         }
 
         /// @brief Close the plugin window and terminate the plugin instance.
-        /// 
-        /// Not only close the tab window, also detach the plugin from the PropellerCPU what uses it.
+        /// @details Not only close the tab window, also detach the plugin from the PropellerCPU 
+        /// what uses it.
         /// @param[in] sender Reference to object where event was raised.
         /// @param[in] e Event data arguments.
         private void closeActiveTab_Click(object sender, EventArgs e)
@@ -464,11 +459,12 @@ namespace Gear.GUI
             runTimer.Start();
         }
 
-        /// @todo Document Gear.GUI.Emulator.stopEmulator_Click()
-        /// 
+        /// @brief Stop the emulation.
+        /// @version V15.03.26 - Added the refresh of the screen.
         private void stopEmulator_Click(object sender, EventArgs e)
         {
             runTimer.Stop();
+            RepaintViews(); //added the repaint, to refresh the views
         }
 
         /// @todo Document Gear.GUI.Emulator.stepInstruction_Click()
@@ -498,11 +494,19 @@ namespace Gear.GUI
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Filter = "Gear Plug-in (*.xml)|*.xml|All Files (*.*)|*.*";
             dialog.Title = "Open Gear Plug-in...";
-            if (GearDesktop.LastPlugin != null)
-                dialog.InitialDirectory = Path.GetDirectoryName(GearDesktop.LastPlugin);
+            if ((Properties.Settings.Default.LastPlugin != null) &&
+                (Properties.Settings.Default.LastPlugin.Length > 0))
+                dialog.InitialDirectory = Path.GetDirectoryName(Properties.Settings.Default.LastPlugin);
 
             if (dialog.ShowDialog(this) == DialogResult.OK)
                 LoadPlugin(dialog.FileName);
+        }
+
+        /// @todo Document Gear.GUI.Emulator.Emulator_FormClosing()
+        /// 
+        private void Emulator_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Chip.OnClose(sender, e);
         }
 
         /// @todo Document Gear.GUI.Emulator.OnDeactivate()
@@ -512,9 +516,9 @@ namespace Gear.GUI
             runTimer.Stop();
         }
 
-        /// @brief Determine avalaibility of close plugin button when tab is changed.
+        /// @brief Determine availability of close plugin button when tab is changed.
         /// @details Enable close plugin button based on if active tab is subclass of 
-        /// Gear.PluginSupport.PluginBase and if that class permit close the window. Tipically 
+        /// Gear.PluginSupport.PluginBase and if that class permit close the window. Typically 
         /// the user plugins enabled it; but the cog window, main memory, logic probe, etc, 
         /// don't allow to close.
         /// @param[in] sender Reference to object where event was raised.
@@ -560,12 +564,17 @@ namespace Gear.GUI
                     runTimer.Start();
             }
         }
+
     }
 }
 
 // vínculo a Referencia de MSCGEN: http://www.mcternan.me.uk/mscgen/
 // Vínculo a referencia de DOXYGEN commands: http://www.stack.nl/~dimitri/doxygen/manual/commands.html
 //
+/// @defgroup PluginDetails Details about Loading a Plugin
+/// 
+
+/// @ingroup PluginDetails
 /// @page PluginLoadingSequencePage Loading Sequence for a Plugin.
 /// @par Main Sequence.
 /// Sequence of plugin loading, since the user presses the button in the emulator window (ideal 

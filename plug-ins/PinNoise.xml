@@ -19,7 +19,7 @@
 
         public override string Title
         {
-            get { return &quot;Pin Noise&quot;; }
+            get { return "Pin Noise"; }
         }
 
         public override void PresentChip()
@@ -38,7 +38,7 @@
             }
         }
 
-        public override void OnClock(double time)
+        public override void OnClock(double time, uint sysCounter)
         {
             if (time - last &gt;= 0.00001)
             {
@@ -48,5 +48,6 @@
             }
         }
     }
-  </code>
+  
+</code>
 </plugin>

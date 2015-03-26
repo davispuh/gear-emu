@@ -22,6 +22,8 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Text;
 
 /// @copydoc Gear.EmulationCore
 namespace Gear.EmulationCore
@@ -119,11 +121,11 @@ namespace Gear.EmulationCore
     abstract public partial class Cog
     {
         // Runtime variables
-        protected uint[] Memory;            //!< Program Memory
+        protected uint[] Memory;            //!< Cog Memory.
 
-        protected PropellerCPU Hub;            //!< Host processor
+        protected PropellerCPU Hub;         //!< Host processor
         protected volatile uint PC;         //!< Program Cursor
-        protected volatile int BP;          //!< Breakpoint Address
+        protected volatile int BreakPointCogCursor; //!< Breakpoint Address
 
         protected int StateCount;           //!< Arguement for the current state
         protected CogRunState State;        //!< Current COG state
@@ -156,7 +158,7 @@ namespace Gear.EmulationCore
             PhaseLockedLoop.SetupPLL(Video);
 
             PC = 0;
-            BP = -1;    // Breakpoint disabled
+            BreakPointCogCursor = -1;    // Breakpoint disabled
 
             // We are in boot time load
             Memory[(int)CogSpecialAddress.PAR] = param;
@@ -176,12 +178,12 @@ namespace Gear.EmulationCore
         /// 
         public int BreakPoint
         {
-            get { return BP; }
-            set { BP = value; }
+            get { return BreakPointCogCursor; }
+            set { BreakPointCogCursor = value; }
         }
 
         /// @brief Property to return complete OUT pins (P0..P63)
-        /// Analyze all sources of pin changes in the cog: OUTA, OUTB, the two counters 
+        /// Analyse all sources of pin changes in the cog: OUTA, OUTB, the two counters 
         /// and the video generator.
         public ulong OUT
         {
@@ -196,7 +198,7 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Property to return only OUTA pins.
-        /// Analyze all sources of pin changes in the cog for OUTA pins (P31..P0): the two 
+        /// Analyse all sources of pin changes in the cog for OUTA pins (P31..P0): the two 
         /// counters and the video generator.
         public uint OUTA
         {
@@ -210,7 +212,7 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Property to return only OUTB pins.
-        /// Analyze all sources of pin changes in the cog for OUTB pins (P63..P32): the 
+        /// Analyse all sources of pin changes in the cog for OUTB pins (P63..P32): the 
         /// two counters and the video generator.
         public uint OUTB
         {
@@ -457,7 +459,7 @@ namespace Gear.EmulationCore
         /// 
         public uint ReadLong(uint address)
         {
-            // values using CogSpecialAddress enum, intead of direct hex values
+            // values using CogSpecialAddress enum, instead of direct hex values
             switch ((CogSpecialAddress)(address & 0x1FF))
             {
                 case CogSpecialAddress.CNT:
@@ -488,7 +490,7 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Write cog RAM with a specified value
-        /// This method take care of special cog address that in this class aren't writed in 
+        /// This method take care of special cog address that in this class aren't write in 
         /// memory array Cog.Memory.
         /// @param[in] address Address to write
         /// @param[in] data Data to write in address
@@ -501,7 +503,7 @@ namespace Gear.EmulationCore
         /// and GEAR didn't emulate that.
         protected void WriteLong(uint address, uint data)
         {
-            // values using CogSpecialAddress enum, intead of direct hex values
+            // values using CogSpecialAddress enum, instead of direct hex values
             switch ((CogSpecialAddress)(address & 0x1FF))
             {
                 // Read only registers
