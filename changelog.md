@@ -3,7 +3,7 @@ Read more in forum threads:
 * [More GEAR - Improved Emulation of the Propeller](http://forums.parallax.com/showthread.php/100380-More-GEAR-Improved-Emulation-of-the-Propeller)
 * [GEAR: Propeller Debugging Environment](http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment)
 
-## V15.03.31
+## V15.03.26
 
 * Corrections on all the effects for PASM hub operations (zero, carry and return): CLKSET. COGID, COGINIT, COGSTOP, LOCKNEW, LOCKRET, LOCKSET, LOCKCLR. There was some missing values for carry & zero flags.
 
