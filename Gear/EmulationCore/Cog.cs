@@ -25,6 +25,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using Gear.Propeller;
+
 /// @copydoc Gear.EmulationCore
 namespace Gear.EmulationCore
 {
@@ -53,6 +55,7 @@ namespace Gear.EmulationCore
         HUB_HUBOP,              //!< Waiting to perform hub operation
     }
 
+/*
     /// @brief %Cog RAM Special Purpose Registers.
     /// 
     /// Source: Table 15 - %Cog RAM Special Purpose Registers, %Propeller P8X32A Datasheet V1.4.0.
@@ -115,7 +118,8 @@ namespace Gear.EmulationCore
         IF_C_OR_Z       = 0x0E, //!< if C set or Z set
         IF_ALWAYS       = 0x0F  //!< Always execute
     }
-
+*/
+	
     /// @todo Document class Gear.EmulationCore.Cog. 
     /// 
     abstract public partial class Cog
@@ -183,7 +187,7 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Property to return complete OUT pins (P0..P63)
-        /// Analyse all sources of pin changes in the cog: OUTA, OUTB, the two counters 
+        /// Analyze all sources of pin changes in the cog: OUTA, OUTB, the two counters 
         /// and the video generator.
         public ulong OUT
         {
@@ -198,7 +202,7 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Property to return only OUTA pins.
-        /// Analyse all sources of pin changes in the cog for OUTA pins (P31..P0): the two 
+        /// Analyze all sources of pin changes in the cog for OUTA pins (P31..P0): the two 
         /// counters and the video generator.
         public uint OUTA
         {
@@ -212,7 +216,7 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Property to return only OUTB pins.
-        /// Analyse all sources of pin changes in the cog for OUTB pins (P63..P32): the 
+        /// Analyze all sources of pin changes in the cog for OUTB pins (P63..P32): the 
         /// two counters and the video generator.
         public uint OUTB
         {
@@ -402,7 +406,7 @@ namespace Gear.EmulationCore
             switch (State)
             {
                 case CogRunState.WAIT_LOAD_PROGRAM:
-                    Memory[StateCount++] = Hub.ReadLong(ProgramAddress);
+                    Memory[StateCount++] = Hub.DirectReadLong(ProgramAddress);
                     ProgramAddress += 4;
 
                     if (StateCount == 0x1F0)
