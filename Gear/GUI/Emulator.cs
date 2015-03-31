@@ -109,7 +109,7 @@ namespace Gear.GUI
             plugin.Dock = DockStyle.Fill;
             plugin.Parent = t;
             documentsTab.SelectedTab = t;
-            //Mantain the close button availability
+            //Maintain the close button availability
             if (plugin.IsClosable)
             {
                 closeButton.Enabled = true;
@@ -191,7 +191,7 @@ namespace Gear.GUI
         }
 
         /// @brief Load a plugin from XML file.
-        /// @details Try to open the xml definition for the plugin from the file name given as 
+        /// @details Try to open the XML definition for the plugin from the file name given as 
         /// parameter. Then extract information from the XML (class name, auxiliary references 
         /// and source code to compile), trying to compile the C# source code (based on 
         /// Gear.PluginSupport.PluginBase class) and returning the new class instance. If the 
