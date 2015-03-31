@@ -11,8 +11,8 @@ namespace Gear.Propeller
         /// Source: Table 15 - %Cog RAM Special Purpose Registers, %Propeller P8X32A Datasheet V1.4.0.
         public enum RegisterAddress : uint
         {
-            COGID     = 0x1E9,    //!<
-            INITCOGID = 0x1EF,    //!<
+            COGID     = 0x1E9,    //!< @todo Document enum value Assembly.RegisterAddress.COGID.
+            INITCOGID = 0x1EF,    //!< @todo Document enum value Assembly.RegisterAddress.INITCOGID.
             PAR       = 0x1F0,    //!< Boot Parameter
             CNT       = 0x1F1,    //!< System Counter
             INA       = 0x1F2,    //!< Input States for P31 - P0.
@@ -34,10 +34,18 @@ namespace Gear.Propeller
         public const int RegisterBaseAddress = 0x1F0;
 
         /// @brief %Cog RAM Special Purpose Registers.
-        /// 
+        /// Specify the write and read status of special registers of cog RAM.
         /// Source: Table 15 - %Cog RAM Special Purpose Registers, %Propeller P8X32A Datasheet V1.4.0.
+        /// @note PAR address is a special case, because unless Propeller Manual V1.4 
+        /// specifications says it is a read-only register, there are claims that in reality it 
+        /// is writeable as explains 
+        /// <a href="http://forums.parallax.com/showthread.php/115909-PASM-simulator-debugger)">
+        /// Forum thread "PASM simulator / debugger?</a>.
+        /// @par They claims that some parallax video drivers in PASM changes the PAR register, 
+        /// and GEAR didn't emulate that.
         static public readonly Register[] Registers = new Register[] {
-            new Register("PAR ", true, false),  //  $1F0 - Boot Parameter
+            //Constructor Register(string Name, bool Read, bool Write)
+            new Register("PAR ", true, true),  //  $1F0 - Boot Parameter // PAR register changed to writeable
             new Register("CNT ", true, false),  //  $1F1 - System Counter
             new Register("INA ", true, false),  //  $1F2 - Input States for P31-P0.
             new Register("INB ", true, false),  //  $1F3 - Input States for P63-P32.

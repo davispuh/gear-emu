@@ -77,7 +77,7 @@ namespace Gear.EmulationCore
     /// @details Conceptually it comprehends the ROM, RAM (hub memory), clock , locks, hub ring, main 
     /// pin state, and references to each cog (with their own cog memory, counters, frequency 
     /// generator, program cursor).
-    public partial class PropellerCPU
+    public partial class PropellerCPU : Propeller.DirectMemory
     {
         /// @brief Name of Constants for setting Clock.
         /// 
@@ -107,8 +107,6 @@ namespace Gear.EmulationCore
         /// @details Helpful to detect when all the cogs are stopped so you can stop the emulator.
         /// @version 15.03.26 - Added to help detecting the complete stop of the CPU. 
         private uint CogsRunning;
-        //!< @todo Document member Gear.EmulationCore.PropellerCPU.Memory
-        private byte[] Memory;      
         //!< @todo Document member Gear.EmulationCore.PropellerCPU.ResetMemory
         private byte[] ResetMemory;
 
@@ -144,15 +142,15 @@ namespace Gear.EmulationCore
         //!< @todo Document member Gear.EmulationCore.PropellerCPU.pinChange
         private bool pinChange;
 
-        /// @brief Emulation Time in secounds units.
+        /// @brief Emulation Time in seconds units.
         private double Time;
 
         /// @brief Reference to the emulator instance running this CPU.
         private Emulator emulator;
 
-        /// @brief Versionated List of Handlers for clock ticks on plugins.
+        /// @brief List of Handlers for clock ticks on plugins.
         private List<PluginBase> TickHandlers;      
-        /// @brief Versionated List of Handlers for Pin changes on plugins.
+        /// @brief List of Handlers for Pin changes on plugins.
         private List<PluginBase> PinHandlers;
         /// @brief List of active PlugIns (include system ones, like cog views, etc).
         private List<PluginBase> PlugIns;          
@@ -160,7 +158,7 @@ namespace Gear.EmulationCore
         //Expose constants declarations of P1 Chip to use on the emulation. 
         /// @brief Cogs implemented in emulator for P1 Chip.
         public const int TOTAL_COGS      = 8;
-        /// @brief Number of lock availables in P1 Chip.
+        /// @brief Number of locks availably in P1 Chip.
         public const int TOTAL_LOCKS     = 8;
         /// @brief Number of pins of P1 Chip.
         public const int TOTAL_PINS      = 64;
@@ -201,7 +199,7 @@ namespace Gear.EmulationCore
             ClockSources = new ClockSource[TOTAL_COGS];
             CoreClockSource = new SystemXtal();
 
-            // Put rom it top part of main ram.
+            // Put ROM it top part of main RAM.
             Resources.BiosImage.CopyTo(Memory, TOTAL_MEMORY - TOTAL_RAM);
         }
 
@@ -238,18 +236,6 @@ namespace Gear.EmulationCore
             get
             {
                 return RingPosition;
-            }
-        }
-
-        /// @todo Document operator Gear.EmulationCore.PropellerCPU[]
-        /// 
-        public byte this[int offset]
-        {
-            get
-            {
-                if (offset >= Memory.Length)
-                    return 0x55;
-                return Memory[offset];
             }
         }
 
@@ -652,7 +638,7 @@ namespace Gear.EmulationCore
             DirectWriteWord(InitFrame - 4, DirectReadWord(12)); // Local
             DirectWriteWord(InitFrame - 2, DirectReadWord(14)); // Stack
 
-            // Boot parameter is Inital PC in the lo word, and the stack frame in the hi word
+            // Boot parameter is Initial PC in the lo word, and the stack frame in the hi word
             ClockSources[0] = new PLLGroup();
 
             Cogs[0] = new InterpretedCog(this, InitFrame, CoreFreq, (PLLGroup)ClockSources[0]);
@@ -677,7 +663,7 @@ namespace Gear.EmulationCore
 
         /// @brief Advance one clock step.
         /// @details Inside it calls the OnClock() method for each plugin as clock advances. Also 
-        /// update the pins, by efect of calling each cog and source of clocks.
+        /// update the pins, by effect of calling each cog and source of clocks.
         public bool Step()
         {
             ulong pinsPrev;
