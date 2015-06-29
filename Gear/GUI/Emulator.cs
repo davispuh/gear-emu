@@ -253,6 +253,10 @@ namespace Gear.GUI
                     pe.OpenFile(FileName, true);
                     pe.MdiParent = this.MdiParent;
                     pe.Show();
+                    //the compilation errors are displayed in the error grid
+                    ModuleCompiler.EnumerateErrors(pe.EnumErrors);
+                    //show the error list
+                    pe.ShowErrorGrid(true);
                 }
                 else               //if success compiling & instantiate the new class...
                 {
@@ -264,25 +268,19 @@ namespace Gear.GUI
 
                 return plugin;
             }
-            catch (IOException ioe)
+            catch (Exception ex)
             {
-                MessageBox.Show(this,
-                    ioe.Message,
-                    "Failed to load program binary",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Exclamation);
+                if ((ex is IOException) | (ex is XmlException))
+                {
+                    MessageBox.Show(this,
+                        ex.Message,
+                        "Failed to load program binary",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
 
-                return null;
-            }
-            catch (XmlException xmle)
-            {
-                MessageBox.Show(this,
-                    xmle.Message,
-                    "Failed to load program binary",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Exclamation);
-
-                return null;
+                    return null;
+                }
+                else throw;
             }
             finally
             {
@@ -494,9 +492,9 @@ namespace Gear.GUI
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Filter = "Gear Plug-in (*.xml)|*.xml|All Files (*.*)|*.*";
             dialog.Title = "Open Gear Plug-in...";
-            if ((Properties.Settings.Default.LastPlugin != null) &&
-                (Properties.Settings.Default.LastPlugin.Length > 0))
-                dialog.InitialDirectory = Path.GetDirectoryName(Properties.Settings.Default.LastPlugin);
+            if (!String.IsNullOrEmpty(Properties.Settings.Default.LastPlugin))
+                dialog.InitialDirectory = Path.GetDirectoryName(
+                    Properties.Settings.Default.LastPlugin);
 
             if (dialog.ShowDialog(this) == DialogResult.OK)
                 LoadPlugin(dialog.FileName);

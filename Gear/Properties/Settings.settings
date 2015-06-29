@@ -20,5 +20,8 @@
     <Setting Name="LastTickMarkGrid" Type="System.Double" Scope="User">
       <Value Profile="(Default)">5E-05</Value>
     </Setting>
+    <Setting Name="EmbeddedCode" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

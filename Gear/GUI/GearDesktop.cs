@@ -22,19 +22,14 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
 using System.IO;
+using System.Windows.Forms;
 
-/// @brief Contains definitions related to GUI objects (controlling objects) namespace.
-/// @namespace Gear.GUI
+/// @brief Contains the definitions of %GUI objects (controlling objects).
 namespace Gear.GUI
 {
-    /// @brief Implements the graphical Desktop to the emulator, plugin editor and related windows.
+    /// @brief Implements the graphical Desktop to the emulator, plugin editor and 
+    /// related windows.
     public partial class GearDesktop : Form
     {
         /// @brief Gear.GUI.GearDesktop Constructor.
@@ -44,15 +39,15 @@ namespace Gear.GUI
         }
 
         /// @brief Load a new emulator from file.
-        /// Load an binary image into a new emulator, from user selected file, remembering last binary directory,
-        /// independently from last plugin directory.
+        /// Load an binary image into a new emulator, from user selected file, remembering last
+        /// binary directory, independently from last plugin directory.
         private void OpenBinaryButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Propeller Runtime Image (*.binary;*.eeprom)|*.binary;*.eeprom|All Files (*.*)|*.*";
+            openFileDialog.Filter = "Propeller Runtime Image (*.binary;*.eeprom)|*.binary;" +
+                "*.eeprom|All Files (*.*)|*.*";
             openFileDialog.Title = "Open Propeller Binary...";
-            if ((Properties.Settings.Default.LastBinary != null) &&
-                (Properties.Settings.Default.LastBinary.Length > 0))
+            if (!String.IsNullOrEmpty(Properties.Settings.Default.LastBinary))
                 //retrieve last binary location
                 openFileDialog.InitialDirectory = 
                     Path.GetDirectoryName(Properties.Settings.Default.LastBinary);   
@@ -60,13 +55,14 @@ namespace Gear.GUI
             if (openFileDialog.ShowDialog(this) == DialogResult.OK)
             {
                 Emulator emul = new Emulator(Path.GetFileName(openFileDialog.FileName));
-                if (emul.OpenFile(openFileDialog.FileName))   //if succesfully load binary in emulator
+                //if successfully load binary in emulator
+                if (emul.OpenFile(openFileDialog.FileName))
                 {
                     //show emulator window
                     emul.MdiParent = this;
                     emul.WindowState = FormWindowState.Maximized;
                     emul.Show();
-                    //remember last binary succesfully opened
+                    //remember last binary successfully opened
                     Properties.Settings.Default.LastBinary = emul.GetLastBinary;
                     Properties.Settings.Default.Save();
                 }
@@ -85,7 +81,7 @@ namespace Gear.GUI
             LayoutMdi(MdiLayout.Cascade);
         }
 
-        /// @brief Arrange the emulator windows in Verticle Tiles.
+        /// @brief Arrange the emulator windows in Vertical Tiles.
         private void TileVerticleToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LayoutMdi(MdiLayout.TileVertical);
@@ -122,13 +118,14 @@ namespace Gear.GUI
         /// @brief Load plugin editor from file.
         /// @details Load a plugin definition into a new editor window, from user selected file, 
         /// remembering independently from last binary directory.
+        /// @param[in] sender Reference to object where event was raised.
+        /// @param[in] e Event data arguments.
         private void OpenPluginButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Gear plug-in component (*.xml)|*.xml|All Files (*.*)|*.*";
             openFileDialog.Title = "Open Gear Plug-in...";
-            if ((Properties.Settings.Default.LastPlugin != null) &&
-                (Properties.Settings.Default.LastPlugin.Length > 0))
+            if (!String.IsNullOrEmpty(Properties.Settings.Default.LastPlugin))
                 openFileDialog.InitialDirectory = 
                     Path.GetDirectoryName(Properties.Settings.Default.LastPlugin);
 
@@ -140,8 +137,9 @@ namespace Gear.GUI
                 {
                     //show plugin editor loaded with selected one
                     plugin.MdiParent = this;
+                    plugin.ShowErrorGrid(false);    //hide it by default
                     plugin.Show();
-                    //remember plugin succesfully loaded
+                    //remember plugin successfully loaded
                     Properties.Settings.Default.LastPlugin = plugin.GetLastPlugin;
                     Properties.Settings.Default.Save();
                 }
@@ -149,10 +147,13 @@ namespace Gear.GUI
         }
 
         /// @brief Open a window with the plugin editor to create a new plugin.
+        /// @param[in] sender Reference to object where event was raised.
+        /// @param[in] e Event data arguments.
         private void newPluginButton_Click(object sender, EventArgs e)
         {
             //load default plugin template
-            PluginEditor plugin = new PluginEditor(! Properties.Settings.Default.UseNoTemplate);   
+            PluginEditor plugin = 
+                new PluginEditor(! Properties.Settings.Default.UseNoTemplate);
             plugin.MdiParent = this;
             plugin.Show();
         }
