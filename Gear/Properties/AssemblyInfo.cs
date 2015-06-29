@@ -23,7 +23,6 @@
  */
 
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following
@@ -31,8 +30,6 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle("Gear")]
 [assembly: AssemblyDescription(
-    "Original Developer: Robert Vandiver.\r\n" +
-    "\r\n" +
     "Current Developers:\r\n" +
     "   davispuh\r\n" +
     "   gatuno (Antonio Sanhueza)\r\n" +
@@ -40,6 +37,8 @@ using System.Runtime.InteropServices;
     "Past Developers:\r\n" +
     "   mirror\r\n" +
     "   benjie (Ben Levitt)\r\n" +
+    "\r\n" +
+    "Original Developer: Robert Vandiver.\r\n" +
     "\r\n" +
     "Third Party Components: \r\n" +
     "Windows Forms Collapsible Splitter Control for .Net\r\n" +

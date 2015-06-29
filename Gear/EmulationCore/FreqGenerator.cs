@@ -21,17 +21,14 @@
  * --------------------------------------------------------------------------------
  */
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 using Gear.Propeller;
 
 namespace Gear.EmulationCore
 {
-    /// @brief Counter Modes.
-    /// 
-    /// Source: Table 6 - Counter Modes (CTRMODE Field Values), %Propeller P8X32A Datasheet V1.4.0.
+    /// @brief Counter modes of operation.
+    /// @remark Source: Table 6 - Counter Modes (CTRMODE Field Values), %Propeller 
+    /// P8X32A Datasheet V1.4.0.
+    /// @version v14.7.3 - Missing logic modes implemented (LOGIC_NEVER ... LOGIC_ALWAYS)
     public enum CounterMode : uint
     {
         DISABLED,                   //!< %00000 | Counter disabled (off)
@@ -75,6 +72,8 @@ namespace Gear.EmulationCore
         LOGIC_ALWAYS                //!< %11111 | LOGIC always
     }
 
+    /// @todo document Gear.EmulationCore.FreqGenerator
+    /// 
     public class FreqGenerator
     {
         private uint Control;
@@ -157,7 +156,7 @@ namespace Gear.EmulationCore
                     case CounterMode.PLL_DIFFERENTIAL:
                     case CounterMode.LOGIC_NEVER:       // do nothing for LOGIC_NEVER
 
-                        // This is a special dejitter function
+                        // This is a special de-jitter function
                         // The edge-sensitive system resulted in unstable
                         // output frequencies
 
@@ -186,7 +185,9 @@ namespace Gear.EmulationCore
         {
             get
             {
-                return (OutA ? PinAMask : 0) | (OutB ? PinBMask : 0) | PhaseLockLoop.Pins;
+                return (OutA ? PinAMask : 0) | 
+                    (OutB ? PinBMask : 0) | 
+                    PhaseLockLoop.Pins;
             }
         }
 

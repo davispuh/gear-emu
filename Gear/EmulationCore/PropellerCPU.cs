@@ -189,7 +189,7 @@ namespace Gear.EmulationCore
 
             Time = 0;
             RingPosition = 0;
-            LocksAvailable = new bool[TOTAL_LOCKS]; // 8 general purpose semaphors
+            LocksAvailable = new bool[TOTAL_LOCKS]; // 8 general purpose semaphores
             LocksState = new bool[TOTAL_LOCKS];
 
             Memory = new byte[TOTAL_MEMORY];        // 64k of memory (top 32k read-only bios)
@@ -496,14 +496,14 @@ namespace Gear.EmulationCore
 
         /// @brief Remove a plugin from the active plugin list of propeller instance
         /// @details Only if the plugin exists on the list, this method removes from it.
-        /// Before detach, the `OnClose()` method of plugin is invoqued, to do
+        /// Before detach, the `OnClose()` method of plugin is invoked, to do
         /// housekeeping, for example to clear pins managed by the plugin.
         /// @param[in] plugin Compiled plugin reference to remove
         public void RemovePlugin(PluginBase plugin)
         {
             if (PlugIns.Contains(plugin))
             {
-                plugin.OnClose();      //call the event of instanciated plugin before remove 
+                plugin.OnClose();      //call the event of instantiated plugin before remove 
                 PlugIns.Remove(plugin);
             }
         }
@@ -593,7 +593,7 @@ namespace Gear.EmulationCore
 
         /// @brief Reset the propeller CPU to initial state.
         /// @details Release cog instances, clock sources, clear locks and pins, and reset plugins.
-        /// @version 15.03.26 - Separate reset loops for clocksources, cogs and locks.
+        /// @version 15.03.26 - Separate reset loops for clock sources, cogs and locks.
         public void Reset()
         {
             ResetMemory.CopyTo(Memory, 0);
@@ -917,8 +917,8 @@ namespace Gear.EmulationCore
         /// @param[out] zero Zero flag that could be affected by the operation.
         /// @returns Value depending on operation.
         /// @note Reference of supported Operations, based in Propeller Manual v1.2:
-        /// @arg HUBOP_CLKSET - page 271.
-        /// @arg HUBOP_COGID - page 283.
+        /// @arg HUBOP_CLKSET  - page 271.
+        /// @arg HUBOP_COGID   - page 283.
         /// @arg HUBOP_COGINIT - page 284.
         /// @arg HUBOP_COGSTOP - page 286.
         /// @arg HUBOP_LOCKNEW - page 304.

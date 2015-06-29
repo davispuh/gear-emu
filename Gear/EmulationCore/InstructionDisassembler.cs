@@ -22,8 +22,7 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
+
 using Gear.Disassembler;
 
 namespace Gear.EmulationCore
@@ -42,21 +41,21 @@ namespace Gear.EmulationCore
             {
                 Propeller.Assembly.SubInstruction ActualInstruction = instr.GetSubInstruction();
 
-                string SrcString = "";
-                string DestString = "";
+                string SrcString = string.Empty;
+                string DestString = string.Empty;
 
                 if (ActualInstruction.Source)
                 {
                     if (instr.SRC >= Propeller.Assembly.RegisterBaseAddress)
                     {
                         SrcString = String.Format("{0}{1}",
-                                instr.ImmediateValue() ? "#" : "",
+                                instr.ImmediateValue() ? "#" : string.Empty,
                                 Propeller.Assembly.Registers[instr.SRC - Propeller.Assembly.RegisterBaseAddress].Name);
                     }
                     else
                     {
                         SrcString = String.Format("{0}${1:X3}",
-                                instr.ImmediateValue() ? "#" : "",
+                                instr.ImmediateValue() ? "#" : string.Empty,
                                 instr.SRC);
                     }
                 }
@@ -215,7 +214,7 @@ namespace Gear.EmulationCore
                 case Propeller.Spin.ArgumentMode.MemoryOpCode:
                     return String.Format("{0} {1}", Name, GetMemoryOp(memory, useShortOpcodes));
                 default:
-                    throw new Exception("Uknown Spin Argument Mode: " + Instr.ArgumentMode.ToString());
+                    throw new Exception("Unknown Spin Argument Mode: " + Instr.ArgumentMode.ToString());
             }
         }
     }

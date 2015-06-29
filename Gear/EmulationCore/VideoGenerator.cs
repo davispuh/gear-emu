@@ -21,10 +21,6 @@
  * --------------------------------------------------------------------------------
  */
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace Gear.EmulationCore
 {
     /// @brief Video mode Field.
@@ -201,7 +197,7 @@ namespace Gear.EmulationCore
 
                 // --- BASEBAND MODE ---
 
-                // Mix if nessessary
+                // Mix if necessary
                 if (Chroma0)
                 {
                     if (shiftedPhase != 0)
@@ -215,7 +211,7 @@ namespace Gear.EmulationCore
 
                 // --- BROADCAST MODE ---
 
-                // Mix if nessessary
+                // Mix if necessary
                 if (Chroma1)
                 {
                     if (shiftedPhase != 0)

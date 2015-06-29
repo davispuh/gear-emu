@@ -21,55 +21,61 @@
  * --------------------------------------------------------------------------------
  */
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 using Gear.Propeller;
 
-/// @copydoc Gear.EmulationCore
 namespace Gear.EmulationCore
 {
     public enum CogRunState
     {
-        STATE_EXECUTE,          //!< Waiting for instruction to finish executing
-
-        WAIT_LOAD_PROGRAM,      //!< %Cog is loading program memory
-        //!< %Cog is executing an instruction, and waiting an alloted ammount of cycles
+        /// @brief Waiting for instruction to finish executing.
+        STATE_EXECUTE,
+        /// @brief %Cog is loading program memory.
+        WAIT_LOAD_PROGRAM,
+        /// @brief %Cog is executing an instruction, and waiting an alloted amount of cycles
         WAIT_CYCLES,
-        //!< Waits for an allotted number of cycles before changing to a new state
-        WAIT_PREWAIT,           
+        /// @brief Waits for an allotted number of cycles before changing to a new state
+        WAIT_PREWAIT,
 
-        BOOT_INTERPRETER,       //!< Interpreter is booting up
-        WAIT_INTERPRETER,       //!< Interpreter is executing an instruction
-        EXEC_INTERPRETER,       //!< Interpreter is fetching instruction
+        /// @brief Interpreter is booting up
+        BOOT_INTERPRETER,
+        /// @brief Interpreter is executing an instruction
+        WAIT_INTERPRETER,
+        /// @brief Interpreter is fetching instruction
+        EXEC_INTERPRETER,
 
-        WAIT_PEQ,               //!< Waits for pins to match
-        WAIT_PNE,               //!< Waits for pins to NOT match
-        WAIT_CNT,               //!< Waits for count
-        WAIT_VID,               //!< Waits for video
+        /// @brief Waits for pins to match
+        WAIT_PEQ,
+        /// @brief Waits for pins to NOT match
+        WAIT_PNE,
+        /// @brief Waits for count
+        WAIT_CNT,
+        /// @brief Waits for video
+        WAIT_VID,
 
-        HUB_RDBYTE,             //!< Waiting to read byte
-        HUB_RDWORD,             //!< Waiting to read word
-        HUB_RDLONG,             //!< Waiting to read uint
-        HUB_HUBOP,              //!< Waiting to perform hub operation
+        /// @brief Waiting to read byte
+        HUB_RDBYTE,
+        /// @brief Waiting to read word
+        HUB_RDWORD,
+        /// @brief Waiting to read uint
+        HUB_RDLONG,
+        /// @brief Waiting to perform hub operation
+        HUB_HUBOP
     }
 
-	
-    /// @todo Document class Gear.EmulationCore.Cog. 
-    /// 
+
+    /// @brief Base class for a %Cog emulator.
     abstract public partial class Cog
     {
         // Runtime variables
-        protected uint[] Memory;            //!< Cog Memory.
+        protected uint[] Memory;            //!< %Cog Memory.
 
         protected PropellerCPU Hub;         //!< Host processor
         protected volatile uint PC;         //!< Program Cursor
         protected volatile int BreakPointCogCursor; //!< Breakpoint Address
 
         protected int StateCount;           //!< Argument for the current state
-        protected CogRunState State;        //!< Current COG state
-        protected CogRunState NextState;    //!< Next state COG state
+        protected CogRunState State;        //!< Current %Cog state
+        protected CogRunState NextState;    //!< Next state %Cog state
 
         protected uint ProgramAddress;      //!< @todo Document member Cog.ProgramAddress
         protected uint ParamAddress;        //!< @todo Document member Cog.ParamAddress
@@ -79,13 +85,15 @@ namespace Gear.EmulationCore
         protected VideoGenerator Video;     //!< @todo Document member Cog.Video
         protected PLLGroup PhaseLockedLoop; //!< @todo Document member Cog.PhaseLockedLoop
 
-        /// @todo Document constructor Gear.EmulationCore.Cog()
-        /// 
+        /// @brief Total %Cog memory implemented on P1 Chip.
+        public const int TOTAL_COG_MEMORY = 0x200;  // 512 longs of memory
+
+        /// @brief Default constructor.
         public Cog(PropellerCPU host, uint programAddress, uint param, uint frequency, PLLGroup pll)
         {
             Hub = host;
 
-            Memory = new uint[0x200];     // 512 longs of memory
+            Memory = new uint[TOTAL_COG_MEMORY];
             ProgramAddress = programAddress;
             ParamAddress = param;
 
@@ -98,7 +106,7 @@ namespace Gear.EmulationCore
             PhaseLockedLoop.SetupPLL(Video);
 
             PC = 0;
-            BreakPointCogCursor = -1;    // Breakpoint disabled
+            BreakPointCogCursor = -1;    // Breakpoint disabled initially
 
             // We are in boot time load
             Memory[(int)Assembly.RegisterAddress.PAR] = param;
@@ -114,8 +122,7 @@ namespace Gear.EmulationCore
             SetClock(frequency);
         }
 
-        /// @todo Document property Gear.EmulationCore.Cog.BreakPoint
-        /// 
+        /// @brief Break Point position in the program running in this cog.
         public int BreakPoint
         {
             get { return BreakPointCogCursor; }
@@ -166,8 +173,7 @@ namespace Gear.EmulationCore
             }
         }
 
-        /// @todo Document property Gear.EmulationCore.Cog.DIR.
-        /// 
+        /// @brief Property to return complete DIR pins.
         public ulong DIR
         {
             get
@@ -197,16 +203,14 @@ namespace Gear.EmulationCore
             }
         }
 
-        /// @todo Document property Gear.EmulationCore.Cog.ProgramCursor.
-        /// 
+        /// @brief The actual position where the program is executing in this cog.
         public uint ProgramCursor
         {
             get { return PC; }
             set { PC = value; }
         }
 
-        /// @todo Document property Gear.EmulationCore.Cog.CogState.
-        /// 
+        /// @brief Show a string with human readable state of a cog.
         public string CogState
         {
             get
@@ -250,7 +254,7 @@ namespace Gear.EmulationCore
         {
             get
             {
-                if (i >= 0x200)
+                if (i >= TOTAL_COG_MEMORY)
                 {
                     return 0x55;
                 }
@@ -271,7 +275,7 @@ namespace Gear.EmulationCore
 
             set
             {
-                if (i < 0x200)
+                if (i < TOTAL_COG_MEMORY)
                 {
                     Memory[i] = value;
                 }
@@ -364,8 +368,7 @@ namespace Gear.EmulationCore
             Video.DetachAural();
         }
 
-        /// @todo Document method Gear.EmulationCore.Cog.Step
-        /// 
+        /// @brief Execute a Step in the cog.
         public bool Step()
         {
             bool result = DoInstruction();
@@ -429,17 +432,17 @@ namespace Gear.EmulationCore
             }
         }
 
-        /// @brief Write cog RAM with a specified value
-        /// This method take care of special cog address that in this class aren't write in 
-        /// memory array Cog.Memory.
-        /// @param[in] address Address to write
-        /// @param[in] data Data to write in address
+        /// @brief Write cog RAM with a specified value.
+        /// details This method take care of special cog address that in this class aren't 
+        /// write in memory array Cog.Memory.
+        /// @param[in] address Address to write.
+        /// @param[in] data Data to write in address.
         /// @note PAR address is a special case, because unless Propeller Manual V1.2 
         /// specifications says it is a read-only register, there are claims that in reality it 
-        /// is writeable as explains 
+        /// is writable as explains 
         /// <a href="http://forums.parallax.com/showthread.php/115909-PASM-simulator-debugger)">
         /// Forum thread "PASM simulator / debugger?</a>.
-        /// @par They claims that some parallax video drivers in PASM changes the PAR register, 
+        /// They claims that some parallax video drivers in PASM changes the PAR register, 
         /// and GEAR didn't emulate that.
         protected void WriteLong(uint address, uint data)
         {
@@ -447,7 +450,7 @@ namespace Gear.EmulationCore
             switch ((Assembly.RegisterAddress)(address & 0x1FF))
             {
                 // Read only registers
-                // case Assembly.RegisterAddress.PAR: // PAR register changed to writeable
+                // case Assembly.RegisterAddress.PAR: // PAR register changed to writable
                 case Assembly.RegisterAddress.CNT:
                 case Assembly.RegisterAddress.INA:
                 case Assembly.RegisterAddress.INB:
@@ -482,7 +485,8 @@ namespace Gear.EmulationCore
             }
         }
 
-        /// @todo Document method Gear.EmulationCore.Cog.DoInstruction()
+        /// @brief Execute a instruction in this cog.
+        /// @returns TRUE if it is time to trigger a breakpoint, or FALSE if not.
         abstract public bool DoInstruction();
 
         /// @todo Document method Gear.EmulationCore.Cog.Boot()

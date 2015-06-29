@@ -30,6 +30,7 @@ using Gear.Propeller;
 namespace Gear.EmulationCore
 {
 
+    /// @brief Derived class from Cog, to emulate running PASM code.
     class NativeCog : Cog
     {
         // Decode fields
@@ -53,8 +54,8 @@ namespace Gear.EmulationCore
         protected bool CarryResult;
         protected bool ZeroResult;
 
-        protected bool Carry;               // Carry Flag
-        protected bool Zero;                // Zero Flag
+        protected bool Carry;               //!< Carry Flag
+        protected bool Zero;                //!< Zero Flag
 
         public bool CarryFlag
         {
@@ -68,6 +69,12 @@ namespace Gear.EmulationCore
             set { Zero = value; }
         }
 
+        /// @brief Default constructor for a Cog running in PASM mode.
+        /// @param host PropellerCPU where this cog resides.
+        /// @param programAddress Start of program to load from main memory.
+        /// @param paramAddress PARAM value given to the Cog.
+        /// @param frequency Frequency running the cog (the same as the Propeller).
+        /// @param pll PLL Multiplier running the cog (the same as the Propeller).
         public NativeCog(PropellerCPU host,
             uint programAddress, uint paramAddress, uint frequency,
             PLLGroup pll)
@@ -77,6 +84,8 @@ namespace Gear.EmulationCore
             Zero = false;
         }
 
+        /// @brief Determine what effect will be executed after this operation.
+        /// @details The possibles are Write Result, Zero flag or Carry flag, or mix between them.
         private void WriteBackResult()
         {
             if (WriteResult)
@@ -89,6 +98,7 @@ namespace Gear.EmulationCore
             State = CogRunState.STATE_EXECUTE;
         }
 
+        /// @brief Setup the cog to a initial state after boot it.
         public override void Boot()
         {
             State = CogRunState.STATE_EXECUTE;
@@ -100,6 +110,9 @@ namespace Gear.EmulationCore
             Operation = ReadLong(0);
         }
 
+        /// @brief Determine if the Hub is accessible in that moment of time, setting the state 
+        /// accordantly.
+        /// @version v15.03.26 - corrected zero and carry values for missing HUBOPS.
         public override void HubAccessable()
         {
             switch (State)
@@ -109,46 +122,33 @@ namespace Gear.EmulationCore
                         ref ZeroResult);
                     WriteBackResult();
                     return;
+
                 case CogRunState.HUB_RDBYTE:
                     if (WriteResult)
-                    {
                         DataResult = Hub.DirectReadByte(SourceValue);
-                        ZeroResult = DataResult == 0;
-                        // TODO: Find Carry
-                    }
                     else
-                    {
                         Hub.DirectWriteByte(SourceValue, (byte)DestinationValue);
-                        // TODO: Find Zero and Carry
-                    }
+                    ZeroResult = (DataResult == 0); //set as state Manual v1.2
+                    // Don't affect Carry as state Manual v1.2
                     WriteBackResult();
                     return;
+
                 case CogRunState.HUB_RDWORD:
                     if (WriteResult)
-                    {
                         DataResult = Hub.DirectReadWord(SourceValue);
-                        ZeroResult = DataResult == 0;
-                        // TODO: Find Carry
-                    }
                     else
-                    {
                         Hub.DirectWriteWord(SourceValue, (ushort)DestinationValue);
-                        // TODO: Find Zero and Carry
-                    }
+                    ZeroResult = (DataResult == 0); //set as state Manual v1.2
+                    // Don't affect Carry as state Manual v1.2
                     WriteBackResult();
                     return;
                 case CogRunState.HUB_RDLONG:
                     if (WriteResult)
-                    {
                         DataResult = Hub.DirectReadLong(SourceValue);
-                        ZeroResult = DataResult == 0;
-                        // TODO: Find Carry
-                    }
                     else
-                    {
                         Hub.DirectWriteLong(SourceValue, DestinationValue);
-                        // TODO: Find Zero and Carry
-                    }
+                    ZeroResult = (DataResult == 0);  //set as state Manual v1.2
+                    // Don't affect Carry as state Manual v1.2
                     WriteBackResult();
                     return;
             }
@@ -156,6 +156,8 @@ namespace Gear.EmulationCore
             base.HubAccessable();
         }
 
+        /// @brief Execute a PASM instruction in this cog.
+        /// @returns TRUE if it is the opportunity to trigger a breakpoint, or FALSE if not.
         override public bool DoInstruction()
         {
             switch (State)
@@ -181,7 +183,7 @@ namespace Gear.EmulationCore
                         if (maskedIn != DestinationValue)
                         {
                             DataResult = maskedIn;
-                            Zero = maskedIn == 0;
+                            Zero = (maskedIn == 0);
                             // TODO: DETERMINE CARRY
                             WriteBackResult();
                         }
@@ -193,7 +195,7 @@ namespace Gear.EmulationCore
                         if (maskedIn == DestinationValue)
                         {
                             DataResult = maskedIn;
-                            Zero = maskedIn == 0;
+                            Zero = (maskedIn == 0);
                             // TODO: DETERMINE CARRY
                             WriteBackResult();
                             return true;
@@ -209,7 +211,7 @@ namespace Gear.EmulationCore
                             target += SourceValue;
                             DataResult = (uint)target;
                             CarryResult = target > 0xFFFFFFFF;
-                            ZeroResult = DataResult == 0;
+                            ZeroResult = (DataResult == 0);
                             WriteBackResult();
                             return true;
                         }
@@ -886,44 +888,59 @@ namespace Gear.EmulationCore
             ZeroResult = DataResult == 0;
         }
 
+        /// @brief Execute instruction MOV: Set a register to a value.
+        /// @details Effects: Set D to S
         private void InstructionMOV()
         {
             DataResult = SourceValue;
-            ZeroResult = DataResult == 0;
-            CarryResult = (SourceValue & 0x80000000) != 0;
+            ZeroResult = (DataResult == 0);
+            CarryResult = ((SourceValue & 0x80000000) != 0);
         }
 
-        private void InstructionMOVS()
+        /// @brief Execute instruction MOVS: Set a register's source field to a value.
+        /// @details Effects: Insert S[8..0] into D[8..0]
+         private void InstructionMOVS()
         {
             DataResult = (DestinationValue & 0xFFFFFE00) | (SourceValue & 0x000001FF);
-            ZeroResult = DataResult == 0;
-            // TODO: Find out what carry REALLY does
+            ZeroResult = (DataResult == 0);
+            /// @todo InstructionMOVS - Find out what carry REALLY does in hardware.
             CarryResult = Carry;
         }
 
+        /// @brief Execute instruction MOVD: Set a register's destination field to a value.
+        /// @details Effects: Insert S[8..0] into D[17..9]
         private void InstructionMOVD()
         {
             DataResult = (DestinationValue & 0xFFFC01FF) | ((SourceValue & 0x000001FF) << 9);
-            ZeroResult = DataResult == 0;
-            // TODO: Find out what carry REALLY does
+            ZeroResult = (DataResult == 0);
+            /// @todo InstructionMOVD - Find out what carry REALLY does in hardware.
             CarryResult = Carry;
         }
 
+        /// @brief Execute instruction MOVI: Set a register's instruction and effects fields 
+        /// to a value.
+        /// @details Effects: Insert S[8..0] into D[31..23]
         private void InstructionMOVI()
         {
             DataResult = (DestinationValue & 0x007FFFFF) | ((SourceValue & 0x000001FF) << 23);
-            ZeroResult = DataResult == 0;
-            // TODO: Find out what carry REALLY does
+            ZeroResult = (DataResult == 0);
+            /// @todo InstructionMOVI - Find out what carry REALLY does in hardware.
             CarryResult = Carry;
         }
 
+        /// @brief Execute instruction JMPRET: Jump to address with intention to "return" 
+        /// to another address.
+        /// @details Effects: Insert PC+1 into D[8..0] and set PC to S[8..0].
+        /// @version V15.03.26 - corrected Carry flag according to Propeller Manual v1.2.
         private void InstructionJMPRET()
         {
             DataResult = (DestinationValue & 0xFFFFFE00) | (PC & 0x000001FF);
             PC = SourceValue & 0x1FF;
-            ZeroResult = DataResult == 0;
-            // TODO: Find out what carry REALLY does
-            CarryResult = Carry;
+            ZeroResult = (DataResult == 0);
+            //Note from Propeller Manual v1.2: "The C flag is set (1) unless PC+1 equals 0; very 
+            // unlikely since it would require the JMPRET to be executed from the top of 
+            // cog RAM ($1FF; special purpose register VSCL)."
+            CarryResult = (PC != 0);
         }
 
         private void InstructionMINS()

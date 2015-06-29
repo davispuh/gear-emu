@@ -1,6 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿/* --------------------------------------------------------------------------------
+ * Gear: Parallax Inc. Propeller Debugger
+ * Copyright 2007 - Robert Vandiver
+ * --------------------------------------------------------------------------------
+ * Assembly.cs
+ * --------------------------------------------------------------------------------
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * --------------------------------------------------------------------------------
+ */
+
+using System;
 
 namespace Gear.Disassembler
 {
@@ -28,7 +48,7 @@ namespace Gear.Disassembler
                     }
                     return SourceInstruction.SubInstructions[num];
             }
-            throw new Exception("Uknown Instruction Type: " + SourceInstruction.Type.ToString());
+            throw new Exception("Unknown Instruction Type: " + SourceInstruction.Type.ToString());
         }
 
         public class ParsedInstruction
@@ -38,12 +58,12 @@ namespace Gear.Disassembler
             public const byte WriteResultFlag    = 0x2;
             public const byte ImmediateValueFlag = 0x1;
 
-            public uint   Opcode { get; private set; }  // Instruction's 32-bit opcode
-            public byte   INSTR  { get; private set; }  // Indicates the instruction being executed
-            public byte   ZCRI   { get; private set; }  // Indicates instruction’s effect status and SRC field meaning
-            public byte   CON    { get; private set; }  // Indicates the condition in which to execute the instruction
-            public ushort DEST   { get; private set; }  // Contains the destination register address
-            public ushort SRC    { get; private set; }  // Contains the source register address or 9-bit literal value
+            public uint   Opcode { get; private set; }  //!< Instruction's 32-bit opcode
+            public byte   INSTR  { get; private set; }  //!< Indicates the instruction being executed
+            public byte   ZCRI   { get; private set; }  //!< Indicates instruction’s effect status and SRC field meaning
+            public byte   CON    { get; private set; }  //!< Indicates the condition in which to execute the instruction
+            public ushort DEST   { get; private set; }  //!< Contains the destination register address
+            public ushort SRC    { get; private set; }  //!< Contains the source register address or 9-bit literal value
 
             public Propeller.Assembly.Instruction SourceInstruction { get; private set; }
 

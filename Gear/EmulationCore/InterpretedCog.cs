@@ -23,12 +23,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 using Gear.Propeller;
 
 namespace Gear.EmulationCore
 {
+    /// @brief Derived class from Cog, to emulate running SPIN code.
     class InterpretedCog : Cog
     {
         // Constants
@@ -39,14 +39,16 @@ namespace Gear.EmulationCore
         private uint ObjectFrame;
         private uint VariableFrame;
         private uint LocalFrame;
-        private bool InterpreterFlag; // Flag for determining if a COGINIT statement is to load an interpreter
+        /// @brief Flag for determining if a COGINIT statement is loading an interpreter.
+        private bool InterpreterFlag;
 
         private uint TargetValue;
         private uint MaskValue;
         private uint PixelsValue;
         private uint ColorsValue;
 
-        private Stack<uint> CallStack;  // Internal stack, used for storing return call stuff
+        /// @brief Internal stack, used for storing return call stuff
+        private Stack<uint> CallStack;
 
         private bool Port;
 
@@ -70,6 +72,7 @@ namespace Gear.EmulationCore
             get { return VariableFrame; }
         }
 
+        /// @brief Default constructor for the derived class.
         public InterpretedCog(PropellerCPU host,
             uint paramAddress, uint frequency,
             PLLGroup pll)
@@ -187,8 +190,8 @@ namespace Gear.EmulationCore
             return Hub.HubOp(this, (uint)HubOperationCodes.HUBOP_COGINIT, code, ref temp, ref temp2);
         }
 
-        /// @todo document Gear.EmulationCore.DoInstruction()
-        /// 
+        /// @brief Execute a SPIN instruction in this cog.
+        /// @returns TRUE if it is the opportunity to trigger a breakpoint, or FALSE if not.
         override public bool DoInstruction()
         {
             switch (State)
@@ -452,7 +455,7 @@ namespace Gear.EmulationCore
                             {
                                 Range = Top - Bottom + 1;
 
-                                // Are we inrange?
+                                // Are we in range?
                                 if (Key < Range)
                                 {
                                     PC = Jump + ObjectFrame;
@@ -967,7 +970,7 @@ namespace Gear.EmulationCore
                     return (uint)((int)left + (int)right);
                 case 0x0D:  // Subtract
                     return (uint)((int)left - (int)right);
-                case 0x0E:  // Arithmatic shift right
+                case 0x0E:  // Arithmetic shift right
                     {
                         int shift = (int)right;
                         ulong mask = left;
