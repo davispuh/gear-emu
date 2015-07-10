@@ -37,14 +37,15 @@ namespace Gear.GUI
     /// @brief View class for PropellerCPU emulator instance.
     /// @details This class implements a view over a propeller emulator, with interface to control 
     /// the chip, like start, go through steps, reset or reload.
-    public partial class Emulator : Form
+    public partial class Emulator : System.Windows.Forms.Form
     {
         private PropellerCPU Chip;          //!< @brief Reference to PropellerCPU running instance.
         private String Source;              //!< @brief Name of Binary program loaded.
         private String LastFileName;        //!< @brief Last file name opened.
+        public uint stepInterval;           //!< @brief How many steps to update screen.
         private List<Control> FloatControls;//!< @brief List of floating controls.
 
-        //!< @todo Document Gear.GUI.Emulator.runtimer member (what it is for???)
+        /// @brief Stopwatch to periodically rerun a step of the emulation
         private Timer runTimer;             
 
         /// @brief Default Constructor.
@@ -65,7 +66,7 @@ namespace Gear.GUI
 
             AttachPlugin(new MemoryView(Chip));
             AttachPlugin(new SpinView(Chip));
-            AttachPlugin(new LogicProbe.LogicView(Chip));   //changed to logicprobe be the last tab
+            AttachPlugin(new LogicProbe.LogicView(Chip));   //changed to LogicProbe be the last tab
             documentsTab.SelectedIndex = 0;
 
             // TEMPORARY RUN FUNCTION
@@ -74,6 +75,7 @@ namespace Gear.GUI
             runTimer.Tick += new EventHandler(RunEmulatorStep);
 
             hubView.Host = Chip;
+            stepInterval = Properties.Settings.Default.UpdateEachSteps;
         }
 
         /// @brief Get the last binary opened successfully.
@@ -87,7 +89,7 @@ namespace Gear.GUI
         }
 
         /// @brief Make a stop on the emulation.
-        /// @details This method would be called when a plug in determine to stop, for example
+        /// @details This method would be called when a plugin want to stop, for example
         /// when a breakpoint condition is satisfied.
         public void BreakPoint()
         {
@@ -97,7 +99,7 @@ namespace Gear.GUI
 
         /// @brief Include a plugin to a propeller chip instance.
         /// @details Attach a plugin, linking the propeller instance to the plugin, opening a new 
-        /// tab window and enabling the close button by plugin's closable property.
+        /// tab window and enabling the close button by plugin's isClosable property.
         /// @param[in] plugin Instance of a Gear.PluginSupport.PluginBase class to be attached.
         private void AttachPlugin(PluginBase plugin)
         {
@@ -121,15 +123,14 @@ namespace Gear.GUI
         }
 
         /// @brief Delete a plugin from a propeller chip instance.
-        /// 
-        /// Delete a plugin from the actives plugins of the propeller instance, effectively stopping 
-        /// the plugin. Remove also from pins and clock watch list.
-        /// @param plugin Instance of a Gear.PluginSupport.PluginBase class to be detached.
-        /// @version V15.03.26 - Added.
+        /// @details Delete a plugin from the actives plugins of the propeller instance, 
+        /// effectively stopping the plugin. Remove also from pins and clock watch list.
+        /// @param[in] plugin Instance of a Gear.PluginSupport.PluginCommon class to be detached.
+        /// @since V15.03.26 - Added.
         //Added method to detach a plugin from the active plugin list of the propeller instance.
         private void DetachPlugin(PluginBase plugin)
         {
-            if (plugin.IsClosable)      //check if the plugin is closable, then remove...
+            if (plugin.IsClosable)      //check if the plugin is able to close, then remove...
             {
                 Chip.RemoveOnPins(plugin);  //from pins watch list
                 Chip.RemoveOnClock(plugin); //from clock watch list
@@ -138,14 +139,15 @@ namespace Gear.GUI
         }
 
         /// @brief Run the emulator updating the screen between a number of steps.
-        /// @details The program property "UpdateEachSteps" gives the number of steps before screen repaint.
-        /// Adjusting this number in configuration (like increasing the number) enable to obtain faster 
-        /// execution at expense of less screen responsiveness.
+        /// @details The program property "UpdateEachSteps" gives the number of steps before 
+        /// screen repaint.
+        /// Adjusting this number in configuration (like increasing the number) enable to obtain 
+        /// faster execution at expense of less screen responsiveness.
         /// @param[in] sender Reference to object where event was raised.
         /// @param[in] e Event data arguments.
         private void RunEmulatorStep(object sender, EventArgs e)
         {
-            for (uint i = 0; i < Properties.Settings.Default.UpdateEachSteps; i++)
+            for (uint i = 0; i < stepInterval; i++)
                 if (!Chip.Step())
                 {
                     runTimer.Stop();
@@ -154,8 +156,8 @@ namespace Gear.GUI
             RepaintViews();
         }
 
-        /// @todo Document Gear.GUI.Emulator.Unfloat()
-        /// 
+        /// @brief Unfloat the tab object.
+        /// @param c Tab object.
         public void Unfloat(Control c)
         {
             TabPage tp = new TabPage(c.Text);
@@ -303,8 +305,10 @@ namespace Gear.GUI
                 OpenFile(openFileDialog.FileName);
         }
 
-        /// @todo Document Gear.GUI.Emulator.reloadBinary_Click()
-        /// 
+        /// @brief Event to reload the whole %Propeller program from binary file.
+        /// @details It also reset the %Propeller Chip and all the plugins.
+        /// @param[in] sender Reference to object where event was raised.
+        /// @param[in] e Event data arguments.
         private void reloadBinary_Click(object sender, EventArgs e)
         {
             OpenFile(LastFileName);
@@ -341,8 +345,9 @@ namespace Gear.GUI
             hubView.DataChanged();
         }
 
-        /// @todo Document Gear.GUI.Emulator.resetEmulator_Click()
-        /// 
+        /// @brief Event to reset the whole %Propeller Chip.
+        /// @param[in] sender Reference to object where event was raised.
+        /// @param[in] e Event data arguments.
         private void resetEmulator_Click(object sender, EventArgs e)
         {
             Chip.Reset();
@@ -450,8 +455,9 @@ namespace Gear.GUI
             }
         }
 
-        /// @todo Document Gear.GUI.Emulator.runEmulator_Click()
-        /// 
+        /// @brief Event to run the emulator freely.
+        /// @param[in] sender Reference to the object where this event was called.
+        /// @param[in] e Class with the details event.
         private void runEmulator_Click(object sender, EventArgs e)
         {
             runTimer.Start();
@@ -459,14 +465,17 @@ namespace Gear.GUI
 
         /// @brief Stop the emulation.
         /// @version V15.03.26 - Added the refresh of the screen.
+        /// @param[in] sender Reference to the object where this event was called.
+        /// @param[in] e Class with the details event.
         private void stopEmulator_Click(object sender, EventArgs e)
         {
             runTimer.Stop();
             RepaintViews(); //added the repaint, to refresh the views
         }
 
-        /// @todo Document Gear.GUI.Emulator.stepInstruction_Click()
-        /// 
+        /// @brief Event to run one instruction in emulator.
+        /// @param[in] sender Reference to the object where this event was called.
+        /// @param[in] e Class with the details event.
         private void stepInstruction_Click(object sender, EventArgs e)
         {
             if (documentsTab.SelectedTab != null)
@@ -485,8 +494,10 @@ namespace Gear.GUI
             RepaintViews();
         }
 
-        /// @todo Document Gear.GUI.Emulator.OpenPlugin_Click()
-        /// 
+        /// @brief Try to open a plugin, compiling it and attaching to the active 
+        /// emulator instance.
+        /// @param[in] sender Reference to the object where this event was called.
+        /// @param[in] e Class with the details event.
         private void OpenPlugin_Click(object sender, EventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
@@ -500,8 +511,9 @@ namespace Gear.GUI
                 LoadPlugin(dialog.FileName);
         }
 
-        /// @todo Document Gear.GUI.Emulator.Emulator_FormClosing()
-        /// 
+        /// @brief Event when the Emulator windows begin to close.
+        /// @param[in] sender Reference to the object where this event was called.
+        /// @param[in] e Class with the details event.
         private void Emulator_FormClosing(object sender, FormClosingEventArgs e)
         {
             Chip.OnClose(sender, e);
@@ -521,7 +533,7 @@ namespace Gear.GUI
         /// don't allow to close.
         /// @param[in] sender Reference to object where event was raised.
         /// @param[in] e Event data arguments.
-        /// @version V14.07.03 - Added.
+        /// @since V14.07.03 - Added.
         private void documentsTab_Click(object sender, EventArgs e)
         {
             TabPage tp = documentsTab.SelectedTab;
@@ -569,7 +581,7 @@ namespace Gear.GUI
 // Reference link to MSCGEN: http://www.mcternan.me.uk/mscgen/
 // Reference link to DOXYGEN commands: http://www.stack.nl/~dimitri/doxygen/manual/commands.html
 //
-/// @defgroup PluginDetails Details about Loading a Plugin
+/// @defgroup PluginDetails Plugin Loading Details
 /// 
 
 /// @ingroup PluginDetails

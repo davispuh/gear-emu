@@ -24,7 +24,7 @@
 /// @brief Transversal %Properties for the program.
 namespace Gear.Properties
 {
-    
+    /// @brief Controls events for configuration class.
     
     // Esta clase le permite controlar eventos específicos en la clase de configuración:
     //  El evento SettingChanging se desencadena antes de cambiar un valor de configuración.
@@ -33,19 +33,22 @@ namespace Gear.Properties
     //  El evento SettingsSaving se desencadena antes de guardar los valores de configuración.
     internal sealed partial class Settings {
         
+        /// @brief Default constructor.
         public Settings() {
-            // // Para agregar los controladores de eventos para guardar y cambiar la configuración, quite la marca de comentario de las líneas:
+            //Para agregar los controladores de eventos para guardar y cambiar la configuración, quite la marca de comentario de las líneas:
             //
             // this.SettingChanging += this.SettingChangingEventHandler;
             //
             // this.SettingsSaving += this.SettingsSavingEventHandler;
             //
         }
-        
+
+        /// @todo Document Gear.Properties.SettingChangingEventHandler(.)
         private void SettingChangingEventHandler(object sender, System.Configuration.SettingChangingEventArgs e) {
             // Agregar código para administrar aquí el evento SettingChangingEvent.
         }
-        
+
+        /// @todo Document Gear.Properties.SettingsSavingEventHandler(.)
         private void SettingsSavingEventHandler(object sender, System.ComponentModel.CancelEventArgs e) {
             // Agregar código para administrar aquí el evento SettingsSaving.
         }

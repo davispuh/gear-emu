@@ -247,7 +247,7 @@ namespace Gear.GUI
             this.closeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.closeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.closeButton.Name = "closeButton";
-            this.closeButton.Size = new System.Drawing.Size(40, 22);
+            this.closeButton.Size = new System.Drawing.Size(40, 19);
             this.closeButton.Text = "Close";
             this.closeButton.ToolTipText = "Close the tab window (if permitted)";
             this.closeButton.Click += new System.EventHandler(this.closeActiveTab_Click);
