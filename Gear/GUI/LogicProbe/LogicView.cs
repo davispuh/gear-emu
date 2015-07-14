@@ -23,14 +23,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 
 using Gear.EmulationCore;
-using Gear.PluginSupport;
 
 namespace Gear.GUI.LogicProbe
 {
@@ -83,15 +79,12 @@ namespace Gear.GUI.LogicProbe
 
             viewOffset.LargeChange = 1;
 
+            //retrieve the default settings for grid
+            TimeScale = Properties.Settings.Default.LastTimeFrame;
+            Marker = Properties.Settings.Default.LastTickMarkGrid;
             //Set international localized text for timeFrame & tickMark text boxes
-            double timeFrame = Properties.Settings.Default.LastTimeFrame,
-                   tickMark = Properties.Settings.Default.LastTickMarkGrid;
-
-            timeFrameBox.Text = timeFrame.ToString("0.00000000");
-            tickMarkBox.Text = tickMark.ToString("0.00000000") ;
-
-            TimeScale = 0.0001;
-            Marker = 256.0 / 80000000.0;
+            timeFrameBox.Text = TimeScale.ToString("0.00000000");
+            tickMarkBox.Text = Marker.ToString("0.00000000");
 
             Pins = new List<LogicRow>();
             DigitalPins = new LogicDigital[64];
@@ -124,7 +117,7 @@ namespace Gear.GUI.LogicProbe
             }
         }
 
-        /// @brief Save the last used settings before close.
+        /// @brief Save the last used settings of the grid view before close.
         /// @version V15.03.26 - added.
         public override void OnClose()
         {
@@ -252,8 +245,7 @@ namespace Gear.GUI.LogicProbe
             e.Graphics.DrawImageUnscaled(BackBuffer, 0, 0);
         }
 
-        /// @todo document Gear.GUI.LogicProbe.updateGridButton_Click()
-        ///
+        /// @brief Update the grid view with the new settings of scale and markers.
         private void updateGridButton_Click(object sender, EventArgs e)
         {
             try
@@ -369,7 +361,7 @@ namespace Gear.GUI.LogicProbe
                         Pins.Add(DigitalPins[Convert.ToUInt16(s)]);
                     }
                 }
-                pinsTextBox.Text = "";
+                pinsTextBox.Text = string.Empty;
             }
             catch (FormatException)
             {
@@ -453,7 +445,7 @@ namespace Gear.GUI.LogicProbe
                 }
             }
 
-            pinsTextBox.Text = "";
+            pinsTextBox.Text = string.Empty;
             Pins.Add(new LogicAnalog(pins.ToArray()));
             Repaint(true);
         }
