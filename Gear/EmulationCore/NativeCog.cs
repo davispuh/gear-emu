@@ -1125,7 +1125,7 @@ namespace Gear.EmulationCore
                 result += (int)SourceValue;
 
             DataResult = (uint)result;
-            ZeroResult = Zero && (DataResult == 0);
+            ZeroResult = (DataResult == 0);
             CarryResult = ((SourceValue ^ DestinationValue) & 0x80000000) == 0
                 && ((SourceValue ^ DataResult) & 0x80000000) != 0;
         }
@@ -1140,7 +1140,7 @@ namespace Gear.EmulationCore
                 result += (int)SourceValue;
 
             DataResult = (uint)result;
-            ZeroResult = Zero && (DataResult == 0);
+            ZeroResult = (DataResult == 0);
             CarryResult = ((SourceValue ^ DestinationValue) & 0x80000000) == 0
                 && ((SourceValue ^ DataResult) & 0x80000000) != 0;
         }
