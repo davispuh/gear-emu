@@ -717,11 +717,13 @@ namespace Gear.EmulationCore
 
             //execute a step on each cog
             for (int i = 0; i < Cogs.Length; i++)
+            {
                 if (Cogs[i] != null)
                 {
                     cogResult = Cogs[i].Step();
                     result &= cogResult;
                 }
+            }
 
             if ((RingPosition & 1) == 0)  // Every other clock, a cog gets a tick
             {

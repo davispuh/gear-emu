@@ -46,7 +46,7 @@ namespace Gear.GUI
         private List<Control> FloatControls;//!< @brief List of floating controls.
 
         /// @brief Stopwatch to periodically rerun a step of the emulation
-        private Timer runTimer;             
+        private Timer runTimer;
 
         /// @brief Default Constructor.
         /// @param[in] source Binary program loaded (path & name)
@@ -242,16 +242,16 @@ namespace Gear.GUI
                 //Dynamic load and compile the plugin module as a class, giving the chip 
                 // instance as a parameter.
                 PluginBase plugin = ModuleCompiler.LoadModule(
-                    code, 
-                    instanceName, 
-                    references.ToArray(), 
+                    code,
+                    instanceName,
+                    references.ToArray(),
                     Chip
                 );
 
                 if (plugin == null)     //if it fails...
                 {
                     // ...open plugin editor in other window
-                    PluginEditor pe = new PluginEditor(false);   
+                    PluginEditor pe = new PluginEditor(false);
                     pe.OpenFile(FileName, true);
                     pe.MdiParent = this.MdiParent;
                     pe.Show();
@@ -263,7 +263,7 @@ namespace Gear.GUI
                 else               //if success compiling & instantiate the new class...
                 {
                     //...add the reference to the plugin list of the emulator instance
-                    AttachPlugin(plugin);   
+                    AttachPlugin(plugin);
                     Properties.Settings.Default.LastPlugin = FileName;  //update location of last plugin
                     Properties.Settings.Default.Save();
                 }
@@ -296,7 +296,7 @@ namespace Gear.GUI
         private void openBinary_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Propeller Runtime Image (*.binary;*.eeprom)|*.binary;" + 
+            openFileDialog.Filter = "Propeller Runtime Image (*.binary;*.eeprom)|*.binary;" +
                 "*.eeprom|All Files (*.*)|*.*";
             openFileDialog.Title = "Open Propeller Binary...";
             openFileDialog.FileName = Source;
@@ -338,8 +338,8 @@ namespace Gear.GUI
             if (c != null)
                 ((PluginBase)c).Repaint(true);
 
-            if ( (documentsTab.SelectedTab != null) && 
-                 ((c = documentsTab.SelectedTab.GetNextControl(null, true)) != null) )
+            if ((documentsTab.SelectedTab != null) &&
+                 ((c = documentsTab.SelectedTab.GetNextControl(null, true)) != null))
                 ((PluginBase)c).Repaint(true);
 
             hubView.DataChanged();
@@ -372,7 +372,7 @@ namespace Gear.GUI
         {
             TabPage tp = documentsTab.SelectedTab;
             PluginBase p = (PluginBase)tp.Controls[0];
-            
+
             if (p != null)          //test if cast to PluginBase works...
             {
                 if (p.IsClosable)   //... so, test if we can close the tab 
@@ -384,7 +384,7 @@ namespace Gear.GUI
                         //tab changing housekeeping for plugin close button
                         documentsTab_Click(this, e);
                         //detach the plugin from the emulator
-                        this.DetachPlugin(p);           
+                        this.DetachPlugin(p);
                         p.Dispose();
                     }
                     tp.Parent = null;   //delete the reference to plugin
@@ -544,11 +544,13 @@ namespace Gear.GUI
                     closeButton.Enabled = true;
                 else
                     closeButton.Enabled = false;
+                b.Repaint(false);
             }
             else
             {
                 closeButton.Enabled = false;
             }
+            tp.Invalidate();
         }
 
         /// @todo Document Gear.GUI.Emulator.documentsTab_KeyPress()
@@ -574,7 +576,6 @@ namespace Gear.GUI
                     runTimer.Start();
             }
         }
-
     }
 }
 

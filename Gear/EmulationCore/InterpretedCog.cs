@@ -233,11 +233,12 @@ namespace Gear.EmulationCore
                         return true;
                     }
                 case CogRunState.WAIT_VID:
-                    if (Video.Ready)
-                    {
-                        State = CogRunState.EXEC_INTERPRETER;
-                        Video.Feed(ColorsValue, PixelsValue);
-                    }
+                    // Logic Changed: GetVideoData now clears VAIT_VID state
+                    // if (Video.Ready)
+                    // {
+                    //     State = CogRunState.EXEC_INTERPRETER;
+                    //     Video.Feed(ColorsValue, PixelsValue);
+                    // }
                     return true;
 
                 // Non-execute states are ignored
@@ -246,6 +247,7 @@ namespace Gear.EmulationCore
             }
 
             byte op = Hub.DirectReadByte(PC++);
+            frameFlag = FrameState.frameNone;
 
             // Masked Memory Operations
             if (op >= 0xE0)
@@ -816,6 +818,25 @@ namespace Gear.EmulationCore
                 }
             }
             return PC != BreakPointCogCursor;
+        }
+
+        override public void GetVideoData(out uint colours, out uint pixels)
+        {
+            if (State == CogRunState.WAIT_VID)
+            {
+                colours = ColorsValue;
+                pixels = PixelsValue;
+                State = CogRunState.EXEC_INTERPRETER;
+                frameFlag = FrameState.frameHit;
+            }
+            else
+            {
+                // Frame counter ran out while not in WAIT_VID
+                // True results would depend upon Spin Interpreter operation
+                colours = 0;
+                pixels = 0;
+                frameFlag = FrameState.frameMiss;
+            }
         }
 
         private void ReturnFromSub(uint value, bool abort)
