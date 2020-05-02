@@ -433,7 +433,7 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Write cog RAM with a specified value.
-        /// details This method take care of special cog address that in this class aren't 
+        /// @details This method take care of special cog address that in this class aren't 
         /// write in memory array Cog.Memory.
         /// @param[in] address Address to write.
         /// @param[in] data Data to write in address.

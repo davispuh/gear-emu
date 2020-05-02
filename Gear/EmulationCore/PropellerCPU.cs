@@ -33,8 +33,7 @@ using Gear;
 using Gear.PluginSupport;
 using Gear.GUI;
 
-/// @todo Document Gear.EmulationCore namespace.
-/// 
+/// @brief Core of the emulation for %Propeller (model objects).
 namespace Gear.EmulationCore
 {
     /// @brief Identifiers for hub operations.
@@ -42,15 +41,16 @@ namespace Gear.EmulationCore
     {
         /// @brief Setting the clock.
         HUBOP_CLKSET  = 0,
-        /// @brief Getting the Cog ID.
+        /// @brief Getting the %Cog ID.
         HUBOP_COGID   = 1,
-        /// @brief Start or restart a Cog by ID or next available.
+        /// @brief Start or restart a %Cog by ID or next available.
         HUBOP_COGINIT = 2,
-        /// @brief Stop Cog by its ID.
+        /// @brief Stop %Cog by its ID.
         HUBOP_COGSTOP = 3,
         /// @brief Check out new semaphore and get its ID.
         HUBOP_LOCKNEW = 4,
-        /// @brief Return semaphore back to semaphore pool, releasing it for future LOCKNEW requests.
+        /// @brief Return semaphore back to semaphore pool, releasing it for future 
+        /// LOCKNEW requests.
         HUBOP_LOCKRET = 5,
         /// @brief Set semaphore to true and get its previous state.
         HUBOP_LOCKSET = 6,
@@ -73,9 +73,9 @@ namespace Gear.EmulationCore
         INPUT_HI  = 1,   
     }
 
-    /// @brief Class to emulate the core of Propeller P1 chip.
-    /// @details Conceptually it comprehends the ROM, RAM (hub memory), clock , locks, hub ring, main 
-    /// pin state, and references to each cog (with their own cog memory, counters, frequency 
+    /// @brief Class to emulate the core of %Propeller P1 chip.
+    /// @details Conceptually it comprehends the ROM, RAM (hub memory), clock , locks, hub ring, 
+    /// main pin state, and references to each cog (with their own cog memory, counters, frequency 
     /// generator, program cursor).
     public partial class PropellerCPU : Propeller.DirectMemory
     {
@@ -164,9 +164,9 @@ namespace Gear.EmulationCore
         public const int TOTAL_PINS      = 64;
         /// @brief Pin mask for all the 64 pins of P1 Chip.
         public const ulong PIN_FULL_MASK = 0xFFFFFFFFFFFFFFFF;
-        /// @brief Total main memory implemented on P1 Chip (Hub RAM + ROM).
+        /// @brief Total Main memory implemented on P1 Chip (Hub RAM + ROM).
         public const int TOTAL_MEMORY    = 0x10000;
-        /// @brief Total RAM hub memory implemented on P1 Chip.
+        /// @brief Total RAM Hub memory implemented on P1 Chip.
         public const int TOTAL_RAM       = 0x8000;
 
         /// @brief PropellerCPU Constructor.
@@ -192,7 +192,7 @@ namespace Gear.EmulationCore
             LocksAvailable = new bool[TOTAL_LOCKS]; // 8 general purpose semaphores
             LocksState = new bool[TOTAL_LOCKS];
 
-            Memory = new byte[TOTAL_MEMORY];        // 64k of memory (top 32k read-only bios)
+            Memory = new byte[TOTAL_MEMORY];        // 64k of memory (top 32k read-only BIOS)
 
             PinStates = new PinState[TOTAL_PINS];   // We have 64 pins we will be passing on
 
@@ -386,7 +386,7 @@ namespace Gear.EmulationCore
         {
             get
             {
-                string mode = "";
+                string mode = string.Empty;
 
                 if ((ClockMode & 0x80) != 0)
                     mode += "RESET+";
@@ -719,7 +719,7 @@ namespace Gear.EmulationCore
             for (int i = 0; i < Cogs.Length; i++)
                 if (Cogs[i] != null)
                 {
-                    cogResult = Cogs[i].Step();
+                    cogResult = Cogs[i].Step();     // TODO ASB: Parallelism point: cog.step()
                     result &= cogResult;
                 }
 
@@ -742,7 +742,7 @@ namespace Gear.EmulationCore
             // Run each module of the list on time event (calling OnClock()).
             foreach (PluginBase plugin in TickHandlers)
             {
-                plugin.OnClock(Time, SystemCounter);
+                plugin.OnClock(Time, SystemCounter);  // TODO ASB: Parallelism point: Plugin.OnClock()
             }
 
             if (pinsPrev != IN || dirPrev != DIR || pinChange)
@@ -781,7 +781,7 @@ namespace Gear.EmulationCore
 
             //traverse across plugins that use OnPinChange()
             foreach (PluginBase plugin in PinHandlers)
-                plugin.OnPinChange(Time, PinStates);
+                plugin.OnPinChange(Time, PinStates);    // TODO ASB: Parallelism point plugin.OnPinChange()
         }
 
         /// @brief Drive a pin of Propeller.
@@ -791,7 +791,7 @@ namespace Gear.EmulationCore
         {
             if ( (pin >= 0) & (pin < TOTAL_PINS) )  //prevent pin overflow.
             {
-                ulong mask = (ulong)1 << pin;
+                ulong mask = (ulong)0x1 << pin;
 
                 if (Floating)
                     PinFloat |= mask;
@@ -910,11 +910,11 @@ namespace Gear.EmulationCore
         /// @brief Execute the hub operations.
         /// @details This method is called from a cog to do the operations related to all the CPU.
         /// @version 15.03.26 - corrected problem in COGSTOP return.
-        /// @param caller Reference to the caller Cog of this method.
-        /// @param operation Hub operation to execute.
-        /// @param argument Parameter given to the opcode (destination field in PASM).
-        /// @param[out] carry Carry flag that could be affected by the operation.
-        /// @param[out] zero Zero flag that could be affected by the operation.
+        /// @param[in] caller Reference to the caller Cog of this method.
+        /// @param[in] operation Hub operation to execute.
+        /// @param[in] argument Parameter given to the opcode (destination field in PASM).
+        /// @param[in,out] carry Carry flag that could be affected by the operation.
+        /// @param[in,out] zero Zero flag that could be affected by the operation.
         /// @returns Value depending on operation.
         /// @note Reference of supported Operations, based in Propeller Manual v1.2:
         /// @arg HUBOP_CLKSET  - page 271.
@@ -970,8 +970,8 @@ namespace Gear.EmulationCore
 
                     PLLGroup pll = new PLLGroup();
                     ClockSources[cog] = (ClockSource)pll;
-                    uint param = (argument >> 16) & 0xFFFC;     //decode param value
-                    uint progm = (argument >> 2) & 0xFFFC;      //decode program addr to load to
+                    uint param = (argument >> 16) & 0xFFFC;   //decode param value
+                    uint progm = (argument >> 2) & 0xFFFC;    //decode program address to load to
                     if (progm == 0xF004)
                         Cogs[cog] = new InterpretedCog(this, param, CoreFreq, pll);
                     else
@@ -1036,7 +1036,7 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Notify all the plugins about the closing event.
-        /// @version 15.03.26 - added.
+        /// @since 15.03.26 - Added.
         public void OnClose(object sender, FormClosingEventArgs e)
         { 
             foreach(PluginBase plugin in PlugIns)

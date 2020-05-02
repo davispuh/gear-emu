@@ -30,8 +30,6 @@ using System.Xml;
 using Gear.EmulationCore;
 using Gear.PluginSupport;
 
-/// @copydoc Gear.GUI
-/// 
 namespace Gear.GUI
 {
     /// @brief View class for PropellerCPU emulator instance.
@@ -113,13 +111,9 @@ namespace Gear.GUI
             documentsTab.SelectedTab = t;
             //Maintain the close button availability
             if (plugin.IsClosable)
-            {
                 closeButton.Enabled = true;
-            }
             else
-            {
                 closeButton.Enabled = false;
-            }
         }
 
         /// @brief Delete a plugin from a propeller chip instance.
@@ -210,8 +204,8 @@ namespace Gear.GUI
             bool ReadText = false;
 
             List<string> references = new List<string>();
-            string instanceName = "";
-            string code = "";
+            string instanceName = string.Empty;
+            string code = string.Empty;
 
             try
             {
@@ -503,10 +497,11 @@ namespace Gear.GUI
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Filter = "Gear Plug-in (*.xml)|*.xml|All Files (*.*)|*.*";
             dialog.Title = "Open Gear Plug-in...";
+            //get the path of last plugin like a hint to open a new one
             if (!String.IsNullOrEmpty(Properties.Settings.Default.LastPlugin))
-                dialog.InitialDirectory = Path.GetDirectoryName(
-                    Properties.Settings.Default.LastPlugin);
-
+                dialog.InitialDirectory =
+                    Path.GetDirectoryName(Properties.Settings.Default.LastPlugin);
+            //ask the user what plugin file to open
             if (dialog.ShowDialog(this) == DialogResult.OK)
                 LoadPlugin(dialog.FileName);
         }

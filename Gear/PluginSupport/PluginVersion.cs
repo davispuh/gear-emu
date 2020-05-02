@@ -28,7 +28,6 @@ using System.Reflection;
 
 using Gear.EmulationCore; 
 
-/// @copydoc Gear.PluginSupport
 namespace Gear.PluginSupport
 {
     /// @brief Versioning support for members of PluginBase.

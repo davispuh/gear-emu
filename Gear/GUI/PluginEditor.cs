@@ -34,12 +34,12 @@ using Gear.PluginSupport;
 
 namespace Gear.GUI
 {
-    /// @brief Form to edit or create GEAR plugins.
+    /// @brief %Form to edit or create GEAR plugins.
     public partial class PluginEditor : Form
     {
         /// @brief File name of current plugin on editor window.
         /// @note Include full path and name to the file.
-        private string _saveFileName;
+        private string _lastPluginNameFile;
         /// @brief Default font for editor code.
         /// @since v14.07.03 - Added.
         private static Font defaultFont = new Font(FontFamily.GenericMonospace, 10, 
@@ -94,7 +94,39 @@ namespace Gear.GUI
             "unsafe", "ushort", "using", "value", "var", "virtual", "void",
             "volatile", "where", "while", "yield"
         };
-        
+        /// @brief Return last plugin successfully loaded o saved.
+        /// @details Useful to remember last plugin directory.
+        /// @since v15.03.26 - Added.
+        private string LastPlugin
+        {
+            get { return _lastPluginNameFile; }
+            set { _lastPluginNameFile = value; }
+        }
+
+        /// @brief Attribute for changed plugin detection.
+        /// @since v15.03.26 - Added.
+        private bool CodeChanged
+        {
+            get { return codeChanged; }
+            set
+            {
+                codeChanged = value;
+                UpdateTitles();
+            }
+        }
+
+        /// @brief Complete Name for plugin, including path, for presentation purposes.
+        /// @since v15.03.26 - Added.
+        private string PluginFileName
+        {
+            get
+            {
+                if (!String.IsNullOrEmpty(_lastPluginNameFile))
+                    return new FileInfo(_lastPluginNameFile).Name;
+                else return "<New plugin>";
+            }
+        }
+
         /// @brief Default constructor.
         /// Initialize the class, defines columns for error grid, setting on changes detection  
         /// initially, and try to load the default template for plugin.
@@ -110,7 +142,7 @@ namespace Gear.GUI
             {
                 try
                 {
-                    codeEditorView.LoadFile("Resources\\PluginTemplate.cs",
+                    codeEditorView.LoadFile(@"Resources\PluginTemplate.cs",
                         RichTextBoxStreamType.PlainText);
                 }
                 catch (IOException) { }         //do nothing, maintaining empty the code text box
@@ -118,7 +150,7 @@ namespace Gear.GUI
                 finally { }                     //
             }
 
-            _saveFileName = null;
+            LastPlugin = null;
             changeDetectEnabled = true;
             CodeChanged = false;
 
@@ -141,43 +173,6 @@ namespace Gear.GUI
 
         }
 
-        /// @brief Return last plugin successfully loaded o saved.
-        /// @details Useful to remember last plugin directory.
-        /// @since v15.03.26 - Added.
-        public string GetLastPlugin
-        {
-            get { return _saveFileName; }
-        }
-
-        /// @brief Attribute for changed plugin detection.
-        /// @since v15.03.26 - Added.
-        private bool CodeChanged
-        {
-            get { return codeChanged; }
-            set  
-            {
-                codeChanged = value;
-                UpdateTitles();
-            }
-        }
-
-        /// @brief Complete Name for plugin, including path.
-        /// @since v15.03.26 - Added.
-        private string SaveFileName
-        {
-            get
-            {
-                if (!String.IsNullOrEmpty(_saveFileName))
-                    return new FileInfo(_saveFileName).Name;
-                else return "<New plugin>";
-            }
-            set
-            {
-                _saveFileName = value;
-                UpdateTitles();
-            }
-        }
-
         /// @brief Shows or hide the error grid.
         /// @param enable Enable (=true) or disable (=False) the error grid.
         public void ShowErrorGrid(bool enable)
@@ -193,12 +188,14 @@ namespace Gear.GUI
         /// if need to save.
         private void UpdateTitles()
         {
-            this.Text = ("Plugin Editor: " + SaveFileName +  (CodeChanged ? " *" : string.Empty));
+            this.Text = ("Plugin Editor: " + PluginFileName +  (CodeChanged ? " *" : string.Empty));
         }
 
-        /// @brief Load a plugin from File.
-        /// @note This method take care of update change state of the window. 
-        /// @todo Correct method to implement new plugin system.
+        /// @brief Load a plugin from File in Plugin Editor, updating the screen.
+        /// @details This method take care of update change state of the window. 
+        /// @param[in] FileName Name of the file to open.
+        /// @param[in] displayErrors Flag to show errors in the error grid.
+        /// @returns Success on load the file on the editor (=true) or fail (=false).
         public bool OpenFile(string FileName, bool displayErrors)
         {
             XmlReaderSettings settings = new XmlReaderSettings();
@@ -222,7 +219,7 @@ namespace Gear.GUI
                         codeEditorView.SelectionFont = defaultFont;
                         codeEditorView.SelectionColor = Color.Black;
                         codeEditorView.Text = tr.Value;
-                        ReadText = false;
+                        CodeChanged = false;
                     }
 
                     switch (tr.Name.ToLower())
@@ -239,7 +236,7 @@ namespace Gear.GUI
                             break;
                     }
                 }
-                _saveFileName = FileName;
+                LastPlugin = FileName;
                 CodeChanged = false;
 
                 if (displayErrors)
@@ -304,8 +301,12 @@ namespace Gear.GUI
 
             xmlDoc.Save(FileName);
 
-            _saveFileName = FileName;
-            CodeChanged = false;    //update modified state for the plugin
+            //update modified state for the plugin
+            CodeChanged = false;
+            //refresh & store the plugin name
+            LastPlugin = FileName;
+            UpdateTitles();
+
         }
 
         /// @brief Method to compile C# source code to check errors on it.
@@ -394,16 +395,16 @@ namespace Gear.GUI
             bool continueAnyway = true;
             if (CodeChanged)
             {
-                continueAnyway = CloseAnyway(SaveFileName); //ask the user to not lost changes
+                continueAnyway = CloseAnyway(PluginFileName); //ask the user to not lost changes
             }
             if (continueAnyway)
             {
                 OpenFileDialog dialog = new OpenFileDialog();
                 dialog.Filter = "Gear plug-in component (*.xml)|*.xml|All Files (*.*)|*.*";
                 dialog.Title = "Open Gear Plug-in...";
-                if (!String.IsNullOrEmpty(_saveFileName))
+                if (!String.IsNullOrEmpty(LastPlugin))
                     //retrieve from last plugin edited
-                    dialog.InitialDirectory = Path.GetDirectoryName(_saveFileName);
+                    dialog.InitialDirectory = Path.GetDirectoryName(LastPlugin);
                 else
                     if (!String.IsNullOrEmpty(Properties.Settings.Default.LastPlugin))
                         //retrieve from global last plugin
@@ -412,9 +413,19 @@ namespace Gear.GUI
 
                 if (dialog.ShowDialog(this) == DialogResult.OK)
                 {
-                    OpenFile(dialog.FileName, false);   //try to open the file and load to screen
+                    //try to open the file and load to screen
+                    if (OpenFile(dialog.FileName, false))
+                        UpdateLastPluginOpened();
                 }
             }
+        }
+
+        /// @brief Update the last plugin opened.
+        /// @since v15.03.26 - Added.
+        public void UpdateLastPluginOpened()
+        {
+            Properties.Settings.Default.LastPlugin = LastPlugin;
+            Properties.Settings.Default.Save();
         }
 
         /// @brief Show dialog to save a plugin information into file, using GEAR plugin format.
@@ -422,8 +433,8 @@ namespace Gear.GUI
         /// @param[in] e `EventArgs` class with a list of argument to the event call.
         private void SaveButton_Click(object sender, EventArgs e)
         {
-            if (!String.IsNullOrEmpty(_saveFileName))
-                SaveFile(_saveFileName);
+            if (!string.IsNullOrEmpty(LastPlugin))
+                SaveFile(LastPlugin);
             else
                 SaveAsButton_Click(sender, e);
 
@@ -438,9 +449,9 @@ namespace Gear.GUI
             SaveFileDialog dialog = new SaveFileDialog();
             dialog.Filter = "Gear plug-in component (*.xml)|*.xml|All Files (*.*)|*.*";
             dialog.Title = "Save Gear Plug-in...";
-            if (!String.IsNullOrEmpty(_saveFileName))
+            if (!string.IsNullOrEmpty(LastPlugin))
                 //retrieve from last plugin edited
-                dialog.InitialDirectory = Path.GetDirectoryName(_saveFileName);
+                dialog.InitialDirectory = Path.GetDirectoryName(LastPlugin);   
             else
                 if (!String.IsNullOrEmpty(Properties.Settings.Default.LastPlugin))
                     //retrieve from global last plugin
@@ -546,7 +557,7 @@ namespace Gear.GUI
             codeEditorView.Enabled = true;
             changeDetectEnabled = true; //restore change detection
         }
-
+        
         /// @brief Auxiliary method to check syntax.
         /// Examines line by line, parsing reserved C# words.
         /// @param[in] line Text line from the source code.
@@ -707,11 +718,9 @@ namespace Gear.GUI
         {
             if (CodeChanged)
             {
-                if (!CloseAnyway(SaveFileName)) //ask the user to not loose changes
+                if (!CloseAnyway(PluginFileName)) //ask the user to not lose changes
                     e.Cancel = true;    //cancel the closing event
             }
-            Properties.Settings.Default.LastPlugin = GetLastPlugin;
-            Properties.Settings.Default.Save();
         }
 
         /// @brief Ask the user to not loose changes.
