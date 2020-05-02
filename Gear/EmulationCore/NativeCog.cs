@@ -218,12 +218,13 @@ namespace Gear.EmulationCore
                         return true;
                     }
                 case CogRunState.WAIT_VID:
-                    if (Video.Ready)
-                    {
-                        Video.Feed(DestinationValue, SourceValue);
-                        // TODO: Determine carry, zero, and result
-                        WriteBackResult();
-                    }
+                    // Logic Changed: GetVideoData now clears VAIT_VID state
+                    // if (Video.Ready)
+                    // {
+                    //     Video.Feed(DestinationValue, SourceValue);
+                    //     // TODO: Determine carry, zero, and result
+                    //     WriteBackResult();
+                    // }
                     return true;
 
                 // Non-execute states are ignored
@@ -232,6 +233,8 @@ namespace Gear.EmulationCore
             }
 
             PC = (PC + 1) & 0x1FF;
+
+            frameFlag = FrameState.frameNone;
 
             InstructionCode = (Assembly.InstructionCodes)(Operation & 0xFC000000);
             ConditionCode = (Assembly.ConditionCodes)((Operation & 0x003C0000) >> 18);
@@ -595,6 +598,23 @@ namespace Gear.EmulationCore
             Operation = ReadLong(PC);
             // Check if it's time to trigger a breakpoint
             return PC != BreakPointCogCursor;
+        }
+
+        override public void GetVideoData (out uint colours, out uint pixels)
+        {
+            colours = DestinationValue;
+            pixels = SourceValue;
+            if (State == CogRunState.WAIT_VID)
+            {
+                State = CogRunState.WAIT_CYCLES;
+                StateCount = 3; // Minimum of 7 clocks in total
+                frameFlag = FrameState.frameHit;
+            }
+            else
+            {
+                // Frame counter ran out while not in WAIT_VID
+                frameFlag = FrameState.frameMiss;
+            }
         }
 
         private void InstructionRCR()

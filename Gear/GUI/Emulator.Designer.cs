@@ -49,7 +49,6 @@ namespace Gear.GUI
         private void InitializeComponent()
         {
             System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-            System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Emulator));
             this.controlBar = new System.Windows.Forms.ToolStrip();
             this.openBinaryButton = new System.Windows.Forms.ToolStripButton();
@@ -72,7 +71,6 @@ namespace Gear.GUI
             this.hubViewSplitter = new Gear.GUI.CollapsibleSplitter();
             this.hubView = new Gear.GUI.HubView();
             toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.controlBar.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -80,11 +78,6 @@ namespace Gear.GUI
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
             toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-            // 
-            // toolStripSeparator2
-            // 
-            toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
             // 
             // controlBar
             // 
@@ -97,7 +90,6 @@ namespace Gear.GUI
             this.stopEmulatorButton,
             this.stepInstructionButton,
             this.stepClockButton,
-            toolStripSeparator2,
             this.unpinButton,
             this.pinButton,
             this.floatButton,
@@ -237,7 +229,7 @@ namespace Gear.GUI
             this.AboutPluginButton.Image = ((System.Drawing.Image)(resources.GetObject("AboutPluginButton.Image")));
             this.AboutPluginButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.AboutPluginButton.Name = "AboutPluginButton";
-            this.AboutPluginButton.Size = new System.Drawing.Size(44, 22);
+            this.AboutPluginButton.Size = new System.Drawing.Size(44, 19);
             this.AboutPluginButton.Text = "About";
             this.AboutPluginButton.ToolTipText = "About Plugin";
             this.AboutPluginButton.Visible = false;
@@ -275,7 +267,7 @@ namespace Gear.GUI
             this.documentsTab.Name = "documentsTab";
             this.documentsTab.SelectedIndex = 0;
             this.documentsTab.ShowToolTips = true;
-            this.documentsTab.Size = new System.Drawing.Size(657, 403);
+            this.documentsTab.Size = new System.Drawing.Size(657, 408);
             this.documentsTab.TabIndex = 5;
             this.documentsTab.Click += new System.EventHandler(this.documentsTab_Click);
             this.documentsTab.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.documentsTab_KeyPress);
@@ -289,7 +281,7 @@ namespace Gear.GUI
             this.pinnedSplitter.Cursor = System.Windows.Forms.Cursors.HSplit;
             this.pinnedSplitter.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.pinnedSplitter.ExpandParentForm = false;
-            this.pinnedSplitter.Location = new System.Drawing.Point(215, 428);
+            this.pinnedSplitter.Location = new System.Drawing.Point(215, 433);
             this.pinnedSplitter.Name = "collapsibleSplitter1";
             this.pinnedSplitter.TabIndex = 4;
             this.pinnedSplitter.TabStop = false;

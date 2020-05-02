@@ -50,6 +50,7 @@ namespace Gear.GUI
         private Brush StringBrush;
         private bool displayAsHexadecimal;
         private bool useShortOpcodes;
+        private FrameState breakVideo;
 
         public override string Title
         {
@@ -91,6 +92,11 @@ namespace Gear.GUI
             MonoFontBold = new Font(MonoFont, FontStyle.Bold);
 
             InitializeComponent();
+
+            breakNone.Checked = true;
+            breakMiss.Checked = false;
+            breakAll.Checked = false;
+            breakVideo = FrameState.frameMiss;
         }
 
         public Cog GetViewCog()
@@ -331,7 +337,9 @@ namespace Gear.GUI
             else if (Host is InterpretedCog) Repaint(force, (InterpretedCog)Host);
 
             programCounterLabel.Text = "PC: " + String.Format("{0:X8}", Host.ProgramCursor);
-            processorStateLabel.Text = "CPU State: " + Host.CogState;
+            processorStateLabel.Text = "CPU State: " + Host.CogState; // + Host.VideoStateString;
+            frameCountLabel.Text = "Frames: " + Host.VideoFramesString;
+            // frameCountLabel.Text = String.Format("Frames: {0}", Host.VideoFrames);
 
             assemblyPanel.CreateGraphics().DrawImageUnscaled(BackBuffer, 0, 0);
         }
@@ -452,6 +460,33 @@ namespace Gear.GUI
                 );
                 LastLine = line;
             }
+        }
+
+        public void VideoBreak_Click(object sender, EventArgs e)
+        {
+            if (sender == breakNone)
+            {
+                breakNone.Checked = true;
+                breakMiss.Checked = false;
+                breakAll.Checked = false;
+                breakVideo = FrameState.frameMiss;
+            }
+            if (sender == breakMiss)
+            {
+                breakNone.Checked = false;
+                breakMiss.Checked = true;
+                breakAll.Checked = false;
+                breakVideo = FrameState.frameMiss;
+            }
+            if (sender == breakAll)
+            {
+                breakNone.Checked = true;
+                breakMiss.Checked = false;
+                breakAll.Checked = false;
+                breakVideo = FrameState.frameNone;
+            }
+            Cog cog = Chip.GetCog(HostID);
+            cog.VideoBreak = breakVideo;
         }
 
     }

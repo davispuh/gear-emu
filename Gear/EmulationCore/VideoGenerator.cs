@@ -45,6 +45,7 @@ namespace Gear.EmulationCore
     {
         private uint Scale;
         private uint Config;
+        private uint frameCount;
 
         // Scale Registers
 
@@ -84,6 +85,22 @@ namespace Gear.EmulationCore
         // Misc Variables
 
         private PropellerCPU Chip;
+        private Cog cog;
+
+        public uint Frames
+        {
+            get
+            {
+                return frameCount;
+            }
+        }
+
+        public void FrameCounters (out uint frameNo, out uint frameClk, out uint pixelClk)
+        {
+            frameNo = frameCount;
+            frameClk = FrameClocks;
+            pixelClk = PixelClocks;
+        }
 
         public uint CFG
         {
@@ -112,6 +129,11 @@ namespace Gear.EmulationCore
                 // Attach to the new aural sub PLL
                 if (Chip.GetPLL(AuralSub) != null)
                     Chip.GetPLL(AuralSub).AttachHook(this);
+
+                // Reset counters
+                PixelClockStart = (Scale >> 12) & 0xFF;
+                FrameClocks = Scale & 0xFFF;    // Copy our frameclocks out of the scale register
+                frameCount = 0;
             }
         }
 
@@ -147,11 +169,12 @@ namespace Gear.EmulationCore
             }
         }
 
-        public VideoGenerator(PropellerCPU chip)
+        public VideoGenerator(PropellerCPU chip, Cog owner)
         {
             // Clear our phase accumulator
             PhaseAccumulator = 0;
             Chip = chip;
+            cog = owner;
 
             // Scale is dirty
             ScaleDirty = true;
@@ -175,7 +198,7 @@ namespace Gear.EmulationCore
             }
 
             FrameClocks = Scale & 0xFFF;    // Copy our frameclocks out of the scale register
-            PixelClocks = 1;                // Always serialize out the first pixel on first clock
+            PixelClocks = 0;                // Always serialize out the first pixel on first clock
         }
 
         private void FillComposite(uint color)
@@ -257,12 +280,6 @@ namespace Gear.EmulationCore
             if (level != true)
                 return;
 
-            // Check to see if we are at the end of our frame clocks
-            if (FrameClocks <= 0)
-                return;
-
-            FrameClocks--;
-
             // Avoid extra logic when video generator is disabled
             if (VideoMode == VMode.DISABLED)
             {
@@ -270,8 +287,24 @@ namespace Gear.EmulationCore
                 return;
             }
 
+            // Decrement clocks
+            --FrameClocks;
+            FrameClocks &= 0xFFF;
+            --PixelClocks;
+            PixelClocks &= 0xFF;
+
+            // Check to see if we are at the end of our frame clocks
+            if (FrameClocks <= 0)
+            {
+                uint colours;
+                uint pixels;
+                cog.GetVideoData(out colours, out pixels);
+                Feed(colours, pixels);
+                ++frameCount;
+            }
+
             // Clock up to our pixel accumulator (wait for pixel)
-            if (--PixelClocks <= 0)
+            if (PixelClocks <= 0)
             {
                 // Find the pixel color we need to shift out
                 switch (ColorMode)
@@ -279,12 +312,12 @@ namespace Gear.EmulationCore
                     // Four color video
                     case CMode.FOUR_COLOR:
                         ShiftOut = (ColorLoad >> (int)((PixelLoad & 3) << 3)) & 0xFF;
-                        PixelLoad >>= 2;
+                        PixelLoad = (PixelLoad & 0xC0000000) | (PixelLoad >> 2);
                         break;
                     // Two color mode
                     default:
                         ShiftOut = (ColorLoad >> (int)((PixelLoad & 1) << 3)) & 0xFF;
-                        PixelLoad >>= 1;
+                        PixelLoad = (PixelLoad & 0x80000000) | (PixelLoad >> 1);
                         break;
                 }
 

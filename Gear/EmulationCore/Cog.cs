@@ -62,6 +62,12 @@ namespace Gear.EmulationCore
         HUB_HUBOP
     }
 
+    public enum FrameState
+    {
+        frameNone,
+        frameHit,
+        frameMiss
+    }
 
     /// @brief Base class for a %Cog emulator.
     abstract public partial class Cog
@@ -79,6 +85,8 @@ namespace Gear.EmulationCore
 
         protected uint ProgramAddress;      //!< @todo Document member Cog.ProgramAddress
         protected uint ParamAddress;        //!< @todo Document member Cog.ParamAddress
+        protected FrameState frameFlag;     //!< @brief Indicates video frame end and whether in WAIT_VID
+        protected FrameState frameBreak;    //!< @breaf Break if frameFlag higher
 
         protected FreqGenerator FreqA;      //!< @todo Document member Cog.FreqA
         protected FreqGenerator FreqB;      //!< @todo Document member Cog.FreqB
@@ -99,7 +107,7 @@ namespace Gear.EmulationCore
 
             FreqA = new FreqGenerator(host, pll, true);
             FreqB = new FreqGenerator(host, pll, false);
-            Video = new VideoGenerator(host);
+            Video = new VideoGenerator(host, this);
             PhaseLockedLoop = pll;
 
             // Attach the video generator to PLLs
@@ -107,6 +115,8 @@ namespace Gear.EmulationCore
 
             PC = 0;
             BreakPointCogCursor = -1;    // Breakpoint disabled initially
+            frameFlag = FrameState.frameNone;
+            frameBreak = FrameState.frameMiss;
 
             // We are in boot time load
             Memory[(int)Assembly.RegisterAddress.PAR] = param;
@@ -129,6 +139,37 @@ namespace Gear.EmulationCore
             set { BreakPointCogCursor = value; }
         }
 
+        /// @break Get video frames cont
+        public uint VideoFrames
+        {
+            get { return Video.Frames; }
+        }
+
+        public string VideoFramesString
+        {
+            get
+            {
+                string hitState;
+                uint framesNo;
+                uint framesCtr;
+                uint pixelsCtr;
+                Video.FrameCounters(out framesNo, out framesCtr, out pixelsCtr);
+                switch(frameFlag)
+                {
+                    case FrameState.frameHit:
+                        hitState = "H";
+                        break;
+                    case FrameState.frameMiss:
+                        hitState = "M";
+                        break;
+                    default:
+                        hitState = " ";
+                        break;
+                }
+                return string.Format("{0} {1:D4} {2:D3}", hitState, framesCtr, pixelsCtr);
+            }
+        }
+
         /// @brief Property to return complete OUT pins (P0..P63)
         /// Analyze all sources of pin changes in the cog: OUTA, OUTB, the two counters 
         /// and the video generator.
@@ -141,6 +182,28 @@ namespace Gear.EmulationCore
                     FreqA.Output |
                     FreqB.Output |
                     Video.Output;
+            }
+        }
+
+        /// @brief Set video frame condition on which to break
+        public FrameState VideoBreak
+        {
+            set
+            {
+                frameBreak = value;
+            }
+        }
+
+        public string VideoStateString
+        {
+            get
+            {
+                switch (frameFlag)
+                {
+                    case FrameState.frameMiss: return " - Frame Miss";
+                    case FrameState.frameHit: return " - Frame End";
+                }
+                return "";
             }
         }
 
@@ -375,7 +438,8 @@ namespace Gear.EmulationCore
             // Run our frequency counters
             FreqA.Tick(Hub.IN);
             FreqB.Tick(Hub.IN);
-            return result;    // false - we hit a breakpoint
+            result = result && (frameFlag <= frameBreak);    // false - we hit a breakpoint
+            return result;
         }
 
         /// @todo Document method Gear.EmulationCore.Cog.SetClock().
@@ -395,7 +459,8 @@ namespace Gear.EmulationCore
                 Hub.Step();
             }
             while ( (State != CogRunState.EXEC_INTERPRETER) && 
-                (State != CogRunState.STATE_EXECUTE && --i > 0) );
+                (State != CogRunState.STATE_EXECUTE && --i > 0) &&
+                (frameFlag <= frameBreak));
         }
 
         /// @todo Document method Gear.EmulationCore.Cog.ReadLong().
@@ -491,5 +556,7 @@ namespace Gear.EmulationCore
 
         /// @todo Document method Gear.EmulationCore.Cog.Boot()
         abstract public void Boot();
+
+        abstract public void GetVideoData(out uint colours, out uint pixels);
     }
 }
