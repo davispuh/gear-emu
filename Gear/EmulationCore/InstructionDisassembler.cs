@@ -76,7 +76,7 @@ namespace Gear.EmulationCore
                     Propeller.Assembly.Conditions[instr.CON][0],
                     ActualInstruction.Name,
                     DestString,
-                    (ActualInstruction.Source && ActualInstruction.Destination) ? ", " : "",
+                    (ActualInstruction.Source && ActualInstruction.Destination) ? ", " : string.Empty,
                     SrcString }
                 );
 
@@ -111,7 +111,7 @@ namespace Gear.EmulationCore
         {
             Spin.ParsedAssignment ParsedAssignment = new Spin.ParsedAssignment(memory.ReadByte());
 
-            string effect = ParsedAssignment.Push ? "" : "POP ";
+            string effect = ParsedAssignment.Push ? string.Empty : "POP ";
 
             if (useShortOpcodes)
             {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+/// @brief %Propeller P1 Definitions.
 namespace Gear.Propeller
 {
     public class Register

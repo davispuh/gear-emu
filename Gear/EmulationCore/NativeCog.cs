@@ -919,7 +919,7 @@ namespace Gear.EmulationCore
 
         /// @brief Execute instruction MOVS: Set a register's source field to a value.
         /// @details Effects: Insert S[8..0] into D[8..0]
-         private void InstructionMOVS()
+        private void InstructionMOVS()
         {
             DataResult = (DestinationValue & 0xFFFFFE00) | (SourceValue & 0x000001FF);
             ZeroResult = (DataResult == 0);

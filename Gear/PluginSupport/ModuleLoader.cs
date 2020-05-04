@@ -29,7 +29,6 @@ using System.Text;
 using System.CodeDom.Compiler;
 using System.Reflection;
 
-/// @copydoc Gear.PluginSupport
 namespace Gear.PluginSupport
 {
     public delegate void ErrorEnumProc(System.CodeDom.Compiler.CompilerError e);
@@ -115,7 +114,7 @@ namespace Gear.PluginSupport
 
             if (target == null)
             {
-                CompilerError c = new CompilerError("", 0, 0, "CS0103",
+                CompilerError c = new CompilerError(string.Empty, 0, 0, "CS0103",
                     "The name '" + module + "' does not exist in the current context." +
                     " Does the class name is the same that is declared in c# code?");
                 m_Errors = new CompilerErrorCollection(new CompilerError[] { c });
@@ -123,7 +122,7 @@ namespace Gear.PluginSupport
             }
             else if (!(target is PluginBase))
             {
-                CompilerError c = new CompilerError("", 0, 0, "CS0029",
+                CompilerError c = new CompilerError(string.Empty, 0, 0, "CS0029",
                     "Cannot implicitly convert type '" + target.GetType().FullName +
                     "' to 'Gear.PluginSupport.BusModule'");
                 m_Errors = new CompilerErrorCollection(new CompilerError[] { c });

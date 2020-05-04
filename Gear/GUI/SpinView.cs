@@ -96,7 +96,7 @@ namespace Gear.GUI
             TreeNode root = objectView.Nodes.Add("Spin");
             TreeNode node;
 
-            node = root.Nodes.Add(String.Format("System Frequency: {0}mhz", Chip.DirectReadLong(0)));
+            node = root.Nodes.Add(String.Format("System Frequency: {0}Mhz", Chip.DirectReadLong(0)));
             node.Tag = (int)0;
             node = root.Nodes.Add(String.Format("Clock Mode: {0:X2}", Chip.DirectReadByte(4)));
             node.Tag = (int)4;

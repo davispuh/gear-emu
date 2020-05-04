@@ -1,8 +1,9 @@
 //Plugin template for plugin system v1.0
-//Name   : put your name here
-//Version: put the version of this plugin
-//Date   : date of this version
-//Purpose: write what do your plugin
+//Author     : put your name here
+//Date       : date of this version
+//Version    : put the version of this plugin
+//Description: write what do your plugin
+//Usage      : how to use this plugin
 
 //Assemblies needed for GEAR plugin system (do not delete them).
 using System;
@@ -29,7 +30,7 @@ class YourClassName : PluginBase
         
     }
 
-    //Title to be shown in tab, change the string as you needing.
+    //Title to be shown in tab, change the string as you need.
     public override string Title
     { 
         get { return "PluginBase"; }    //change to your plugin name
@@ -49,9 +50,9 @@ class YourClassName : PluginBase
         //Put your code here:
     }
 
-    //Called every time a pin changes, if called Chip.NotifyOnPins() in 
-    // method PresentChip(.) above. 
-    //Warning: to assure the correct correct operation of the plugin system, 
+    //Called every time a pin changes, only if called Chip.NotifyOnPins()  
+    // inside of method PresentChip() above. 
+    //Warning: to assure the correct operation of the plugin system, 
     //you can't change the parameters of any predefined method: neither the 
     //names or the types. Also you must not add other parameters.
     public override void OnPinChange(double time, PinState[] pins)
@@ -61,17 +62,21 @@ class YourClassName : PluginBase
         //Possible values for PinState enum are: 
         //  FLOATING, OUTPUT_LO, OUTPUT_HI, INPUT_LO, INPUT_HI.
         //
+        //Also you can use BreakPoint() to stop the program here.
+        //
         //Put your code here.
         
     }
     
-    //Called every clock tick, if called Chip.NotifyOnClock() in method 
-    // PresentChip() above. 
-    //Warning: to assure the correct correct operation of the plugin system, 
+    //Called every clock tick, only if called Chip.NotifyOnClock() inside of 
+    // method PresentChip() above. 
+    //Warning: to assure the correct operation of the plugin system, 
     //you can't change the parameters of any predefined method: neither the 
     //names or the types. Also you must not add other parameters.
     public override void OnClock(double time, uint sysCounter) 
-    { 
+    {
+        //You can use BreakPoint() to stop the program here.
+        //
         //Put your code here.
     }
 

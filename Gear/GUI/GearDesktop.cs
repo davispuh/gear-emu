@@ -135,13 +135,12 @@ namespace Gear.GUI
 
                 if (plugin.OpenFile(openFileDialog.FileName, false))
                 {
+                    //remember plugin successfully loaded
+                    plugin.UpdateLastPluginOpened();
                     //show plugin editor loaded with selected one
                     plugin.MdiParent = this;
                     plugin.ShowErrorGrid(false);    //hide it by default
                     plugin.Show();
-                    //remember plugin successfully loaded
-                    Properties.Settings.Default.LastPlugin = plugin.GetLastPlugin;
-                    Properties.Settings.Default.Save();
                 }
             }
         }

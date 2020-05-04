@@ -87,7 +87,9 @@ namespace Gear.GUI
             if (Chip == null)
                 return;
 
-            for (int i = positionScrollBar.Value, p = 0; p < memoryPanel.Height && i < 0x10000; i += 4, p += MonoFont.Height)
+            for (int i = positionScrollBar.Value, p = 0; 
+                p < memoryPanel.Height && i < 0x10000; 
+                i += 4, p += MonoFont.Height)
             {
                 for (int bi = 0; bi < 4; bi++)
                     b[bi] = Chip[i + bi];
@@ -97,10 +99,11 @@ namespace Gear.GUI
 
                 int i1 = (int)(s1 | (s2 << 16));
 
-                g.FillRectangle(SystemBrushes.Control, 0, p, memoryPanel.Width, p + MonoFont.Height);
-                g.DrawString(
-                    String.Format("{0:X4}:  {1:X2} {2:X2} {3:X2} {4:X2}  :\t{5}\t{6}\t{7}\t{8}\t{9:d}",
-                        i, b[0], b[1], b[2], b[3], s1, s2, (short)s1, (short)s2, i1), MonoFont, SystemBrushes.ControlText, 0, p);
+                g.FillRectangle(SystemBrushes.Control, 0, p, memoryPanel.Width, 
+                    p + MonoFont.Height);
+                g.DrawString(String.Format("{0:X4}:  {1:X2} {2:X2} {3:X2} {4:X2}  :" +
+                    "\t{5}\t{6}\t{7}\t{8}\t{9:d}", i, b[0], b[1], b[2], b[3], s1, s2, 
+                    (short)s1, (short)s2, i1), MonoFont, SystemBrushes.ControlText, 0, p);
             }
 
             memoryPanel.CreateGraphics().DrawImageUnscaled(BackBuffer, 0, 0);

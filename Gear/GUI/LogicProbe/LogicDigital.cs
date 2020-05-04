@@ -63,7 +63,6 @@ namespace Gear.GUI.LogicProbe
         }
 
         /// @brief Default Constructor 
-        /// 
         /// @param[in] pin Pin map to use
         public LogicDigital(int pin)
         {
@@ -73,7 +72,7 @@ namespace Gear.GUI.LogicProbe
             PinNumber = pin;
 
             //use the new method Reset()
-            Reset();
+            this.Reset();
         }
 
         public override void Click()

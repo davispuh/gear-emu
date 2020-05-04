@@ -32,8 +32,6 @@ using System.Windows.Forms;
 using Gear.EmulationCore;
 using Gear.PluginSupport;
 
-/// @copydoc Gear.GUI
-/// 
 namespace Gear.GUI
 {
     public partial class CogView : Gear.PluginSupport.PluginBase
@@ -52,28 +50,23 @@ namespace Gear.GUI
         private bool useShortOpcodes;
         private FrameState breakVideo;
 
+        /// @brief Title of the tab window.
         public override string Title
         {
-            get
-            {
-                return "Cog " + HostID.ToString();
-            }
+            get { return "Cog " + HostID.ToString(); }
         }
 
+        /// @brief Attribute to allow the window to be closed (default) or not (like cog windows).
         public override Boolean IsClosable
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
+        /// @brief Identify a plugin as user (=true) or system (=false).
+        /// @since V15.03.26 - Added.
         public override bool IsUserPlugin
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public CogView(int hostId, PropellerCPU chip) : base (chip)
@@ -183,8 +176,8 @@ namespace Gear.GUI
             topLine = 5;
             bottomLine = (uint)((ClientRectangle.Height / MonoFont.Height) - 5);
 
-            zeroFlagLabel.Text = "";
-            carryFlagLabel.Text = "";
+            zeroFlagLabel.Text = string.Empty;
+            carryFlagLabel.Text = string.Empty;
             OpcodeSize.Visible = true;
             DisplayUnits.Visible = true;
 
@@ -223,7 +216,9 @@ namespace Gear.GUI
             {
                 uint y = 0;
 
-                for (uint i = (uint)positionScroll.Value, line = 1; y < ClientRectangle.Height; y += (uint)MonoFont.Height, line++)
+                for (uint i = (uint)positionScroll.Value, line = 1;
+                    y < ClientRectangle.Height;
+                    y += (uint)MonoFont.Height, line++)
                 {
                     if (i > 0xFFFF)
                         continue;
@@ -298,9 +293,9 @@ namespace Gear.GUI
             if (Host == null)
             {
                 processorStateLabel.Text = "CPU State: Cog is stopped.";
-                programCounterLabel.Text = "";
-                zeroFlagLabel.Text = "";
-                carryFlagLabel.Text = "";
+                programCounterLabel.Text = string.Empty;
+                zeroFlagLabel.Text = string.Empty;
+                carryFlagLabel.Text = string.Empty;
                 return;
             }
 
