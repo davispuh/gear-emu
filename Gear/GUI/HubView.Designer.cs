@@ -48,6 +48,7 @@ namespace Gear.GUI
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.Label label8;
             System.Windows.Forms.Label label7;
             System.Windows.Forms.Label label6;
@@ -70,6 +71,7 @@ namespace Gear.GUI
             this.pinLocksFree = new Gear.GUI.BitView();
             this.pinLocks = new Gear.GUI.BitView();
             this.ringMeter = new Gear.GUI.RingMeter();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             label8 = new System.Windows.Forms.Label();
             label7 = new System.Windows.Forms.Label();
             label6 = new System.Windows.Forms.Label();
@@ -191,6 +193,8 @@ namespace Gear.GUI
             this.coreFrequency.TabIndex = 21;
             this.coreFrequency.Text = "label14";
             this.coreFrequency.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.coreFrequency.Click += new System.EventHandler(this.FrequencyLabels_Click);
+            this.coreFrequency.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Label_MouseMove);
             // 
             // xtalFrequency
             // 
@@ -201,6 +205,8 @@ namespace Gear.GUI
             this.xtalFrequency.TabIndex = 20;
             this.xtalFrequency.Text = "label10";
             this.xtalFrequency.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.xtalFrequency.Click += new System.EventHandler(this.FrequencyLabels_Click);
+            this.xtalFrequency.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Label_MouseMove);
             // 
             // clockMode
             // 
@@ -221,6 +227,8 @@ namespace Gear.GUI
             this.systemCounter.TabIndex = 13;
             this.systemCounter.Text = "SysCounter";
             this.systemCounter.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.systemCounter.Click += new System.EventHandler(this.FrequencyLabels_Click);
+            this.systemCounter.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Label_MouseMove);
             // 
             // label1
             // 
@@ -336,7 +344,6 @@ namespace Gear.GUI
             this.Controls.Add(this.ringMeter);
             this.Name = "HubView";
             this.Size = new System.Drawing.Size(214, 546);
-            this.Load += new System.EventHandler(this.HubView_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -356,5 +363,6 @@ namespace Gear.GUI
         private BitView pinLocks;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }

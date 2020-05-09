@@ -664,6 +664,7 @@ namespace Gear.EmulationCore
         /// @brief Advance one clock step.
         /// @details Inside it calls the OnClock() method for each plugin as clock advances. Also 
         /// update the pins, by effect of calling each cog and source of clocks.
+        /// @returns Success of all cog status (=true), or if some fail (=false).
         public bool Step()
         {
             ulong pinsPrev;
@@ -717,13 +718,11 @@ namespace Gear.EmulationCore
 
             //execute a step on each cog
             for (int i = 0; i < Cogs.Length; i++)
-            {
                 if (Cogs[i] != null)
                 {
                     cogResult = Cogs[i].Step();     // TODO ASB: Parallelism point: cog.step()
                     result &= cogResult;
                 }
-            }
 
             if ((RingPosition & 1) == 0)  // Every other clock, a cog gets a tick
             {

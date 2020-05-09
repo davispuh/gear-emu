@@ -23,5 +23,8 @@
     <Setting Name="EmbeddedCode" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="FreqFormat" Type="Gear.GUI.FreqFormat" Scope="User">
+      <Value Profile="(Default)">Parallax_SPIN</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

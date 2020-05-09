@@ -21,6 +21,8 @@
  * --------------------------------------------------------------------------------
  */
 
+using Gear.GUI;
+
 /// @brief Transversal %Properties for the program.
 namespace Gear.Properties
 {
@@ -88,6 +90,10 @@ namespace Gear.Properties
         /// @property UpdateEachSteps
         /// @brief Number of steps before update the windows and tabs.
         /// @since V15.03.26 - Added as a User property of the program.
+
+        /// @property FreqFormat
+        /// @brief Format of frequency labels in GUI.
+        /// @since V20.05.00 - Added as a User property of the program.
 
     }
 }
