@@ -22,15 +22,11 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Gear.GUI
 {
+    /// @brief Window container for a floated plugin.
     public partial class FloatedWindow : Form
     {
         private Emulator SourceHost;

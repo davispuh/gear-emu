@@ -22,7 +22,9 @@
  */
 
 using System;
+using System.Drawing.Text;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 /// @brief Contains the definitions of %GUI objects (controlling objects).
@@ -32,7 +34,7 @@ namespace Gear.GUI
     /// related windows.
     public partial class GearDesktop : Form
     {
-        /// @brief Gear.GUI.GearDesktop Constructor.
+        /// @brief Default constructor.
         public GearDesktop()
         {
             InitializeComponent();
@@ -118,8 +120,8 @@ namespace Gear.GUI
         /// @brief Load plugin editor from file.
         /// @details Load a plugin definition into a new editor window, from user selected file, 
         /// remembering independently from last binary directory.
-        /// @param[in] sender Reference to object where event was raised.
-        /// @param[in] e Event data arguments.
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
         private void OpenPluginButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -146,15 +148,35 @@ namespace Gear.GUI
         }
 
         /// @brief Open a window with the plugin editor to create a new plugin.
-        /// @param[in] sender Reference to object where event was raised.
-        /// @param[in] e Event data arguments.
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
         private void newPluginButton_Click(object sender, EventArgs e)
         {
             //load default plugin template
             PluginEditor plugin = 
-                new PluginEditor(! Properties.Settings.Default.UseNoTemplate);
+                new PluginEditor(Properties.Settings.Default.UseTemplate);
             plugin.MdiParent = this;
             plugin.Show();
+        }
+
+        /// @brief Open Gear properties editor.
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
+        /// @since 20-05-00 - Added.
+        private void OptionsButton_Click(object sender, EventArgs e)
+        {
+            var options = new AppPropertiesEditor();
+            options.MdiParent = this;
+            options.Show();
+        }
+
+        /// @brief Open Gear properties editor
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
+        /// @since 20-05-00 - Added.
+        private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OptionsButton_Click(sender, e);
         }
 
     }

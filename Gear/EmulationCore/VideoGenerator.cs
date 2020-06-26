@@ -41,6 +41,7 @@ namespace Gear.EmulationCore
         FOUR_COLOR      = 0x10000000
     }
 
+    /// @brief Video Generator Circuit emulation.
     public class VideoGenerator
     {
         private uint Scale;

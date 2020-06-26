@@ -21,17 +21,10 @@
  * --------------------------------------------------------------------------------
  */
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
-using System.Windows.Forms;
-
-using Gear;
-using Gear.PluginSupport;
 using Gear.GUI;
+using Gear.PluginSupport;
+using System.Collections.Generic;
+using System.Windows.Forms;
 
 /// @brief Core of the emulation for %Propeller (model objects).
 namespace Gear.EmulationCore
@@ -463,7 +456,7 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Return the cog.
-        /// @param[in] id Cog number to get the reference.
+        /// @param id Cog number to get the reference.
         /// @returns Return the reference to the cog.
         public Cog GetCog(int id)
         {
@@ -485,7 +478,7 @@ namespace Gear.EmulationCore
 
         /// @brief Include a plugin in active plugin list of propeller instance.
         /// @details It see if the plugin exist already to insert or not.
-        /// @param[in] plugin Compiled plugin reference to include.
+        /// @param plugin Compiled plugin reference to include.
         public void IncludePlugin(PluginBase plugin)
         {
             if (!(PlugIns.Contains(plugin)))
@@ -498,7 +491,7 @@ namespace Gear.EmulationCore
         /// @details Only if the plugin exists on the list, this method removes from it.
         /// Before detach, the `OnClose()` method of plugin is invoked, to do
         /// housekeeping, for example to clear pins managed by the plugin.
-        /// @param[in] plugin Compiled plugin reference to remove
+        /// @param plugin Compiled plugin reference to remove
         public void RemovePlugin(PluginBase plugin)
         {
             if (PlugIns.Contains(plugin))
@@ -646,7 +639,7 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Stop a cog of the P1 Chip.
-        /// @param[in] cog Cog number to stop.
+        /// @param cog Cog number to stop.
         public void Stop(int cog)
         {
             if (cog >= TOTAL_COGS || cog < 0)
@@ -911,9 +904,9 @@ namespace Gear.EmulationCore
         /// @brief Execute the hub operations.
         /// @details This method is called from a cog to do the operations related to all the CPU.
         /// @version 15.03.26 - corrected problem in COGSTOP return.
-        /// @param[in] caller Reference to the caller Cog of this method.
-        /// @param[in] operation Hub operation to execute.
-        /// @param[in] argument Parameter given to the opcode (destination field in PASM).
+        /// @param caller Reference to the caller Cog of this method.
+        /// @param operation Hub operation to execute.
+        /// @param argument Parameter given to the opcode (destination field in PASM).
         /// @param[in,out] carry Carry flag that could be affected by the operation.
         /// @param[in,out] zero Zero flag that could be affected by the operation.
         /// @returns Value depending on operation.

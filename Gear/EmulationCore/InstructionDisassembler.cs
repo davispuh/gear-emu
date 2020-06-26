@@ -21,12 +21,12 @@
  * --------------------------------------------------------------------------------
  */
 
-using System;
-
 using Gear.Disassembler;
+using System;
 
 namespace Gear.EmulationCore
 {
+    /// @brief Provides a method for creating the string equivalent of a propeller operation.
     public static class InstructionDisassembler
     {
         static InstructionDisassembler()

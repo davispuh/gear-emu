@@ -21,21 +21,21 @@
  * --------------------------------------------------------------------------------
  */
 
+using Gear.EmulationCore;
+using Gear.PluginSupport;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Text;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml;
-
-using Gear.EmulationCore;
-using Gear.PluginSupport;
 
 namespace Gear.GUI
 {
     /// @brief View class for PropellerCPU emulator instance.
     /// @details This class implements a view over a propeller emulator, with interface to control 
     /// the chip, like start, go through steps, reset or reload.
-    public partial class Emulator : System.Windows.Forms.Form
+    public partial class Emulator : Form
     {
         private PropellerCPU Chip;          //!< @brief Reference to PropellerCPU running instance.
         private String Source;              //!< @brief Name of Binary program loaded.
@@ -47,7 +47,7 @@ namespace Gear.GUI
         private Timer runTimer;             
 
         /// @brief Default Constructor.
-        /// @param[in] source Binary program loaded (path & name)
+        /// @param source Binary program loaded (path & name)        
         public Emulator(string source)
         {
             Chip = new PropellerCPU(this);
@@ -55,6 +55,8 @@ namespace Gear.GUI
             FloatControls = new List<Control>();
 
             InitializeComponent();
+
+            hubView.SetFontSpecialLabels();
 
             this.Text = "Propeller: " + source;
 
@@ -77,7 +79,6 @@ namespace Gear.GUI
         }
 
         /// @brief Get the last binary opened successfully.
-        /// 
         public string GetLastBinary
         {
             get
@@ -98,7 +99,7 @@ namespace Gear.GUI
         /// @brief Include a plugin to a propeller chip instance.
         /// @details Attach a plugin, linking the propeller instance to the plugin, opening a new 
         /// tab window and enabling the close button by plugin's isClosable property.
-        /// @param[in] plugin Instance of a Gear.PluginSupport.PluginBase class to be attached.
+        /// @param plugin Instance of a Gear.PluginSupport.PluginBase class to be attached.
         private void AttachPlugin(PluginBase plugin)
         {
             Chip.IncludePlugin(plugin);     //include into plugin lists of a PropellerCPU instance
@@ -119,7 +120,7 @@ namespace Gear.GUI
         /// @brief Delete a plugin from a propeller chip instance.
         /// @details Delete a plugin from the actives plugins of the propeller instance, 
         /// effectively stopping the plugin. Remove also from pins and clock watch list.
-        /// @param[in] plugin Instance of a Gear.PluginSupport.PluginCommon class to be detached.
+        /// @param plugin Instance of a Gear.PluginSupport.PluginCommon class to be detached.
         /// @since V15.03.26 - Added.
         //Added method to detach a plugin from the active plugin list of the propeller instance.
         private void DetachPlugin(PluginBase plugin)
@@ -137,8 +138,8 @@ namespace Gear.GUI
         /// screen repaint.
         /// Adjusting this number in configuration (like increasing the number) enable to obtain 
         /// faster execution at expense of less screen responsiveness.
-        /// @param[in] sender Reference to object where event was raised.
-        /// @param[in] e Event data arguments.
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
         private void RunEmulatorStep(object sender, EventArgs e)
         {
             for (uint i = 0; i < stepInterval; i++)
@@ -192,7 +193,7 @@ namespace Gear.GUI
         /// and source code to compile), trying to compile the C# source code (based on 
         /// Gear.PluginSupport.PluginBase class) and returning the new class instance. If the 
         /// compilation fails, then it opens the plugin editor to show errors and source code.
-        /// @param[in] FileName Name and path to the XML plugin file to open
+        /// @param FileName Name and path to the XML plugin file to open
         /// @returns Reference to the new plugin instance (on success) or NULL (on fail).
         public PluginBase LoadPlugin(string FileName)
         {
@@ -285,8 +286,8 @@ namespace Gear.GUI
         }
 
         /// @brief Select binary propeller image to load.
-        /// @param[in] sender Reference to object where event was raised.
-        /// @param[in] e Event data arguments.
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
         private void openBinary_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -301,8 +302,8 @@ namespace Gear.GUI
 
         /// @brief Event to reload the whole %Propeller program from binary file.
         /// @details It also reset the %Propeller Chip and all the plugins.
-        /// @param[in] sender Reference to object where event was raised.
-        /// @param[in] e Event data arguments.
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
         private void reloadBinary_Click(object sender, EventArgs e)
         {
             OpenFile(LastFileName);
@@ -340,8 +341,8 @@ namespace Gear.GUI
         }
 
         /// @brief Event to reset the whole %Propeller Chip.
-        /// @param[in] sender Reference to object where event was raised.
-        /// @param[in] e Event data arguments.
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
         private void resetEmulator_Click(object sender, EventArgs e)
         {
             Chip.Reset();
@@ -349,8 +350,8 @@ namespace Gear.GUI
         }
 
         /// @brief Run only one instruction of the active cog, stopping after executed.
-        /// @param[in] sender Reference to object where event was raised.
-        /// @param[in] e Event data arguments.
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
         private void stepEmulator_Click(object sender, EventArgs e)
         {
             Chip.Step();
@@ -360,8 +361,8 @@ namespace Gear.GUI
         /// @brief Close the plugin window and terminate the plugin instance.
         /// @details Not only close the tab window, also detach the plugin from the PropellerCPU 
         /// what uses it.
-        /// @param[in] sender Reference to object where event was raised.
-        /// @param[in] e Event data arguments.
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
         private void closeActiveTab_Click(object sender, EventArgs e)
         {
             TabPage tp = documentsTab.SelectedTab;
@@ -450,8 +451,8 @@ namespace Gear.GUI
         }
 
         /// @brief Event to run the emulator freely.
-        /// @param[in] sender Reference to the object where this event was called.
-        /// @param[in] e Class with the details event.
+        /// @param sender Reference to the object where this event was called.
+        /// @param e Class with the details event.
         private void runEmulator_Click(object sender, EventArgs e)
         {
             runTimer.Start();
@@ -459,8 +460,8 @@ namespace Gear.GUI
 
         /// @brief Stop the emulation.
         /// @version V15.03.26 - Added the refresh of the screen.
-        /// @param[in] sender Reference to the object where this event was called.
-        /// @param[in] e Class with the details event.
+        /// @param sender Reference to the object where this event was called.
+        /// @param e Class with the details event.
         private void stopEmulator_Click(object sender, EventArgs e)
         {
             runTimer.Stop();
@@ -468,8 +469,8 @@ namespace Gear.GUI
         }
 
         /// @brief Event to run one instruction in emulator.
-        /// @param[in] sender Reference to the object where this event was called.
-        /// @param[in] e Class with the details event.
+        /// @param sender Reference to the object where this event was called.
+        /// @param e Class with the details event.
         private void stepInstruction_Click(object sender, EventArgs e)
         {
             if (documentsTab.SelectedTab != null)
@@ -490,8 +491,8 @@ namespace Gear.GUI
 
         /// @brief Try to open a plugin, compiling it and attaching to the active 
         /// emulator instance.
-        /// @param[in] sender Reference to the object where this event was called.
-        /// @param[in] e Class with the details event.
+        /// @param sender Reference to the object where this event was called.
+        /// @param e Class with the details event.
         private void OpenPlugin_Click(object sender, EventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
@@ -507,8 +508,8 @@ namespace Gear.GUI
         }
 
         /// @brief Event when the Emulator windows begin to close.
-        /// @param[in] sender Reference to the object where this event was called.
-        /// @param[in] e Class with the details event.
+        /// @param sender Reference to the object where this event was called.
+        /// @param e Class with the details event.
         private void Emulator_FormClosing(object sender, FormClosingEventArgs e)
         {
             Chip.OnClose(sender, e);
@@ -526,8 +527,8 @@ namespace Gear.GUI
         /// Gear.PluginSupport.PluginBase and if that class permit close the window. Typically 
         /// the user plugins enabled it; but the cog window, main memory, logic probe, etc, 
         /// don't allow to close.
-        /// @param[in] sender Reference to object where event was raised.
-        /// @param[in] e Event data arguments.
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
         /// @since V14.07.03 - Added.
         private void documentsTab_Click(object sender, EventArgs e)
         {

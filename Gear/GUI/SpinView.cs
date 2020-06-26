@@ -21,17 +21,16 @@
  * --------------------------------------------------------------------------------
  */
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
-using System.Windows.Forms;
-
-using Gear.PluginSupport;
 using Gear.EmulationCore;
+using Gear.PluginSupport;
+using System;
+using System.Drawing;
+using System.Text;
+using System.Windows.Forms;
 
 namespace Gear.GUI
 {
+    /// @brief Spin object viewer.
     class SpinView : PluginBase
     {
         private Font MonoSpace;
@@ -42,7 +41,6 @@ namespace Gear.GUI
         private VScrollBar scrollPosition;
         private Brush[] Colorize;
         private Splitter splitter1;
-        //private System.ComponentModel.IContainer components;
         private Bitmap BackBuffer;
 
         public override string Title

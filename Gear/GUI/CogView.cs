@@ -21,20 +21,16 @@
  * --------------------------------------------------------------------------------
  */
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
-using System.Windows.Forms;
-
 using Gear.EmulationCore;
 using Gear.PluginSupport;
+using System;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace Gear.GUI
 {
-    public partial class CogView : Gear.PluginSupport.PluginBase
+    /// @brief Generic real-time cog information viewer.
+    public partial class CogView : PluginBase
     {
         private int HostID;
         private Font MonoFont;

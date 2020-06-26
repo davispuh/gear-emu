@@ -21,9 +21,9 @@
  * --------------------------------------------------------------------------------
  */
 
+using Gear.GUI;
 using System;
 using System.Windows.Forms;
-using Gear.GUI;
 
 /// @brief Main namespace for GEAR Emulator.
 namespace Gear

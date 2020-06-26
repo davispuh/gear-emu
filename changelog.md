@@ -3,11 +3,93 @@ Read more in forum threads:
 * [More GEAR - Improved Emulation of the Propeller](http://forums.parallax.com/showthread.php/100380-More-GEAR-Improved-Emulation-of-the-Propeller)
 * [GEAR: Propeller Debugging Environment](http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment)
 
-## V15.03.27
+## V.20.06.01
+
+
+
+## Commit 70e132c - Merge pull request #19 from davispuh/Remember-Dirs
+
+* Remember last directories binary files and plugins loaded or edited.
+
+## Commit 970064d - Merge pull request #18 from Memotech-Bill/master
 
 * Corrected timing of Video Generator Frame Reload.
 * Added the ability to set breaks on video frame reloads, either all or just those that do not coinside with a WAIT_VID.
 * Fixed refresh when switching between tabs.
+
+## Commit decdc0d - Remember last directories binary files and plugins loaded or edited.
+
+* The last directories of binary and plugins loaded are remembered on main windows and plugin editor.
+* Better documentation of PluginTemplate and PluginBase.
+* A lot of documentation improvements and error corrections.
+
+## Commit 961cddc - Merge pull request #16 from mbaeten/master
+
+* Fixed Z-flag behavior of instructions SUMC and SUMN
+
+## Commit 74c355d - Bug correction on Logic View creation
+
+* Corrected bug on Logic View: on creation of logic view form, the last grid settings was not updated on form creation.
+
+## Commit b41c66a - Plugin 1.0 Changes 3
+
+* Overhead eliminated on run emulator step (calling to a default setting every time).
+* Some DOXYGEN documentation on Emulator.cs
+
+## Commit 7eb43c6 - Plugin 1.0 Changes 2
+
+* Correction on some missing Z & C flags on NativeCogs.cs.
+* A lot of DOXYGEN documentation on *.cs.
+* Ordering on Using libraries on *.cs.
+* Some corrections on mispellings.
+
+## Commit 8d43068 - Plugin 1.0 Changes 1
+
+* Improved syntax highlighting in Plugin Editor: faster processing of text, with progress bar for user feedback.
+* Auto detected class name on the code, to prevent possible inconsistences on the plugin instance name of the XML with the class name on the code.
+* Error grid more intelligent: shown only on errors, with more space on the grid.
+* References List improved: Added name to it, improved tool tips to Add & Remove buttons.
+* Some DOXYGEN documentation fixed.
+
+## Commit d2a38e8 - Merge Correction 3
+
+* Corrected spellings errors.
+
+## Commit 789b325 - Merge Correction 2
+
+* EmulationCore\PropellerCPU.cs - for PropellerCPU class changed ancestor to Propeller.DirectMemory and consequences, spelling errors. Now it compiles well.
+* EmulationCore\Cog.cs - changed references of CogSpecialAddress to Assembly.RegisterAddress, and references of CogConditionCodes to Assembly.ConditionCodes, using the definitions of Propeller\AssemblyRegisters.cs & Propeller\Conditions.cs. Also deleted obsolete definitions of enum CogSpecialAddress and CogConditionCodes. Corrected spelling errors.
+* Propeller\AssemblyRegisters.cs - Added comments from old code in EmulationCore\Cogs.cs, principally by adding the correction for PAR register (allowing writes) in PASM.
+* GUI\SpinView.cs - Changed invocations of methods Propeller.ReadYYY() & Propeller.WriteYYY() to Propeller.DirectReadYYY() & Propeller.DirectWriteYYY(), following the changes in Propeller\MemoryManager.cs.
+
+## Commit 2eb7f4e - Merge Correction 1
+
+* EmulationCore\Cog.cs - Corrected some changes (#include Gear.Propeller header, memory writes & reads invocations with DirectXXYYY methods, spelling errors). Temporary correction:  commented code to memory access. TODO: clear compile errors on dependencies,
+* EmulationCore\PropellerCPU.cs - Corrected memory writes & reads invocations with DirectXXYYY methods.
+* EmulationCore\InterpretedCog.cs -> validated corrections in commit 230d27d
+* EmulationCore\NativeCog.cs -> validated corrections in commit 230d27d
+
+## Commit 30ca271 - Merge pull request #2 from gatuno1/Rel_Candidate2015_03
+
+* Release 2015.03.26
+
+## Commit bd306e9 - Final commit to Rel.Cand2015_03
+
+* Fix the date to 15.03.26
+
+## Commit 2d703bf - Version corrected to Rel.Cand.15_03
+
+* Corrected version & date in About dialog and Assembly version.
+
+## Commit 3451731 - Version reference corrected to Rel.Cand.15_03
+
+* Correction on all version references to points to V15.03.31.
+* Some spellings corrected in coments.
+
+## Commit ca1a8cc - Bug corrections of LastPlugin application setting
+
+* Bug Correction on first plugin loading on a fresh instalation of GEAR, related to LastPlugin application setting.
+* Corrected a bug in references list: it was possible to add a blank line to the list.
 
 ## V15.03.26
 

@@ -58,16 +58,17 @@ namespace Gear.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         [CategoryAttribute("Plugin Editor")]
-        [DescriptionAttribute("Do not use a template in a new plugin?")]
-        [DisplayNameAttribute("Do not use a template in a new plugin?")]
-       public bool UseNoTemplate {
+        [DescriptionAttribute("Use a template for new plugins")]
+        [DisplayNameAttribute("Use template for new plugins")]
+        [ReadOnlyAttribute(true)]
+        public bool UseTemplate {
             get {
-                return ((bool)(this["UseNoTemplate"]));
+                return ((bool)(this["UseTemplate"]));
             }
             set {
-                this["UseNoTemplate"] = value;
+                this["UseTemplate"] = value;
             }
         }
         
@@ -140,15 +141,30 @@ namespace Gear.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Parallax_SPIN")]
-        [CategoryAttribute("Propeller Emulator")]
-        [DescriptionAttribute("Format of frequency labels in GUI.")]
+        [CategoryAttribute("Hub View")]
+        [DescriptionAttribute("Format of counter and frequency labels in Hub view.")]
         [DisplayNameAttribute("Frequency labels")]
-        public FreqFormatEnum FreqFormat {
+        public NumberFormatEnum FreqFormat {
             get {
-                return ((FreqFormatEnum)(this["FreqFormat"]));
+                return ((NumberFormatEnum)(this["FreqFormat"]));
             }
             set {
                 this["FreqFormat"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("s")]
+        [CategoryAttribute("Hub View")]
+        [DescriptionAttribute("Unit of measure for elapsed time label in Hub view.")]
+        [DisplayNameAttribute("Unit for elapsed time")]
+        public global::Gear.GUI.TimeUnitComboBox.TimeUnitsEnum HubTimeUnit {
+            get {
+                return ((global::Gear.GUI.TimeUnitComboBox.TimeUnitsEnum)(this["HubTimeUnit"]));
+            }
+            set {
+                this["HubTimeUnit"] = value;
             }
         }
     }

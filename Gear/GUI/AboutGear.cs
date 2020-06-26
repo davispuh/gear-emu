@@ -22,14 +22,12 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Windows.Forms;
 using System.Reflection;
+using System.Windows.Forms;
 
 namespace Gear.GUI
 {
+    /// @brief About box for gear.
     partial class AboutGear : Form
     {
         public AboutGear()

@@ -22,15 +22,12 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Gear.GUI
 {
+    /// @brief Rotating gear hub view object.
     public partial class RingMeter : UserControl
     {
         private uint m_RingPosition;

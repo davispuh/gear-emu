@@ -229,7 +229,7 @@ namespace Gear.GUI
             this.AboutPluginButton.Image = ((System.Drawing.Image)(resources.GetObject("AboutPluginButton.Image")));
             this.AboutPluginButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.AboutPluginButton.Name = "AboutPluginButton";
-            this.AboutPluginButton.Size = new System.Drawing.Size(44, 19);
+            this.AboutPluginButton.Size = new System.Drawing.Size(44, 22);
             this.AboutPluginButton.Text = "About";
             this.AboutPluginButton.ToolTipText = "About Plugin";
             this.AboutPluginButton.Visible = false;
@@ -239,7 +239,7 @@ namespace Gear.GUI
             this.closeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.closeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.closeButton.Name = "closeButton";
-            this.closeButton.Size = new System.Drawing.Size(40, 19);
+            this.closeButton.Size = new System.Drawing.Size(40, 22);
             this.closeButton.Text = "Close";
             this.closeButton.ToolTipText = "Close the tab window (if permitted)";
             this.closeButton.Click += new System.EventHandler(this.closeActiveTab_Click);
@@ -267,7 +267,7 @@ namespace Gear.GUI
             this.documentsTab.Name = "documentsTab";
             this.documentsTab.SelectedIndex = 0;
             this.documentsTab.ShowToolTips = true;
-            this.documentsTab.Size = new System.Drawing.Size(657, 408);
+            this.documentsTab.Size = new System.Drawing.Size(657, 403);
             this.documentsTab.TabIndex = 5;
             this.documentsTab.Click += new System.EventHandler(this.documentsTab_Click);
             this.documentsTab.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.documentsTab_KeyPress);
@@ -281,7 +281,7 @@ namespace Gear.GUI
             this.pinnedSplitter.Cursor = System.Windows.Forms.Cursors.HSplit;
             this.pinnedSplitter.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.pinnedSplitter.ExpandParentForm = false;
-            this.pinnedSplitter.Location = new System.Drawing.Point(215, 433);
+            this.pinnedSplitter.Location = new System.Drawing.Point(215, 428);
             this.pinnedSplitter.Name = "collapsibleSplitter1";
             this.pinnedSplitter.TabIndex = 4;
             this.pinnedSplitter.TabStop = false;
@@ -349,10 +349,10 @@ namespace Gear.GUI
         private System.Windows.Forms.ToolStripButton pinButton;
         private System.Windows.Forms.ToolStripButton floatButton;
         private System.Windows.Forms.ToolStripButton unpinButton;
-        private HubView hubView;
         private System.Windows.Forms.ToolStripButton stepInstructionButton;
         private System.Windows.Forms.ToolStripButton openPluginButton;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripButton AboutPluginButton;
+        public HubView hubView;
     }
 }

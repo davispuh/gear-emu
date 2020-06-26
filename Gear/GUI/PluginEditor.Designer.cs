@@ -181,7 +181,7 @@ namespace Gear.GUI
             this.syntaxButton.Image = ((System.Drawing.Image)(resources.GetObject("syntaxButton.Image")));
             this.syntaxButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.syntaxButton.Name = "syntaxButton";
-            this.syntaxButton.Size = new System.Drawing.Size(98, 22);
+            this.syntaxButton.Size = new System.Drawing.Size(99, 22);
             this.syntaxButton.Text = "Syntax Highlight";
             this.syntaxButton.ToolTipText = "Syntax Highlight the code";
             this.syntaxButton.Click += new System.EventHandler(this.syntaxButton_Click);
@@ -199,7 +199,7 @@ namespace Gear.GUI
             // 
             // EmbeddedCode
             // 
-            this.EmbeddedCode.Checked = true;
+            this.EmbeddedCode.Checked = global::Gear.Properties.Settings.Default.EmbeddedCode;
             this.EmbeddedCode.CheckOnClick = true;
             this.EmbeddedCode.CheckState = System.Windows.Forms.CheckState.Indeterminate;
             this.EmbeddedCode.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;

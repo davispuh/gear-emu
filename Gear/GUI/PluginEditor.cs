@@ -21,6 +21,7 @@
  * --------------------------------------------------------------------------------
  */
 
+using Gear.PluginSupport;
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
@@ -29,8 +30,6 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Xml;
-
-using Gear.PluginSupport;
 
 namespace Gear.GUI
 {
@@ -105,7 +104,7 @@ namespace Gear.GUI
 
         /// @brief Attribute for changed plugin detection.
         /// @since v15.03.26 - Added.
-        private bool CodeChanged
+        public bool CodeChanged
         {
             get { return codeChanged; }
             set
@@ -130,7 +129,7 @@ namespace Gear.GUI
         /// @brief Default constructor.
         /// Initialize the class, defines columns for error grid, setting on changes detection  
         /// initially, and try to load the default template for plugin.
-        /// @param[in] loadDefaultTemplate Indicate to load default template (=true) or 
+        /// @param loadDefaultTemplate Indicate to load default template (=true) or 
         /// no template at all(=false).
         /// @since v15.03.26 - Added parameter for loading default template for plugin.
         public PluginEditor(bool loadDefaultTemplate)
@@ -193,8 +192,8 @@ namespace Gear.GUI
 
         /// @brief Load a plugin from File in Plugin Editor, updating the screen.
         /// @details This method take care of update change state of the window. 
-        /// @param[in] FileName Name of the file to open.
-        /// @param[in] displayErrors Flag to show errors in the error grid.
+        /// @param FileName Name of the file to open.
+        /// @param displayErrors Flag to show errors in the error grid.
         /// @returns Success on load the file on the editor (=true) or fail (=false).
         public bool OpenFile(string FileName, bool displayErrors)
         {
@@ -311,8 +310,8 @@ namespace Gear.GUI
 
         /// @brief Method to compile C# source code to check errors on it.
         /// Actually call a C# compiler to determine errors, using references.
-        /// @param[in] sender Object who called this on event.
-        /// @param[in] e `EventArgs` class with a list of argument to the event call.
+        /// @param sender Object who called this on event.
+        /// @param e `EventArgs` class with a list of argument to the event call.
         private void CheckSource_Click(object sender, EventArgs e)
         {
             if (String.IsNullOrEmpty(codeEditorView.Text))
@@ -374,7 +373,7 @@ namespace Gear.GUI
         }
 
         /// @brief Add error details on screen list.
-        /// @param[in] e `CompileError` object.
+        /// @param e `CompileError` object.
         public void EnumErrors(CompilerError e)
         {
             ListViewItem item = new ListViewItem(e.ErrorNumber, 0);
@@ -388,8 +387,8 @@ namespace Gear.GUI
 
         /// @brief Show a dialog to load a file with plugin information.
         /// @details This method checks if the previous plugin data was modified and not saved.
-        /// @param[in] sender Object who called this on event.
-        /// @param[in] e `EventArgs` class with a list of argument to the event call.
+        /// @param sender Object who called this on event.
+        /// @param e `EventArgs` class with a list of argument to the event call.
         private void OpenButton_Click(object sender, EventArgs e)
         {
             bool continueAnyway = true;
@@ -429,8 +428,8 @@ namespace Gear.GUI
         }
 
         /// @brief Show dialog to save a plugin information into file, using GEAR plugin format.
-        /// @param[in] sender Object who called this on event.
-        /// @param[in] e `EventArgs` class with a list of argument to the event call.
+        /// @param sender Object who called this on event.
+        /// @param e `EventArgs` class with a list of argument to the event call.
         private void SaveButton_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrEmpty(LastPlugin))
@@ -442,8 +441,8 @@ namespace Gear.GUI
         }
 
         /// @brief Show dialog to save a plugin information into file, using GEAR plugin format.
-        /// @param[in] sender Object who called this on event.
-        /// @param[in] e `EventArgs` class with a list of argument to the event call.
+        /// @param sender Object who called this on event.
+        /// @param e `EventArgs` class with a list of argument to the event call.
         private void SaveAsButton_Click(object sender, EventArgs e)
         {
             SaveFileDialog dialog = new SaveFileDialog();
@@ -467,8 +466,8 @@ namespace Gear.GUI
 
         /// @brief Add a reference from the `ReferenceName`text box.
         /// Also update change state for the plugin module, marking as changed.
-        /// @param[in] sender Object who called this on event.
-        /// @param[in] e `EventArgs` class with a list of argument to the event call.
+        /// @param sender Object who called this on event.
+        /// @param e `EventArgs` class with a list of argument to the event call.
         private void addReferenceButton_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrEmpty(referenceName.Text))
@@ -481,8 +480,8 @@ namespace Gear.GUI
 
         /// @brief Remove the selected reference of the list.
         /// Also update change state for the plugin module, marking as changed.
-        /// @param[in] sender Object who called this on event.
-        /// @param[in] e `EventArgs` class with a list of argument to the event call.
+        /// @param sender Object who called this on event.
+        /// @param e `EventArgs` class with a list of argument to the event call.
         private void RemoveReferenceButton_Click(object sender, EventArgs e)
         {
             if (referencesList.SelectedIndex != -1)
@@ -493,8 +492,8 @@ namespace Gear.GUI
         }
 
         /// @brief Position the cursor in code window, corresponding to selected error row.
-        /// @param[in] sender Object who called this on event.
-        /// @param[in] e EventArgs class with a list of argument to the event call.
+        /// @param sender Object who called this on event.
+        /// @param e EventArgs class with a list of argument to the event call.
         private void ErrorView_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (errorListView.SelectedIndices.Count < 1)
@@ -522,8 +521,8 @@ namespace Gear.GUI
         }
 
         /// @brief Check syntax on the C# source code
-        /// @param[in] sender Object who called this on event.
-        /// @param[in] e `EventArgs` class with a list of argument to the event call.
+        /// @param sender Object who called this on event.
+        /// @param e `EventArgs` class with a list of argument to the event call.
         /// @since V14.07.03 - Added.
         /// @note Experimental highlighting. Probably changes in the future.
         // Syntax highlighting
@@ -560,7 +559,7 @@ namespace Gear.GUI
         
         /// @brief Auxiliary method to check syntax.
         /// Examines line by line, parsing reserved C# words.
-        /// @param[in] line Text line from the source code.
+        /// @param line Text line from the source code.
         /// @param[in,out] commentMultiline Flag to indicate if it is on comment mode 
         /// between multi lines (=true) or normal mode (=false).
         /// @since v14.07.03 - Added.
@@ -667,8 +666,8 @@ namespace Gear.GUI
 
         /// @brief Update change state for code text box.
         /// It marks as changed, to prevent not averted loses at closure of the window.
-        /// @param[in] sender Object who called this on event.
-        /// @param[in] e `EventArgs` class with a list of argument to the event call.
+        /// @param sender Object who called this on event.
+        /// @param e `EventArgs` class with a list of argument to the event call.
         /// @since v15.03.26 - Added.
         private void codeEditorView_TextChanged(object sender, EventArgs e)
         {
@@ -679,7 +678,7 @@ namespace Gear.GUI
         }
 
         /// @brief Detect the plugin class name from the code text given as parameter.
-        /// @param[in] code Text of the source code of plugin to look for the class 
+        /// @param code Text of the source code of plugin to look for the class 
         /// name declaration.
         /// @param[out] match Name of the plugin class found. If not, it will be null.
         /// @returns If a match had found =True, else =False.
@@ -711,8 +710,8 @@ namespace Gear.GUI
         /// @brief Event handler for closing plugin window.
         /// If code, references or class name have changed and them are not saved, a Dialog is 
         /// presented to the user to proceed or abort the closing.
-        /// @param[in] sender Object who called this on event.
-        /// @param[in] e `FormClosingEventArgs` class with a list of argument to the event call.
+        /// @param sender Object who called this on event.
+        /// @param e `FormClosingEventArgs` class with a list of argument to the event call.
         /// @since v15.03.26 - Added.
         private void PluginEditor_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -724,7 +723,7 @@ namespace Gear.GUI
         }
 
         /// @brief Ask the user to not loose changes.
-        /// @param[in] fileName Filename to show in dialog.
+        /// @param fileName Filename to show in dialog.
         /// @returns Boolean to close (=true) or not (=false).
         /// @since v15.03.26 - Added.
         private bool CloseAnyway(string fileName)
@@ -745,22 +744,28 @@ namespace Gear.GUI
         }
 
         /// @brief Toggle the button state, updating the name & tooltip text.
-        /// @param[in] sender Object who called this on event.
-        /// @param[in] e `EventArgs` class with a list of argument to the event call.
+        /// @param sender Object who called this on event.
+        /// @param e `EventArgs` class with a list of argument to the event call.
         /// @since v15.03.26 - Added.
         private void embeddedCode_Click(object sender, EventArgs e)
         {
             SetEmbeddedCodeButton(EmbeddedCode.Checked);
-            //remember setting
-            Properties.Settings.Default.EmbeddedCode = EmbeddedCode.Checked;
+            UpdateTextEmbeddedCodeButton();
         }
 
-        /// @brief Update the name & tooltip text depending on each state.
-        /// @param[in] newValue Value to set.
+        /// @brief Set the state of EmbeddedCode button.
+        /// @param newValue Value to set.
         /// @since v15.03.26 - Added.
+        /// @version 20.06.01 - Separed in 2 methods.
         private void SetEmbeddedCodeButton(bool newValue)
         {
             EmbeddedCode.Checked = newValue;
+        }
+
+        /// @brief Update the name & tooltip text depending on state.
+        /// @since 20.06.01 - Added.
+        public void UpdateTextEmbeddedCodeButton()
+        {
             if (EmbeddedCode.Checked)
             {
                 EmbeddedCode.Text = "Embedded";
@@ -772,6 +777,5 @@ namespace Gear.GUI
                 EmbeddedCode.ToolTipText = "Code in separated file from XML plugin file.";
             }
         }
-
     }
 }

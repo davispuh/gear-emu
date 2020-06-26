@@ -23,6 +23,7 @@
 
 namespace Gear.Propeller
 {
+    /// @brief Registers of a Propeller Cog.
     public partial class Assembly
     {
         /// @brief %Cog RAM Special Purpose Registers.

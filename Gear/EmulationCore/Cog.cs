@@ -86,7 +86,7 @@ namespace Gear.EmulationCore
         protected uint ProgramAddress;      //!< @todo Document member Cog.ProgramAddress
         protected uint ParamAddress;        //!< @todo Document member Cog.ParamAddress
         protected FrameState frameFlag;     //!< @brief Indicates video frame end and whether in WAIT_VID
-        protected FrameState frameBreak;    //!< @breaf Break if frameFlag higher
+        protected FrameState frameBreak;    //!< @brief Break if frameFlag higher
 
         protected FreqGenerator FreqA;      //!< @todo Document member Cog.FreqA
         protected FreqGenerator FreqB;      //!< @todo Document member Cog.FreqB
@@ -139,7 +139,7 @@ namespace Gear.EmulationCore
             set { BreakPointCogCursor = value; }
         }
 
-        /// @break Get video frames cont
+        /// @brief Get video frames cont
         public uint VideoFrames
         {
             get { return Video.Frames; }
@@ -500,8 +500,8 @@ namespace Gear.EmulationCore
         /// @brief Write cog RAM with a specified value.
         /// @details This method take care of special cog address that in this class aren't 
         /// write in memory array Cog.Memory.
-        /// @param[in] address Address to write.
-        /// @param[in] data Data to write in address.
+        /// @param address Address to write.
+        /// @param data Data to write in address.
         /// @note PAR address is a special case, because unless Propeller Manual V1.2 
         /// specifications says it is a read-only register, there are claims that in reality it 
         /// is writable as explains 

@@ -21,10 +21,8 @@
  * --------------------------------------------------------------------------------
  */
 
-using System;
-using System.Windows.Forms;
-
 using Gear.EmulationCore;
+using System.Windows.Forms;
 
 /// @brief Name space for Plugin support.
 /// @details Contains the classes that defines the plugin system: the plugin class  
@@ -59,7 +57,7 @@ namespace Gear.PluginSupport
         ///     private PropellerCPU Chip;  /*<== this line will not be necesary to declare in every plugin anymore.*/
         /// ...
         /// @endcode
-        /// @param[in] chip Propeller CPU reference.
+        /// @param chip Propeller CPU reference.
         /// @version V15.03.26 - Modified to add %PropellerCPU parameter.
         public PluginBase(PropellerCPU chip)
         {
@@ -107,8 +105,8 @@ namespace Gear.PluginSupport
         public virtual void OnClose() { }
              
         /// @brief Event when a clock tick is informed to the plugin, in clock units.
-        /// @param[in] time Time in seconds of the emulation.
-        /// @param[in] sysCounter Present system clock in ticks unit.
+        /// @param time Time in seconds of the emulation.
+        /// @param sysCounter Present system clock in ticks unit.
         /// @warning If sysCounter is used only, the plugin designer have to take measures to 
         /// detect and manage system counter rollover.
         /// @version V15.03.26 - Modified to have two parameters.
@@ -120,8 +118,8 @@ namespace Gear.PluginSupport
         /// floating.
         /// @note Source: <a href="http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment?p=625629&viewfull=1#post625629">
         /// API GEAR described on GEAR original Post</a>
-        /// @param[in] time Time in seconds.
-        /// @param[in] pins Array of pins with the current state.
+        /// @param time Time in seconds.
+        /// @param pins Array of pins with the current state.
         public virtual void OnPinChange(double time, PinState[] pins) { }
 
         /// @brief Event to repaint the plugin screen (if used).
@@ -130,7 +128,7 @@ namespace Gear.PluginSupport
         /// 'force' an update, this is provided so you can pass a false for non-forced repaints).
         /// @note Source: <a href="http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment?p=625629&viewfull=1#post625629">
         /// API GEAR described on GEAR original Post</a>
-        /// @param[in] force Flag to indicate the intention to force the repaint.
+        /// @param force Flag to indicate the intention to force the repaint.
         public virtual void Repaint(bool force) { }
 
         /// @brief Notifies that this plugin must be notified on pin changes.
@@ -151,9 +149,9 @@ namespace Gear.PluginSupport
 
         /// @brief Drive a pin of PropellerCPU
         /// This method is for isolate the access to the underline Chip.
-        /// @param[in] pin Pin number to drive
-        /// @param[in] Floating Boolean to left floating (=true) or to set on input/output (=false).
-        /// @param[in] Hi Boolean to set on Hi state (=true) or to set on Low (=false).
+        /// @param pin Pin number to drive
+        /// @param Floating Boolean to left floating (=true) or to set on input/output (=false).
+        /// @param Hi Boolean to set on Hi state (=true) or to set on Low (=false).
         /// @since V15.03.26 - Added.
         public void DrivePin(int pin, bool Floating, bool Hi)
         {

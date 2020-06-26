@@ -21,15 +21,15 @@
  * --------------------------------------------------------------------------------
  */
 
+using Gear.EmulationCore;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-using Gear.EmulationCore;
-
 namespace Gear.GUI.LogicProbe
 {
+    /// @brief Logical pin waveform viewer
     public partial class LogicView : Gear.PluginSupport.PluginBase
     {
         private Font MonoFont;

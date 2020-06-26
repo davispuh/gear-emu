@@ -21,15 +21,12 @@
  * --------------------------------------------------------------------------------
  */
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
-
 using Gear.EmulationCore;
+using System.Drawing;
 
 namespace Gear.GUI.LogicProbe
 {
+    /// @brief Provides a Digital logic channel for LogicView.
     public class LogicDigital : LogicRow
     {
         const int MAXIMUM_SAMPLES = 1024;
@@ -63,7 +60,7 @@ namespace Gear.GUI.LogicProbe
         }
 
         /// @brief Default Constructor 
-        /// @param[in] pin Pin map to use
+        /// @param pin Pin map to use
         public LogicDigital(int pin)
         {
             Pins = new PinState[MAXIMUM_SAMPLES];

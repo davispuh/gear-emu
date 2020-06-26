@@ -21,13 +21,11 @@
  * --------------------------------------------------------------------------------
  */
 
-using Gear.GUI;
-
 /// @brief Transversal %Properties for the program.
 namespace Gear.Properties
 {
     /// @brief Controls events for configuration class.
-    
+
     // Esta clase le permite controlar eventos específicos en la clase de configuración:
     //  El evento SettingChanging se desencadena antes de cambiar un valor de configuración.
     //  El evento PropertyChanged se desencadena después de cambiar el valor de configuración.
@@ -82,9 +80,9 @@ namespace Gear.Properties
         /// @brief Last value used as a width in the logic view plugin.
         /// @since V15.03.26 - Added as a User property of the program.
 
-        /// @property UseNoTemplate
-        /// @brief Indicates to use the default template on the creation of a new plugin (=false), or to 
-        /// do not use a template (blank content initially) (=true).
+        /// @property UseTemplate
+        /// @brief Indicates to use the default template on the creation of a new plugin (=true), or to 
+        /// do not use a template (blank content initially) (=false).
         /// @since V15.03.26 - Added as a User property of the program.
 
         /// @property UpdateEachSteps
@@ -93,7 +91,7 @@ namespace Gear.Properties
 
         /// @property FreqFormat
         /// @brief Format of frequency labels in GUI.
-        /// @since V20.05.00 - Added as a User property of the program.
+        /// @since V20.06.01 - Added as a User property of the program.
 
     }
 }

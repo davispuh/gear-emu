@@ -72,8 +72,7 @@ namespace Gear.EmulationCore
         LOGIC_ALWAYS                //!< %11111 | LOGIC always
     }
 
-    /// @todo document Gear.EmulationCore.FreqGenerator
-    /// 
+    /// @brief Frequency Generator Circuit emulation
     public class FreqGenerator
     {
         private uint Control;

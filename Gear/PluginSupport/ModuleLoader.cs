@@ -21,11 +21,6 @@
  * --------------------------------------------------------------------------------
  */
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-//using Microsoft.CSharp;
 using System.CodeDom.Compiler;
 using System.Reflection;
 
@@ -34,7 +29,6 @@ namespace Gear.PluginSupport
     public delegate void ErrorEnumProc(System.CodeDom.Compiler.CompilerError e);
 
     /// @brief Compile a PluginBase Module, keeping the errors if they appears.
-    /// 
     static class ModuleCompiler
     {
         /// @brief Collection for error list on compile a dynamic plugin.
@@ -48,7 +42,7 @@ namespace Gear.PluginSupport
         }
 
         /// @brief Enumerate errors from the compiling process.
-        /// @param[in] proc Method to invoke for each error.
+        /// @param proc Method to invoke for each error.
         static public void EnumerateErrors(ErrorEnumProc proc)
         {
             if (m_Errors == null)
@@ -62,11 +56,11 @@ namespace Gear.PluginSupport
         /// @details Try to dynamically compile a module for the plugin, based on supplied C# code
         /// and other C# modules referenced. If the compiling fails, it gives a list of errors, 
         /// intended to be showed in the plugin view.
-        /// @param[in] code C# Source code based on PluginBase class, to implement your plugin.
-        /// @param[in] module Class name of the plugin.
-        /// @param[in] references String array with auxiliary references used by your plugin. 
+        /// @param code C# Source code based on PluginBase class, to implement your plugin.
+        /// @param module Class name of the plugin.
+        /// @param references String array with auxiliary references used by your plugin. 
         /// See notes for defaults used.
-        /// @param[in] obj Reference to a PropellerCPU of this instance, to be passed as a 
+        /// @param obj Reference to a PropellerCPU of this instance, to be passed as a 
         /// parameter to the constructor of the new plugin class instance.
         /// @returns New Plugin class instance compiled (on success), or NULL (on fail).
         /// @note There are some references already added, so you don't need to include on your plugins: 
