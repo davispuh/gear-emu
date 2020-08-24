@@ -38,14 +38,7 @@ namespace Gear.PluginSupport
     static class ModuleCompiler
     {
         /// @brief Collection for error list on compile a dynamic plugin.
-        static private CompilerErrorCollection m_Errors;    
-
-        /// @brief ModuleCompiler Constructor.
-        /// @details Clear error list by default.
-        static ModuleCompiler()
-        {
-            m_Errors = null;
-        }
+        static private CompilerErrorCollection m_Errors = null;    
 
         /// @brief Enumerate errors from the compiling process.
         /// @param[in] proc Method to invoke for each error.
@@ -77,7 +70,11 @@ namespace Gear.PluginSupport
             CodeDomProvider provider = new Microsoft.CSharp.CSharpCodeProvider();
             CompilerParameters cp = new CompilerParameters();
 
+#if DEBUG
+            cp.IncludeDebugInformation = true;
+#else
             cp.IncludeDebugInformation = false;
+#endif
             cp.GenerateExecutable = false;
             cp.GenerateInMemory = true;
             cp.CompilerOptions = "/optimize";

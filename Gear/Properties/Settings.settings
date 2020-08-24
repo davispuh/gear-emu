@@ -23,5 +23,8 @@
     <Setting Name="EmbeddedCode" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="TabSize" Type="System.UInt32" Scope="User">
+      <Value Profile="(Default)">4</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

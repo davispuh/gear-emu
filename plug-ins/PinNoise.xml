@@ -1,54 +1,70 @@
-<plugin>
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin[<!ELEMENT plugin (instance, reference*, code)>
+<!ATTLIST plugin version CDATA "1.0">
+<!ELEMENT instance EMPTY>
+<!ATTLIST instance class CDATA #REQUIRED>
+<!ELEMENT reference EMPTY>
+<!ATTLIST reference name CDATA #REQUIRED>
+<!ELEMENT code (#PCDATA)>
+<!ATTLIST code codeFileName CDATA #IMPLIED>]>
+<plugin version="1.0">
   <instance class="PinNoise" />
-  <code>
-    using Gear.EmulationCore;
-    using Gear.PluginSupport;
+  <code><![CDATA[//Assemblies needed for GEAR plugin system.
+using Gear.EmulationCore;
+using Gear.PluginSupport;
 
-    class PinNoise : PluginBase
-    {
+//Class declaration of plugin.
+class PinNoise : PluginBase
+{
 
-        private int Drive;
-        private bool Clock;
-        private double last;
+	private int Drive;
+	private bool Clock;
+	private double last;
 
-        public PinNoise(PropellerCPU chip) : base(chip) 
-        { 
-            Drive = 0;
-            Clock = false;
-            last = 0.0;
-        }
+	//Constructor for plugin initialization.
+	public PinNoise(PropellerCPU chip) : base(chip) 
+	{ 
+		Drive = 0;
+		Clock = false;
+		last = 0.0;
+	}
 
-        public override string Title
-        {
-            get { return "Pin Noise"; }
-        }
+	//Title to be shown in tab.
+	public override string Title
+	{
+		get { return "Pin Noise"; }
+	}
 
-        public override void PresentChip()
-        {
-            NotifyOnPins();
-            NotifyOnClock();
-        }
+	//Register the events to be notified to this plugin.
+	public override void PresentChip()
+	{
+		NotifyOnPins();
+		NotifyOnClock();
+	}
 
-        public override void OnPinChange(double time, PinState[] pins)
-        {
-            Drive++;
-            if (Drive % 3 == 0)
-            {
-                // DrivePin(int pin_number, bool Floating, bool Hi)
-                DrivePin(3, false, (Drive &amp; 1) == 1);
-            }
-        }
+	//Called every time a pin changes, only if it was registered on 
+	//method PresentChip() above.
+	public override void OnPinChange(double time, PinState[] pins)
+	{
+		Drive++;
+		if (Drive % 3 == 0)
+		{
+			// DrivePin(int pin_number, bool Floating, bool Hi)
+			DrivePin(3, false, (Drive & 1) == 1);
+		}
+	}
 
-        public override void OnClock(double time, uint sysCounter)
-        {
-            if (time - last &gt;= 0.00001)
-            {
-                last += 0.00001;
-                Clock = !Clock;
-                DrivePin(2, false, Clock);
-            }
-        }
-    }
-  
-</code>
+	//Called every clock tick, only if it was registered on method 
+	//PresentChip() above. 
+	public override void OnClock(double time, uint sysCounter)
+	{
+		if (time - last >= 0.00001)
+		{
+			last += 0.00001;
+			Clock = !Clock;
+			DrivePin(2, false, Clock);
+		}
+	}
+}
+]]></code>
 </plugin>

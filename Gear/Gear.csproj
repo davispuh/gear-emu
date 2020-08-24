@@ -203,6 +203,13 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Content Include="Resources\Plugin.dtd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </Content>
+    <None Include="Resources\plugin.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Resources\StartupROM.bin" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>

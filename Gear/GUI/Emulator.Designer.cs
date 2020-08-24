@@ -112,7 +112,7 @@ namespace Gear.GUI
             this.openBinaryButton.Size = new System.Drawing.Size(40, 22);
             this.openBinaryButton.Text = "Open";
             this.openBinaryButton.ToolTipText = "Open image of propeller (binary/eeprom)";
-            this.openBinaryButton.Click += new System.EventHandler(this.openBinary_Click);
+            this.openBinaryButton.Click += new System.EventHandler(this.OpenBinary_Click);
             // 
             // reloadBinaryButton
             // 
@@ -122,7 +122,7 @@ namespace Gear.GUI
             this.reloadBinaryButton.Size = new System.Drawing.Size(47, 22);
             this.reloadBinaryButton.Text = "Reload";
             this.reloadBinaryButton.ToolTipText = "Reload image (binary/eeprom) from file";
-            this.reloadBinaryButton.Click += new System.EventHandler(this.reloadBinary_Click);
+            this.reloadBinaryButton.Click += new System.EventHandler(this.ReloadBinary_Click);
             // 
             // resetEmulatorButton
             // 
@@ -133,7 +133,7 @@ namespace Gear.GUI
             this.resetEmulatorButton.Size = new System.Drawing.Size(39, 22);
             this.resetEmulatorButton.Text = "Reset";
             this.resetEmulatorButton.ToolTipText = "Reset the emulator";
-            this.resetEmulatorButton.Click += new System.EventHandler(this.resetEmulator_Click);
+            this.resetEmulatorButton.Click += new System.EventHandler(this.ResetEmulator_Click);
             // 
             // runEmulatorButton
             // 
@@ -143,7 +143,7 @@ namespace Gear.GUI
             this.runEmulatorButton.Name = "runEmulatorButton";
             this.runEmulatorButton.Size = new System.Drawing.Size(32, 22);
             this.runEmulatorButton.Text = "Run";
-            this.runEmulatorButton.Click += new System.EventHandler(this.runEmulator_Click);
+            this.runEmulatorButton.Click += new System.EventHandler(this.RunEmulator_Click);
             // 
             // stopEmulatorButton
             // 
@@ -153,7 +153,7 @@ namespace Gear.GUI
             this.stopEmulatorButton.Name = "stopEmulatorButton";
             this.stopEmulatorButton.Size = new System.Drawing.Size(35, 22);
             this.stopEmulatorButton.Text = "Stop";
-            this.stopEmulatorButton.Click += new System.EventHandler(this.stopEmulator_Click);
+            this.stopEmulatorButton.Click += new System.EventHandler(this.StopEmulator_Click);
             // 
             // stepInstructionButton
             // 
@@ -163,7 +163,7 @@ namespace Gear.GUI
             this.stepInstructionButton.Name = "stepInstructionButton";
             this.stepInstructionButton.Size = new System.Drawing.Size(94, 22);
             this.stepInstructionButton.Text = "Step Instruction";
-            this.stepInstructionButton.Click += new System.EventHandler(this.stepInstruction_Click);
+            this.stepInstructionButton.Click += new System.EventHandler(this.StepInstruction_Click);
             // 
             // stepClockButton
             // 
@@ -173,7 +173,7 @@ namespace Gear.GUI
             this.stepClockButton.Name = "stepClockButton";
             this.stepClockButton.Size = new System.Drawing.Size(67, 22);
             this.stepClockButton.Text = "Step Clock";
-            this.stepClockButton.Click += new System.EventHandler(this.stepEmulator_Click);
+            this.stepClockButton.Click += new System.EventHandler(this.StepEmulator_Click);
             // 
             // unpinButton
             // 
@@ -185,7 +185,7 @@ namespace Gear.GUI
             this.unpinButton.Size = new System.Drawing.Size(48, 22);
             this.unpinButton.Text = "Unsplit";
             this.unpinButton.ToolTipText = "Restore the splitted object to a tab window";
-            this.unpinButton.Click += new System.EventHandler(this.unpinButton_Click);
+            this.unpinButton.Click += new System.EventHandler(this.UnpinButton_Click);
             // 
             // pinButton
             // 
@@ -197,7 +197,7 @@ namespace Gear.GUI
             this.pinButton.Size = new System.Drawing.Size(34, 22);
             this.pinButton.Text = "Split";
             this.pinButton.ToolTipText = "Embbed the selected tab to the lower split area";
-            this.pinButton.Click += new System.EventHandler(this.pinActiveTab_Click);
+            this.pinButton.Click += new System.EventHandler(this.PinActiveTab_Click);
             // 
             // floatButton
             // 
@@ -209,7 +209,7 @@ namespace Gear.GUI
             this.floatButton.Size = new System.Drawing.Size(37, 22);
             this.floatButton.Text = "Float";
             this.floatButton.ToolTipText = "Float the selected tab to a new window";
-            this.floatButton.Click += new System.EventHandler(this.floatActiveTab_Click);
+            this.floatButton.Click += new System.EventHandler(this.FloatActiveTab_Click);
             // 
             // openPluginButton
             // 
@@ -242,7 +242,7 @@ namespace Gear.GUI
             this.closeButton.Size = new System.Drawing.Size(40, 19);
             this.closeButton.Text = "Close";
             this.closeButton.ToolTipText = "Close the tab window (if permitted)";
-            this.closeButton.Click += new System.EventHandler(this.closeActiveTab_Click);
+            this.closeButton.Click += new System.EventHandler(this.CloseActiveTab_Click);
             // 
             // toolStripSeparator3
             // 
@@ -269,8 +269,8 @@ namespace Gear.GUI
             this.documentsTab.ShowToolTips = true;
             this.documentsTab.Size = new System.Drawing.Size(657, 408);
             this.documentsTab.TabIndex = 5;
-            this.documentsTab.Click += new System.EventHandler(this.documentsTab_Click);
-            this.documentsTab.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.documentsTab_KeyPress);
+            this.documentsTab.Click += new System.EventHandler(this.DocumentsTab_Click);
+            this.documentsTab.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.DocumentsTab_KeyPress);
             // 
             // pinnedSplitter
             // 

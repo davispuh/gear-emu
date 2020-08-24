@@ -21,10 +21,8 @@
  * --------------------------------------------------------------------------------
  */
 
-using System;
-using System.Windows.Forms;
-
 using Gear.EmulationCore;
+using System.Windows.Forms;
 
 /// @brief Name space for Plugin support.
 /// @details Contains the classes that defines the plugin system: the plugin class  

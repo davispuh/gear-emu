@@ -1,220 +1,230 @@
-<plugin>
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin[<!ELEMENT plugin (instance, reference*, code)>
+<!ATTLIST plugin version CDATA "1.0">
+<!ELEMENT instance EMPTY>
+<!ATTLIST instance class CDATA #REQUIRED>
+<!ELEMENT reference EMPTY>
+<!ATTLIST reference name CDATA #REQUIRED>
+<!ELEMENT code (#PCDATA)>
+<!ATTLIST code codeFileName CDATA #IMPLIED>]>
+<plugin version="1.0">
   <instance class="Television" />
-  <code>
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
-    using System.Drawing;
+  <code><![CDATA[//Assemblies needed for GEAR plugin system.
+using Gear.EmulationCore;
+using Gear.PluginSupport;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Text;
 
-    using Gear.PluginSupport;
-    using Gear.EmulationCore;
+//Class declaration of plugin.
+class Television : PluginBase
+{
+	const double ColorCarrier = 1.0 / 3579545.0;
+	const double SampleTime = ColorCarrier / 16.0;  // Amount of time for 1/16th of a color phase
+	const double RoundSquare = ColorCarrier / 64.0;
+	const int PixelPitch = 4;                       // Horizontal resolution divide
 
-    class Television : PluginBase
-    {
-        const double ColorCarrier = 1.0 / 3579545.0;
-        const double SampleTime = ColorCarrier / 16.0;  // Ammmount of time for 1/16th of a color phase
-        const double RoundSquare = ColorCarrier / 64.0;
-        const int PixelPitch = 4;                       // Horizontal resolution divide
+	private double LastTime;
+	private double SampleError;
+	private int PixelError;
+	private Bitmap Picture;
 
-        private double LastTime;
-        private double SampleError;
-        private int PixelError;
-        private Bitmap Picture;
+	private double[] BackLog;
+	private int BackLogIndex;
 
-        private double[] BackLog;
-        private int BackLogIndex;
+	private double SyncTime;
+	private bool MidRaster;
 
-        private double SyncTime;
-        private bool MidRaster;
+	private int Voltage;
 
-        private int Voltage;
+	private int RasterX;
+	private int RasterY;
 
-        private int RasterX;
-        private int RasterY;
+	private bool Syncing;
 
-        private bool Syncing;
+	//Constructor for plugin initialization.
+	public Television(PropellerCPU chip) : base(chip)
+	{
+		Picture = new Bitmap(910, 600, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
 
+		LastTime = 0;
+		RasterX = RasterY = 0;
+		BackLog = new double[10];
+		BackLogIndex = 0;
+	}
 
-        public override string Title
-        {
-            get { return &quot;Television&quot;; }
-        }
+	//Title to be shown in tab.
+	public override string Title
+	{
+		get { return "Television"; }
+	}
 
-        public Television(PropellerCPU chip) : base(chip)
-        {
-            Picture = new Bitmap(910, 600, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+	protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
+	{
+		e.Graphics.DrawImage(Picture, 0, 0);
+	}
 
-            LastTime = 0;
-            RasterX = RasterY = 0;
-            BackLog = new double[10];
-            BackLogIndex = 0;
-        }
+	//To repaint the plugin screen.
+	public override void Repaint(bool force)
+	{
+		CreateGraphics().DrawImage(Picture, 0, 0);
+	}
 
-        protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
-        {
-            e.Graphics.DrawImage(Picture, 0, 0);
-        }
+	//Register the events to be notified to this plugin.
+	public override void PresentChip()
+	{
+		NotifyOnPins();
+	}
 
-        public override void Repaint(bool force)
-        {
-            CreateGraphics().DrawImage(Picture, 0, 0);
-        }
+	private Color HSVtoRGB(double h, double s, double v)
+	{
+		int i;
+		double f, p, q, t;
 
-        public override void PresentChip()
-        {
-            NotifyOnPins();
-        }
+		v *= 255;
 
-        private Color HSVtoRGB(double h, double s, double v)
-        {
-            int i;
-            double f, p, q, t;
+		if (s == 0)
+			return Color.FromArgb((int)v, (int)v, (int)v);
 
-            v *= 255;
+		h *= 5.0;
+		while (h < 0.0)
+			h += 5;
 
-            if (s == 0)
-                return Color.FromArgb((int)v, (int)v, (int)v);
+		i = (int)h;
+		f = h - i;          // factorial part of h
+		p = v * (1 - s);
+		q = v * (1 - s * f);
+		t = v * (1 - s * (1 - f));
 
-            h *= 5.0;
-            while (h &lt; 0.0)
-                h += 5;
+		switch (i)
+		{
+			case 0:
+				return Color.FromArgb((int)v, (int)t, (int)p);
+			case 1:
+				return Color.FromArgb((int)q, (int)v, (int)p);
+			case 2:
+				return Color.FromArgb((int)p, (int)v, (int)t);
+			case 3:
+				return Color.FromArgb((int)p, (int)q, (int)v);
+			case 4:
+				return Color.FromArgb((int)t, (int)p, (int)v);
+			default:        // case 5:
+				return Color.FromArgb((int)v, (int)p, (int)q);
+		}
 
-            i = (int)h;
-            f = h - i;			// factorial part of h
-            p = v * (1 - s);
-            q = v * (1 - s * f);
-            t = v * (1 - s * (1 - f));
+	}
 
-            switch (i)
-            {
-                case 0:
-                    return Color.FromArgb((int)v, (int)t, (int)p);
-                case 1:
-                    return Color.FromArgb((int)q, (int)v, (int)p);
-                case 2:
-                    return Color.FromArgb((int)p, (int)v, (int)t);
-                case 3:
-                    return Color.FromArgb((int)p, (int)q, (int)v);
-                case 4:
-                    return Color.FromArgb((int)t, (int)p, (int)v);
-                default:		// case 5:
-                    return Color.FromArgb((int)v, (int)p, (int)q);
-            }
+	double prior;
+	double chroma;
+	double baseChroma;
 
-        }
+	//Called every time a pin changes, only if it was registered on 
+	//method PresentChip() above.
+	public override void OnPinChange(double time, PinState[] pins)
+	{
+		double delta = time - LastTime;
+		LastTime = time;
 
-        double prior;
-        double chroma;
-        double baseChroma;
+		// Run lowpass on signal to get the current gray level
+		double luma = (Voltage / 7.0);
 
-        public override void OnPinChange(double time, PinState[] pins)
-        {
-            double delta = time - LastTime;
-            LastTime = time;
+		// Find the number of samples to display (with taking error into account
+		SampleError += delta / SampleTime;
+		int samples = (int)SampleError;
+		SampleError -= samples;
 
-            // Run lowpass on signal to get the current gray level
-            // if (!Syncing)
-            // {
-                double luma = (Voltage / 7.0);
+		while (samples-- > 0)
+		{
+			BackLog[BackLogIndex++] = luma;
+			if (BackLogIndex >= BackLog.Length)
+				BackLogIndex = 0;
 
-                // Find the number of samples to display (with taking error into account
-                SampleError += delta / SampleTime;
-                int samples = (int)SampleError;
-                SampleError -= samples;
+			if (prior > luma)
+			{
+				double linePulse = (time - SyncTime) / SampleTime;
 
-                while (samples-- &gt; 0)
-                {
-                    BackLog[BackLogIndex++] = luma;
-                    if (BackLogIndex &gt;= BackLog.Length)
-                        BackLogIndex = 0;
+				if (linePulse < 447)
+					baseChroma = time;
 
-                    if (prior &gt; luma)
-                    {
-                        double linePulse = (time - SyncTime) / SampleTime;
+				// Find out aproximately how much of a difference there is from the base phase
+				chroma = (time - baseChroma) / ColorCarrier + 0.75;
+				// Round it down, and color correct
+				chroma = 1.0 - (chroma - (int)chroma);
+			}
+			prior = luma;
 
-                        if (linePulse &lt; 447)
-                            baseChroma = time;
+			double minAmp = 8;
+			double maxAmp = -1;
 
-                        // Find out aproximately how much of a difference there is from the base phase
-                        chroma = (time - baseChroma) / ColorCarrier + 0.75;
-                        // Round it down, and color correct
-                        chroma = 1.0 - (chroma - (int)chroma);
-                    }
-                    prior = luma;
+			for (int i = 0; i < BackLog.Length; i++)
+			{
+				if (minAmp > BackLog[i])
+					minAmp = BackLog[i];
+				if (maxAmp < BackLog[i])
+					maxAmp = BackLog[i];
+			}
 
-                    double minAmp = 8;
-                    double maxAmp = -1;
+			double amplitude = (maxAmp + minAmp) / 2;
+			double saturation = (maxAmp - minAmp);
 
-                    for (int i = 0; i &lt; BackLog.Length; i++)
-                    {
-                        if (minAmp &gt; BackLog[i])
-                            minAmp = BackLog[i];
-                        if (maxAmp &lt; BackLog[i])
-                            maxAmp = BackLog[i];
-                    }
+			if (++PixelError < PixelPitch)
+				continue;
+			PixelError = 0;
 
-                    double amplitude = (maxAmp + minAmp) / 2;
-                    double saturation = (maxAmp - minAmp);
+			if (RasterX < Picture.Width)
+			{
+				// Proper color screen
+				Picture.SetPixel(
+					RasterX++, RasterY,
+					HSVtoRGB(chroma, saturation, amplitude)
+					);
+			}
+		}
 
-                    if (++PixelError &lt; PixelPitch)
-                        continue;
-                    PixelError = 0;
+		Voltage =
+			((pins[12] == PinState.OUTPUT_HI) ? 1 : 0) +
+			((pins[13] == PinState.OUTPUT_HI) ? 2 : 0) +
+			((pins[14] == PinState.OUTPUT_HI) ? 4 : 0);
 
-                    if (RasterX &lt; Picture.Width)
-                    {
-                        // Proper color screen
-                        Picture.SetPixel(
-                            RasterX++, RasterY,
-                            HSVtoRGB(chroma, saturation, amplitude)
-                            );
-                    }
-                }
-            // }
+		if (Voltage == 0)
+		{
+			if (!Syncing)
+			{
+				SyncTime = time;
+				Syncing = true;
+			}
+			return;
+		}
+		else
+		{
+			if (Syncing)
+			{
+				double syncClocks = (time - SyncTime) / SampleTime;
 
-            Voltage =
-                ((pins[12] == PinState.OUTPUT_HI) ? 1 : 0) +
-                ((pins[13] == PinState.OUTPUT_HI) ? 2 : 0) +
-                ((pins[14] == PinState.OUTPUT_HI) ? 4 : 0);
+				// We found a HSYNC pulse
+				if (syncClocks < 300)
+				{
+					// Increment our display counters
+					RasterX = 0;
+					RasterY += 2;
 
-            if (Voltage == 0)
-            {
-                if (!Syncing)
-                {
-                    SyncTime = time;
-                    Syncing = true;
-                }
-                return;
-            }
-            else
-            {
-                if (Syncing)
-                {
-                    double syncClocks = (time - SyncTime) / SampleTime;
+					// Fix horizontal error
+					SampleError = 0;
+					PixelError = 0;
 
-                    // We found a HSYNC pulse
-                    if (syncClocks &lt; 300)
-                    {
-                        // Increment our display counters
-                        RasterX = 0;
-                        RasterY += 2;
-
-                        // Fix horizontal error
-                        SampleError = 0;
-                        PixelError = 0;
-
-                        if (RasterY &gt;= Picture.Height)
-                            RasterY = 0;
-                    }
-                    // Vertical sync pulse
-                    else if (RasterY &gt; 100)
-                    {
-                        RasterY = MidRaster ? 0 : 1;
-                        MidRaster = !MidRaster;
-                    }
-                    Syncing = false;
-                }
-            }
-        }
-    }
-  </code>
+					if (RasterY >= Picture.Height)
+						RasterY = 0;
+				}
+				// Vertical sync pulse
+				else if (RasterY > 100)
+				{
+					RasterY = MidRaster ? 0 : 1;
+					MidRaster = !MidRaster;
+				}
+				Syncing = false;
+			}
+		}
+	}
+}]]></code>
 </plugin>
