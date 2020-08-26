@@ -72,7 +72,7 @@ namespace Gear.GUI
             this.memoryPanel.Name = "memoryPanel";
             this.memoryPanel.Size = new System.Drawing.Size(133, 150);
             this.memoryPanel.TabIndex = 1;
-            this.memoryPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.memoryPanel_MouseClick);
+            this.memoryPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.MemoryPanel_MouseClick);
             this.memoryPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintMemoryView);
             this.memoryPanel.SizeChanged += new System.EventHandler(this.SizeChange);
             //

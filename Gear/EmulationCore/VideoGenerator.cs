@@ -41,6 +41,7 @@ namespace Gear.EmulationCore
         FOUR_COLOR      = 0x10000000
     }
 
+    /// @brief Video Generator Circuit emulation.
     public class VideoGenerator
     {
         private uint Scale;
@@ -84,8 +85,8 @@ namespace Gear.EmulationCore
 
         // Misc Variables
 
-        private PropellerCPU Chip;
-        private Cog cog;
+        private readonly PropellerCPU Chip;
+        private readonly Cog cog;
 
         public uint Frames
         {

@@ -204,7 +204,7 @@ namespace Gear.GUI
             // 
             // EmbeddedCode
             // 
-            this.EmbeddedCode.Checked = true;
+            this.EmbeddedCode.Checked = global::Gear.Properties.Settings.Default.EmbeddedCode;
             this.EmbeddedCode.CheckOnClick = true;
             this.EmbeddedCode.CheckState = System.Windows.Forms.CheckState.Indeterminate;
             this.EmbeddedCode.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;

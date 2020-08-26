@@ -8,16 +8,19 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using System.CodeDom.Compiler;
 using System.ComponentModel;
+using System.Configuration;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
-namespace Gear.Properties {
-    
-    
-    [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.7.0.0")]
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+namespace Gear.Properties
+{
+    [CompilerGeneratedAttribute()]
+    [GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.7.0.0")]
+    internal sealed partial class Settings : ApplicationSettingsBase {
         
-        private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
+        private static Settings defaultInstance = ((Settings)(ApplicationSettingsBase.Synchronized(new Settings())));
         
         public static Settings Default {
             get {
@@ -25,9 +28,9 @@ namespace Gear.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [UserScopedSettingAttribute()]
+        [DebuggerNonUserCodeAttribute()]
+        [DefaultSettingValueAttribute("")]
         [CategoryAttribute("Plugin Editor")]
         [DescriptionAttribute("Last plugin loaded or edited (with full path).")]
         [DisplayNameAttribute("last Plugin loaded")]
@@ -40,9 +43,9 @@ namespace Gear.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [UserScopedSettingAttribute()]
+        [DebuggerNonUserCodeAttribute()]
+        [DefaultSettingValueAttribute("")]
         [CategoryAttribute("Propeller Emulator")]
         [DescriptionAttribute("Last Propeller binary loaded (with full path).")]
         [DisplayNameAttribute("Last Binary loaded")]
@@ -55,21 +58,25 @@ namespace Gear.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool UseNoTemplate {
+        [UserScopedSettingAttribute()]
+        [DebuggerNonUserCodeAttribute()]
+        [DefaultSettingValueAttribute("True")]
+        [CategoryAttribute("Plugin Editor")]
+        [DescriptionAttribute("Use a template for new plugins")]
+        [DisplayNameAttribute("Use template for new plugins")]
+        [ReadOnlyAttribute(true)]
+        public bool UseTemplate {
             get {
-                return ((bool)(this["UseNoTemplate"]));
+                return ((bool)(this["UseTemplate"]));
             }
             set {
-                this["UseNoTemplate"] = value;
+                this["UseTemplate"] = value;
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1024")]
+        [UserScopedSettingAttribute()]
+        [DebuggerNonUserCodeAttribute()]
+        [DefaultSettingValueAttribute("1024")]
         [CategoryAttribute("Propeller Emulator")]
         [DescriptionAttribute("How many clock steps will pass between screen repaint of emulator and plugins.")]
         [DisplayNameAttribute("Update screen each steps")]
@@ -82,9 +89,9 @@ namespace Gear.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1E-04")]
+        [UserScopedSettingAttribute()]
+        [DebuggerNonUserCodeAttribute()]
+        [DefaultSettingValueAttribute("1E-04")]
         [CategoryAttribute("Logic Probe")]
         [DescriptionAttribute("Width of time frame for the logic probe window.")]
         [DisplayNameAttribute("Last Time Frame")]
@@ -97,9 +104,9 @@ namespace Gear.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5E-05")]
+        [UserScopedSettingAttribute()]
+        [DebuggerNonUserCodeAttribute()]
+        [DefaultSettingValueAttribute("5E-05")]
         [CategoryAttribute("Logic Probe")]
         [DescriptionAttribute("Time interval for the logic probe grid.")]
         [DisplayNameAttribute("Last Tick mark Grid")]
@@ -112,9 +119,9 @@ namespace Gear.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [UserScopedSettingAttribute()]
+        [DebuggerNonUserCodeAttribute()]
+        [DefaultSettingValueAttribute("True")]
         [CategoryAttribute("Plugin Editor")]
         [DescriptionAttribute("Flag to embed the C# code of the plugin into XML file, or to " + 
             "create in a separated .CS file.")]
@@ -128,9 +135,9 @@ namespace Gear.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("4")]
+        [UserScopedSettingAttribute()]
+        [DebuggerNonUserCodeAttribute()]
+        [DefaultSettingValueAttribute("4")]
         [CategoryAttribute("Plugin Editor")]
         [DescriptionAttribute("Tabulator size in characters.")]
         [DisplayNameAttribute("Tab size")]

@@ -21,27 +21,22 @@
  * --------------------------------------------------------------------------------
  */
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
-using System.Windows.Forms;
-
 using Gear.EmulationCore;
-using Gear.PluginSupport;
+using System;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace Gear.GUI
 {
+    /// @brief Generic real-time cog information viewer.
     public partial class CogView : Gear.PluginSupport.PluginBase
     {
-        private int HostID;
-        private Font MonoFont;
-        private Font MonoFontBold;
+        private readonly int HostID;
+        private readonly Font MonoFont;
+        private readonly Font MonoFontBold;
         private Bitmap BackBuffer;
-        private uint[] InterpAddress;
-        private int  StackMargin = 180;
+        private readonly uint[] InterpAddress;
+        private readonly int StackMargin = 180;
         private uint LastLine    = 0;       //!< @brief Last line in NativeCog view.
         private uint StringX;
         private uint StringY;
@@ -200,9 +195,9 @@ namespace Gear.GUI
                     display = String.Format("{0:X4}:  {1:X8}   {2}   ",
                               i, mem, binary);
                     if (displayAsHexadecimal)
-                        display = display + String.Format("{0:X8}", mem);
+                        display += String.Format("{0:X8}", mem);
                     else
-                        display = display + String.Format("{0}", mem);
+                        display += String.Format("{0}", mem);
 
                     g.FillRectangle(SystemBrushes.Control, 0, y, assemblyPanel.Width, y + MonoFont.Height);
 
@@ -328,7 +323,8 @@ namespace Gear.GUI
                     positionScroll.Value = (int)Host.ProgramCursor;
             }
 
-            if (Host is NativeCog) Repaint(force, (NativeCog)Host);
+            if (Host is NativeCog)
+                Repaint(force, (NativeCog)Host);
             else if (Host is InterpretedCog) Repaint(force, (InterpretedCog)Host);
 
             programCounterLabel.Text = "PC: " + String.Format("{0:X8}", Host.ProgramCursor);
@@ -360,14 +356,13 @@ namespace Gear.GUI
             Repaint(false);
         }
 
-        private void memoryViewButton_Click(object sender, EventArgs e)
+        private void MemoryViewButton_Click(object sender, EventArgs e)
         {
             Repaint(false);
         }
 
-        private void assemblyPanel_MouseDown(object sender, MouseEventArgs e)
+        private void AssemblyPanel_MouseDown(object sender, MouseEventArgs e)
         {
-            int bp = 0;
             if ((e.Button & MouseButtons.Left) == MouseButtons.Left)
             {
                 //Make sure it's a valid breakpoint environment
@@ -375,7 +370,7 @@ namespace Gear.GUI
                 Cog Host = Chip.GetCog(HostID);
                 if (Host == null) return;
                 //Find the line that was clicked on
-                bp = (assemblyPanel.PointToClient(MousePosition).Y / MonoFont.Height);
+                int bp = (assemblyPanel.PointToClient(MousePosition).Y / MonoFont.Height);
                 //What type of cog?
                 if (Host is NativeCog) bp += positionScroll.Value;
                 else if (Host is InterpretedCog) bp = (int)InterpAddress[bp + 1];
@@ -387,12 +382,12 @@ namespace Gear.GUI
             }
         }
 
-        private void followPCButton_Click(object sender, EventArgs e)
+        private void FollowPCButton_Click(object sender, EventArgs e)
         {
             Repaint(false);
         }
 
-        private void hexadecimalUnits_Click(object sender, EventArgs e)
+        private void HexadecimalUnits_Click(object sender, EventArgs e)
         {
             displayAsHexadecimal = true;
             hexadecimalUnits.Checked = true;
@@ -400,7 +395,7 @@ namespace Gear.GUI
             Repaint(false);
         }
 
-        private void decimalUnits_Click(object sender, EventArgs e)
+        private void DecimalUnits_Click(object sender, EventArgs e)
         {
             displayAsHexadecimal = false;
             hexadecimalUnits.Checked = false;
@@ -408,7 +403,7 @@ namespace Gear.GUI
             Repaint(false);
         }
 
-        private void longOpcodes_Click(object sender, EventArgs e)
+        private void LongOpcodes_Click(object sender, EventArgs e)
         {
             useShortOpcodes = false;
             longOpcodes.Checked = true;
@@ -416,7 +411,7 @@ namespace Gear.GUI
             Repaint(false);
         }
 
-        private void shortOpcodes_Click(object sender, EventArgs e)
+        private void ShortOpcodes_Click(object sender, EventArgs e)
         {
             useShortOpcodes = true;
             longOpcodes.Checked = false;
@@ -424,17 +419,17 @@ namespace Gear.GUI
             Repaint(false);
         }
 
-        private void assemblyPanel_MouseClick(object sender, MouseEventArgs e)
+        private void AssemblyPanel_MouseClick(object sender, MouseEventArgs e)
         {
             positionScroll.Focus();
         }
 
-        private void assemblyPanel_MouseHover(object sender, EventArgs e)
+        private void AssemblyPanel_MouseHover(object sender, EventArgs e)
         {
 
         }
 
-        private void assemblyPanel_MouseMove(object sender, MouseEventArgs e)
+        private void AssemblyPanel_MouseMove(object sender, MouseEventArgs e)
         {
             uint line;
             uint mem;

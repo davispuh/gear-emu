@@ -24,7 +24,7 @@ using System;
 
 namespace Gear.Disassembler
 {
-    public partial class Assembly
+    public static class Assembly
     {
         public static Propeller.Assembly.SubInstruction GetSubInstruction(Propeller.Assembly.Instruction SourceInstruction, ParsedInstruction ParsedInstruction)
         {

@@ -22,7 +22,9 @@
  */
 
 using System;
+using System.Drawing.Text;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 /// @brief Contains the definitions of %GUI objects (controlling objects).
@@ -32,7 +34,7 @@ namespace Gear.GUI
     /// related windows.
     public partial class GearDesktop : Form
     {
-        /// @brief Gear.GUI.GearDesktop Constructor.
+        /// @brief Default constructor.
         public GearDesktop()
         {
             InitializeComponent();
@@ -109,7 +111,7 @@ namespace Gear.GUI
         }
 
         /// @brief Show the details about the GEAR Emulator.
-        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        private void AboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AboutGear about = new AboutGear();
             about.ShowDialog(this);
@@ -146,14 +148,16 @@ namespace Gear.GUI
         }
 
         /// @brief Open a window with the plugin editor to create a new plugin.
-        /// @param[in] sender Reference to object where event was raised.
-        /// @param[in] e Event data arguments.
-        private void newPluginButton_Click(object sender, EventArgs e)
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
+        private void NewPluginButton_Click(object sender, EventArgs e)
         {
             //load default plugin template
-            PluginEditor plugin = 
-                new PluginEditor(! Properties.Settings.Default.UseNoTemplate);
-            plugin.MdiParent = this;
+            PluginEditor plugin =
+                new PluginEditor(Properties.Settings.Default.UseTemplate)
+            {
+                MdiParent = this
+            };
             plugin.Show();
         }
 

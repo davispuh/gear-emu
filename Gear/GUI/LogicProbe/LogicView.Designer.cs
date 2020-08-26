@@ -125,7 +125,7 @@ namespace Gear.GUI.LogicProbe
             this.updateGridButton.Name = "updateGridButton";
             this.updateGridButton.Size = new System.Drawing.Size(49, 22);
             this.updateGridButton.Text = "Update";
-            this.updateGridButton.Click += new System.EventHandler(this.updateGridButton_Click);
+            this.updateGridButton.Click += new System.EventHandler(this.UpdateGridButton_Click);
             // 
             // toolStripLabel3
             // 
@@ -148,7 +148,7 @@ namespace Gear.GUI.LogicProbe
             this.analogButton.Size = new System.Drawing.Size(57, 22);
             this.analogButton.Text = "+Analog";
             this.analogButton.ToolTipText = "Add a Analog view on pin selected.";
-            this.analogButton.Click += new System.EventHandler(this.analogButton_Click);
+            this.analogButton.Click += new System.EventHandler(this.AnalogButton_Click);
             // 
             // digitalButton
             // 
@@ -159,7 +159,7 @@ namespace Gear.GUI.LogicProbe
             this.digitalButton.Size = new System.Drawing.Size(53, 22);
             this.digitalButton.Text = "+Digital";
             this.digitalButton.ToolTipText = "Add a Digitalview on pin selected.";
-            this.digitalButton.Click += new System.EventHandler(this.digitalButton_Click);
+            this.digitalButton.Click += new System.EventHandler(this.DigitalButton_Click);
             // 
             // viewOffset
             // 

@@ -35,6 +35,7 @@ namespace Gear.GUI
         {
             if (disposing && (components != null))
             {
+                runTimer.Dispose();
                 components.Dispose();
             }
             base.Dispose(disposing);

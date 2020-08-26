@@ -21,10 +21,6 @@
  * --------------------------------------------------------------------------------
  */
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 using Gear.Propeller;
 
 namespace Gear.EmulationCore

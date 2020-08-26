@@ -26,13 +26,15 @@ using System.Collections.Generic;
 
 namespace Gear.EmulationCore
 {
+    /// @brief Provides PLLA and PLLB to a Cog, as well as forwards internal 
+    /// signals to a video generator object.
     public class PLLGroup : ClockSource
     {
-        private List<VideoGenerator> AuralHooks;
+        private readonly List<VideoGenerator> AuralHooks;
         private VideoGenerator Partner;
 
-        private PLL PllA;
-        private PLL PllB;
+        private readonly PLL PllA;
+        private readonly PLL PllB;
 
         public ulong Pins
         {

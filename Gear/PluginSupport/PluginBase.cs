@@ -57,7 +57,7 @@ namespace Gear.PluginSupport
         ///     private PropellerCPU Chip;  /*<== this line will not be necesary to declare in every plugin anymore.*/
         /// ...
         /// @endcode
-        /// @param[in] chip Propeller CPU reference.
+        /// @param chip Propeller CPU reference.
         /// @version V15.03.26 - Modified to add %PropellerCPU parameter.
         public PluginBase(PropellerCPU chip)
         {

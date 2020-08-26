@@ -1,15 +1,105 @@
 Read more in forum threads:
-* [Improved GEAR Emulator](http://forums.parallax.com/showthread.php/156347-Improved-GEAR-Emulator)
-* [More GEAR - Improved Emulation of the Propeller](http://forums.parallax.com/showthread.php/100380-More-GEAR-Improved-Emulation-of-the-Propeller)
-* [GEAR: Propeller Debugging Environment](http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment)
+* [Improved GEAR Emulator](http://forums.parallax.com/discussion/156347/improved-gear-emulator)
+* [More GEAR - Improved Emulation of the Propeller](https://forums.parallax.com/discussion/100380/more-gear-improved-emulation-of-the-propeller)
+* [GEAR: Propeller Debugging Environment](https://forums.parallax.com/discussion/91084/gear-propeller-debugging-environment)
 
-## V15.03.27
+## Version 20.08.01
+
+* Updated version to 20.08.01 in files and documentation, syncronizing some code changes with UI-Improvements branch.
+* Updated changelog.md with corrected links to propeller forums and version changes.
+* Added comment headers to some files without it, and some documentation improvements.
+
+## Commit 5474027 - Enhanced plugin system and editor.
+
+* Enhanced plugin format in XML files, also accepting old format. A plugin can have the c# code in a separate file (*.cs), to enable debugging into visual studio. Added validation of xml format.
+* Added tab size of plugin editor to program properties.
+* Enhanced comments on plugin template for new plugins, and also in shipped plugins.
+
+## Commit 70e132c - Merge pull request #19 from davispuh/Remember-Dirs
+
+* Remember last directories binary files and plugins loaded or edited.
+
+## Commit 970064d - Merge pull request #18 from Memotech-Bill/master
 
 * Corrected timing of Video Generator Frame Reload.
 * Added the ability to set breaks on video frame reloads, either all or just those that do not coinside with a WAIT_VID.
 * Fixed refresh when switching between tabs.
 
-## V15.03.26
+## Commit decdc0d - Remember last directories binary files and plugins loaded or edited.
+
+* The last directories of binary and plugins loaded are remembered on main windows and plugin editor.
+* Better documentation of PluginTemplate and PluginBase.
+* A lot of documentation improvements and error corrections.
+
+## Commit 961cddc - Merge pull request #16 from mbaeten/master
+
+* Fixed Z-flag behavior of instructions SUMC and SUMN
+
+## Commit 74c355d - Bug correction on Logic View creation
+
+* Corrected bug on Logic View: on creation of logic view form, the last grid settings was not updated on form creation.
+
+## Commit b41c66a - Plugin 1.0 Changes 3
+
+* Overhead eliminated on run emulator step (calling to a default setting every time).
+* Some DOXYGEN documentation on Emulator.cs
+
+## Commit 7eb43c6 - Plugin 1.0 Changes 2
+
+* Correction on some missing Z & C flags on NativeCogs.cs.
+* A lot of DOXYGEN documentation on *.cs.
+* Ordering on Using libraries on *.cs.
+* Some corrections on mispellings.
+
+## Commit 8d43068 - Plugin 1.0 Changes 1
+
+* Improved syntax highlighting in Plugin Editor: faster processing of text, with progress bar for user feedback.
+* Auto detected class name on the code, to prevent possible inconsistences on the plugin instance name of the XML with the class name on the code.
+* Error grid more intelligent: shown only on errors, with more space on the grid.
+* References List improved: Added name to it, improved tool tips to Add & Remove buttons.
+* Some DOXYGEN documentation fixed.
+
+## Commit d2a38e8 - Merge Correction 3
+
+* Corrected spellings errors.
+
+## Commit 789b325 - Merge Correction 2
+
+* EmulationCore\PropellerCPU.cs - for PropellerCPU class changed ancestor to Propeller.DirectMemory and consequences, spelling errors. Now it compiles well.
+* EmulationCore\Cog.cs - changed references of CogSpecialAddress to Assembly.RegisterAddress, and references of CogConditionCodes to Assembly.ConditionCodes, using the definitions of Propeller\AssemblyRegisters.cs & Propeller\Conditions.cs. Also deleted obsolete definitions of enum CogSpecialAddress and CogConditionCodes. Corrected spelling errors.
+* Propeller\AssemblyRegisters.cs - Added comments from old code in EmulationCore\Cogs.cs, principally by adding the correction for PAR register (allowing writes) in PASM.
+* GUI\SpinView.cs - Changed invocations of methods Propeller.ReadYYY() & Propeller.WriteYYY() to Propeller.DirectReadYYY() & Propeller.DirectWriteYYY(), following the changes in Propeller\MemoryManager.cs.
+
+## Commit 2eb7f4e - Merge Correction 1
+
+* EmulationCore\Cog.cs - Corrected some changes (#include Gear.Propeller header, memory writes & reads invocations with DirectXXYYY methods, spelling errors). Temporary correction:  commented code to memory access. TODO: clear compile errors on dependencies,
+* EmulationCore\PropellerCPU.cs - Corrected memory writes & reads invocations with DirectXXYYY methods.
+* EmulationCore\InterpretedCog.cs -> validated corrections in commit 230d27d
+* EmulationCore\NativeCog.cs -> validated corrections in commit 230d27d
+
+## Commit 30ca271 - Merge pull request #2 from gatuno1/Rel_Candidate2015_03
+
+* Version 2015.03.26
+
+## Commit bd306e9 - Final commit to Rel.Cand2015_03
+
+* Fix the date to 15.03.26
+
+## Commit 2d703bf - Version corrected to Rel.Cand.15_03
+
+* Corrected version & date in About dialog and Assembly version.
+
+## Commit 3451731 - Version reference corrected to Rel.Cand.15_03
+
+* Correction on all version references to points to V15.03.31.
+* Some spellings corrected in coments.
+
+## Commit ca1a8cc - Bug corrections of LastPlugin application setting
+
+* Bug Correction on first plugin loading on a fresh instalation of GEAR, related to LastPlugin application setting.
+* Corrected a bug in references list: it was possible to add a blank line to the list.
+
+## Version 15.03.26
 
 * Corrections on all the effects for PASM hub operations (zero, carry and return): CLKSET. COGID, COGINIT, COGSTOP, LOCKNEW, LOCKRET, LOCKSET, LOCKCLR. There was some missing values for carry & zero flags.
 
@@ -23,15 +113,15 @@ Read more in forum threads:
 
 * Updated PluginBase class structure, so all the old plugins have to be updated:
     -Constructor invocation must call Base constructor.
-	-Extra parameter on OnClock() method for current clock number in tick clocks.
-	-Method PresentChip() with no param, beacuse Chip reference now is included in plugin base class definition.
-	-New method OnClose() is called for every plugin before closing the emulator (to perform cleanup).
+    -Extra parameter on OnClock() method for current clock number in tick clocks.
+    -Method PresentChip() with no param, beacuse Chip reference now is included in plugin base class definition.
+    -New method OnClose() is called for every plugin before closing the emulator (to perform cleanup).
 
 * Added program settings to remember them between sessions (stored in "Gear.exe.config" file in this version): 
-	-TimeFrame and TickMarkGrid on logic view.
-	-LastBinary & LastPlugin on Emulator, GearDesktop & PluginEditor.
-	-UpdateEachSteps to enable changes on the screen refresh rate.
-	-Added "UseNoTemplate" program setting to enable load plugin editor empty (old default style).
+    -TimeFrame and TickMarkGrid on logic view.
+    -LastBinary & LastPlugin on Emulator, GearDesktop & PluginEditor.
+    -UpdateEachSteps to enable changes on the screen refresh rate.
+    -Added "UseNoTemplate" program setting to enable load plugin editor empty (old default style).
 
 * Changed names and tooltips on buttons "open plugin", "load plugin", "open binary" on GearDesktop & Emulator.
 
@@ -40,7 +130,7 @@ Read more in forum threads:
 * Improved general documentation of source code, including specific pages for sequence of callings for PropellerCPU.Step() and loading a plugin in memory after compilation.
 
 
-## V14.07.03
+## Version 14.07.03
 
 * Faster emulation.
     - In my own testing, GEAR runs now about 30% or 35% faster than Gear V09_10_26, maybe because the executable now use MS .NET framework 4.0 instead of 2.0. The drawback is the need to download the framework, but in windows 7 or 8, probably it is installed already.
@@ -69,31 +159,31 @@ Read more in forum threads:
     - Experimental C# sintax highlighting of code. Now the name of the file is displayed on the title of the window. Added tooltips to be more self explaining. 
 
 
-## V09_10_26 26 October 2009
+## Version 09.10.26 26 October 2009
 
 * Many thanks to Bob Anderson for identifying bugs in and subsequently testing improvements to the emulation of SUBS, SUBSX, CMPSX and REV.
 
 
-## V09_06_05 (140) 5 June 2009
+## Version 09.06.05 (140) 5 June 2009
 
 * Many thanks to Ben Levitt for improving the behaviour of GEAR. (Reload Binary, Open to PlugIn, Close PlugIn)
 * Improvements in SerialIO plugin (Ben Levitt).
 
 
-## V09_05_12 (50) 11 May 2009
+## Version 09.05.12 (50) 11 May 2009
 
 * Fixed memory references of the form `LONG[ &MyVar ][ 2 ]`, this case was being emulated as `LONG[ 2 ][ &MyVar ]`.
 * Included SerialIO plugin (with thanks to Ben Levitt) in the distribution.
 
 
-## V08_10_16 (151) 16 October 2008
+## Version 08.10.16 (151) 16 October 2008
 
 * An extra function has been added which allows hot keys to be disabled for a plugin.
 Simply add the following function to your plugin:
 `public override Boolean AllowHotKeys { get { return false; } }`
 
 
-## V08 04 29 (159) 29 April 2008
+## Version 08.04.29 (159) 29 April 2008
 * The lastest stimulus.zip is now included in V08_04_29.zip.
 * 'R' and 'S' keys can now be used to run, stop and step the currently active cog.
 * Floating the cursor over an assembly cog page shows the values stored at the source and destination registers for the instruction line that's under the mouse. The values are shown as both hex and decimal.
@@ -113,12 +203,12 @@ stop - causes a breakpoint - click Run to go to the next stop / breakpoint
 * Added stimulus.zip which updates stimulus.xml and the example stimulus file. It is now possible to do clock and pwm generation.
 
 
-## V08_01_18 (140)
+## Version 08_01_18 (140)
 
 * Pin toggling by means of a stimulus file.
 
 
-## V08_01_13 (86)
+## Version 08.01.13 (86)
 
 * Better disassembly of PASM
 * Some fixes in assembly language emulation

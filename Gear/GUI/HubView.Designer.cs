@@ -48,6 +48,7 @@ namespace Gear.GUI
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.Label label8;
             System.Windows.Forms.Label label7;
             System.Windows.Forms.Label label6;
@@ -219,7 +220,7 @@ namespace Gear.GUI
             this.systemCounter.Name = "systemCounter";
             this.systemCounter.Size = new System.Drawing.Size(61, 13);
             this.systemCounter.TabIndex = 13;
-            this.systemCounter.Text = "SysCounter";
+            this.systemCounter.Text = "SystemCounter";
             this.systemCounter.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // label1
@@ -336,7 +337,6 @@ namespace Gear.GUI
             this.Controls.Add(this.ringMeter);
             this.Name = "HubView";
             this.Size = new System.Drawing.Size(214, 546);
-            this.Load += new System.EventHandler(this.HubView_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

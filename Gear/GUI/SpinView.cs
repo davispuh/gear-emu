@@ -21,52 +21,41 @@
  * --------------------------------------------------------------------------------
  */
 
+using Gear.EmulationCore;
+using Gear.PluginSupport;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
 
-using Gear.PluginSupport;
-using Gear.EmulationCore;
-
 namespace Gear.GUI
 {
+    /// @brief Spin object viewer.
     class SpinView : PluginBase
     {
-        private Font MonoSpace;
+        private readonly Font MonoSpace;
         private TreeView objectView;
         private Panel hexView;
         private ToolStrip toolStrip1;
         private ToolStripButton analizeButton;
         private VScrollBar scrollPosition;
-        private Brush[] Colorize;
+        private readonly Brush[] Colorize;
         private Splitter splitter1;
         //private System.ComponentModel.IContainer components;
         private Bitmap BackBuffer;
 
         public override string Title
         {
-            get
-            {
-                return "Spin Map";
-            }
+            get { return "Spin Map"; }
         }
 
-        public override Boolean IsClosable
+        public override bool IsClosable
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public override bool IsUserPlugin
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public SpinView(PropellerCPU chip) : base(chip)
@@ -179,7 +168,6 @@ namespace Gear.GUI
                 return;
 
             Graphics g = Graphics.FromImage((Image)BackBuffer);
-            ASCIIEncoding ascii = new ASCIIEncoding();
 
             g.Clear(SystemColors.Control);
 
@@ -196,15 +184,7 @@ namespace Gear.GUI
                 {
                     byte data = Chip.DirectReadByte((uint)y);
                     g.FillRectangle(Colorize[y], new Rectangle(dx, dy, s.Width, s.Height));
-
-                    // if (data > 32 && data < 127)
-                    // {
-                    //    g.DrawString(ascii.GetString(new byte[] { data }), MonoSpace, SystemBrushes.ControlText, dx, dy);
-                    // }
-                    // else
-                    // {
-                        g.DrawString(String.Format("{0:X2}", data), MonoSpace, SystemBrushes.ControlText, dx, dy);
-                    // }
+                    g.DrawString(String.Format("{0:X2}", data), MonoSpace, SystemBrushes.ControlText, dx, dy);
                 }
             }
 
@@ -242,7 +222,7 @@ namespace Gear.GUI
             this.hexView.Name = "hexView";
             this.hexView.Size = new System.Drawing.Size(415, 424);
             this.hexView.TabIndex = 1;
-            this.hexView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.hexView_MouseClick);
+            this.hexView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.HexView_MouseClick);
             this.hexView.Paint += new System.Windows.Forms.PaintEventHandler(this.OnPaint);
             this.hexView.SizeChanged += new System.EventHandler(this.OnSize);
             //
@@ -264,7 +244,7 @@ namespace Gear.GUI
             this.analizeButton.Name = "analizeButton";
             this.analizeButton.Size = new System.Drawing.Size(57, 22);
             this.analizeButton.Text = "Reanalize";
-            this.analizeButton.Click += new System.EventHandler(this.analizeButton_Click);
+            this.analizeButton.Click += new System.EventHandler(this.AnalizeButton_Click);
             //
             // scrollPosition
             //
@@ -320,7 +300,7 @@ namespace Gear.GUI
             }
         }
 
-        private void analizeButton_Click(object sender, EventArgs e)
+        private void AnalizeButton_Click(object sender, EventArgs e)
         {
             ColorCode();
             objectView.ExpandAll();
@@ -348,19 +328,10 @@ namespace Gear.GUI
             Repaint(false);
         }
 
-        private void hexView_MouseClick(object sender, MouseEventArgs e)
+        private void HexView_MouseClick(object sender, MouseEventArgs e)
         {
             scrollPosition.Focus();
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void openStimulusFileToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }

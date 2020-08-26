@@ -22,15 +22,12 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Gear.GUI
 {
+    /// @brief Simple highlighted bit viewer.
     public partial class BitView : UserControl
     {
         const int BitSize = 8;
@@ -47,6 +44,7 @@ namespace Gear.GUI
         private int last_box;   // last value of index
         const int nil = -1;     // constant for none value selected
 
+        /// @brief Default constructor.
         public BitView()
         {
             bits = 0;
@@ -162,9 +160,8 @@ namespace Gear.GUI
         // event handler for set/clear tooltip, depending on mouse position
         private void BitView_MouseMove(object sender, MouseEventArgs e)
         {
-            int x = e.X, y = e.Y, temp = 0,
-                valX = nil, valY = nil;     // vars for column & row of boxes
-
+            int x = e.X, y = e.Y, valX = nil, valY = nil;     // vars for column & row of boxes
+            int temp;
             if (x < BitsPerRow * BitSize)   // test Max X range
             {
                 temp = (x / BitSize);       // Integer division

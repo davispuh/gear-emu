@@ -187,7 +187,7 @@ namespace Gear.GUI
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.aboutToolStripMenuItem.Text = "&About ...";
-            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.AboutToolStripMenuItem_Click);
             // 
             // toolStrip
             // 
@@ -221,7 +221,7 @@ namespace Gear.GUI
             this.newPluginButton.Size = new System.Drawing.Size(72, 22);
             this.newPluginButton.Text = "New Plugin";
             this.newPluginButton.ToolTipText = "Create a New Plugin in editor window";
-            this.newPluginButton.Click += new System.EventHandler(this.newPluginButton_Click);
+            this.newPluginButton.Click += new System.EventHandler(this.NewPluginButton_Click);
             // 
             // openPluginButton
             // 

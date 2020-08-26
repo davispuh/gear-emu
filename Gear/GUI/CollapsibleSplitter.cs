@@ -80,7 +80,7 @@ namespace Gear.GUI
 
         // declare and define some base properties
         private bool hot;
-        private System.Drawing.Color hotColor = CalculateColor(SystemColors.Highlight, SystemColors.Window, 70);
+        private readonly System.Drawing.Color hotColor = CalculateColor(SystemColors.Highlight, SystemColors.Window, 70);
         private System.Windows.Forms.Control controlToHide;
         private System.Drawing.Rectangle rr;
         private System.Windows.Forms.Form parentForm;
@@ -91,7 +91,7 @@ namespace Gear.GUI
         private System.Windows.Forms.Border3DStyle borderStyle = System.Windows.Forms.Border3DStyle.Flat;
 
         // animation controls introduced in version 1.22
-        private System.Windows.Forms.Timer animationTimer;
+        private readonly System.Windows.Forms.Timer animationTimer;
         private int controlWidth;
         private int controlHeight;
         private int parentFormWidth;
@@ -230,12 +230,18 @@ namespace Gear.GUI
             // Setup the animation timer control
             this.animationTimer = new System.Windows.Forms.Timer();
             this.animationTimer.Interval = animationDelay;
-            this.animationTimer.Tick += new System.EventHandler(this.animationTimerTick);
+            this.animationTimer.Tick += new System.EventHandler(this.AnimationTimerTick);
         }
 
         #endregion
 
         #region Overrides
+
+        protected override void Dispose(bool disposing)
+        {
+            animationTimer.Dispose();
+            base.Dispose(disposing);
+        }
 
         protected override void OnHandleCreated(EventArgs e)
         {
@@ -445,7 +451,7 @@ namespace Gear.GUI
 
         #region Animation Timer Tick
 
-        private void animationTimerTick(object sender, System.EventArgs e)
+        private void AnimationTimerTick(object sender, System.EventArgs e)
         {
             switch (currentState)
             {

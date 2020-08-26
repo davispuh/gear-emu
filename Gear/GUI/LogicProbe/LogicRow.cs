@@ -21,15 +21,11 @@
  * --------------------------------------------------------------------------------
  */
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
-
-using Gear.EmulationCore;
 
 namespace Gear.GUI.LogicProbe
 {
+    /// @brief Abstract baseclass for a LogicView channel.
     public abstract class LogicRow
     {
         public abstract string Name { get; }

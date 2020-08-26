@@ -21,18 +21,15 @@
  * --------------------------------------------------------------------------------
  */
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
-
 using Gear.EmulationCore;
+using System.Drawing;
 
 namespace Gear.GUI.LogicProbe
 {
+    /// @brief Provides a analog channel for LogicView.
     class LogicAnalog : LogicRow
     {
-        private LogicDigital[] Channels;
+        private readonly LogicDigital[] Channels;
 
         public override string Name
         {

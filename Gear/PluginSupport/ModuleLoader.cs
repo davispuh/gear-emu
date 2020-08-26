@@ -21,27 +21,24 @@
  * --------------------------------------------------------------------------------
  */
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-//using Microsoft.CSharp;
+using Microsoft.CSharp;
 using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using System.Reflection;
+using System.Windows.Forms;
 
 namespace Gear.PluginSupport
 {
-    public delegate void ErrorEnumProc(System.CodeDom.Compiler.CompilerError e);
+    public delegate void ErrorEnumProc(CompilerError e);
 
     /// @brief Compile a PluginBase Module, keeping the errors if they appears.
-    /// 
     static class ModuleCompiler
     {
         /// @brief Collection for error list on compile a dynamic plugin.
-        static private CompilerErrorCollection m_Errors = null;    
+        static private CompilerErrorCollection m_Errors = null;
 
         /// @brief Enumerate errors from the compiling process.
-        /// @param[in] proc Method to invoke for each error.
+        /// @param proc Method to invoke for each error.
         static public void EnumerateErrors(ErrorEnumProc proc)
         {
             if (m_Errors == null)
@@ -52,24 +49,29 @@ namespace Gear.PluginSupport
         }
 
         /// @brief Dynamic compiling & loading for a plugin.
-        /// @details Try to dynamically compile a module for the plugin, based on supplied C# code
+        /// @details Try to dynamically compile a className for the plugin, based on supplied C# code
         /// and other C# modules referenced. If the compiling fails, it gives a list of errors, 
         /// intended to be showed in the plugin view.
-        /// @param[in] code C# Source code based on PluginBase class, to implement your plugin.
-        /// @param[in] module Class name of the plugin.
-        /// @param[in] references String array with auxiliary references used by your plugin. 
+        /// @param code C# Source code based on PluginBase class, to implement your plugin.
+        /// @param className Class name of the plugin.
+        /// @param references String array with auxiliary references used by your plugin. 
         /// See notes for defaults used.
-        /// @param[in] obj Reference to a PropellerCPU of this instance, to be passed as a 
+        /// @param obj Reference to a PropellerCPU of this instance, to be passed as a 
         /// parameter to the constructor of the new plugin class instance.
         /// @returns New Plugin class instance compiled (on success), or NULL (on fail).
         /// @note There are some references already added, so you don't need to include on your plugins: 
         /// @li `using System;` @li `using System.Data;` @li `using System.Drawing;`
         /// @li `using System.Windows.Forms;` @li `using System.Xml;`
-        static public PluginBase LoadModule(string code, string module, string[] references, object obj)
+        /// @version v20.08.01 - Added compiler version definition.
+        static public PluginBase LoadModule(string code, string className, 
+            string[] references, object obj)
         {
-            CodeDomProvider provider = new Microsoft.CSharp.CSharpCodeProvider();
+            //set compiler version
+            Dictionary<string, string> provOptions =
+                new Dictionary<string, string>() { { "CompilerVersion", "v4.0" } };
+            //create new compiler version
+            CodeDomProvider provider = new CSharpCodeProvider(provOptions);
             CompilerParameters cp = new CompilerParameters();
-
 #if DEBUG
             cp.IncludeDebugInformation = true;
 #else
@@ -79,13 +81,12 @@ namespace Gear.PluginSupport
             cp.GenerateInMemory = true;
             cp.CompilerOptions = "/optimize";
 
-            cp.ReferencedAssemblies.Add(System.Windows.Forms.Application.ExecutablePath);
-
-            cp.ReferencedAssemblies.Add("System.Windows.Forms.dll");
+            cp.ReferencedAssemblies.Add(Application.ExecutablePath);
             cp.ReferencedAssemblies.Add("System.dll");
             cp.ReferencedAssemblies.Add("System.Data.dll");
             cp.ReferencedAssemblies.Add("System.Drawing.dll");
             cp.ReferencedAssemblies.Add("System.Xml.dll");
+            cp.ReferencedAssemblies.Add("System.Windows.Forms.dll");
 
             foreach (string s in references)
                 cp.ReferencedAssemblies.Add(s);
@@ -100,19 +101,19 @@ namespace Gear.PluginSupport
 
             //compile plugin with parameters
             object target = results.CompiledAssembly.CreateInstance(           
-                module,                                         //name of class
-                false,                                          //=false: case sensitive
-                BindingFlags.Public | BindingFlags.Instance,    //flags to delimit the candidates
-                null,                                           //default binder object
-                new object[] { obj },                           //parameter lists
-                null,                                           //default culture
-                null                                            //default activation object
+                className,                                    //name of class
+                ignoreCase: false,                            //=false: case sensitive
+                BindingFlags.Public | BindingFlags.Instance,  //flags to delimit the candidates
+                null,                                         //default binder object
+                new object[] { obj },                         //parameter lists
+                null,                                         //default culture
+                null                                          //default activation object
             );
 
             if (target == null)
             {
                 CompilerError c = new CompilerError(string.Empty, 0, 0, "CS0103",
-                    "The name '" + module + "' does not exist in the current context." +
+                    "The name '" + className + "' does not exist in the current context." +
                     " Does the class name is the same that is declared in c# code?");
                 m_Errors = new CompilerErrorCollection(new CompilerError[] { c });
                 return null;
@@ -121,7 +122,7 @@ namespace Gear.PluginSupport
             {
                 CompilerError c = new CompilerError(string.Empty, 0, 0, "CS0029",
                     "Cannot implicitly convert type '" + target.GetType().FullName +
-                    "' to 'Gear.PluginSupport.BusModule'");
+                    "' to 'Gear.PluginSupport.PluginBase'");
                 m_Errors = new CompilerErrorCollection(new CompilerError[] { c });
                 return null;
             }

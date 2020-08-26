@@ -21,47 +21,32 @@
  * --------------------------------------------------------------------------------
  */
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
-using System.Windows.Forms;
-
 using Gear.EmulationCore;
-using Gear.PluginSupport;
+using System;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace Gear.GUI
 {
+    /// @brief Main memory viewer.
     public partial class MemoryView : Gear.PluginSupport.PluginBase
     {
-        //private PropellerCPU Host;
-        private Font MonoFont;
+        private readonly Font MonoFont;
         private Bitmap BackBuffer;
 
         public override string Title
         {
-            get
-            {
-                return "Main Memory";
-            }
+            get { return "Main Memory"; }
         }
 
         public override Boolean IsClosable
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public override bool IsUserPlugin
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public MemoryView(PropellerCPU chip) : base(chip)
@@ -132,7 +117,7 @@ namespace Gear.GUI
             Repaint(false);
         }
 
-        private void memoryPanel_MouseClick(object sender, MouseEventArgs e)
+        private void MemoryPanel_MouseClick(object sender, MouseEventArgs e)
         {
             positionScrollBar.Focus();
         }

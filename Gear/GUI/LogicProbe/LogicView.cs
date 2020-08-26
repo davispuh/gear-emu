@@ -21,21 +21,21 @@
  * --------------------------------------------------------------------------------
  */
 
+using Gear.EmulationCore;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-using Gear.EmulationCore;
-
 namespace Gear.GUI.LogicProbe
 {
+    /// @brief Logical pin waveform viewer
     public partial class LogicView : Gear.PluginSupport.PluginBase
     {
-        private Font MonoFont;
+        private readonly Font MonoFont;
 
-        private List<LogicRow> Pins;
-        private LogicDigital[] DigitalPins;
+        private readonly List<LogicRow> Pins;
+        private readonly LogicDigital[] DigitalPins;
         private double TimeScale;
         private double Marker;
 
@@ -43,26 +43,17 @@ namespace Gear.GUI.LogicProbe
 
         public override string Title
         {
-            get
-            {
-                return "Logic Probe";
-            }
+            get { return "Logic Probe"; }
         }
 
         public override Boolean IsClosable
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public override bool IsUserPlugin
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         /// @brief Default Constructor.
@@ -122,7 +113,7 @@ namespace Gear.GUI.LogicProbe
         public override void OnClose()
         {
             double aux;
-            if (Double.TryParse(timeFrameBox.Text,out aux))
+            if (Double.TryParse(timeFrameBox.Text, out aux))
                 Properties.Settings.Default.LastTimeFrame = aux;
             if (Double.TryParse(tickMarkBox.Text, out aux))
                 Properties.Settings.Default.LastTickMarkGrid = aux;
@@ -246,7 +237,7 @@ namespace Gear.GUI.LogicProbe
         }
 
         /// @brief Update the grid view with the new settings of scale and markers.
-        private void updateGridButton_Click(object sender, EventArgs e)
+        private void UpdateGridButton_Click(object sender, EventArgs e)
         {
             try
             {
@@ -329,7 +320,7 @@ namespace Gear.GUI.LogicProbe
 
         /// @todo document Gear.GUI.LogicProbe.digitalButton_Click()
         ///
-        private void digitalButton_Click(object sender, EventArgs e)
+        private void DigitalButton_Click(object sender, EventArgs e)
         {
             try
             {
@@ -387,7 +378,7 @@ namespace Gear.GUI.LogicProbe
 
         /// @todo document Gear.GUI.LogicProbe.analogButton_Click()
         ///
-        private void analogButton_Click(object sender, EventArgs e)
+        private void AnalogButton_Click(object sender, EventArgs e)
         {
             string[] numbers = pinsTextBox.Text.Split(',');
             List<LogicDigital> pins = new List<LogicDigital>();

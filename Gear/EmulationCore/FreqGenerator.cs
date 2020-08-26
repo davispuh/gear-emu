@@ -72,8 +72,7 @@ namespace Gear.EmulationCore
         LOGIC_ALWAYS                //!< %11111 | LOGIC always
     }
 
-    /// @todo document Gear.EmulationCore.FreqGenerator
-    /// 
+    /// @brief Frequency Generator Circuit emulation
     public class FreqGenerator
     {
         private uint Control;
@@ -84,7 +83,7 @@ namespace Gear.EmulationCore
         private ulong PinAMask;
         private ulong PinBMask;
 
-        private PropellerCPU Host;
+        private readonly PropellerCPU Host;
 
         private bool PinA;
         private bool PinA_;
@@ -93,10 +92,10 @@ namespace Gear.EmulationCore
         private bool OutA;
         private bool OutB;
 
-        private bool FreqA; // THIS IS UGLY AND I HATE IT.
+        private readonly bool FreqA; // THIS IS UGLY AND I HATE IT.
         private uint Divider;
 
-        private PLLGroup PhaseLockLoop;
+        private readonly PLLGroup PhaseLockLoop;
 
         public uint CTR
         {

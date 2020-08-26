@@ -21,26 +21,22 @@
  * --------------------------------------------------------------------------------
  */
 
+using Gear.EmulationCore;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
+using System.Linq;
 using System.Windows.Forms;
-using Gear.EmulationCore;
 
 namespace Gear.GUI
 {
+    /// @brief GUI Control to show Hub status
     public partial class HubView : UserControl
     {
+        /// @brief Reference to propeller cpu instance.
         private PropellerCPU m_Host;
 
-        public HubView()
-        {
-            InitializeComponent();
-        }
-
+        /// @brief Property to set the %Propeller %Host.
         public PropellerCPU Host
         {
             set
@@ -48,6 +44,12 @@ namespace Gear.GUI
                 m_Host = value;
                 DataChanged();
             }
+        }
+
+        /// @brief Default constructor
+        public HubView()
+        {
+            InitializeComponent();
         }
 
         /// @brief Update screen data on event.
@@ -71,8 +73,5 @@ namespace Gear.GUI
             ringMeter.Value = m_Host.Ring;
         }
 
-        private void HubView_Load(object sender, EventArgs e)
-        {
-        }
     }
 }
