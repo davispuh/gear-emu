@@ -5,11 +5,12 @@ Read more in forum threads:
 
 ## V.20.09.01
 
-* New time units dedicated ComboBox and ToolStripComboBox. They are used in the new field "elapsed time" in hub view, and in Logic View (Time Frame and Tick Mark Grid fields).
+* New time units dedicated ComboBox and ToolStripComboBox. They are used in the new field "elapsed time" in Hub and Logic views (Time Frame and Tick Mark Grid fields). Their values are remembereded as program properties.
+* Added tooltips to explain enhancements in Hub and Logic views.
 * Added time units & number formats in hub view. You can cycle between None, System default and Parallax (separator "_"), using the mouse button.
 * Added program properties editor form.
 * Enhanced plugin system to v1.0, with better XML format, and the possibility to write code to a separate .cs file
-* Migrated to .Net Framework 4.7.2, supporting language version 7.3.
+* Migrated to .Net Framework 4.7.2, supporting version 7.3 of c# language.
 * A lot of documentation improvements and error corrections, using better tools of VisualStudio 2019.
 
 ## Commit 70e132c - Merge pull request #19 from davispuh/Remember-Dirs

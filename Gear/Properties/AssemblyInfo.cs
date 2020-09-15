@@ -3,7 +3,7 @@
  * Copyright 2007 - Robert Vandiver
  * --------------------------------------------------------------------------------
  * AssemblyInfo.cs
- * Run-time settings for gear
+ * Run-time settings for Gear
  * --------------------------------------------------------------------------------
  *
  *  This program is free software; you can redistribute it and/or modify

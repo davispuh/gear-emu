@@ -321,6 +321,9 @@ namespace Gear.GUI.LogicProbe
                 tickMarkBox.Text = Marker.ToString();
             }
 
+            updateGridButton.Enabled = false;
+            updateGridButton.Checked = false;
+
             Repaint(true);
         }
 
@@ -519,6 +522,24 @@ namespace Gear.GUI.LogicProbe
                     toolStripComboBox1.TimeUnitSelected;
                 Properties.Settings.Default.Save();
             }
+        }
+
+        /// @brief When the value is changed, enable Update button.
+        /// @param sender
+        /// @param e
+        private void TimeFrameBox_ModifiedChanged(object sender, EventArgs e)
+        {
+            updateGridButton.Enabled = true;
+            updateGridButton.Checked = true;
+        }
+
+        /// @brief When the value is changed, enable Update button.
+        /// @param sender
+        /// @param e
+        private void TickMarkBox_ModifiedChanged(object sender, EventArgs e)
+        {
+            updateGridButton.Enabled = true;
+            updateGridButton.Checked = true;
         }
     }
 }

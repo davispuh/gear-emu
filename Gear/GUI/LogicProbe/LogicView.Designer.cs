@@ -120,6 +120,7 @@ namespace Gear.GUI.LogicProbe
             this.toolStripComboBox1.Name = "toolStripComboBox1";
             this.toolStripComboBox1.Size = new System.Drawing.Size(40, 23);
             this.toolStripComboBox1.TimeUnitSelected = Gear.Utils.TimeUnitsEnum.None;
+            this.toolStripComboBox1.ToolTipText = "Time Unit for Time frame and Tick mark grid.";
             this.toolStripComboBox1.SelectedIndexChanged += new System.EventHandler(this.ToolStripComboBox1_SelectedIndexChanged);
             // 
             // timeFrameBox
@@ -128,6 +129,9 @@ namespace Gear.GUI.LogicProbe
             this.timeFrameBox.Name = "timeFrameBox";
             this.timeFrameBox.Size = new System.Drawing.Size(85, 25);
             this.timeFrameBox.TextBoxTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.timeFrameBox.ToolTipText = "Duration of Time frame in the time unit selected.\r\nTo apply changes, press Update" +
+    " Grid button.";
+            this.timeFrameBox.ModifiedChanged += new System.EventHandler(this.TimeFrameBox_ModifiedChanged);
             // 
             // tickMarkBox
             // 
@@ -135,15 +139,20 @@ namespace Gear.GUI.LogicProbe
             this.tickMarkBox.Name = "tickMarkBox";
             this.tickMarkBox.Size = new System.Drawing.Size(85, 25);
             this.tickMarkBox.TextBoxTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.tickMarkBox.ToolTipText = "Separation between marks, expressed in the time unit selected.\r\nTo apply changes," +
+    " press Update Grid button.";
+            this.tickMarkBox.ModifiedChanged += new System.EventHandler(this.TickMarkBox_ModifiedChanged);
             // 
             // updateGridButton
             // 
             this.updateGridButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.updateGridButton.Enabled = false;
             this.updateGridButton.Image = ((System.Drawing.Image)(resources.GetObject("updateGridButton.Image")));
             this.updateGridButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.updateGridButton.Name = "updateGridButton";
             this.updateGridButton.Size = new System.Drawing.Size(49, 22);
-            this.updateGridButton.Text = "Update";
+            this.updateGridButton.Text = "Update Grid";
+            this.updateGridButton.ToolTipText = "Update grid with new values.";
             this.updateGridButton.Click += new System.EventHandler(this.UpdateGridButton_Click);
             // 
             // toolStripLabel3

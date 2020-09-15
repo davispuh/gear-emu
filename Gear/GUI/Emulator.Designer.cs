@@ -310,6 +310,7 @@ namespace Gear.GUI
             this.hubView.Name = "hubView";
             this.hubView.Size = new System.Drawing.Size(207, 536);
             this.hubView.TabIndex = 6;
+            this.hubView.TimeUnit = Gear.Utils.TimeUnitsEnum.s;
             // 
             // Emulator
             // 
