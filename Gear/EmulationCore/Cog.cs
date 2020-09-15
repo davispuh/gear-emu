@@ -150,10 +150,8 @@ namespace Gear.EmulationCore
             get
             {
                 string hitState;
-                uint framesCtr;
-                uint pixelsCtr;
-                Video.FrameCounters(out _, out framesCtr, out pixelsCtr);
-                switch(frameFlag)
+                Video.FrameCounters(out _, out uint framesCtr, out uint pixelsCtr);
+                switch (frameFlag)
                 {
                     case FrameState.frameHit:
                         hitState = "H";

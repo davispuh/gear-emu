@@ -71,15 +71,17 @@ namespace Gear.PluginSupport
                 new Dictionary<string, string>() { { "CompilerVersion", "v4.0" } };
             //create new compiler version
             CodeDomProvider provider = new CSharpCodeProvider(provOptions);
-            CompilerParameters cp = new CompilerParameters();
+            CompilerParameters cp = new CompilerParameters
+            {
 #if DEBUG
-            cp.IncludeDebugInformation = true;
+                IncludeDebugInformation = true,
 #else
-            cp.IncludeDebugInformation = false;
+                IncludeDebugInformation = false,
 #endif
-            cp.GenerateExecutable = false;
-            cp.GenerateInMemory = true;
-            cp.CompilerOptions = "/optimize";
+                GenerateExecutable = false,
+                GenerateInMemory = true,
+                CompilerOptions = "/optimize"
+            };
 
             cp.ReferencedAssemblies.Add(Application.ExecutablePath);
             cp.ReferencedAssemblies.Add("System.dll");
@@ -102,7 +104,7 @@ namespace Gear.PluginSupport
             //compile plugin with parameters
             object target = results.CompiledAssembly.CreateInstance(           
                 className,                                    //name of class
-                ignoreCase: false,                            //=false: case sensitive
+                false,                                        //=false: case sensitive
                 BindingFlags.Public | BindingFlags.Instance,  //flags to delimit the candidates
                 null,                                         //default binder object
                 new object[] { obj },                         //parameter lists

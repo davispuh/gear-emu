@@ -228,8 +228,10 @@ namespace Gear.GUI
             this.MouseMove += new MouseEventHandler(OnMouseMove);
 
             // Setup the animation timer control
-            this.animationTimer = new System.Windows.Forms.Timer();
-            this.animationTimer.Interval = animationDelay;
+            this.animationTimer = new System.Windows.Forms.Timer
+            {
+                Interval = animationDelay
+            };
             this.animationTimer.Tick += new System.EventHandler(this.AnimationTimerTick);
         }
 

@@ -57,21 +57,6 @@ namespace Gear.Properties
         //and the documentation will be lost if put there.
         //
 
-        /// @property EmbeddedCode
-        /// @brief Determine if the code for the plugin is embedded in the XML file or resides on 
-        /// a separate file.
-        /// @since V15.03.26 - Added as a User property of the program.
-
-        /// @property LastPlugin
-        /// @brief Last plugin successfully opened or saved.
-        /// @details Include complete path and name.
-        /// @since V15.03.26 - Added as a User property of the program.
-
-        /// @property LastBinary
-        /// @brief Last binary file successfully opened.
-        /// @details Include complete path and name.
-        /// @since V15.03.26 - Added as a User property of the program.
-
         /// @property LastTickMarkGrid
         /// @brief Last value used as grid separation in the logic view plugin.
         /// @since V15.03.26 - Added as a User property of the program.
@@ -80,9 +65,35 @@ namespace Gear.Properties
         /// @brief Last value used as a width in the logic view plugin.
         /// @since V15.03.26 - Added as a User property of the program.
 
-        /// @property UseTemplate
-        /// @brief Indicates to use the default template on the creation of a new plugin (=true), or to 
-        /// do not use a template (blank content initially) (=false).
+        /// @property LogicViewTimeUnit
+        /// @brief Unit of measure for elapsed time label in logic probe.
+        /// @since V20.09.01 - Added as a User property of the program.
+
+        /// @property EmbeddedCode
+        /// @brief Determine if the code for the plugin is embedded in the XML file or resides on 
+        /// a separate file, on Plugin Editor.
+        /// @since V15.03.26 - Added as a User property of the program.
+
+        /// @property LastPlugin
+        /// @brief Last plugin successfully opened or saved on Plugin Editor.
+        /// @details Include complete path and name.
+        /// @since V15.03.26 - Added as a User property of the program.
+
+        /// @property TabSize
+        /// @brief Tabulator size in characters, from Plugin Editor.
+        /// @since V20.09.01 - Added as a User property of the program.
+
+        /// @property FreqFormat
+        /// @brief Format of frequency labels in GUI.
+        /// @since V20.06.01 - Added as a User property of the program.
+
+        /// @property HubTimeUnit
+        /// @brief Unit of measure for elapsed time label in Hub view.
+        /// @since V20.06.01 - Added as a User property of the program.
+
+        /// @property LastBinary
+        /// @brief Last binary file successfully opened.
+        /// @details Include complete path and name.
         /// @since V15.03.26 - Added as a User property of the program.
 
         /// @property UpdateEachSteps

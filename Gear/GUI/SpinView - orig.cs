@@ -31,12 +31,39 @@ using System.Windows.Forms;
 namespace Gear.GUI
 {
     /// @brief Spin object viewer.
-    partial class SpinView : Gear.PluginSupport.PluginBase
+    class SpinView : Gear.PluginSupport.PluginBase
     {
+        private readonly Font MonoSpace;
+        private TreeView objectView;
+        private Panel hexView;
+        private ToolStrip toolStrip1;
+        private ToolStripButton analizeButton;
+        private VScrollBar scrollPosition;
+        private readonly Brush[] Colorize;
+        private Splitter splitter1;
+        private Bitmap BackBuffer;
+
         /// @brief Current Culture to modify its Number format.
         /// @since @version v20.09.01 - Added.
         private readonly CultureInfo currentCultureMod =
             (CultureInfo)CultureInfo.CurrentCulture.Clone();
+
+        /// @brief Storage for frequency format.
+        /// @since @version v20.09.01 - Added.
+        private NumberFormatEnum _reqFormatValue;
+
+        /// @brief Frequency format to be displayed.
+        /// @since @version v20.09.01 - Added.
+        private NumberFormatEnum FreqFormatValue
+        {
+            get => _reqFormatValue;
+            set
+            {
+                _reqFormatValue = value;
+                currentCultureMod.NumberFormat =
+                    NumberFormatEnumExtension.GetFormatInfo(_reqFormatValue);
+            }
+        }
 
         public override string Title
         {
@@ -53,8 +80,6 @@ namespace Gear.GUI
             get { return false; }
         }
 
-        /// @brief Default constructor.
-        /// @param chip Reference to Propeller instance.
         public SpinView(PropellerCPU chip) : base(chip)
         {
             MonoSpace = new Font(FontFamily.GenericMonospace, 8);
@@ -67,21 +92,15 @@ namespace Gear.GUI
                 Colorize[i] = Brushes.Gray;
             }
             //retrieve saved settings
-            UpdateFreqFormat();
+            FreqFormatValue = Properties.Settings.Default.FreqFormat;
 
             InitializeComponent();
         }
 
-        /// @brief Update frequency format to be displayed.
-        /// @since v20.09.01 - Added.
-        public void UpdateFreqFormat()
+        public override void PresentChip()
         {
-            currentCultureMod.NumberFormat =
-                NumberFormatEnumExtension.GetFormatInfo(
-                    Properties.Settings.Default.FreqFormat);
-        }
 
-        public override void PresentChip() { }
+        }
 
         /// @brief Format the value to string, considering the value 
         ///  of FreqFormatValue.
@@ -206,6 +225,120 @@ namespace Gear.GUI
             }
 
             hexView.CreateGraphics().DrawImageUnscaled(BackBuffer, 0, 0);
+        }
+
+        #region FormCode
+
+        private void InitializeComponent()
+        {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SpinView));
+            this.objectView = new System.Windows.Forms.TreeView();
+            this.hexView = new System.Windows.Forms.Panel();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.analizeButton = new System.Windows.Forms.ToolStripButton();
+            this.scrollPosition = new System.Windows.Forms.VScrollBar();
+            this.splitter1 = new System.Windows.Forms.Splitter();
+            this.toolStrip1.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // objectView
+            // 
+            this.objectView.Dock = System.Windows.Forms.DockStyle.Left;
+            this.objectView.Indent = 15;
+            this.objectView.Location = new System.Drawing.Point(0, 38);
+            this.objectView.Name = "objectView";
+            this.objectView.Size = new System.Drawing.Size(260, 411);
+            this.objectView.TabIndex = 0;
+            this.objectView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.SelectChanged);
+            // 
+            // hexView
+            // 
+            this.hexView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.hexView.Location = new System.Drawing.Point(260, 38);
+            this.hexView.Name = "hexView";
+            this.hexView.Size = new System.Drawing.Size(348, 411);
+            this.hexView.TabIndex = 1;
+            this.hexView.SizeChanged += new System.EventHandler(this.OnSize);
+            this.hexView.Paint += new System.Windows.Forms.PaintEventHandler(this.OnPaint);
+            this.hexView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.HexView_MouseClick);
+            // 
+            // toolStrip1
+            // 
+            this.toolStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.analizeButton});
+            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Size = new System.Drawing.Size(625, 38);
+            this.toolStrip1.TabIndex = 0;
+            this.toolStrip1.Text = "toolStrip1";
+            // 
+            // analizeButton
+            // 
+            this.analizeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.analizeButton.Image = ((System.Drawing.Image)(resources.GetObject("analizeButton.Image")));
+            this.analizeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.analizeButton.Name = "analizeButton";
+            this.analizeButton.Size = new System.Drawing.Size(88, 33);
+            this.analizeButton.Text = "Reanalize";
+            this.analizeButton.Click += new System.EventHandler(this.AnalizeButton_Click);
+            // 
+            // scrollPosition
+            // 
+            this.scrollPosition.Dock = System.Windows.Forms.DockStyle.Right;
+            this.scrollPosition.LargeChange = 16;
+            this.scrollPosition.Location = new System.Drawing.Point(608, 38);
+            this.scrollPosition.Maximum = 65535;
+            this.scrollPosition.Name = "scrollPosition";
+            this.scrollPosition.Size = new System.Drawing.Size(17, 411);
+            this.scrollPosition.TabIndex = 0;
+            this.scrollPosition.TabStop = true;
+            this.scrollPosition.Scroll += new System.Windows.Forms.ScrollEventHandler(this.OnScroll);
+            // 
+            // splitter1
+            // 
+            this.splitter1.Location = new System.Drawing.Point(260, 38);
+            this.splitter1.Name = "splitter1";
+            this.splitter1.Size = new System.Drawing.Size(3, 411);
+            this.splitter1.TabIndex = 2;
+            this.splitter1.TabStop = false;
+            // 
+            // SpinView
+            // 
+            this.Controls.Add(this.splitter1);
+            this.Controls.Add(this.hexView);
+            this.Controls.Add(this.objectView);
+            this.Controls.Add(this.scrollPosition);
+            this.Controls.Add(this.toolStrip1);
+            this.Name = "SpinView";
+            this.Size = new System.Drawing.Size(625, 449);
+            this.toolStrip1.ResumeLayout(false);
+            this.toolStrip1.PerformLayout();
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                MonoSpace.Dispose();
+                BackBuffer.Dispose();
+                components.Dispose();
+            }
+            base.Dispose(disposing);
         }
 
         private void OnPaint(object sender, PaintEventArgs e)

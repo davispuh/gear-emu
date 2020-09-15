@@ -3,6 +3,16 @@ Read more in forum threads:
 * [More GEAR - Improved Emulation of the Propeller](https://forums.parallax.com/discussion/100380/more-gear-improved-emulation-of-the-propeller)
 * [GEAR: Propeller Debugging Environment](https://forums.parallax.com/discussion/91084/gear-propeller-debugging-environment)
 
+## V.20.09.01
+
+* New time units dedicated ComboBox and ToolStripComboBox. They are used in the new field "elapsed time" in Hub and Logic views (Time Frame and Tick Mark Grid fields). Their values are remembereded as program properties.
+* Added tooltips to explain enhancements in Hub and Logic views.
+* Added time units & number formats in hub view. You can cycle between None, System default and Parallax (separator "_"), using the mouse button.
+* Added program properties editor form.
+* Enhanced plugin system to v1.0, with better XML format, and the possibility to write code to a separate .cs file
+* Migrated to .Net Framework 4.7.2, supporting version 7.3 of c# language.
+* A lot of documentation improvements and error corrections, using better tools of VisualStudio 2019.
+
 ## Version 20.08.01
 
 * Updated version to 20.08.01 in files and documentation, syncronizing some code changes with UI-Improvements branch.

@@ -53,36 +53,39 @@ namespace Gear.GUI
             this.positionScrollBar = new System.Windows.Forms.VScrollBar();
             this.memoryPanel = new System.Windows.Forms.Panel();
             this.SuspendLayout();
-            //
+            // 
             // positionScrollBar
-            //
+            // 
             this.positionScrollBar.Dock = System.Windows.Forms.DockStyle.Right;
             this.positionScrollBar.LargeChange = 16;
-            this.positionScrollBar.Location = new System.Drawing.Point(133, 0);
+            this.positionScrollBar.Location = new System.Drawing.Point(208, 0);
             this.positionScrollBar.Name = "positionScrollBar";
-            this.positionScrollBar.Size = new System.Drawing.Size(17, 150);
+            this.positionScrollBar.Size = new System.Drawing.Size(17, 231);
             this.positionScrollBar.TabIndex = 0;
             this.positionScrollBar.TabStop = true;
             this.positionScrollBar.Scroll += new System.Windows.Forms.ScrollEventHandler(this.PositionChanged);
-            //
+            // 
             // memoryPanel
-            //
+            // 
             this.memoryPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.memoryPanel.Location = new System.Drawing.Point(0, 0);
+            this.memoryPanel.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.memoryPanel.Name = "memoryPanel";
-            this.memoryPanel.Size = new System.Drawing.Size(133, 150);
+            this.memoryPanel.Size = new System.Drawing.Size(360, 231);
             this.memoryPanel.TabIndex = 1;
-            this.memoryPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.MemoryPanel_MouseClick);
-            this.memoryPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintMemoryView);
             this.memoryPanel.SizeChanged += new System.EventHandler(this.SizeChange);
-            //
+            this.memoryPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintMemoryView);
+            this.memoryPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.MemoryPanel_MouseClick);
+            // 
             // MemoryView
-            //
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.memoryPanel);
             this.Controls.Add(this.positionScrollBar);
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "MemoryView";
+            this.Size = new System.Drawing.Size(225, 231);
             this.ResumeLayout(false);
 
         }

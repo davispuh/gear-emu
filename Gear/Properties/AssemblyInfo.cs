@@ -3,7 +3,7 @@
  * Copyright 2007 - Robert Vandiver
  * --------------------------------------------------------------------------------
  * AssemblyInfo.cs
- * Run-time settings for gear
+ * Run-time settings for Gear
  * --------------------------------------------------------------------------------
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -66,5 +66,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("20.08.01.0")]
-[assembly: AssemblyFileVersion("20.08.01.0")]
+[assembly: AssemblyVersion("20.09.01.0")]
+[assembly: AssemblyFileVersion("20.09.01.0")]

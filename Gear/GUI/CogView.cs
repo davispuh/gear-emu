@@ -323,9 +323,10 @@ namespace Gear.GUI
                     positionScroll.Value = (int)Host.ProgramCursor;
             }
 
-            if (Host is NativeCog)
-                Repaint(force, (NativeCog)Host);
-            else if (Host is InterpretedCog) Repaint(force, (InterpretedCog)Host);
+            if (Host is NativeCog cog)
+                Repaint(force, cog);
+            else if (Host is InterpretedCog _cog) 
+                Repaint(force, _cog);
 
             programCounterLabel.Text = "PC: " + String.Format("{0:X8}", Host.ProgramCursor);
             processorStateLabel.Text = "CPU State: " + Host.CogState; // + Host.VideoStateString;

@@ -22,6 +22,7 @@
  */
 
 using Gear.PluginSupport;
+using Gear.Utils;
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
@@ -38,13 +39,6 @@ namespace Gear.GUI
     /// @brief %Form to edit or create GEAR plugins.
     public partial class PluginEditor : Form
     {
-        /// @brief Default font for editor code.
-        /// @since v14.07.03 - Added.
-        private readonly Font defaultFont;
-        /// @brief Bold font for editor code.
-        /// @since v15.03.26 - Added.
-        private readonly Font fontBold;
-
         /// @brief Flag if the plugin definition has changed.
         /// To determine changes, it includes not only the C# code, but also class name and 
         /// reference list.
@@ -64,7 +58,7 @@ namespace Gear.GUI
         /// @brief Regex for syntax highlight.
         /// @since v15.03.26 - Added.
         private static readonly Regex LineExpressionRegex = new Regex(
-            @"\n", 
+            @"\n",
             RegexOptions.Compiled);
         /// @brief Regex for parse token in lines for syntax highlight.
         /// @version 15.03.26 - Added.
@@ -99,7 +93,7 @@ namespace Gear.GUI
 
         /// @brief Attribute for changed plugin detection.
         /// @since v15.03.26 - Added.
-        private bool CodeChanged
+        public bool CodeChanged
         {
             get { return codeChanged; }
             set
@@ -125,6 +119,9 @@ namespace Gear.GUI
             }
         }
 
+        /// @brief Tabulation array for editor.
+        private readonly int[] tabs = new int[32];
+
         /// @brief Default constructor.
         /// Initialize the class, defines columns for error grid, setting changes   
         /// detection, and trying to load the default template for plugin.
@@ -136,41 +133,32 @@ namespace Gear.GUI
             InitializeComponent();
 
             changeDetectEnabled = false;
-            if (loadDefaultTemplate)   //load default plugin template
+
+            // setting default font
+            defaultFont = new Font(FontFamily.GenericMonospace, 10, FontStyle.Regular);
+            fontBold = new Font(defaultFont, FontStyle.Bold);
+            codeEditorView.Font = defaultFont;
+            if (codeEditorView.Font == null)
+                codeEditorView.Font = this.Font;
+            //set editor tabulators
+            UpdateTabs(reloadText: false);
+            //load default plugin template
+            if (loadDefaultTemplate)
             {
                 try
                 {
                     codeEditorView.LoadFile(@"Resources\PluginTemplate.cs",
                         RichTextBoxStreamType.PlainText);
                 }
-                catch (IOException) { }         //do nothing, maintaining empty the code text box
-                catch (ArgumentException) { }   //
-                finally { }                     //
+                catch (IOException) { }       //do nothing, maintaining empty the code text box
+                catch (ArgumentException) { } //
+                finally { }                   //
             }
-
-            LastPlugin = null;
+            //init values
+            LastPlugin = string.Empty;
             changeDetectEnabled = true;
             CodeChanged = false;
             SeparatedFileExist = false;
-
-            // setting default font
-            defaultFont = new Font(FontFamily.GenericMonospace, 10, FontStyle.Regular);
-            fontBold = new Font(defaultFont, FontStyle.Bold);
-
-            codeEditorView.Font = defaultFont;
-            if (codeEditorView.Font == null)
-                codeEditorView.Font = this.Font;
-
-            // setting tab width
-            int charWidth = (int)Properties.Settings.Default.TabSize;
-            List<int> tabs = new List<int>();
-            for (int i = 1; i <= 32; i++)
-            {
-                tabs.Add(TextRenderer.MeasureText(
-                    new string(' ', i * charWidth), defaultFont).Width);
-            }
-            codeEditorView.SelectionTabs = tabs.ToArray();
-
             //Setup error grid
             errorListView.FullRowSelect = true;
             errorListView.GridLines = true;
@@ -178,18 +166,36 @@ namespace Gear.GUI
             errorListView.Columns.Add("Line", -2, HorizontalAlignment.Right);
             errorListView.Columns.Add("Column", -2, HorizontalAlignment.Right);
             errorListView.Columns.Add("Message", -2, HorizontalAlignment.Left);
-
-            //retrieve from settings the last state for embedded code
+            //retrieve the last state for embedded code from settings
             SetEmbeddedCodeButton(Properties.Settings.Default.EmbeddedCode);
-
+            //additional UI init
             progressHighlight.Visible = false;
+        }
+
+        /// @brief Update tab size, considering default tabsize.
+        /// @param reloadText To reload text after.
+        public void UpdateTabs(bool reloadText)
+        {
+            RememberRTBoxPosition checkpoint = 
+                new RememberRTBoxPosition(codeEditorView);
+            // setting tab width
+            for (int i = 0; i < tabs.Length; i++)
+            {
+                int size = (i + 1) * (int)Properties.Settings.Default.TabSize;
+                tabs[i] = TextRenderer.MeasureText(
+                    new string(' ', size),
+                    defaultFont).Width;
+            }
+            codeEditorView.SelectionTabs = tabs;
+            if (reloadText & codeEditorView.Text.Length > 0)
+                checkpoint.RestorePosition();
         }
 
         /// @brief Shows or hide the error grid.
         /// @param enable Enable (=true) or disable (=False) the error grid.
         public void ShowErrorGrid(bool enable)
         {
-            if (enable == true)
+            if (enable)
                 errorListView.Show();
             else
                 errorListView.Hide();
@@ -212,12 +218,14 @@ namespace Gear.GUI
         /// added encoding and DTD sections.
         public bool OpenFile(string FileName, bool displayErrors)
         {
-            XmlReaderSettings settings = new XmlReaderSettings();
-            settings.IgnoreComments = true;
-            settings.IgnoreProcessingInstructions = true;
-            settings.IgnoreWhitespace = true;
-            settings.DtdProcessing = DtdProcessing.Parse;
-            settings.ValidationType = ValidationType.DTD;
+            XmlReaderSettings settings = new XmlReaderSettings
+            {
+                IgnoreComments = true,
+                IgnoreProcessingInstructions = true,
+                IgnoreWhitespace = true,
+                DtdProcessing = DtdProcessing.Parse,
+                ValidationType = ValidationType.DTD
+            };
             settings.ValidationEventHandler += 
                 new ValidationEventHandler(DTDValidationErrHandler);
             XmlReader tr = XmlReader.Create(FileName, settings);
@@ -341,7 +349,7 @@ namespace Gear.GUI
             xmlDoc.AppendChild(declaration);
             //DTD section
             string internalDTD = File.ReadAllText(@"Resources\Plugin.dtd");
-            XmlDocumentType doctype = xmlDoc.CreateDocumentType("plugin", null, null, 
+            XmlDocumentType doctype = xmlDoc.CreateDocumentType("plugin", null, null,
                 internalDTD);
             xmlDoc.AppendChild(doctype);
             //plugin section
@@ -413,8 +421,7 @@ namespace Gear.GUI
             }
             else
             {
-                string className = null;
-                if (DetectClassName(codeEditorView.Text, out className))
+                if (DetectClassName(codeEditorView.Text, out string className))
                 {
                     int i = 0;
                     //show the name found in the screen field
@@ -427,9 +434,9 @@ namespace Gear.GUI
                     try
                     {
                         PluginBase plugin = ModuleCompiler.LoadModule(
-                            codeEditorView.Text, 
-                            className, 
-                            refs, 
+                            codeEditorView.Text,
+                            className,
+                            refs,
                             null);
                         if (plugin != null)
                         {
@@ -491,33 +498,43 @@ namespace Gear.GUI
                 continueAnyway = CloseAnyway(PluginFileName); //ask the user to not lost changes
             if (continueAnyway)
             {
-                OpenFileDialog dialog = new OpenFileDialog();
-                dialog.Filter = "Gear plug-in component (*.xml)|*.xml|All Files (*.*)|*.*";
-                dialog.Title = "Open Gear Plug-in...";
+                OpenFileDialog dialog = new OpenFileDialog
+                {
+                    Filter = "Gear plug-in component (*.xml)|*.xml|All Files (*.*)|*.*",
+                    Title = "Open Gear Plug-in..."
+                };
                 if (!String.IsNullOrEmpty(LastPlugin))
                     //retrieve from last plugin edited
                     dialog.InitialDirectory = Path.GetDirectoryName(LastPlugin);
                 else
                     if (!String.IsNullOrEmpty(Properties.Settings.Default.LastPlugin))
-                        //retrieve from global last plugin
-                        dialog.InitialDirectory = 
-                            Path.GetDirectoryName(Properties.Settings.Default.LastPlugin);   
+                    //retrieve from global last plugin
+                    dialog.InitialDirectory =
+                        Path.GetDirectoryName(Properties.Settings.Default.LastPlugin);
 
                 if (dialog.ShowDialog(this) == DialogResult.OK)
                 {
                     //try to open the file and load to screen
                     if (OpenFile(dialog.FileName, false))
-                        UpdateLastPluginOpened();
+                        UpdateDefaultLastPluginOpened();
                 }
             }
         }
 
-        /// @brief Update the last plugin opened.
-        /// @since v15.03.26 - Added.
-        public void UpdateLastPluginOpened()
+        /// @brief Update the default for last plugin opened or saved in 
+        /// the editor.
+        /// @version v20.09.01 - Changed method name.
+        public void UpdateDefaultLastPluginOpened()
         {
             Properties.Settings.Default.LastPlugin = LastPlugin;
             Properties.Settings.Default.Save();
+        }
+
+        /// @brief Update the last plugin from other class.
+        /// @version v20.09.01 - Added.
+        public void UpdateLastPlugin()
+        {
+            LastPlugin = Properties.Settings.Default.LastPlugin;
         }
 
         /// @brief Show dialog to save a plugin information into file, using GEAR plugin format.
@@ -537,17 +554,19 @@ namespace Gear.GUI
         /// @param e `EventArgs` class with a list of argument to the event call.
         private void SaveAsButton_Click(object sender, EventArgs e)
         {
-            SaveFileDialog dialog = new SaveFileDialog();
-            dialog.Filter = "Gear plug-in component (*.xml)|*.xml|All Files (*.*)|*.*";
-            dialog.Title = "Save Gear Plug-in...";
+            SaveFileDialog dialog = new SaveFileDialog
+            {
+                Filter = "Gear plug-in component (*.xml)|*.xml|All Files (*.*)|*.*",
+                Title = "Save Gear Plug-in..."
+            };
             if (!string.IsNullOrEmpty(LastPlugin))
                 //retrieve from last plugin edited
-                dialog.InitialDirectory = Path.GetDirectoryName(LastPlugin);   
+                dialog.InitialDirectory = Path.GetDirectoryName(LastPlugin);
             else
                 if (!String.IsNullOrEmpty(Properties.Settings.Default.LastPlugin))
-                    //retrieve from global last plugin
-                    dialog.InitialDirectory = 
-                        Path.GetDirectoryName(Properties.Settings.Default.LastPlugin);
+                //retrieve from global last plugin
+                dialog.InitialDirectory =
+                    Path.GetDirectoryName(Properties.Settings.Default.LastPlugin);
             //propose the detected class name
             dialog.FileName = instanceName.Text;
 
@@ -614,13 +633,14 @@ namespace Gear.GUI
             return;
         }
 
-        /// @brief Check syntax on the C# source code
+        /// @brief Check syntax on the C# source code.
         /// @param sender Object who called this on event.
         /// @param e `EventArgs` class with a list of argument to the event call.
         /// @since V14.07.03 - Added.
         private void SyntaxButton_Click(object sender, EventArgs e)
         {
-            int restore_pos = codeEditorView.SelectionStart, pos = 0;    //remember last position
+            int pos = 0;
+            RememberRTBoxPosition checkpoint = new RememberRTBoxPosition(codeEditorView);
             changeDetectEnabled = false;    //not enable change detection
             bool commentMultiline = false;  //initially not in comment mode
             //For each line in input, identify key words and format them when 
@@ -642,13 +662,12 @@ namespace Gear.GUI
             //update progress bar
             progressHighlight.Visible = false;
             //update editor code
-            codeEditorView.SelectionStart = restore_pos;    //restore last position
-            codeEditorView.ScrollToCaret();                 //and scroll to it
+            checkpoint.RestorePosition();
             codeEditorView.Visible = true;
             codeEditorView.Enabled = true;
             changeDetectEnabled = true; //restore change detection
         }
-        
+
         /// @brief Auxiliary method to check syntax.
         /// Examines line by line, parsing reserved C# words.
         /// @param line Text line from the source code.
@@ -673,7 +692,7 @@ namespace Gear.GUI
                     //parse the rest of the line (if any)
                     commentMultiline = false;
                     //is there more text after the comment?
-                    if (line.Length > index)    
+                    if (line.Length > index)
                         ParseLine(line.Substring(index), ref commentMultiline);
                     else  //no more text, so ...
                         codeEditorView.SelectedText = "\n"; //..finalize the line
@@ -700,7 +719,7 @@ namespace Gear.GUI
                         index = line.IndexOf("/*");
                         int indexEnd = line.IndexOf("*/");
                         //end comment found in the rest of the line?
-                        if ((indexEnd != -1) && (indexEnd > index)) 
+                        if ((indexEnd != -1) && (indexEnd > index))
                         {
                             //extract the comment text
                             string comment = line.Substring(index, (indexEnd += 2) - index);
@@ -718,12 +737,12 @@ namespace Gear.GUI
                         else  //as there is no end comment in the line..
                         {
                             //..entering comment multi line mode
-                            commentMultiline = true; 
+                            commentMultiline = true;
                             string comment = line.Substring(index, line.Length - index);
                             codeEditorView.SelectionColor = Color.Green;
                             codeEditorView.SelectionFont = defaultFont;
                             codeEditorView.SelectedText = comment;
-                            break;  
+                            break;
                         }
                     }
 
@@ -815,7 +834,7 @@ namespace Gear.GUI
         {
             //dialog to not lost changes
             DialogResult confirm = MessageBox.Show(
-                "Are you sure to close plugin \"" + fileName + 
+                "Are you sure to close plugin \"" + fileName +
                 "\" without saving?\nYour changes will lost.",
                 "Save.",
                 MessageBoxButtons.OKCancel,

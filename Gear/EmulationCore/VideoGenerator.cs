@@ -297,9 +297,7 @@ namespace Gear.EmulationCore
             // Check to see if we are at the end of our frame clocks
             if (FrameClocks <= 0)
             {
-                uint colours;
-                uint pixels;
-                cog.GetVideoData(out colours, out pixels);
+                cog.GetVideoData(out uint colours, out uint pixels);
                 Feed(colours, pixels);
                 ++frameCount;
             }

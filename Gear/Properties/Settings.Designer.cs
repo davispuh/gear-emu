@@ -8,19 +8,16 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System.CodeDom.Compiler;
 using System.ComponentModel;
-using System.Configuration;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
 
-namespace Gear.Properties
-{
-    [CompilerGeneratedAttribute()]
-    [GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.7.0.0")]
-    internal sealed partial class Settings : ApplicationSettingsBase {
+namespace Gear.Properties {
+    
+    
+    [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.7.0.0")]
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
-        private static Settings defaultInstance = ((Settings)(ApplicationSettingsBase.Synchronized(new Settings())));
+        private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
         
         public static Settings Default {
             get {
@@ -28,70 +25,24 @@ namespace Gear.Properties
             }
         }
         
-        [UserScopedSettingAttribute()]
-        [DebuggerNonUserCodeAttribute()]
-        [DefaultSettingValueAttribute("")]
-        [CategoryAttribute("Plugin Editor")]
-        [DescriptionAttribute("Last plugin loaded or edited (with full path).")]
-        [DisplayNameAttribute("last Plugin loaded")]
-        public string LastPlugin {
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5E-05")]
+        [CategoryAttribute("Logic Probe")]
+        [DescriptionAttribute("Time interval for the logic probe grid.")]
+        [DisplayNameAttribute("Last Tick mark grid")]
+        public double LastTickMarkGrid {
             get {
-                return ((string)(this["LastPlugin"]));
+                return ((double)(this["LastTickMarkGrid"]));
             }
             set {
-                this["LastPlugin"] = value;
+                this["LastTickMarkGrid"] = value;
             }
         }
         
-        [UserScopedSettingAttribute()]
-        [DebuggerNonUserCodeAttribute()]
-        [DefaultSettingValueAttribute("")]
-        [CategoryAttribute("Propeller Emulator")]
-        [DescriptionAttribute("Last Propeller binary loaded (with full path).")]
-        [DisplayNameAttribute("Last Binary loaded")]
-        public string LastBinary {
-            get {
-                return ((string)(this["LastBinary"]));
-            }
-            set {
-                this["LastBinary"] = value;
-            }
-        }
-        
-        [UserScopedSettingAttribute()]
-        [DebuggerNonUserCodeAttribute()]
-        [DefaultSettingValueAttribute("True")]
-        [CategoryAttribute("Plugin Editor")]
-        [DescriptionAttribute("Use a template for new plugins")]
-        [DisplayNameAttribute("Use template for new plugins")]
-        [ReadOnlyAttribute(true)]
-        public bool UseTemplate {
-            get {
-                return ((bool)(this["UseTemplate"]));
-            }
-            set {
-                this["UseTemplate"] = value;
-            }
-        }
-        
-        [UserScopedSettingAttribute()]
-        [DebuggerNonUserCodeAttribute()]
-        [DefaultSettingValueAttribute("1024")]
-        [CategoryAttribute("Propeller Emulator")]
-        [DescriptionAttribute("How many clock steps will pass between screen repaint of emulator and plugins.")]
-        [DisplayNameAttribute("Update screen each steps")]
-        public uint UpdateEachSteps {
-            get {
-                return ((uint)(this["UpdateEachSteps"]));
-            }
-            set {
-                this["UpdateEachSteps"] = value;
-            }
-        }
-        
-        [UserScopedSettingAttribute()]
-        [DebuggerNonUserCodeAttribute()]
-        [DefaultSettingValueAttribute("1E-04")]
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.0001")]
         [CategoryAttribute("Logic Probe")]
         [DescriptionAttribute("Width of time frame for the logic probe window.")]
         [DisplayNameAttribute("Last Time Frame")]
@@ -104,24 +55,24 @@ namespace Gear.Properties
             }
         }
         
-        [UserScopedSettingAttribute()]
-        [DebuggerNonUserCodeAttribute()]
-        [DefaultSettingValueAttribute("5E-05")]
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("s")]
         [CategoryAttribute("Logic Probe")]
-        [DescriptionAttribute("Time interval for the logic probe grid.")]
-        [DisplayNameAttribute("Last Tick mark Grid")]
-        public double LastTickMarkGrid {
+        [DescriptionAttribute("Unit of measure for elapsed time label in logic probe.")]
+        [DisplayNameAttribute("Unit for time frame and time interval.")]
+        public global::Gear.Utils.TimeUnitsEnum LogicViewTimeUnit {
             get {
-                return ((double)(this["LastTickMarkGrid"]));
+                return ((global::Gear.Utils.TimeUnitsEnum)(this["LogicViewTimeUnit"]));
             }
             set {
-                this["LastTickMarkGrid"] = value;
+                this["LogicViewTimeUnit"] = value;
             }
         }
         
-        [UserScopedSettingAttribute()]
-        [DebuggerNonUserCodeAttribute()]
-        [DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         [CategoryAttribute("Plugin Editor")]
         [DescriptionAttribute("Flag to embed the C# code of the plugin into XML file, or to " + 
             "create in a separated .CS file.")]
@@ -135,11 +86,26 @@ namespace Gear.Properties
             }
         }
         
-        [UserScopedSettingAttribute()]
-        [DebuggerNonUserCodeAttribute()]
-        [DefaultSettingValueAttribute("4")]
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         [CategoryAttribute("Plugin Editor")]
-        [DescriptionAttribute("Tabulator size in characters.")]
+        [DescriptionAttribute("Last plugin loaded or edited (with full path).")]
+        [DisplayNameAttribute("last Plugin loaded")]
+        public string LastPlugin {
+            get {
+                return ((string)(this["LastPlugin"]));
+            }
+            set {
+                this["LastPlugin"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("4")]
+        [CategoryAttribute("Plugin Editor")]
+        [DescriptionAttribute("Tabulation size in editor")]
         [DisplayNameAttribute("Tab size")]
         public uint TabSize {
             get {
@@ -147,6 +113,66 @@ namespace Gear.Properties
             }
             set {
                 this["TabSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Parallax_SPIN")]
+        [CategoryAttribute("Hub View")]
+        [DescriptionAttribute("Format of counter and frequency labels in Hub view.")]
+        [DisplayNameAttribute("Freq & Time format")]
+        public global::Gear.Utils.NumberFormatEnum FreqFormat {
+            get {
+                return ((global::Gear.Utils.NumberFormatEnum)(this["FreqFormat"]));
+            }
+            set {
+                this["FreqFormat"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("s")]
+        [CategoryAttribute("Hub View")]
+        [DescriptionAttribute("Unit of measure for elapsed time label in Hub view.")]
+        [DisplayNameAttribute("Unit for elapsed time")]
+        public global::Gear.Utils.TimeUnitsEnum HubTimeUnit {
+            get {
+                return ((global::Gear.Utils.TimeUnitsEnum)(this["HubTimeUnit"]));
+            }
+            set {
+                this["HubTimeUnit"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [CategoryAttribute("Propeller Emulator")]
+        [DescriptionAttribute("Last Propeller binary loaded (with full path).")]
+        [DisplayNameAttribute("Last Binary loaded")]
+        public string LastBinary {
+            get {
+                return ((string)(this["LastBinary"]));
+            }
+            set {
+                this["LastBinary"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1024")]
+        [CategoryAttribute("Propeller Emulator")]
+        [DescriptionAttribute("How many clock steps will pass between screen repaint of emulator and plugins.")]
+        [DisplayNameAttribute("Update screen each steps")]
+        public uint UpdateEachSteps {
+            get {
+                return ((uint)(this["UpdateEachSteps"]));
+            }
+            set {
+                this["UpdateEachSteps"] = value;
             }
         }
     }
