@@ -58,7 +58,7 @@ namespace Gear.GUI
         /// @brief Regex for syntax highlight.
         /// @since v15.03.26 - Added.
         private static readonly Regex LineExpressionRegex = new Regex(
-            @"\n", 
+            @"\n",
             RegexOptions.Compiled);
         /// @brief Regex for parse token in lines for syntax highlight.
         /// @version 15.03.26 - Added.
@@ -349,7 +349,7 @@ namespace Gear.GUI
             xmlDoc.AppendChild(declaration);
             //DTD section
             string internalDTD = File.ReadAllText(@"Resources\Plugin.dtd");
-            XmlDocumentType doctype = xmlDoc.CreateDocumentType("plugin", null, null, 
+            XmlDocumentType doctype = xmlDoc.CreateDocumentType("plugin", null, null,
                 internalDTD);
             xmlDoc.AppendChild(doctype);
             //plugin section
@@ -508,9 +508,9 @@ namespace Gear.GUI
                     dialog.InitialDirectory = Path.GetDirectoryName(LastPlugin);
                 else
                     if (!String.IsNullOrEmpty(Properties.Settings.Default.LastPlugin))
-                        //retrieve from global last plugin
-                        dialog.InitialDirectory = 
-                            Path.GetDirectoryName(Properties.Settings.Default.LastPlugin);   
+                    //retrieve from global last plugin
+                    dialog.InitialDirectory =
+                        Path.GetDirectoryName(Properties.Settings.Default.LastPlugin);
 
                 if (dialog.ShowDialog(this) == DialogResult.OK)
                 {
@@ -561,12 +561,12 @@ namespace Gear.GUI
             };
             if (!string.IsNullOrEmpty(LastPlugin))
                 //retrieve from last plugin edited
-                dialog.InitialDirectory = Path.GetDirectoryName(LastPlugin);   
+                dialog.InitialDirectory = Path.GetDirectoryName(LastPlugin);
             else
                 if (!String.IsNullOrEmpty(Properties.Settings.Default.LastPlugin))
-                    //retrieve from global last plugin
-                    dialog.InitialDirectory = 
-                        Path.GetDirectoryName(Properties.Settings.Default.LastPlugin);
+                //retrieve from global last plugin
+                dialog.InitialDirectory =
+                    Path.GetDirectoryName(Properties.Settings.Default.LastPlugin);
             //propose the detected class name
             dialog.FileName = instanceName.Text;
 
@@ -667,7 +667,7 @@ namespace Gear.GUI
             codeEditorView.Enabled = true;
             changeDetectEnabled = true; //restore change detection
         }
-        
+
         /// @brief Auxiliary method to check syntax.
         /// Examines line by line, parsing reserved C# words.
         /// @param line Text line from the source code.
@@ -692,7 +692,7 @@ namespace Gear.GUI
                     //parse the rest of the line (if any)
                     commentMultiline = false;
                     //is there more text after the comment?
-                    if (line.Length > index)    
+                    if (line.Length > index)
                         ParseLine(line.Substring(index), ref commentMultiline);
                     else  //no more text, so ...
                         codeEditorView.SelectedText = "\n"; //..finalize the line
@@ -719,7 +719,7 @@ namespace Gear.GUI
                         index = line.IndexOf("/*");
                         int indexEnd = line.IndexOf("*/");
                         //end comment found in the rest of the line?
-                        if ((indexEnd != -1) && (indexEnd > index)) 
+                        if ((indexEnd != -1) && (indexEnd > index))
                         {
                             //extract the comment text
                             string comment = line.Substring(index, (indexEnd += 2) - index);
@@ -737,12 +737,12 @@ namespace Gear.GUI
                         else  //as there is no end comment in the line..
                         {
                             //..entering comment multi line mode
-                            commentMultiline = true; 
+                            commentMultiline = true;
                             string comment = line.Substring(index, line.Length - index);
                             codeEditorView.SelectionColor = Color.Green;
                             codeEditorView.SelectionFont = defaultFont;
                             codeEditorView.SelectedText = comment;
-                            break;  
+                            break;
                         }
                     }
 
@@ -834,7 +834,7 @@ namespace Gear.GUI
         {
             //dialog to not lost changes
             DialogResult confirm = MessageBox.Show(
-                "Are you sure to close plugin \"" + fileName + 
+                "Are you sure to close plugin \"" + fileName +
                 "\" without saving?\nYour changes will lost.",
                 "Save.",
                 MessageBoxButtons.OKCancel,

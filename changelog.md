@@ -13,6 +13,18 @@ Read more in forum threads:
 * Migrated to .Net Framework 4.7.2, supporting version 7.3 of c# language.
 * A lot of documentation improvements and error corrections, using better tools of VisualStudio 2019.
 
+## Version 20.08.01
+
+* Updated version to 20.08.01 in files and documentation, syncronizing some code changes with UI-Improvements branch.
+* Updated changelog.md with corrected links to propeller forums and version changes.
+* Added comment headers to some files without it, and some documentation improvements.
+
+## Commit 5474027 - Enhanced plugin system and editor.
+
+* Enhanced plugin format in XML files, also accepting old format. A plugin can have the c# code in a separate file (*.cs), to enable debugging into visual studio. Added validation of xml format.
+* Added tab size of plugin editor to program properties.
+* Enhanced comments on plugin template for new plugins, and also in shipped plugins.
+
 ## Commit 70e132c - Merge pull request #19 from davispuh/Remember-Dirs
 
 * Remember last directories binary files and plugins loaded or edited.

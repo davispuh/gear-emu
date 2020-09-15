@@ -100,5 +100,8 @@ namespace Gear.Properties
         /// @brief Number of steps before update the windows and tabs.
         /// @since V15.03.26 - Added as a User property of the program.
 
+        /// @property TabSize
+        /// @brief Tabulator size in characters.
+        /// @since V20.08.01 - Added as a User property of the program.
     }
 }

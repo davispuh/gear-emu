@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using System.Drawing.Text;
 using System.Xml;
 
 namespace Gear.GUI
@@ -552,6 +553,8 @@ namespace Gear.GUI
         /// @param sender Reference to the object where this event was called.
         /// @param e Class with the details event.
         /// @version V15.03.26 - Added the refresh of the screen.
+        /// @param sender Reference to the object where this event was called.
+        /// @param e Class with the details event.
         private void StopEmulator_Click(object sender, EventArgs e)
         {
             runTimer.Stop();
