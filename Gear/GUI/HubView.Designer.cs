@@ -66,9 +66,9 @@ namespace Gear.GUI
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.timeLabel = new System.Windows.Forms.Label();
             this.elapsedTime = new System.Windows.Forms.Label();
             this.timeUnitSelector = new Gear.GUI.TimeUnitComboBox();
+            this.timeLabel = new System.Windows.Forms.Label();
             this.pinIN = new Gear.GUI.BitView();
             this.pinDIR = new Gear.GUI.BitView();
             this.pinFloating = new Gear.GUI.BitView();
@@ -253,15 +253,6 @@ namespace Gear.GUI
             this.label2.Text = "R - Run";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // timeLabel
-            // 
-            this.timeLabel.AutoSize = true;
-            this.timeLabel.Location = new System.Drawing.Point(3, 236);
-            this.timeLabel.Name = "timeLabel";
-            this.timeLabel.Size = new System.Drawing.Size(42, 13);
-            this.timeLabel.TabIndex = 32;
-            this.timeLabel.Text = "Time [ ]";
-            // 
             // elapsedTime
             // 
             this.elapsedTime.AutoSize = true;
@@ -272,24 +263,38 @@ namespace Gear.GUI
             this.elapsedTime.TabIndex = 33;
             this.elapsedTime.Text = "ElapsedTime";
             this.toolTip1.SetToolTip(this.elapsedTime, "Elapsed time from begining of emulation.\r\n(Click to change to next time unit.)");
-            this.elapsedTime.Click += new System.EventHandler(this.elapsedTime_Click);
+            this.elapsedTime.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ElapsedTime_MouseClick);
             // 
             // timeUnitSelector
             // 
+            this.timeUnitSelector.BaseUnit = Gear.Utils.TimeUnitsEnum.s;
+            this.timeUnitSelector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.timeUnitSelector.ExcludedUnits.Add(Gear.Utils.TimeUnitsEnum.None);
             this.timeUnitSelector.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.timeUnitSelector.FormattingEnabled = true;
-            this.timeUnitSelector.Location = new System.Drawing.Point(32, 233);
+            this.timeUnitSelector.Location = new System.Drawing.Point(32, 232);
             this.timeUnitSelector.Name = "timeUnitSelector";
             this.timeUnitSelector.Size = new System.Drawing.Size(40, 21);
             this.timeUnitSelector.TabIndex = 34;
             this.timeUnitSelector.TabStop = false;
-            this.toolTip1.SetToolTip(this.timeUnitSelector, "Time Unit");
-            this.timeUnitSelector.SelectedIndexChanged += new System.EventHandler(this.timeUnitSelector_SelectedIndexChanged);
+            this.timeUnitSelector.TimeUnitSelected = Gear.Utils.TimeUnitsEnum.None;
+            this.toolTip1.SetToolTip(this.timeUnitSelector, "Time unit of emulation time.");
+            this.timeUnitSelector.SelectedIndexChanged += new System.EventHandler(this.TimeUnitSelector_SelectedIndexChanged);
+            // 
+            // timeLabel
+            // 
+            this.timeLabel.AutoSize = true;
+            this.timeLabel.Location = new System.Drawing.Point(3, 236);
+            this.timeLabel.Name = "timeLabel";
+            this.timeLabel.Size = new System.Drawing.Size(30, 13);
+            this.timeLabel.TabIndex = 32;
+            this.timeLabel.Text = "Time";
             // 
             // pinIN
             // 
             this.pinIN.Bits = 64;
             this.pinIN.Location = new System.Drawing.Point(78, 368);
+            this.pinIN.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pinIN.Name = "pinIN";
             this.pinIN.Postfix = "";
             this.pinIN.Prefix = "P";
@@ -301,6 +306,7 @@ namespace Gear.GUI
             // 
             this.pinDIR.Bits = 64;
             this.pinDIR.Location = new System.Drawing.Point(78, 406);
+            this.pinDIR.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pinDIR.Name = "pinDIR";
             this.pinDIR.Postfix = "";
             this.pinDIR.Prefix = "P";
@@ -312,6 +318,7 @@ namespace Gear.GUI
             // 
             this.pinFloating.Bits = 64;
             this.pinFloating.Location = new System.Drawing.Point(78, 444);
+            this.pinFloating.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pinFloating.Name = "pinFloating";
             this.pinFloating.Postfix = "";
             this.pinFloating.Prefix = "P";
@@ -323,6 +330,7 @@ namespace Gear.GUI
             // 
             this.pinLocksFree.Bits = 8;
             this.pinLocksFree.Location = new System.Drawing.Point(78, 327);
+            this.pinLocksFree.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pinLocksFree.Name = "pinLocksFree";
             this.pinLocksFree.Postfix = "";
             this.pinLocksFree.Prefix = "Lock";
@@ -335,6 +343,7 @@ namespace Gear.GUI
             this.pinLocks.AutoSize = true;
             this.pinLocks.Bits = 8;
             this.pinLocks.Location = new System.Drawing.Point(78, 346);
+            this.pinLocks.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pinLocks.Name = "pinLocks";
             this.pinLocks.Postfix = "";
             this.pinLocks.Prefix = "Lock";

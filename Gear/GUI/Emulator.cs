@@ -3,7 +3,7 @@
  * Copyright 2007 - Robert Vandiver
  * --------------------------------------------------------------------------------
  * Emulator.cs
- * Emulator window class
+ * View class for PropellerCPU emulator instance
  * --------------------------------------------------------------------------------
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,7 +25,6 @@ using Gear.EmulationCore;
 using Gear.PluginSupport;
 using System;
 using System.Collections.Generic;
-using System.Drawing.Text;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml;
@@ -37,21 +36,23 @@ namespace Gear.GUI
     /// the chip, like start, go through steps, reset or reload.
     public partial class Emulator : Form
     {
-        private PropellerCPU Chip;          //!< @brief Reference to PropellerCPU running instance.
-        private String Source;              //!< @brief Name of Binary program loaded.
-        private String LastFileName;        //!< @brief Last file name opened.
-        public uint stepInterval;           //!< @brief How many steps to update screen.
-        private List<Control> FloatControls;//!< @brief List of floating controls.
+        private readonly PropellerCPU Chip;          //!< @brief Reference to PropellerCPU running instance.
+        private string source;                       //!< @brief Name of Binary program loaded.
+        private uint stepInterval;                   //!< @brief How many steps to update screen.
+        private readonly List<Control> FloatControls;//!< @brief List of floating controls.
 
         /// @brief Stopwatch to periodically rerun a step of the emulation
-        private Timer runTimer;             
+        private readonly Timer runTimer;
+
+        /// @brief Get the last binary opened successfully.
+        public string LastBinary { get => source; }
 
         /// @brief Default Constructor.
-        /// @param source Binary program loaded (path & name)        
-        public Emulator(string source)
+        /// @param _source Binary program loaded (path & name)
+        public Emulator(string _source)
         {
             Chip = new PropellerCPU(this);
-            Source = source;
+            source = _source;
             FloatControls = new List<Control>();
 
             InitializeComponent();
@@ -70,30 +71,75 @@ namespace Gear.GUI
             documentsTab.SelectedIndex = 0;
 
             // TEMPORARY RUN FUNCTION
-            runTimer = new Timer();
-            runTimer.Interval = 10;
+            runTimer = new Timer
+            {
+                Interval = 10
+            };
             runTimer.Tick += new EventHandler(RunEmulatorStep);
 
             hubView.Host = Chip;
-            stepInterval = Properties.Settings.Default.UpdateEachSteps;
+            UpdateStepInterval();
         }
 
-        /// @brief Get the last binary opened successfully.
-        public string GetLastBinary
+        /// @brief Update value of system properties inside of 
+        /// contained controls.
+        /// @since v20.09.01 - Added.
+        public void UpdateVarValue(string variableName)
         {
-            get
+            switch (variableName)
             {
-                return LastFileName;
+                case "LastTickMarkGrid":
+                    foreach (TabPage tabCtl in documentsTab.TabPages)
+                        foreach (Control ctl in tabCtl.Controls)
+                            if (ctl is LogicProbe.LogicView logic)
+                            {
+                                logic.UpdateLastTickMarkGrid();
+                                logic.UpdateFrameAndTickText();
+                            }
+                    break;
+                case "LastTimeFrame":
+                    foreach (TabPage tabCtl in documentsTab.TabPages)
+                        foreach (Control ctl in tabCtl.Controls)
+                            if (ctl is LogicProbe.LogicView logic)
+                            { 
+                                logic.UpdateLastTimeFrame();
+                                logic.UpdateFrameAndTickText();
+                            }
+                    break;
+                case "LogicViewTimeUnit":
+                    foreach (TabPage tabCtl in documentsTab.TabPages)
+                        foreach (Control ctl in tabCtl.Controls)
+                            if (ctl is LogicProbe.LogicView logic)
+                                logic.UpdateTimeUnit();
+                    break;
+                case "FreqFormat":
+                    //update hubview
+                    hubView.UpdateFreqFormat();
+                    hubView.UpdateTimeText();
+                    hubView.UpdateCounterFreqTexts();
+                    //update SpinView and logic view
+                    foreach (TabPage tabCtl in documentsTab.TabPages)
+                        foreach (Control ctl in tabCtl.Controls)
+                            if (ctl is SpinView viewCtl)
+                                viewCtl.UpdateFreqFormat();
+                    break;
+                case "HubTimeUnit":
+                    hubView.UpdateTimeText();
+                    hubView.UpdateHubTimeUnit();
+                    break;
+                case "UpdateEachSteps":
+                    UpdateStepInterval();
+                    break;
+                default:
+                    break;
             }
         }
 
-        /// @brief Make a stop on the emulation.
-        /// @details This method would be called when a plugin want to stop, for example
-        /// when a breakpoint condition is satisfied.
-        public void BreakPoint()
+        /// @brief Update step interval from default value.
+        /// @since v20.09.01 - Added.
+        private void UpdateStepInterval()
         {
-            runTimer.Stop();
-            RepaintViews();
+            stepInterval = Properties.Settings.Default.UpdateEachSteps;
         }
 
         /// @brief Include a plugin to a propeller chip instance.
@@ -102,19 +148,18 @@ namespace Gear.GUI
         /// @param plugin Instance of a Gear.PluginSupport.PluginBase class to be attached.
         private void AttachPlugin(PluginBase plugin)
         {
-            Chip.IncludePlugin(plugin);     //include into plugin lists of a PropellerCPU instance
+            Chip.IncludePlugin(plugin); //include into plugin lists of a PropellerCPU instance
             plugin.PresentChip();       //invoke initial setup of plugin.
 
-            TabPage t = new TabPage(plugin.Title);
-            t.Parent = documentsTab;
+            TabPage t = new TabPage(plugin.Title)
+            {
+                Parent = documentsTab
+            };
             plugin.Dock = DockStyle.Fill;
             plugin.Parent = t;
             documentsTab.SelectedTab = t;
             //Maintain the close button availability
-            if (plugin.IsClosable)
-                closeButton.Enabled = true;
-            else
-                closeButton.Enabled = false;
+            closeButton.Enabled = plugin.IsClosable;
         }
 
         /// @brief Delete a plugin from a propeller chip instance.
@@ -151,13 +196,23 @@ namespace Gear.GUI
             RepaintViews();
         }
 
+        /// @brief Make a stop on the emulation.
+        /// @details This method would be called when a plugin want to stop, for example
+        /// when a breakpoint condition is satisfied.
+        public void BreakPoint()
+        {
+            runTimer.Stop();
+            RepaintViews();
+        }
+
         /// @brief Unfloat the tab object.
         /// @param c Tab object.
         public void Unfloat(Control c)
         {
-            TabPage tp = new TabPage(c.Text);
-
-            tp.Parent = documentsTab;
+            TabPage tp = new TabPage(c.Text)
+            {
+                Parent = documentsTab
+            };
             c.Parent = tp;
             c.Dock = DockStyle.Fill;
 
@@ -172,7 +227,8 @@ namespace Gear.GUI
             try
             {
                 Chip.Initialize(File.ReadAllBytes(FileName));
-                LastFileName = FileName;
+                source = FileName;
+                Properties.Settings.Default.LastBinary = source;
                 RepaintViews();
                 return true;
             }
@@ -197,32 +253,55 @@ namespace Gear.GUI
         /// @returns Reference to the new plugin instance (on success) or NULL (on fail).
         public PluginBase LoadPlugin(string FileName)
         {
-            XmlReaderSettings settings = new XmlReaderSettings();
-            settings.IgnoreComments = true;
-            settings.IgnoreProcessingInstructions = true;
-            settings.IgnoreWhitespace = true;
+            XmlReaderSettings settings = new XmlReaderSettings
+            {
+                IgnoreComments = true,
+                IgnoreProcessingInstructions = true,
+                IgnoreWhitespace = true,
+                DtdProcessing = DtdProcessing.Parse,
+                ValidationType = ValidationType.DTD
+            };
             XmlReader tr = XmlReader.Create(FileName, settings);
             bool ReadText = false;
 
             List<string> references = new List<string>();
             string instanceName = string.Empty;
             string code = string.Empty;
+            string codeFileName = string.Empty;
+            string pluginVersion = "0.1";
 
             try
             {
 
                 while (tr.Read())
                 {
-                    if (tr.NodeType == XmlNodeType.Text && ReadText)
+                    if (ReadText)
                     {
-                        code = tr.Value;
+                        if (string.IsNullOrEmpty(codeFileName))
+                        {
+                            //Mantain compatibility with old plugins (using Text section)
+                            if (tr.NodeType == XmlNodeType.Text ||
+                                    tr.NodeType == XmlNodeType.CDATA)
+                                code = tr.Value;
+                        }
+                        else
+                        {
+                            codeFileName = 
+                                Path.Combine(Path.GetDirectoryName(FileName), codeFileName);
+                            code = File.ReadAllText(codeFileName);
+                        }
                         ReadText = false;
                     }
-
                     switch (tr.Name.ToLower())
                     {
+                        case "plugin":
+                            pluginVersion =
+                                string.IsNullOrEmpty(tr.GetAttribute("version")) ?
+                                pluginVersion :
+                                tr.GetAttribute("version");
+                            break;
                         case "reference":
-                            if (!tr.IsEmptyElement)     //prevent empty element generates error
+                            if (!tr.IsEmptyElement)
                                 references.Add(tr.GetAttribute("name"));
                             break;
                         case "instance":
@@ -230,6 +309,7 @@ namespace Gear.GUI
                             break;
                         case "code":
                             ReadText = true;
+                            codeFileName = tr.GetAttribute("codeFileName");
                             break;
                     }
                 }
@@ -237,16 +317,16 @@ namespace Gear.GUI
                 //Dynamic load and compile the plugin module as a class, giving the chip 
                 // instance as a parameter.
                 PluginBase plugin = ModuleCompiler.LoadModule(
-                    code, 
-                    instanceName, 
-                    references.ToArray(), 
+                    code,
+                    instanceName,
+                    references.ToArray(),
                     Chip
                 );
 
-                if (plugin == null)     //if it fails...
+                if (plugin == null)  //if it fails...
                 {
                     // ...open plugin editor in other window
-                    PluginEditor pe = new PluginEditor(false);   
+                    PluginEditor pe = new PluginEditor(false);
                     pe.OpenFile(FileName, true);
                     pe.MdiParent = this.MdiParent;
                     pe.Show();
@@ -255,11 +335,12 @@ namespace Gear.GUI
                     //show the error list
                     pe.ShowErrorGrid(true);
                 }
-                else               //if success compiling & instantiate the new class...
+                else  //successful compiling & instantiating of the new class...
                 {
                     //...add the reference to the plugin list of the emulator instance
-                    AttachPlugin(plugin);   
-                    Properties.Settings.Default.LastPlugin = FileName;  //update location of last plugin
+                    AttachPlugin(plugin);
+                    //update location of last plugin
+                    Properties.Settings.Default.LastPlugin = FileName;
                     Properties.Settings.Default.Save();
                 }
 
@@ -288,13 +369,15 @@ namespace Gear.GUI
         /// @brief Select binary propeller image to load.
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
-        private void openBinary_Click(object sender, EventArgs e)
+        private void OpenBinary_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Propeller Runtime Image (*.binary;*.eeprom)|*.binary;" + 
-                "*.eeprom|All Files (*.*)|*.*";
-            openFileDialog.Title = "Open Propeller Binary...";
-            openFileDialog.FileName = Source;
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Filter = "Propeller Runtime Image (*.binary;*.eeprom)|*.binary;" +
+                "*.eeprom|All Files (*.*)|*.*",
+                Title = "Open Propeller Binary...",
+                FileName = source
+            };
 
             if (openFileDialog.ShowDialog(this) == DialogResult.OK)
                 OpenFile(openFileDialog.FileName);
@@ -304,9 +387,9 @@ namespace Gear.GUI
         /// @details It also reset the %Propeller Chip and all the plugins.
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
-        private void reloadBinary_Click(object sender, EventArgs e)
+        private void ReloadBinary_Click(object sender, EventArgs e)
         {
-            OpenFile(LastFileName);
+            OpenFile(source);
             Chip.Reset();
         }
 
@@ -333,8 +416,8 @@ namespace Gear.GUI
             if (c != null)
                 ((PluginBase)c).Repaint(true);
 
-            if ( (documentsTab.SelectedTab != null) && 
-                 ((c = documentsTab.SelectedTab.GetNextControl(null, true)) != null) )
+            if ((documentsTab.SelectedTab != null) &&
+                 ((c = documentsTab.SelectedTab.GetNextControl(null, true)) != null))
                 ((PluginBase)c).Repaint(true);
 
             hubView.DataChanged();
@@ -343,7 +426,7 @@ namespace Gear.GUI
         /// @brief Event to reset the whole %Propeller Chip.
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
-        private void resetEmulator_Click(object sender, EventArgs e)
+        private void ResetEmulator_Click(object sender, EventArgs e)
         {
             Chip.Reset();
             RepaintViews();
@@ -352,7 +435,7 @@ namespace Gear.GUI
         /// @brief Run only one instruction of the active cog, stopping after executed.
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
-        private void stepEmulator_Click(object sender, EventArgs e)
+        private void StepEmulator_Click(object sender, EventArgs e)
         {
             Chip.Step();
             RepaintViews();
@@ -363,11 +446,11 @@ namespace Gear.GUI
         /// what uses it.
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
-        private void closeActiveTab_Click(object sender, EventArgs e)
+        private void CloseActiveTab_Click(object sender, EventArgs e)
         {
             TabPage tp = documentsTab.SelectedTab;
             PluginBase p = (PluginBase)tp.Controls[0];
-            
+
             if (p != null)          //test if cast to PluginBase works...
             {
                 if (p.IsClosable)   //... so, test if we can close the tab 
@@ -375,11 +458,11 @@ namespace Gear.GUI
                     if (documentsTab.SelectedIndex > 0)
                     {
                         //select the previous tab
-                        documentsTab.SelectedIndex = documentsTab.SelectedIndex - 1;
+                        documentsTab.SelectedIndex -= 1;
                         //tab changing housekeeping for plugin close button
-                        documentsTab_Click(this, e);
+                        DocumentsTab_Click(this, e);
                         //detach the plugin from the emulator
-                        this.DetachPlugin(p);           
+                        this.DetachPlugin(p);
                         p.Dispose();
                     }
                     tp.Parent = null;   //delete the reference to plugin
@@ -388,8 +471,9 @@ namespace Gear.GUI
         }
 
         /// @todo Document Gear.GUI.Emulator.floatActiveTab_Click()
-        /// 
-        private void floatActiveTab_Click(object sender, EventArgs e)
+        /// @param sender Reference to the object where this event was called.
+        /// @param e Class with the details event.
+        private void FloatActiveTab_Click(object sender, EventArgs e)
         {
             TabPage tp = documentsTab.SelectedTab;
             tp.Parent = null;
@@ -403,14 +487,15 @@ namespace Gear.GUI
 
             fw.MdiParent = this.MdiParent;
             fw.Show();
-            fw.Text = tp.Text + ": " + Source;
+            fw.Text = tp.Text + ": " + source;
 
             FloatControls.Add(fw);
         }
 
         /// @todo Document Gear.GUI.Emulator.pinActiveTab_Click()
-        /// 
-        private void pinActiveTab_Click(object sender, EventArgs e)
+        /// @param sender Reference to the object where this event was called.
+        /// @param e Class with the details event.
+        private void PinActiveTab_Click(object sender, EventArgs e)
         {
             Control oldPin = pinnedPanel.GetNextControl(null, true);
 
@@ -427,22 +512,27 @@ namespace Gear.GUI
 
             if (oldPin != null)
             {
-                tp = new TabPage(oldPin.Text);
-                tp.Parent = documentsTab;
+                tp = new TabPage(oldPin.Text)
+                {
+                    Parent = documentsTab
+                };
                 oldPin.Parent = tp;
             }
         }
 
         /// @todo Document Gear.GUI.Emulator.unpinButton_Click()
-        /// 
-        private void unpinButton_Click(object sender, EventArgs e)
+        /// @param sender Reference to the object where this event was called.
+        /// @param e Class with the details event.
+        private void UnpinButton_Click(object sender, EventArgs e)
         {
             Control oldPin = pinnedPanel.GetNextControl(null, true);
 
             if (oldPin != null)
             {
-                TabPage tp = new TabPage(oldPin.Text);
-                tp.Parent = documentsTab;
+                TabPage tp = new TabPage(oldPin.Text)
+                {
+                    Parent = documentsTab
+                };
                 oldPin.Parent = tp;
 
                 if (!pinnedSplitter.IsCollapsed)
@@ -453,16 +543,16 @@ namespace Gear.GUI
         /// @brief Event to run the emulator freely.
         /// @param sender Reference to the object where this event was called.
         /// @param e Class with the details event.
-        private void runEmulator_Click(object sender, EventArgs e)
+        private void RunEmulator_Click(object sender, EventArgs e)
         {
             runTimer.Start();
         }
 
         /// @brief Stop the emulation.
-        /// @version V15.03.26 - Added the refresh of the screen.
         /// @param sender Reference to the object where this event was called.
         /// @param e Class with the details event.
-        private void stopEmulator_Click(object sender, EventArgs e)
+        /// @version V15.03.26 - Added the refresh of the screen.
+        private void StopEmulator_Click(object sender, EventArgs e)
         {
             runTimer.Stop();
             RepaintViews(); //added the repaint, to refresh the views
@@ -471,15 +561,15 @@ namespace Gear.GUI
         /// @brief Event to run one instruction in emulator.
         /// @param sender Reference to the object where this event was called.
         /// @param e Class with the details event.
-        private void stepInstruction_Click(object sender, EventArgs e)
+        private void StepInstruction_Click(object sender, EventArgs e)
         {
             if (documentsTab.SelectedTab != null)
             {
                 Control c = documentsTab.SelectedTab.GetNextControl(null, true);
 
-                if (c != null && c is CogView)
+                if (c != null && c is CogView view)
                 {
-                    Cog cog = ((CogView)c).GetViewCog();
+                    Cog cog = view.GetViewCog();
 
                     if (cog != null)
                         cog.StepInstruction();
@@ -495,9 +585,11 @@ namespace Gear.GUI
         /// @param e Class with the details event.
         private void OpenPlugin_Click(object sender, EventArgs e)
         {
-            OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Filter = "Gear Plug-in (*.xml)|*.xml|All Files (*.*)|*.*";
-            dialog.Title = "Open Gear Plug-in...";
+            OpenFileDialog dialog = new OpenFileDialog
+            {
+                Filter = "Gear Plug-in (*.xml)|*.xml|All Files (*.*)|*.*",
+                Title = "Open Gear Plug-in..."
+            };
             //get the path of last plugin like a hint to open a new one
             if (!String.IsNullOrEmpty(Properties.Settings.Default.LastPlugin))
                 dialog.InitialDirectory =
@@ -516,7 +608,8 @@ namespace Gear.GUI
         }
 
         /// @todo Document Gear.GUI.Emulator.OnDeactivate()
-        /// 
+        /// @param sender Reference to the object where this event was called.
+        /// @param e Class with the details event.
         private void OnDeactivate(object sender, EventArgs e)
         {
             runTimer.Stop();
@@ -530,7 +623,7 @@ namespace Gear.GUI
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
         /// @since V14.07.03 - Added.
-        private void documentsTab_Click(object sender, EventArgs e)
+        private void DocumentsTab_Click(object sender, EventArgs e)
         {
             TabPage tp = documentsTab.SelectedTab;
             if (tp.Controls[0] is PluginBase)
@@ -550,8 +643,9 @@ namespace Gear.GUI
         }
 
         /// @todo Document Gear.GUI.Emulator.documentsTab_KeyPress()
-        /// 
-        private void documentsTab_KeyPress(object sender, KeyPressEventArgs e)
+        /// @param sender Reference to the object where this event was called.
+        /// @param e Class with the details event.
+        private void DocumentsTab_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (ActiveControl is PluginBase)
             {
@@ -564,7 +658,7 @@ namespace Gear.GUI
                 if (runTimer.Enabled)
                     runTimer.Stop();
                 else
-                    stepInstruction_Click(sender, e);
+                    StepInstruction_Click(sender, e);
             }
             if ((e.KeyChar == 'r') | (e.KeyChar == 'R'))
             {

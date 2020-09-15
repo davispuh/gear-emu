@@ -22,8 +22,11 @@
  */
 
 using System;
-using System.Reflection;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
 using System.Windows.Forms;
+using System.Reflection;
 
 namespace Gear.GUI
 {
@@ -48,7 +51,7 @@ namespace Gear.GUI
 
         #region Assembly Attribute Accessors
 
-        public string AssemblyTitle
+        public static string AssemblyTitle
         {
             get
             {
@@ -60,7 +63,7 @@ namespace Gear.GUI
                     // Select the first one
                     AssemblyTitleAttribute titleAttribute = (AssemblyTitleAttribute)attributes[0];
                     // If it is not an empty string, return it
-                    if (titleAttribute.Title != string.Empty)
+                    if (!string.IsNullOrEmpty(titleAttribute.Title))
                         return titleAttribute.Title;
                 }
                 // If there was no Title attribute, or if the Title attribute was the empty string, return the .exe name
@@ -90,7 +93,7 @@ namespace Gear.GUI
             }
         }
 
-        public string AssemblyProduct
+        public static string AssemblyProduct
         {
             get
             {
@@ -104,7 +107,7 @@ namespace Gear.GUI
             }
         }
 
-        public string AssemblyCopyright
+        public static string AssemblyCopyright
         {
             get
             {
@@ -118,7 +121,7 @@ namespace Gear.GUI
             }
         }
 
-        public string AssemblyCompany
+        public static string AssemblyCompany
         {
             get
             {

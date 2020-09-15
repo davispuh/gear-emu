@@ -119,10 +119,10 @@ namespace Gear.GUI
             this.assemblyPanel.TabIndex = 1;
             this.assemblyPanel.SizeChanged += new System.EventHandler(this.AsmSized);
             this.assemblyPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.AssemblyView_Paint);
-            this.assemblyPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.assemblyPanel_MouseClick);
-            this.assemblyPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.assemblyPanel_MouseDown);
-            this.assemblyPanel.MouseHover += new System.EventHandler(this.assemblyPanel_MouseHover);
-            this.assemblyPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.assemblyPanel_MouseMove);
+            this.assemblyPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.AssemblyPanel_MouseClick);
+            this.assemblyPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.AssemblyPanel_MouseDown);
+            this.assemblyPanel.MouseHover += new System.EventHandler(this.AssemblyPanel_MouseHover);
+            this.assemblyPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.AssemblyPanel_MouseMove);
             // 
             // positionScroll
             // 
@@ -171,7 +171,7 @@ namespace Gear.GUI
             this.memoryViewButton.Name = "memoryViewButton";
             this.memoryViewButton.Size = new System.Drawing.Size(88, 22);
             this.memoryViewButton.Text = "Show Memory";
-            this.memoryViewButton.Click += new System.EventHandler(this.memoryViewButton_Click);
+            this.memoryViewButton.Click += new System.EventHandler(this.MemoryViewButton_Click);
             // 
             // followPCButton
             // 
@@ -184,7 +184,7 @@ namespace Gear.GUI
             this.followPCButton.Name = "followPCButton";
             this.followPCButton.Size = new System.Drawing.Size(64, 22);
             this.followPCButton.Text = "Follow PC";
-            this.followPCButton.Click += new System.EventHandler(this.followPCButton_Click);
+            this.followPCButton.Click += new System.EventHandler(this.FollowPCButton_Click);
             // 
             // programCounterLabel
             // 
@@ -248,14 +248,14 @@ namespace Gear.GUI
             this.decimalUnits.Name = "decimalUnits";
             this.decimalUnits.Size = new System.Drawing.Size(143, 22);
             this.decimalUnits.Text = "Decimal";
-            this.decimalUnits.Click += new System.EventHandler(this.decimalUnits_Click);
+            this.decimalUnits.Click += new System.EventHandler(this.DecimalUnits_Click);
             // 
             // hexadecimalUnits
             // 
             this.hexadecimalUnits.Name = "hexadecimalUnits";
             this.hexadecimalUnits.Size = new System.Drawing.Size(143, 22);
             this.hexadecimalUnits.Text = "Hexadecimal";
-            this.hexadecimalUnits.Click += new System.EventHandler(this.hexadecimalUnits_Click);
+            this.hexadecimalUnits.Click += new System.EventHandler(this.HexadecimalUnits_Click);
             // 
             // toolStripSeparator6
             // 
@@ -279,7 +279,7 @@ namespace Gear.GUI
             this.longOpcodes.Name = "longOpcodes";
             this.longOpcodes.Size = new System.Drawing.Size(152, 22);
             this.longOpcodes.Text = "Long Opcodes";
-            this.longOpcodes.Click += new System.EventHandler(this.longOpcodes_Click);
+            this.longOpcodes.Click += new System.EventHandler(this.LongOpcodes_Click);
             // 
             // shortOpcodes
             // 
@@ -288,7 +288,7 @@ namespace Gear.GUI
             this.shortOpcodes.Name = "shortOpcodes";
             this.shortOpcodes.Size = new System.Drawing.Size(152, 22);
             this.shortOpcodes.Text = "Short Opcodes";
-            this.shortOpcodes.Click += new System.EventHandler(this.shortOpcodes_Click);
+            this.shortOpcodes.Click += new System.EventHandler(this.ShortOpcodes_Click);
             // 
             // FrameBreakMode
             // 

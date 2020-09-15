@@ -1,9 +1,8 @@
-/* --------------------------------------------------------------------------------
+﻿/* --------------------------------------------------------------------------------
  * Gear: Parallax Inc. Propeller Debugger
  * Copyright 2007 - Robert Vandiver
  * --------------------------------------------------------------------------------
- * FloatedWindow.cs
- * Window container for a floated plugin
+ * TimeUnitComboBox.Designer.cs
  * --------------------------------------------------------------------------------
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,26 +20,41 @@
  * --------------------------------------------------------------------------------
  */
 
-using System;
-using System.Windows.Forms;
-
 namespace Gear.GUI
 {
-    /// @brief Window container for a floated plugin.
-    public partial class FloatedWindow : Form
+    partial class TimeUnitComboBox
     {
-        private readonly Emulator SourceHost;
+        /// <summary> 
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
 
-        public FloatedWindow(Emulator originalHost)
+        /// <summary> 
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
         {
-            SourceHost = originalHost;
-            InitializeComponent();
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
         }
 
-        protected override void OnClosed(EventArgs e)
+        #region Component Designer generated code
+
+        /// <summary> 
+        /// Required method for Designer support - do not modify 
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
         {
-            SourceHost.Unfloat(GetNextControl(null, true));
-            base.OnClosed(e);
+            this.SuspendLayout();
+            this.ResumeLayout(false);
+
         }
+
+        #endregion
     }
 }

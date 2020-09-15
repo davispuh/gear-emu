@@ -2,7 +2,7 @@
  * Gear: Parallax Inc. Propeller Debugger
  * Copyright 2007 - Robert Vandiver
  * --------------------------------------------------------------------------------
- * NumberFormatExt.cs
+ * TimeUnitComboBox.Designer.cs
  * --------------------------------------------------------------------------------
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,42 +20,39 @@
  * --------------------------------------------------------------------------------
  */
 
-using System.Globalization;
-
 namespace Gear.GUI
 {
-    /// @brief Available Number Formats.
-    /// @since @version 20.06.01 - Added.
-    public enum NumberFormatEnum
+    partial class TimeUnitComboBox
     {
-        /// @brief No format (old default).
-        None = 0,
-        /// @brief Format given from system default.
-        System_Default,
-        /// @brief Using '_' as separator.
-        Parallax_SPIN
-    }
+        /// <summary> 
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
 
-    /// @brief Provides number separators formats for clock and counters.
-    /// @since @version 20.06.01 - Added.
-    public static class NumberFormatExt
-    {
-        public static NumberFormatInfo GetFormatInfo(NumberFormatEnum value)
+        /// <summary> 
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
         {
-           NumberFormatInfo retVal = 
-                (NumberFormatInfo)CultureInfo.CurrentCulture.NumberFormat.Clone();
-            switch (value)
+            if (disposing && (components != null))
             {
-                case NumberFormatEnum.None:
-                    retVal.NumberGroupSeparator = string.Empty;
-                    break;
-                case NumberFormatEnum.System_Default:
-                    break;
-                case NumberFormatEnum.Parallax_SPIN:
-                    retVal.NumberGroupSeparator = "_";
-                    break;
+                components.Dispose();
             }
-            return retVal;
+            base.Dispose(disposing);
         }
+
+        #region Component Designer generated code
+
+        /// <summary> 
+        /// Required method for Designer support - do not modify 
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            components = new System.ComponentModel.Container();
+        }
+
+        #endregion
     }
 }

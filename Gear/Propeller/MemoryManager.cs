@@ -82,7 +82,7 @@ namespace Gear.Propeller
 
     public class MemoryManager
     {
-        private DirectMemory Memory;
+        private readonly DirectMemory Memory;
         public uint Address { get; protected set; }
 
         public MemoryManager(DirectMemory Memory, uint Address = 0)

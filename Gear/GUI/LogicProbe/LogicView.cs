@@ -22,9 +22,11 @@
  */
 
 using Gear.EmulationCore;
+using Gear.Utils;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Windows.Forms;
 
 namespace Gear.GUI.LogicProbe
@@ -32,37 +34,32 @@ namespace Gear.GUI.LogicProbe
     /// @brief Logical pin waveform viewer
     public partial class LogicView : Gear.PluginSupport.PluginBase
     {
-        private Font MonoFont;
+        /// @brief Current Culture to modify its Number format.
+        /// @since @version v20.09.01 - Added.
+        private readonly CultureInfo currentCultureMod =
+            (CultureInfo)CultureInfo.CurrentCulture.Clone();
 
-        private List<LogicRow> Pins;
-        private LogicDigital[] DigitalPins;
+        private readonly Font MonoFont;
+        private Bitmap BackBuffer;
+
+        private readonly List<LogicRow> Pins = new List<LogicRow>();
+        private readonly LogicDigital[] DigitalPins = new LogicDigital[64];
         private double TimeScale;
         private double Marker;
 
-        private Bitmap BackBuffer;
-
         public override string Title
         {
-            get
-            {
-                return "Logic Probe";
-            }
+            get { return "Logic Probe"; }
         }
 
-        public override Boolean IsClosable
+        public override bool IsClosable
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public override bool IsUserPlugin
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         /// @brief Default Constructor.
@@ -73,31 +70,82 @@ namespace Gear.GUI.LogicProbe
 
             MonoFont = new Font(FontFamily.GenericMonospace, 10);
             if (MonoFont == null)
-            {
                 MonoFont = this.Font;
-            }
 
-            viewOffset.LargeChange = 1;
+            toolStripComboBox1.SyncValues();
+            //Assign delegates for formatting text of timeUnitSelector
+            var textFormats = new DelegatesPerTimeUnitsList(
+                toolStripComboBox1.ExcludedUnits,
+                new SortedList<TimeUnitsEnum, FormatToTextDelegate>()
+                {
+                    {TimeUnitsEnum.ns, StandardTimeFormatText},
+                    {TimeUnitsEnum.us, StandardTimeFormatText},
+                    {TimeUnitsEnum.ms, StandardTimeFormatText},
+                    {TimeUnitsEnum.s,  StandardTimeFormatText}
+                }
+            );
+            toolStripComboBox1.AssignTextFormats(textFormats);
 
             //retrieve the default settings for grid
-            TimeScale = Properties.Settings.Default.LastTimeFrame;
-            Marker = Properties.Settings.Default.LastTickMarkGrid;
-            //Set international localized text for timeFrame & tickMark text boxes
-            timeFrameBox.Text = TimeScale.ToString("0.00000000");
-            tickMarkBox.Text = Marker.ToString("0.00000000");
-
-            Pins = new List<LogicRow>();
-            DigitalPins = new LogicDigital[64];
+            UpdateLastTimeFrame();
+            UpdateLastTickMarkGrid();
+            UpdateTimeUnit();
+            //Set text for timeFrame & tickMark text boxes, using time unit.
+            UpdateFrameAndTickText();
 
             for (int i = 0; i < DigitalPins.Length; i++)
-            {
                 DigitalPins[i] = new LogicDigital(i);
-            }
 
             for (int i = 0; i < 32; i++)
-            {
                 Pins.Add(DigitalPins[i]);
-            }
+        }
+
+        /// @brief Update the value of TimeScale from default setting.
+        /// @since v20.09.01 - Added.
+        public void UpdateLastTimeFrame()
+        {
+            TimeScale = Properties.Settings.Default.LastTimeFrame;
+        }
+
+        /// @brief Update the value of Marker from default setting.
+        /// @since v20.09.01 - Added.
+        public void UpdateLastTickMarkGrid()
+        {
+            Marker = Properties.Settings.Default.LastTickMarkGrid;
+        }
+
+        /// @brief Update the time unit for logic view from default setting.
+        /// @since v20.09.01 - Added.
+        public void UpdateTimeUnit()
+        {
+            toolStripComboBox1.TimeUnitSelected = 
+                Properties.Settings.Default.LogicViewTimeUnit;
+        }
+
+        /// @brief Update UI values for TimeScale and Marker using Format.
+        /// @since v20.09.01 - Added.
+        public void UpdateFrameAndTickText()
+        {
+            timeFrameBox.Text = toolStripComboBox1.GetFormatedText(TimeScale).Trim();
+            tickMarkBox.Text = toolStripComboBox1.GetFormatedText(Marker).Trim();
+            timeFrameBox.Invalidate();
+            tickMarkBox.Invalidate();
+        }
+
+        /// @brief Format the value to string, for all time units.
+        /// @details Implements Gear.Utils.FormatToTextDelegate delegate.
+        /// @param unit Time unit to use.
+        /// @param val Value to format to string.
+        /// @returns The formatted text.
+        /// @since v20.09.01 - Added.
+        private string StandardTimeFormatText(TimeUnitsEnum unit, double val)
+        {
+            double factor = toolStripComboBox1.FactorSelected;
+            string decimalsSymbols = new string('0', 3 * (int)unit - 2);
+            string numFormat = $"{{0,12:#,##0.{decimalsSymbols}}}";
+            double value = (toolStripComboBox1.IsMultiplyFactor) ?
+                val * factor : val / factor;
+            return string.Format(currentCultureMod, numFormat, value);
         }
 
         /// @todo document Gear.GUI.LogicProbe.PresentChip()
@@ -118,14 +166,12 @@ namespace Gear.GUI.LogicProbe
         }
 
         /// @brief Save the last used settings of the grid view before close.
-        /// @version V15.03.26 - added.
+        /// @version v20.09.01 - Modified to remember the internal value.
         public override void OnClose()
         {
-            double aux;
-            if (Double.TryParse(timeFrameBox.Text,out aux))
-                Properties.Settings.Default.LastTimeFrame = aux;
-            if (Double.TryParse(tickMarkBox.Text, out aux))
-                Properties.Settings.Default.LastTickMarkGrid = aux;
+            Properties.Settings.Default.LastTimeFrame = TimeScale;
+            Properties.Settings.Default.LastTickMarkGrid = Marker;
+            Properties.Settings.Default.Save();
         }
 
         /// @todo document Gear.GUI.LogicProbe.OnPinChange()
@@ -142,7 +188,7 @@ namespace Gear.GUI.LogicProbe
         ///
         public override void Repaint(bool tick)
         {
-            if (Chip == null)
+            if (Chip == null || Pins == null)
                 return;
 
             viewOffset.Maximum = Pins.Count - 1;
@@ -246,11 +292,18 @@ namespace Gear.GUI.LogicProbe
         }
 
         /// @brief Update the grid view with the new settings of scale and markers.
-        private void updateGridButton_Click(object sender, EventArgs e)
+        /// @version v20.09.01 - Modified to manage time units.
+        private void UpdateGridButton_Click(object sender, EventArgs e)
         {
+            double aux = TimeUnitsEnumExtension.TransformUnitsFactor(
+                    toolStripComboBox1.TimeUnitSelected,
+                    out bool inverseOperation,
+                    toolStripComboBox1.BaseUnit);
             try
             {
-                TimeScale = Convert.ToDouble(timeFrameBox.Text);
+                TimeScale = (inverseOperation) ?
+                    Convert.ToDouble(timeFrameBox.Text) / aux :
+                    Convert.ToDouble(timeFrameBox.Text) * aux;
             }
             catch (FormatException)
             {
@@ -259,7 +312,9 @@ namespace Gear.GUI.LogicProbe
 
             try
             {
-                Marker = Convert.ToDouble(tickMarkBox.Text);
+                Marker = (inverseOperation) ?
+                    Convert.ToDouble(tickMarkBox.Text) / aux :
+                    Convert.ToDouble(tickMarkBox.Text) * aux;
             }
             catch (FormatException)
             {
@@ -329,7 +384,7 @@ namespace Gear.GUI.LogicProbe
 
         /// @todo document Gear.GUI.LogicProbe.digitalButton_Click()
         ///
-        private void digitalButton_Click(object sender, EventArgs e)
+        private void DigitalButton_Click(object sender, EventArgs e)
         {
             try
             {
@@ -341,7 +396,7 @@ namespace Gear.GUI.LogicProbe
 
                         if (range.Length < 2)
                         {
-                            MessageBox.Show("Invalid range value", "Pin value Problem", 
+                            MessageBox.Show("Invalid range value", "Pin value Problem",
                                 MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         }
 
@@ -378,7 +433,7 @@ namespace Gear.GUI.LogicProbe
             catch (OverflowException)
             {
                 MessageBox.Show(string.Format("You must specify a pin between 0 and {0}",
-                    PropellerCPU.TOTAL_PINS - 1), 
+                    PropellerCPU.TOTAL_PINS - 1),
                     "Pin value Problem", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
 
@@ -387,7 +442,7 @@ namespace Gear.GUI.LogicProbe
 
         /// @todo document Gear.GUI.LogicProbe.analogButton_Click()
         ///
-        private void analogButton_Click(object sender, EventArgs e)
+        private void AnalogButton_Click(object sender, EventArgs e)
         {
             string[] numbers = pinsTextBox.Text.Split(',');
             List<LogicDigital> pins = new List<LogicDigital>();
@@ -402,7 +457,7 @@ namespace Gear.GUI.LogicProbe
 
                         if (range.Length < 2)
                         {
-                            MessageBox.Show("Invalid range value", "Pin value Problem", 
+                            MessageBox.Show("Invalid range value", "Pin value Problem",
                                 MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         }
 
@@ -425,7 +480,7 @@ namespace Gear.GUI.LogicProbe
                 catch (FormatException)
                 {
                     MessageBox.Show(string.Format("Pin Value needs to be a valid number between 0 and {0}.",
-                        PropellerCPU.TOTAL_PINS - 1), 
+                        PropellerCPU.TOTAL_PINS - 1),
                         "Pin value Problem", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     return;
                 }
@@ -450,5 +505,20 @@ namespace Gear.GUI.LogicProbe
             Repaint(true);
         }
 
+        /// @brief Change the time unit, remembering the user setting.
+        /// @param sender
+        /// @param e
+        /// @since v20.09.01 - Added.
+        private void ToolStripComboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (!this.DesignMode)
+            {
+                UpdateFrameAndTickText();
+                //remember the setting
+                Properties.Settings.Default.LogicViewTimeUnit =
+                    toolStripComboBox1.TimeUnitSelected;
+                Properties.Settings.Default.Save();
+            }
+        }
     }
 }

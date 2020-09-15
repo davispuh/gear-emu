@@ -47,7 +47,7 @@ namespace Gear.EmulationCore
         private uint ColorsValue;
 
         /// @brief Internal stack, used for storing return call stuff
-        private Stack<uint> CallStack;
+        private readonly Stack<uint> CallStack;
 
         private bool Port;
 
@@ -753,10 +753,9 @@ namespace Gear.EmulationCore
                         break;
                     case 0x37:  // Push Packed Literal
                         {
-                            uint result = 0;
                             uint value = Hub.DirectReadByte(PC++);
 
-                            result = (uint)2 << (int)(value & 0x1F);
+                            uint result = (uint)2 << (int)(value & 0x1F);
 
                             if ((value & 0x20) != 0)
                                 result--;
@@ -1261,7 +1260,7 @@ namespace Gear.EmulationCore
                             for (int i = 0; i < 32; i++)
                             {
                                 uint parity = (result) ^ (result >> 1) ^ (result >> 2) ^ (result >> 4);
-                                result = (result >> 1);
+                                result >>= 1;
 
                                 if ((parity & 1) != 0)
                                     result |= 0x80000000;
@@ -1277,7 +1276,7 @@ namespace Gear.EmulationCore
                             for (int i = 0; i < 32; i++)
                             {
                                 uint parity = (result) ^ (result >> 1) ^ (result >> 3) ^ (result >> 31);
-                                result = (result << 1);
+                                result <<= 1;
 
                                 if ((parity & 1) != 0)
                                     result |= 0x00000001;

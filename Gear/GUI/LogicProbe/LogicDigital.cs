@@ -31,9 +31,9 @@ namespace Gear.GUI.LogicProbe
     {
         const int MAXIMUM_SAMPLES = 1024;
 
-        private double[] Time;
-        private PinState[] Pins;
-        private int PinNumber;
+        private readonly double[] Time;
+        private readonly PinState[] Pins;
+        private readonly int PinNumber;
 
         private int WritePointer;
         private bool Wrapped;
@@ -61,7 +61,7 @@ namespace Gear.GUI.LogicProbe
 
         /// @brief Default Constructor 
         /// @param pin Pin map to use
-        public LogicDigital(int pin)
+        public LogicDigital(int pin) : base()
         {
             Pins = new PinState[MAXIMUM_SAMPLES];
             Time = new double[MAXIMUM_SAMPLES];
@@ -69,15 +69,13 @@ namespace Gear.GUI.LogicProbe
             PinNumber = pin;
 
             //use the new method Reset()
-            this.Reset();
+            Reset();
         }
 
         public override void Click()
-        {
-        }
+        { }
 
         /// @brief Clear samples when reset is needed
-        /// 
         public override void Reset()
         {
             Time[0] = 0.0;
@@ -135,8 +133,6 @@ namespace Gear.GUI.LogicProbe
             do
             {
                 nextX = (float)((GetTime(s) - minTime) / scale);
-                nextY = center;
-
                 switch (GetState(s))
                 {
                     case PinState.INPUT_HI:

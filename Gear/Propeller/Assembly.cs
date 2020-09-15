@@ -22,7 +22,7 @@
 
 namespace Gear.Propeller
 {
-    public partial class Assembly
+    public static partial class Assembly
     {
         public enum InstructionType
         {

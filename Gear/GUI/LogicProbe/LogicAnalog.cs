@@ -29,7 +29,7 @@ namespace Gear.GUI.LogicProbe
     /// @brief Provides a analog channel for LogicView.
     class LogicAnalog : LogicRow
     {
-        private LogicDigital[] Channels;
+        private readonly LogicDigital[] Channels;
 
         public override string Name
         {

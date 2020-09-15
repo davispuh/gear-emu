@@ -34,15 +34,11 @@ namespace Gear.GUI
 
         public uint Value
         {
-            get
-            {
-                return m_RingPosition;
-            }
+            get { return m_RingPosition; }
             set
             {
                 uint old = m_RingPosition;
                 m_RingPosition = (value & 0xF);
-
                 if (old != m_RingPosition)
                     Invalidate();
             }
@@ -71,9 +67,11 @@ namespace Gear.GUI
             double TopShift = Math.PI / 24;
 
             Point[] points = new Point[8 * 4];
-            StringFormat drawFormat = new StringFormat();
-            drawFormat.LineAlignment = StringAlignment.Center;
-            drawFormat.Alignment = StringAlignment.Center;
+            StringFormat drawFormat = new StringFormat
+            {
+                LineAlignment = StringAlignment.Center,
+                Alignment = StringAlignment.Center
+            };
 
             for (int i = 0; i < points.Length; i += 4)
             {

@@ -45,10 +45,9 @@ namespace Gear.GUI
         {
             //save to disk
             Properties.Settings.Default.Save();
+            //redraw forms
             foreach(Form f in ParentForm.OwnedForms)
-            {
-
-            }
+                f.Refresh();
             this.Close();
         }
 
@@ -63,10 +62,7 @@ namespace Gear.GUI
                 !(prop = GearPropertyGrid.SelectedGridItem.PropertyDescriptor).IsReadOnly)
             {
                 //try to get the default value of the property
-                DefaultSettingValueAttribute attr =
-                    prop.Attributes[typeof(DefaultSettingValueAttribute)] 
-                    as DefaultSettingValueAttribute;
-                if (attr != null)  //if exist
+                if (prop.Attributes[typeof(DefaultSettingValueAttribute)] is DefaultSettingValueAttribute attr)  //if exist
                 {
                     //remember old value
                     object oldValue = prop.GetValue(Settings.Default);
@@ -75,11 +71,12 @@ namespace Gear.GUI
                         prop.ResetValue(Settings.Default);
                     else
                         prop.SetValue(
-                            Settings.Default, 
-                            Convert.ChangeType(attr.Value, prop.PropertyType) );
+                            Settings.Default,
+                            Convert.ChangeType(attr.Value, prop.PropertyType));
                     //call the notification event
-                    GearPropertyGrid_PropertyValueChanged(sender, new PropertyValueChangedEventArgs(
-                        GearPropertyGrid.SelectedGridItem, oldValue));
+                    GearPropertyGrid_PropertyValueChanged(sender,
+                        new PropertyValueChangedEventArgs(
+                            GearPropertyGrid.SelectedGridItem, oldValue));
                 }
                 GearPropertyGrid.Refresh();
             }
@@ -89,6 +86,7 @@ namespace Gear.GUI
         /// property values used in other forms.
         /// @param s Sender object to this event.
         /// @param e Arguments to this event, including the old value.
+        /// @version v20.09.01 - Modified to include new properties.
         private void GearPropertyGrid_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
         {
             PropertyDescriptor prop;    //to get the underlying property
@@ -97,44 +95,25 @@ namespace Gear.GUI
             {
                 switch (prop.Name)
                 {
-                    case "UpdateEachSteps":
-                        if (this.ParentForm.IsMdiContainer & this.ParentForm.HasChildren)
-                            foreach(Form f in this.ParentForm.MdiChildren)
-                            {
-                                var emu = f as Emulator;
-                                if (emu != null)
-                                    emu.stepInterval = (uint)prop.GetValue(Settings.Default);
-                            }
-                        break;
-                    case "EmbeddedCode":
-                        if (this.ParentForm.IsMdiContainer & this.ParentForm.HasChildren)
-                            foreach (Form f in this.ParentForm.MdiChildren)
-                            {
-                                var pluginEditor = f as PluginEditor;
-                                if (pluginEditor != null)
-                                {
-                                    pluginEditor.UpdateTextEmbeddedCodeButton();
-                                    pluginEditor.CodeChanged = true;
-                                }
-                            }
-                        break;
+                    case "LastTickMarkGrid":
+                    case "LastTimeFrame":
+                    case "LogicViewTimeUnit":
                     case "FreqFormat":
-                        if (this.ParentForm.IsMdiContainer & this.ParentForm.HasChildren)
-                            foreach (Form f in this.ParentForm.MdiChildren)
-                            {
-                                var emu = f as Emulator;
-                                if (emu != null)
-                                    emu.hubView.UpdateCounterFreqTexts();
-                            }
-                        break;
                     case "HubTimeUnit":
-                        if (this.ParentForm.IsMdiContainer & this.ParentForm.HasChildren)
-                            foreach (Form f in this.ParentForm.MdiChildren)
-                            {
-                                var emu = f as Emulator;
-                                if (emu != null)
-                                    emu.hubView.UpdateTimeText();
-                            }
+                    case "UpdateEachSteps":
+                        foreach (Form form in ParentForm.MdiChildren)
+                            if (form is Emulator emu)
+                                emu.UpdateVarValue(prop.Name);
+                        break;
+                    case "TabSize":
+                        foreach (Form form in ParentForm.MdiChildren)
+                            if (form is PluginEditor pluginEditor)
+                                pluginEditor.UpdateTabs(reloadText: true);
+                        break;
+                    case "LastPlugin":
+                        foreach (Form form in ParentForm.MdiChildren)
+                            if (form is PluginEditor pluginEditor)
+                                pluginEditor.UpdateLastPlugin();
                         break;
                     default:
                         break;

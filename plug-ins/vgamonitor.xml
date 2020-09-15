@@ -1,121 +1,134 @@
-<plugin>
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plugin[<!ELEMENT plugin (instance, reference*, code)>
+<!ATTLIST plugin version CDATA "1.0">
+<!ELEMENT instance EMPTY>
+<!ATTLIST instance class CDATA #REQUIRED>
+<!ELEMENT reference EMPTY>
+<!ATTLIST reference name CDATA #REQUIRED>
+<!ELEMENT code (#PCDATA)>
+<!ATTLIST code codeFileName CDATA #IMPLIED>]>
+<plugin version="1.0">
   <instance class="VGAMonitor" />
-  <code>
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
-    using System.Drawing;
-    using System.Collections;
-    using System.ComponentModel;
-    using System.Windows.Forms;
-    using System.Data;
+  <code><![CDATA[//Assemblies needed for GEAR plugin system.
+using Gear.EmulationCore;
+using Gear.PluginSupport;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Text;
+using System.Windows.Forms;
 
-    using Gear.EmulationCore;
-    using Gear.PluginSupport;
+//Class declaration of plugin.
+class VGAMonitor : PluginBase
+{
+	private Bitmap Screen;
 
-    class VGAMonitor : PluginBase
-    {
-        private Bitmap Screen;
+	private double Minimum;
+	private Color Output;
 
-        private double Minimum;
-        private Color Output;
+	private Color[] Palette;
 
-        private Color[] Palette;
+	public bool VSync;
+	public bool HSync;
 
-        public bool VSync;
-        public bool HSync;
+	private double LastTime;
 
-        private double LastTime;
+	public int ScanLine;
+	public int Pixel;
 
-        public int ScanLine;
-        public int Pixel;
+	//Constructor for plugin initialization.
+	public VGAMonitor(PropellerCPU chip) : base(chip)
+	{
+		Screen = new Bitmap(1300, 800);
+		ScanLine = 0;
+		Pixel = 0;
+		Minimum = 1;
+		Palette = new Color[0x40];
 
-        public override string Title
-        {
-            get { return "VGA Monitor"; }
-        }
+		for (int i = 0; i < 0x40; i++)
+		{
+			uint color = 0xFF000000;
+			if ((i & 1) != 0) color |= 0x000055;
+			if ((i & 2) != 0) color |= 0x0000AA;
+			if ((i & 4) != 0) color |= 0x005500;
+			if ((i & 8) != 0) color |= 0x00AA00;
+			if ((i & 16) != 0) color |= 0x550000;
+			if ((i & 32) != 0) color |= 0xAA0000;
+			Palette[i] = Color.FromArgb((int)color);
+		}
 
-        public VGAMonitor(PropellerCPU chip) : base(chip)
-        {
-            Screen = new Bitmap(1300, 800);
-            ScanLine = 0;
-            Pixel = 0;
-            Minimum = 1;
-            Palette = new Color[0x40];
+		Output = Palette[0];
+		for (int x = 0; x < Screen.Width; x++)
+			for (int y = 0; y < Screen.Height; y++)
+				Screen.SetPixel(x, y, Output);
+	}
 
-            for (int i = 0; i &lt; 0x40; i++)
-            {
-                uint color = 0xFF000000;
-                if ((i &amp; 1) != 0) color |= 0x000055;
-                if ((i &amp; 2) != 0) color |= 0x0000AA;
-                if ((i &amp; 4) != 0) color |= 0x005500;
-                if ((i &amp; 8) != 0) color |= 0x00AA00;
-                if ((i &amp; 16) != 0) color |= 0x550000;
-                if ((i &amp; 32) != 0) color |= 0xAA0000;
-                Palette[i] = Color.FromArgb((int)color);
-            }
+	//Title to be shown in tab.
+	public override string Title
+	{
+		get { return "VGA Monitor"; }
+	}
 
-            Output = Palette[0];
-            for (int x = 0; x &lt; Screen.Width; x++)
-                for (int y = 0; y &lt; Screen.Height; y++)
-                    Screen.SetPixel(x, y, Output);
-        }
+	//Register the events to be notified to this plugin.
+	public override void PresentChip()
+	{
+		NotifyOnPins();
+	}
 
-        public override void PresentChip()
-        {
-            NotifyOnPins();
-        }
+	//Called every time a pin changes, only if it was registered on 
+	//method PresentChip() above.
+	public override void OnPinChange(double time, PinState[] pins)
+	{
+		double delta = time - LastTime;
+		LastTime = time;
 
-        public override void OnPinChange(double time, PinState[] pins)
-        {
-            double delta = time - LastTime;
-            LastTime = time;
+		if (delta < Minimum && delta > 0)
+			Minimum = delta;
 
-            if (delta &lt; Minimum &amp;&amp; delta &gt; 0)
-                Minimum = delta;
+		int pixels = (int)(delta / Minimum);
+		while (pixels-- > 0 && Pixel < Screen.Width && ScanLine < Screen.Height)
+			Screen.SetPixel(Pixel++, ScanLine, Output);
 
-            int pixels = (int)(delta / Minimum);
-            while (pixels-- &gt; 0 &amp;&amp; Pixel &lt; Screen.Width &amp;&amp; ScanLine &lt; Screen.Height)
-                Screen.SetPixel(Pixel++, ScanLine, Output);
+		// Check to see if the scanline pins have changed
+		if (pins[16] == PinState.OUTPUT_LO && !VSync)
+		{
+			if (!VSync)
+				ScanLine = 0;
+		}
 
-            // Check to see if the scanline pins have changed
-            if (pins[16] == PinState.OUTPUT_LO &amp;&amp; !VSync)
-            {
-                if (!VSync)
-                    ScanLine = 0;
-            }
+		if (pins[17] == PinState.OUTPUT_LO && !HSync)
+		{
+			if (++ScanLine == Screen.Height)
+				ScanLine = 0;
+			Pixel = 0;
+		}
 
-            if (pins[17] == PinState.OUTPUT_LO &amp;&amp; !HSync)
-            {
-                if (++ScanLine == Screen.Height)
-                    ScanLine = 0;
-                Pixel = 0;
-            }
-
-            VSync = pins[16] == PinState.OUTPUT_LO;
-            HSync = pins[17] == PinState.OUTPUT_LO;
+		VSync = pins[16] == PinState.OUTPUT_LO;
+		HSync = pins[17] == PinState.OUTPUT_LO;
 
 
-            // Drive color off PropellerCPU demo board pins
-            int index = 0;
+		// Drive color off PropellerCPU demo board pins
+		int index = 0;
 
-            for (int b = 0, p = 18; b &lt; 6; b++, p++)
-                if (pins[p] == PinState.OUTPUT_HI)
-                    index |= 1 &lt;&lt; b;
+		for (int b = 0, p = 18; b < 6; b++, p++)
+			if (pins[p] == PinState.OUTPUT_HI)
+				index |= 1 << b;
 
-            Output = Palette[index];
-        }
+		Output = Palette[index];
+	}
 
-        public override void Repaint(bool force)
-        {
-            CreateGraphics().DrawImage(Screen, 0, 0);
-        }
+	public override void Repaint(bool force)
+	{
+		CreateGraphics().DrawImage(Screen, 0, 0);
+	}
 
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            e.Graphics.DrawImage(Screen, 0, 0);
-        }
-    }
-  
-</code>
+	protected override void OnPaint(PaintEventArgs e)
+	{
+		e.Graphics.DrawImage(Screen, 0, 0);
+	}
+}
+]]></code>
 </plugin>

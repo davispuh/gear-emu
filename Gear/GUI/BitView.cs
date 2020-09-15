@@ -160,9 +160,8 @@ namespace Gear.GUI
         // event handler for set/clear tooltip, depending on mouse position
         private void BitView_MouseMove(object sender, MouseEventArgs e)
         {
-            int x = e.X, y = e.Y, temp = 0,
-                valX = nil, valY = nil;     // vars for column & row of boxes
-
+            int x = e.X, y = e.Y, valX = nil, valY = nil;     // vars for column & row of boxes
+            int temp;
             if (x < BitsPerRow * BitSize)   // test Max X range
             {
                 temp = (x / BitSize);       // Integer division

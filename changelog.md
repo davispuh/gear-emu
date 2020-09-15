@@ -1,11 +1,16 @@
 Read more in forum threads:
-* [Improved GEAR Emulator](http://forums.parallax.com/showthread.php/156347-Improved-GEAR-Emulator)
-* [More GEAR - Improved Emulation of the Propeller](http://forums.parallax.com/showthread.php/100380-More-GEAR-Improved-Emulation-of-the-Propeller)
-* [GEAR: Propeller Debugging Environment](http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment)
+* [Improved GEAR Emulator](http://forums.parallax.com/discussion/156347/improved-gear-emulator)
+* [More GEAR - Improved Emulation of the Propeller](https://forums.parallax.com/discussion/100380/more-gear-improved-emulation-of-the-propeller)
+* [GEAR: Propeller Debugging Environment](https://forums.parallax.com/discussion/91084/gear-propeller-debugging-environment)
 
-## V.20.06.01
+## V.20.09.01
 
-
+* New time units dedicated ComboBox and ToolStripComboBox. They are used in the new field "elapsed time" in hub view, and in Logic View (Time Frame and Tick Mark Grid fields).
+* Added time units & number formats in hub view. You can cycle between None, System default and Parallax (separator "_"), using the mouse button.
+* Added program properties editor form.
+* Enhanced plugin system to v1.0, with better XML format, and the possibility to write code to a separate .cs file
+* Migrated to .Net Framework 4.7.2, supporting language version 7.3.
+* A lot of documentation improvements and error corrections, using better tools of VisualStudio 2019.
 
 ## Commit 70e132c - Merge pull request #19 from davispuh/Remember-Dirs
 
@@ -71,7 +76,7 @@ Read more in forum threads:
 
 ## Commit 30ca271 - Merge pull request #2 from gatuno1/Rel_Candidate2015_03
 
-* Release 2015.03.26
+* Version 2015.03.26
 
 ## Commit bd306e9 - Final commit to Rel.Cand2015_03
 
@@ -91,7 +96,7 @@ Read more in forum threads:
 * Bug Correction on first plugin loading on a fresh instalation of GEAR, related to LastPlugin application setting.
 * Corrected a bug in references list: it was possible to add a blank line to the list.
 
-## V15.03.26
+## Version 15.03.26
 
 * Corrections on all the effects for PASM hub operations (zero, carry and return): CLKSET. COGID, COGINIT, COGSTOP, LOCKNEW, LOCKRET, LOCKSET, LOCKCLR. There was some missing values for carry & zero flags.
 
@@ -105,15 +110,15 @@ Read more in forum threads:
 
 * Updated PluginBase class structure, so all the old plugins have to be updated:
     -Constructor invocation must call Base constructor.
-	-Extra parameter on OnClock() method for current clock number in tick clocks.
-	-Method PresentChip() with no param, beacuse Chip reference now is included in plugin base class definition.
-	-New method OnClose() is called for every plugin before closing the emulator (to perform cleanup).
+    -Extra parameter on OnClock() method for current clock number in tick clocks.
+    -Method PresentChip() with no param, beacuse Chip reference now is included in plugin base class definition.
+    -New method OnClose() is called for every plugin before closing the emulator (to perform cleanup).
 
 * Added program settings to remember them between sessions (stored in "Gear.exe.config" file in this version): 
-	-TimeFrame and TickMarkGrid on logic view.
-	-LastBinary & LastPlugin on Emulator, GearDesktop & PluginEditor.
-	-UpdateEachSteps to enable changes on the screen refresh rate.
-	-Added "UseNoTemplate" program setting to enable load plugin editor empty (old default style).
+    -TimeFrame and TickMarkGrid on logic view.
+    -LastBinary & LastPlugin on Emulator, GearDesktop & PluginEditor.
+    -UpdateEachSteps to enable changes on the screen refresh rate.
+    -Added "UseNoTemplate" program setting to enable load plugin editor empty (old default style).
 
 * Changed names and tooltips on buttons "open plugin", "load plugin", "open binary" on GearDesktop & Emulator.
 
@@ -122,7 +127,7 @@ Read more in forum threads:
 * Improved general documentation of source code, including specific pages for sequence of callings for PropellerCPU.Step() and loading a plugin in memory after compilation.
 
 
-## V14.07.03
+## Version 14.07.03
 
 * Faster emulation.
     - In my own testing, GEAR runs now about 30% or 35% faster than Gear V09_10_26, maybe because the executable now use MS .NET framework 4.0 instead of 2.0. The drawback is the need to download the framework, but in windows 7 or 8, probably it is installed already.
@@ -151,31 +156,31 @@ Read more in forum threads:
     - Experimental C# sintax highlighting of code. Now the name of the file is displayed on the title of the window. Added tooltips to be more self explaining. 
 
 
-## V09_10_26 26 October 2009
+## Version 09.10.26 26 October 2009
 
 * Many thanks to Bob Anderson for identifying bugs in and subsequently testing improvements to the emulation of SUBS, SUBSX, CMPSX and REV.
 
 
-## V09_06_05 (140) 5 June 2009
+## Version 09.06.05 (140) 5 June 2009
 
 * Many thanks to Ben Levitt for improving the behaviour of GEAR. (Reload Binary, Open to PlugIn, Close PlugIn)
 * Improvements in SerialIO plugin (Ben Levitt).
 
 
-## V09_05_12 (50) 11 May 2009
+## Version 09.05.12 (50) 11 May 2009
 
 * Fixed memory references of the form `LONG[ &MyVar ][ 2 ]`, this case was being emulated as `LONG[ 2 ][ &MyVar ]`.
 * Included SerialIO plugin (with thanks to Ben Levitt) in the distribution.
 
 
-## V08_10_16 (151) 16 October 2008
+## Version 08.10.16 (151) 16 October 2008
 
 * An extra function has been added which allows hot keys to be disabled for a plugin.
 Simply add the following function to your plugin:
 `public override Boolean AllowHotKeys { get { return false; } }`
 
 
-## V08 04 29 (159) 29 April 2008
+## Version 08.04.29 (159) 29 April 2008
 * The lastest stimulus.zip is now included in V08_04_29.zip.
 * 'R' and 'S' keys can now be used to run, stop and step the currently active cog.
 * Floating the cursor over an assembly cog page shows the values stored at the source and destination registers for the instruction line that's under the mouse. The values are shown as both hex and decimal.
@@ -195,12 +200,12 @@ stop - causes a breakpoint - click Run to go to the next stop / breakpoint
 * Added stimulus.zip which updates stimulus.xml and the example stimulus file. It is now possible to do clock and pwm generation.
 
 
-## V08_01_18 (140)
+## Version 08_01_18 (140)
 
 * Pin toggling by means of a stimulus file.
 
 
-## V08_01_13 (86)
+## Version 08.01.13 (86)
 
 * Better disassembly of PASM
 * Some fixes in assembly language emulation

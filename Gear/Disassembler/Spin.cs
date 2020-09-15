@@ -24,7 +24,7 @@ using System;
 
 namespace Gear.Disassembler
 {
-    public partial class Spin
+    public static class Spin
     {
         public class ParsedMemoryOperation
         {

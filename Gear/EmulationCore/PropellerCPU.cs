@@ -74,7 +74,7 @@ namespace Gear.EmulationCore
     {
         /// @brief Name of Constants for setting Clock.
         /// 
-        static private string[] CLKSEL = new string[] {
+        private static readonly string[] CLKSEL = new string[] {
             "RCFAST",   // Internal fast oscillator:    $00000001
             "RCSLOW",   // Internal slow oscillator:    $00000002
             "XINPUT",   // External clock/oscillator:   $00000004
@@ -87,7 +87,7 @@ namespace Gear.EmulationCore
 
         /// @brief Name of external clock constants.
         /// 
-        static private string[] OSCM = new string[] {
+        private static readonly string[] OSCM = new string[] {
             "XINPUT+",  // External clock/oscillator:     $00000004
             "XTAL1+",   // External low-speed crystal:    $00000008
             "XTAL2+",   // External medium-speed crystal: $00000010 
@@ -95,7 +95,7 @@ namespace Gear.EmulationCore
         };
 
         /// @brief Array of cogs in the CPU.
-        private Cog[] Cogs;
+        private readonly Cog[] Cogs;
         /// @brief Number of cogs Running in the CPU.
         /// @details Helpful to detect when all the cogs are stopped so you can stop the emulator.
         /// @version 15.03.26 - Added to help detecting the complete stop of the CPU. 
@@ -104,14 +104,14 @@ namespace Gear.EmulationCore
         private byte[] ResetMemory;
 
         //!< @todo Document member Gear.EmulationCore.PropellerCPU.LocksAvailable
-        private bool[] LocksAvailable;
+        private readonly bool[] LocksAvailable;
         //!< @todo Document member Gear.EmulationCore.PropellerCPU.LocksState
-        private bool[] LocksState;
+        private readonly bool[] LocksState;
 
         //!< @todo Document member Gear.EmulationCore.PropellerCPU.ClockSources
-        private ClockSource[] ClockSources;
+        private readonly ClockSource[] ClockSources;
         //!< @todo Document member Gear.EmulationCore.PropellerCPU.CoreClockSource
-        private SystemXtal CoreClockSource; 
+        private readonly SystemXtal CoreClockSource; 
 
         //!< @todo Document member Gear.EmulationCore.PropellerCPU.RingPosition
         private uint RingPosition;
@@ -130,7 +130,7 @@ namespace Gear.EmulationCore
         private byte ClockMode;
         /// @brief Array for the state of each pin.
         /// @details Mainly used to expose to plugins the pin state of
-        private PinState[] PinStates;
+        private readonly PinState[] PinStates;
 
         //!< @todo Document member Gear.EmulationCore.PropellerCPU.pinChange
         private bool pinChange;
@@ -139,14 +139,14 @@ namespace Gear.EmulationCore
         private double Time;
 
         /// @brief Reference to the emulator instance running this CPU.
-        private Emulator emulator;
+        private readonly Emulator emulator;
 
         /// @brief List of Handlers for clock ticks on plugins.
-        private List<PluginBase> TickHandlers;      
+        private readonly List<PluginBase> TickHandlers;      
         /// @brief List of Handlers for Pin changes on plugins.
-        private List<PluginBase> PinHandlers;
+        private readonly List<PluginBase> PinHandlers;
         /// @brief List of active PlugIns (include system ones, like cog views, etc).
-        private List<PluginBase> PlugIns;          
+        private readonly List<PluginBase> PlugIns;          
 
         //Expose constants declarations of P1 Chip to use on the emulation. 
         /// @brief Cogs implemented in emulator for P1 Chip.
@@ -934,7 +934,7 @@ namespace Gear.EmulationCore
                 case HubOperationCodes.HUBOP_COGID:
                     carry = false;
                     cog = CogID(caller);
-                    zero = (cog == 0) ? true : false;
+                    zero = (cog == 0);
                     return cog;
 
                 case HubOperationCodes.HUBOP_COGINIT:
@@ -960,7 +960,7 @@ namespace Gear.EmulationCore
                     else  // instead specific cog should be started
                         cog = maskedArg;
                     
-                    zero = (cog == 0) ? true : false;
+                    zero = (cog == 0);
 
                     PLLGroup pll = new PLLGroup();
                     ClockSources[cog] = (ClockSource)pll;
@@ -974,14 +974,14 @@ namespace Gear.EmulationCore
                     return (uint)cog;
 
                 case HubOperationCodes.HUBOP_COGSTOP:
-                    zero = (maskedArg == 0) ? true: false;
-                    carry = (CogsRunning < TOTAL_COGS) ? false : true;
+                    zero = (maskedArg == 0);
+                    carry = (CogsRunning >= TOTAL_COGS);
                     Stop((int)maskedArg);
                     CogsRunning--;
                     return maskedArg;
 
                 case HubOperationCodes.HUBOP_LOCKCLR:
-                    zero = (maskedArg == 0) ? true : false;
+                    zero = (maskedArg == 0);
                     carry = LocksState[maskedArg];
                     LocksState[maskedArg] = false;
                     return argument;
@@ -1003,7 +1003,7 @@ namespace Gear.EmulationCore
                     return 7;   // if all are occupied, return a 7, but carry is true
 
                 case HubOperationCodes.HUBOP_LOCKRET:
-                    zero = (maskedArg == 0) ? true : false;
+                    zero = (maskedArg == 0);
                     carry = true;   // initial value if no Locks available
                     for (uint i = 0; i < LocksAvailable.Length; i++)
                     {
@@ -1016,7 +1016,7 @@ namespace Gear.EmulationCore
                     return maskedArg;
 
                 case HubOperationCodes.HUBOP_LOCKSET:
-                    zero = (maskedArg == 0) ? true : false;
+                    zero = (maskedArg == 0);
                     carry = LocksState[maskedArg];
                     LocksState[maskedArg] = true;
                     return maskedArg;
