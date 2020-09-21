@@ -23,6 +23,7 @@
 
 using Gear.GUI;
 using Gear.PluginSupport;
+using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
@@ -421,12 +422,20 @@ namespace Gear.EmulationCore
             }
         }
 
-        /// @todo Document method Gear.EmulationCore.PropellerCPU.Initialize().
-        /// 
+        /// @brief Validate binary lenght and copy its contents to Propeller 
+        /// chip memory.
+        /// @param program Byte stream to file.
+        /// @throw Exception If binary file size is bigger than physical
+        /// memory of P1.
+        /// @version 20.09.02 - Added throw exception to fix Issue #10.
         public void Initialize(byte[] program)
         {
             if (program.Length > TOTAL_RAM)
-                return;
+            {
+                string msg = $"Binary to load is bigger than physical memory " +
+                    $"of P1:\r\nProgram size is {program.Length} > {TOTAL_RAM} bytes of Total RAM!";
+                throw new BinarySizeException(msg);
+            }
 
             for (int i = 0; i < TOTAL_RAM; i++)
                 Memory[i] = 0;
@@ -1040,4 +1049,22 @@ namespace Gear.EmulationCore
         }
 
     }
+
+    /// @brief Binary size helper exception class.
+    [Serializable]
+    public class BinarySizeException : Exception
+    {
+        public BinarySizeException() :
+            base() { }
+
+        public BinarySizeException(string message) :
+            base(message) { }
+
+        public BinarySizeException(string message, Exception innerException) :
+            base(message, innerException) { }
+
+        protected BinarySizeException(System.Runtime.Serialization.SerializationInfo serializationInfo, System.Runtime.Serialization.StreamingContext streamingContext) :
+            base(serializationInfo, streamingContext) { }
+    }
+
 }

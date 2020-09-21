@@ -237,9 +237,18 @@ namespace Gear.GUI
             {
                 MessageBox.Show(this,
                     ioe.Message,
+                    "IO Error - Failed to load program binary",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                return false;
+            }  
+            catch (BinarySizeException e)
+            {
+                MessageBox.Show(this,
+                    e.Message,
                     "Failed to load program binary",
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Exclamation);
+                    MessageBoxIcon.Error);
                 return false;
             }
         }
