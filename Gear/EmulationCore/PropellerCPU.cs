@@ -427,7 +427,7 @@ namespace Gear.EmulationCore
         /// @param program Byte stream to file.
         /// @throw Exception If binary file size is bigger than physical
         /// memory of P1.
-        /// @version 20.09.02 - Added throw exception to fix Issue #10.
+        /// @version 20.09.02 - Added throw exception to fix Issue #20.
         public void Initialize(byte[] program)
         {
             if (program.Length > TOTAL_RAM)
@@ -810,64 +810,6 @@ namespace Gear.EmulationCore
             };
         }
 
-/*
-        /// @todo Document method Gear.EmulationCore.PropellerCPU.ReadByte().
-        /// 
-        public byte ReadByte(uint address)
-        {
-            return Memory[address & 0xFFFF];
-        }
-
-        /// @todo Document method Gear.EmulationCore.PropellerCPU.ReadWord().
-        /// 
-        public ushort ReadWord(uint address)
-        {
-            address &= 0xFFFFFFFE;
-            return (ushort)(Memory[(address++) & 0xFFFF]
-                | (Memory[(address++) & 0xFFFF] << 8));
-        }
-
-        /// @todo Document method Gear.EmulationCore.PropellerCPU.ReadLong().
-        /// 
-        public uint ReadLong(uint address)
-        {
-            address &= 0xFFFFFFFC;
-
-            return (uint)Memory[(address++) & 0xFFFF]
-                | (uint)(Memory[(address++) & 0xFFFF] << 8)
-                | (uint)(Memory[(address++) & 0xFFFF] << 16)
-                | (uint)(Memory[(address++) & 0xFFFF] << 24);
-        }
-
-        /// @todo Document method Gear.EmulationCore.PropellerCPU.WriteByte().
-        /// 
-        public void WriteByte(uint address, uint value)
-        {
-            if ((address & 0x8000) != 0)
-                return;
-            Memory[(address++) & 0x7FFF] = (byte)value;
-        }
-
-        /// @todo Document method Gear.EmulationCore.PropellerCPU.WriteWord().
-        /// 
-        public void WriteWord(uint address, uint value)
-        {
-            address &= 0xFFFFFFFE;
-            WriteByte(address++, (byte)value);
-            WriteByte(address++, (byte)(value >> 8));
-        }
-
-        /// @todo Document method Gear.EmulationCore.PropellerCPU.WriteLong().
-        /// 
-        public void WriteLong(uint address, uint value)
-        {
-            address &= 0xFFFFFFFC;
-            WriteByte(address++, (byte)value);
-            WriteByte(address++, (byte)(value >> 8));
-            WriteByte(address++, (byte)(value >> 16));
-            WriteByte(address++, (byte)(value >> 24));
-        }
-*/
         /// @todo Document method Gear.EmulationCore.PropellerCPU.LockSet().
         /// 
         public uint LockSet(uint number, bool set)
@@ -1051,6 +993,7 @@ namespace Gear.EmulationCore
     }
 
     /// @brief Binary size helper exception class.
+    /// @version 20.09.02 - Added exception class to fix Issue #20.
     [Serializable]
     public class BinarySizeException : Exception
     {

@@ -3,7 +3,17 @@ Read more in forum threads:
 * [More GEAR - Improved Emulation of the Propeller](https://forums.parallax.com/discussion/100380/more-gear-improved-emulation-of-the-propeller)
 * [GEAR: Propeller Debugging Environment](https://forums.parallax.com/discussion/91084/gear-propeller-debugging-environment)
 
-## V.20.09.01
+## Version 20.09.02 - Enhanced UI and fixed bug #20
+
+* Correction of bug number corrected (should be Fix #20).
+* New Cummulative version released.
+* Changelog updated.
+
+## Commit fe5274f - Message on oversize binary load
+
+* On binary load, now it is validating its size and show message error. Fix Issue #20.
+
+## Version 20.09.01 - UI Improvemnts.
 
 * New time units dedicated ComboBox and ToolStripComboBox. They are used in the new field "elapsed time" in Hub and Logic views (Time Frame and Tick Mark Grid fields). Their values are remembereded as program properties.
 * Added tooltips to explain enhancements in Hub and Logic views.

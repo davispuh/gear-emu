@@ -223,6 +223,7 @@ namespace Gear.GUI
         /// @brief Load a binary image from file.
         /// @details Generate a new instance of a `PropellerCPU` and load the program from 
         /// the binary.
+        /// @version 20.09.02 - Modified to catch exception to fix Issue #20.
         public bool OpenFile(string FileName)
         {
             try
