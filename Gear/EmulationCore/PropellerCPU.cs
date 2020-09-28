@@ -87,7 +87,6 @@ namespace Gear.EmulationCore
         };
 
         /// @brief Name of external clock constants.
-        /// 
         private static readonly string[] OSCM = new string[] {
             "XINPUT+",  // External clock/oscillator:     $00000004
             "XTAL1+",   // External low-speed crystal:    $00000008
@@ -162,6 +161,8 @@ namespace Gear.EmulationCore
         public const int TOTAL_MEMORY    = 0x10000;
         /// @brief Total RAM Hub memory implemented on P1 Chip.
         public const int TOTAL_RAM       = 0x8000;
+        /// @brief max RAM address implemented on P1 Chip.
+        public const int MAX_RAM_ADDR    = 0xFFFF;
 
         /// @brief PropellerCPU Constructor.
         /// @param em Reference to the Gear.GUI.Emulator instance controlling this PropellerCPU.

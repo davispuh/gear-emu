@@ -182,7 +182,7 @@ namespace Gear.GUI
                     y < ClientRectangle.Height;
                     y += (uint)MonoFont.Height, i++)
                 {
-                    if ((i > 0xFFFF) || (i < 0))
+                    if (i > PropellerCPU.MAX_RAM_ADDR)
                         continue;
 
                     uint mem = host[(int)i];
@@ -215,7 +215,7 @@ namespace Gear.GUI
                     y < ClientRectangle.Height;
                     y += (uint)MonoFont.Height, line++)
                 {
-                    if (i > 0xFFFF)
+                    if (i > PropellerCPU.MAX_RAM_ADDR)
                         continue;
 
                     uint start = i;
@@ -296,8 +296,10 @@ namespace Gear.GUI
 
             positionScroll.Minimum = 0;
 
-            if (Host is InterpretedCog) positionScroll.Maximum = 0xFFFF;
-            else if (Host is NativeCog) positionScroll.Maximum = 0x200;
+            if (Host is InterpretedCog) 
+                positionScroll.Maximum = PropellerCPU.MAX_RAM_ADDR;
+            else if (Host is NativeCog) 
+                positionScroll.Maximum = Cog.TOTAL_COG_MEMORY;
 
             positionScroll.LargeChange = 10;
             positionScroll.SmallChange = 1;
@@ -445,9 +447,10 @@ namespace Gear.GUI
             if (line != LastLine)
             {
                 mem = host.ReadLong(line);
-                toolTip1.SetToolTip(assemblyPanel, String.Format("${0:x3}= ${1:x8}, {1}\n${2:x3}= ${3:x8}, {3}",
-                                                                 mem >> 9 & 0x1ff, host.ReadLong(mem >> 9 & 0x1ff),
-                                                                 mem      & 0x1ff, host.ReadLong(mem      & 0x1ff))
+                toolTip1.SetToolTip(assemblyPanel, String.Format(
+                    "${0:x3}= ${1:x8}, {1}\n${2:x3}= ${3:x8}, {3}",
+                    mem >> 9 & 0x1ff, host.ReadLong(mem >> 9 & 0x1ff),
+                    mem      & 0x1ff, host.ReadLong(mem      & 0x1ff))
                 );
                 LastLine = line;
             }

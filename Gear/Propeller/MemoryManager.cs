@@ -20,6 +20,8 @@
  * --------------------------------------------------------------------------------
  */
 
+using Gear.EmulationCore;
+
 namespace Gear.Propeller
 {
     public class DirectMemory
@@ -38,22 +40,23 @@ namespace Gear.Propeller
 
         public byte DirectReadByte(uint address)
         {
-            return Memory[address & 0xFFFF];
+            return Memory[address & PropellerCPU.MAX_RAM_ADDR];
         }
 
         public ushort DirectReadWord(uint address)
         {
             address &= 0xFFFFFFFE;
-            return (ushort)(Memory[(address++) & 0xFFFF] | (Memory[(address++) & 0xFFFF] << 8));
+            return (ushort)(Memory[(address++) & PropellerCPU.MAX_RAM_ADDR] | 
+                (Memory[(address++) & PropellerCPU.MAX_RAM_ADDR] << 8));
         }
 
         public uint DirectReadLong(uint address)
         {
             address &= 0xFFFFFFFC;
-            return (uint)Memory[(address++) & 0xFFFF]
-                | (uint)(Memory[(address++) & 0xFFFF] << 8)
-                | (uint)(Memory[(address++) & 0xFFFF] << 16)
-                | (uint)(Memory[(address++) & 0xFFFF] << 24);
+            return (uint)Memory[(address++) & PropellerCPU.MAX_RAM_ADDR]
+                | (uint)(Memory[(address++) & PropellerCPU.MAX_RAM_ADDR] << 8)
+                | (uint)(Memory[(address++) & PropellerCPU.MAX_RAM_ADDR] << 16)
+                | (uint)(Memory[(address++) & PropellerCPU.MAX_RAM_ADDR] << 24);
         }
 
         public void DirectWriteByte(uint address, byte value)
