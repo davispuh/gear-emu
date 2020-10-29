@@ -1,6 +1,6 @@
 /* --------------------------------------------------------------------------------
- * Gear: Parallax Inc. Propeller Debugger
- * Copyright 2007 - Robert Vandiver
+ * Gear: Parallax Inc. Propeller P1 Emulator
+ * Copyright 2020 - Gear Developers
  * --------------------------------------------------------------------------------
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -48,8 +48,16 @@ namespace Gear.GUI
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
+            this.SuspendLayout();
+            // 
+            // RingMeter
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.DoubleBuffered = true;
+            this.Name = "RingMeter";
+            this.ResumeLayout(false);
+
         }
 
         #endregion

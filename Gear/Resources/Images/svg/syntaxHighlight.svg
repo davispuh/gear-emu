@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="16"
+   height="16"
+   version="1.1"
+   id="svg8"
+   sodipodi:docname="syntaxHighlight.svg"
+   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
+   inkscape:export-filename="..\Image_syntaxHighlight.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96">
+  <title
+     id="title839">syntaxHighlight</title>
+  <metadata
+     id="metadata14">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>syntaxHighlight</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs12" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1810"
+     inkscape:window-height="1057"
+     id="namedview10"
+     showgrid="false"
+     inkscape:zoom="54.1875"
+     inkscape:cx="8"
+     inkscape:cy="8"
+     inkscape:window-x="102"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg8"
+     inkscape:document-rotation="0" />
+  <style
+     type="text/css"
+     id="style2">.icon-canvas-transparent{opacity:0;fill:#F6F6F6;} .icon-vs-out{fill:#F6F6F6;} .icon-vs-bg{fill:#424242;} .icon-vs-action-green{fill:#388A34;}</style>
+  <path
+     class="icon-canvas-transparent"
+     d="M16 16h-16v-16h16v16z"
+     id="canvas" />
+  <path
+     id="path848"
+     style="display:inline;fill:#f6f6f6;fill-opacity:1"
+     d="M 3,0 C 1.8788203,-0.02431923 0.9756808,0.87882033 1,2 V 6.135 C 0.81221045,6.3709681 0.59644158,6.5990215 0.36132812,6.7890625 0.12301774,6.9817037 1.0974734e-4,7.2716899 0,7.578125 v 0.84375 C -1.2184745e-4,8.7303353 0.12439433,9.0221164 0.36523438,9.2148438 0.59857879,9.4018093 0.81366394,9.6235534 1,9.8554688 V 14 c -0.0243184,1.121178 0.9003052,2.024318 2.0214844,2 H 6 v -3 h 4 v 3 h 3 c 1.121187,0.02433 2.024318,-0.878821 2,-2 V 9.855 C 15.186801,9.6218613 15.403881,9.4041152 15.636719,9.2167969 15.876293,9.024111 16.000005,8.7332282 16,8.4257812 V 7.5742188 C 15.999414,7.2674566 15.87576,6.9774127 15.636719,6.7851562 15.401917,6.5955643 15.187126,6.3706545 15,6.1347656 V 2 C 15.02433,0.87881227 14.121179,-0.02431921 13,0 h -3 v 1.9998125 l -4,3.75e-4 V 0 Z M 4,9 H 6 L 5.984375,9.984375 H 4 Z"
+     sodipodi:nodetypes="cccccccccccccccccccccccccccccccccc"
+     inkscape:label="outline" />
+  <path
+     id="iconBg"
+     style="display:inline;fill:#424242;fill-opacity:1"
+     d="M 3,1 C 2.4427857,0.9879136 1.9879136,1.4427857 2,2 V 6.2734375 C 2.00637,6.3958354 1.9751834,6.5179591 1.9121094,6.6230469 1.6500825,6.9795901 1.3441155,7.2999782 1,7.578125 v 0.84375 C 1.3384018,8.693017 1.6412323,9.0058509 1.9003906,9.3535156 1.9682886,9.4514326 2.0029168,9.5683808 2,9.6875 V 14 c -0.012086,0.557214 0.4427857,1.012086 1,1 H 5 V 14 H 3 V 9.5 C 3,8.137 2.0683594,8 2.0683594,8 2.0683594,8 3,7.955 3,6.5 V 2 H 5 V 1 Z m 8,0 v 1 h 2 V 6.5 C 13,7.954 13.988281,8 13.988281,8 13.988281,8 13,8.136 13,9.5 V 14 h -2 v 1 h 2 c 0.557214,0.01209 1.012086,-0.442786 1,-1 V 9.6875 C 13.9985,9.5678265 14.035799,9.4508285 14.105469,9.3535156 14.363582,9.0077686 14.663821,8.6962383 15,8.4257812 V 7.5742188 C 14.657203,7.2974251 14.352463,6.9782627 14.091797,6.6230469 14.027324,6.518398 13.994835,6.3962444 14,6.2734375 V 2 C 14.01209,1.4427857 13.557214,0.98791362 13,1 Z M 4,3 v 1 h 8 V 3 Z m 3,6 v 1 h 5 V 9 Z m -3,2 v 1 h 8 v -1 z" />
+  <path
+     class="icon-vs-action-green"
+     d="m 5,7 h 7 V 8 H 5 Z M 5,6 h 7 V 5 H 5 Z"
+     id="colorAction"
+     style="display:inline" />
+</svg>

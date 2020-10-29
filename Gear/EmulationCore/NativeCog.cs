@@ -1,6 +1,6 @@
 /* --------------------------------------------------------------------------------
  * Gear: Parallax Inc. PropellerCPU Debugger
- * Copyright 2007 - Robert Vandiver
+ * Copyright 2020 - Gear Developers
  * --------------------------------------------------------------------------------
  * NativeCog.cs
  * Object class for a native assembly (machine code) cog

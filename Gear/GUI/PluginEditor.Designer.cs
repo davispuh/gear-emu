@@ -1,6 +1,6 @@
 /* --------------------------------------------------------------------------------
- * Gear: Parallax Inc. Propeller Debugger
- * Copyright 2007 - Robert Vandiver
+ * Gear: Parallax Inc. Propeller P1 Emulator
+ * Copyright 2020 - Gear Developers
  * --------------------------------------------------------------------------------
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ namespace Gear.GUI
             this.progressHighlight = new System.Windows.Forms.ToolStripProgressBar();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.EmbeddedCode = new System.Windows.Forms.ToolStripButton();
-            this.referencePanel = new System.Windows.Forms.Panel();
+            this.referencePanel = new Gear.GUI.DoubleBufferedPanel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.referencesList = new System.Windows.Forms.ListBox();
             this.toolStripReferences = new System.Windows.Forms.ToolStrip();
@@ -75,7 +75,7 @@ namespace Gear.GUI
             this.removeReferenceButton = new System.Windows.Forms.ToolStripButton();
             this.errorListView = new System.Windows.Forms.ListView();
             this.codeEditorView = new System.Windows.Forms.RichTextBox();
-            this.detailsPanel = new System.Windows.Forms.Panel();
+            this.detailsPanel = new Gear.GUI.DoubleBufferedPanel();
             this.errorSplitter = new Gear.GUI.CollapsibleSplitter();
             this.referencesSplitter = new Gear.GUI.CollapsibleSplitter();
             toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -90,13 +90,13 @@ namespace Gear.GUI
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new System.Drawing.Size(6, 26);
+            toolStripSeparator1.Size = new System.Drawing.Size(6, 31);
             // 
             // classNameLabel
             // 
             classNameLabel.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             classNameLabel.Name = "classNameLabel";
-            classNameLabel.Size = new System.Drawing.Size(106, 23);
+            classNameLabel.Size = new System.Drawing.Size(106, 28);
             classNameLabel.Text = "Plugin Class Name";
             classNameLabel.ToolTipText = "Plugin Main Class Name";
             // 
@@ -119,49 +119,49 @@ namespace Gear.GUI
             this.toolStripMain.Location = new System.Drawing.Point(0, 0);
             this.toolStripMain.Name = "toolStripMain";
             this.toolStripMain.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStripMain.Size = new System.Drawing.Size(719, 26);
+            this.toolStripMain.Size = new System.Drawing.Size(719, 31);
             this.toolStripMain.TabIndex = 0;
             this.toolStripMain.Text = "toolStrip1";
             // 
             // openButton
             // 
-            this.openButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.openButton.Image = ((System.Drawing.Image)(resources.GetObject("openButton.Image")));
+            this.openButton.Image = global::Gear.Properties.Resources.Image_openPlugin;
+            this.openButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.openButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.openButton.Name = "openButton";
-            this.openButton.Size = new System.Drawing.Size(40, 23);
+            this.openButton.Size = new System.Drawing.Size(56, 28);
             this.openButton.Text = "Open";
             this.openButton.ToolTipText = "Open plugin";
             this.openButton.Click += new System.EventHandler(this.OpenButton_Click);
             // 
             // saveButton
             // 
-            this.saveButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.saveButton.Image = ((System.Drawing.Image)(resources.GetObject("saveButton.Image")));
+            this.saveButton.Image = global::Gear.Properties.Resources.Image_save;
+            this.saveButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.saveButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.saveButton.Name = "saveButton";
-            this.saveButton.Size = new System.Drawing.Size(35, 23);
+            this.saveButton.Size = new System.Drawing.Size(51, 28);
             this.saveButton.Text = "Save";
             this.saveButton.ToolTipText = "Save plugin";
             this.saveButton.Click += new System.EventHandler(this.SaveButton_Click);
             // 
             // saveAsButton
             // 
-            this.saveAsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.saveAsButton.Image = ((System.Drawing.Image)(resources.GetObject("saveAsButton.Image")));
+            this.saveAsButton.Image = global::Gear.Properties.Resources.Image_saveAs;
+            this.saveAsButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.saveAsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.saveAsButton.Name = "saveAsButton";
-            this.saveAsButton.Size = new System.Drawing.Size(57, 23);
+            this.saveAsButton.Size = new System.Drawing.Size(73, 28);
             this.saveAsButton.Text = "Save As..";
             this.saveAsButton.Click += new System.EventHandler(this.SaveAsButton_Click);
             // 
             // checkButton
             // 
-            this.checkButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.checkButton.Image = ((System.Drawing.Image)(resources.GetObject("checkButton.Image")));
+            this.checkButton.Image = global::Gear.Properties.Resources.Image_checkCode;
+            this.checkButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.checkButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.checkButton.Name = "checkButton";
-            this.checkButton.Size = new System.Drawing.Size(75, 23);
+            this.checkButton.Size = new System.Drawing.Size(91, 28);
             this.checkButton.Text = "Check Code";
             this.checkButton.ToolTipText = "Check code for errors";
             this.checkButton.Click += new System.EventHandler(this.CheckSource_Click);
@@ -172,47 +172,48 @@ namespace Gear.GUI
             this.instanceName.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.instanceName.Name = "instanceName";
             this.instanceName.ReadOnly = true;
-            this.instanceName.Size = new System.Drawing.Size(100, 26);
+            this.instanceName.Size = new System.Drawing.Size(100, 31);
             this.instanceName.ToolTipText = "Name of the Class for the plugin\r\nMust be the same as the class inherited from Pl" +
     "uginBase.";
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 26);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 31);
             // 
             // syntaxButton
             // 
-            this.syntaxButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.syntaxButton.Image = ((System.Drawing.Image)(resources.GetObject("syntaxButton.Image")));
+            this.syntaxButton.Image = global::Gear.Properties.Resources.Image_syntaxHighlight;
+            this.syntaxButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.syntaxButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.syntaxButton.Name = "syntaxButton";
-            this.syntaxButton.Size = new System.Drawing.Size(99, 23);
+            this.syntaxButton.Size = new System.Drawing.Size(115, 28);
             this.syntaxButton.Text = "Syntax Highlight";
             this.syntaxButton.ToolTipText = "Syntax Highlight the code";
             this.syntaxButton.Click += new System.EventHandler(this.SyntaxButton_Click);
             // 
             // progressHighlight
             // 
+            this.progressHighlight.Margin = new System.Windows.Forms.Padding(1, 2, 1, 2);
             this.progressHighlight.Name = "progressHighlight";
-            this.progressHighlight.Size = new System.Drawing.Size(53, 23);
+            this.progressHighlight.Size = new System.Drawing.Size(53, 27);
             this.progressHighlight.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.progressHighlight.VisibleChanged += new System.EventHandler(this.ProgressHighlight_VisibleChanged);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 26);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 31);
             // 
             // EmbeddedCode
             // 
             this.EmbeddedCode.Checked = global::Gear.Properties.Settings.Default.EmbeddedCode;
             this.EmbeddedCode.CheckOnClick = true;
             this.EmbeddedCode.CheckState = System.Windows.Forms.CheckState.Indeterminate;
-            this.EmbeddedCode.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.EmbeddedCode.Image = global::Gear.Properties.Resources.Image_embedded;
             this.EmbeddedCode.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.EmbeddedCode.Name = "EmbeddedCode";
-            this.EmbeddedCode.Size = new System.Drawing.Size(68, 23);
+            this.EmbeddedCode.Size = new System.Drawing.Size(92, 28);
             this.EmbeddedCode.Text = "Embedded";
             this.EmbeddedCode.Click += new System.EventHandler(this.EmbeddedCode_Click);
             // 
@@ -224,7 +225,7 @@ namespace Gear.GUI
             this.referencePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.referencePanel.Location = new System.Drawing.Point(0, 0);
             this.referencePanel.Name = "referencePanel";
-            this.referencePanel.Size = new System.Drawing.Size(200, 416);
+            this.referencePanel.Size = new System.Drawing.Size(200, 411);
             this.referencePanel.TabIndex = 1;
             // 
             // groupBox1
@@ -234,7 +235,7 @@ namespace Gear.GUI
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Location = new System.Drawing.Point(0, 0);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(200, 391);
+            this.groupBox1.Size = new System.Drawing.Size(200, 386);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "References List";
@@ -246,7 +247,7 @@ namespace Gear.GUI
             this.referencesList.FormattingEnabled = true;
             this.referencesList.Location = new System.Drawing.Point(3, 16);
             this.referencesList.Name = "referencesList";
-            this.referencesList.Size = new System.Drawing.Size(194, 372);
+            this.referencesList.Size = new System.Drawing.Size(194, 367);
             this.referencesList.TabIndex = 1;
             // 
             // toolStripReferences
@@ -258,7 +259,7 @@ namespace Gear.GUI
             this.addReferenceButton,
             this.removeReferenceButton});
             this.toolStripReferences.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            this.toolStripReferences.Location = new System.Drawing.Point(0, 391);
+            this.toolStripReferences.Location = new System.Drawing.Point(0, 386);
             this.toolStripReferences.Name = "toolStripReferences";
             this.toolStripReferences.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
             this.toolStripReferences.Size = new System.Drawing.Size(200, 25);
@@ -315,9 +316,9 @@ namespace Gear.GUI
             this.codeEditorView.DetectUrls = false;
             this.codeEditorView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.codeEditorView.HideSelection = false;
-            this.codeEditorView.Location = new System.Drawing.Point(208, 26);
+            this.codeEditorView.Location = new System.Drawing.Point(208, 31);
             this.codeEditorView.Name = "codeEditorView";
-            this.codeEditorView.Size = new System.Drawing.Size(511, 311);
+            this.codeEditorView.Size = new System.Drawing.Size(511, 306);
             this.codeEditorView.TabIndex = 7;
             this.codeEditorView.Text = "";
             this.codeEditorView.WordWrap = false;
@@ -328,9 +329,9 @@ namespace Gear.GUI
             this.detailsPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.detailsPanel.Controls.Add(this.referencePanel);
             this.detailsPanel.Dock = System.Windows.Forms.DockStyle.Left;
-            this.detailsPanel.Location = new System.Drawing.Point(0, 26);
+            this.detailsPanel.Location = new System.Drawing.Point(0, 31);
             this.detailsPanel.Name = "detailsPanel";
-            this.detailsPanel.Size = new System.Drawing.Size(200, 416);
+            this.detailsPanel.Size = new System.Drawing.Size(200, 411);
             this.detailsPanel.TabIndex = 2;
             // 
             // errorSplitter
@@ -356,7 +357,7 @@ namespace Gear.GUI
             this.referencesSplitter.BorderStyle3D = System.Windows.Forms.Border3DStyle.RaisedOuter;
             this.referencesSplitter.ControlToHide = this.detailsPanel;
             this.referencesSplitter.ExpandParentForm = false;
-            this.referencesSplitter.Location = new System.Drawing.Point(200, 26);
+            this.referencesSplitter.Location = new System.Drawing.Point(200, 31);
             this.referencesSplitter.Name = "collapsibleSplitter1";
             this.referencesSplitter.TabIndex = 3;
             this.referencesSplitter.TabStop = false;
@@ -365,8 +366,8 @@ namespace Gear.GUI
             // 
             // PluginEditor
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
+            this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(719, 442);
             this.Controls.Add(this.codeEditorView);
             this.Controls.Add(this.errorSplitter);
@@ -375,9 +376,13 @@ namespace Gear.GUI
             this.Controls.Add(this.detailsPanel);
             this.Controls.Add(this.toolStripMain);
             this.DoubleBuffered = true;
+            this.Icon = global::Gear.Properties.Resources.Icon_PluginEditor;
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "PluginEditor";
             this.Text = "Plugin Editor";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PluginEditor_FormClosing);
+            this.Load += new System.EventHandler(this.PluginEditor_Load);
             this.toolStripMain.ResumeLayout(false);
             this.toolStripMain.PerformLayout();
             this.referencePanel.ResumeLayout(false);
@@ -397,21 +402,21 @@ namespace Gear.GUI
         private System.Windows.Forms.ToolStripButton openButton;
         private System.Windows.Forms.ToolStripButton saveButton;
         private System.Windows.Forms.ToolStripButton checkButton;
-        private System.Windows.Forms.Panel referencePanel;
+        private Gear.GUI.DoubleBufferedPanel referencePanel;
         private System.Windows.Forms.ListBox referencesList;
         private System.Windows.Forms.ToolStrip toolStripReferences;
         private System.Windows.Forms.ToolStripTextBox referenceName;
         private System.Windows.Forms.ToolStripButton addReferenceButton;
-        private CollapsibleSplitter referencesSplitter;
+        private Gear.GUI.CollapsibleSplitter referencesSplitter;
         private System.Windows.Forms.ToolStripTextBox instanceName;
         private System.Windows.Forms.ToolStripButton saveAsButton;
         private System.Windows.Forms.ToolStripButton removeReferenceButton;
         private System.Windows.Forms.ListView errorListView;
-        private CollapsibleSplitter errorSplitter;
+        private Gear.GUI.CollapsibleSplitter errorSplitter;
         private System.Windows.Forms.RichTextBox codeEditorView;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripButton syntaxButton;
-        private System.Windows.Forms.Panel detailsPanel;
+        private Gear.GUI.DoubleBufferedPanel detailsPanel;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripButton EmbeddedCode;
         private System.Windows.Forms.GroupBox groupBox1;

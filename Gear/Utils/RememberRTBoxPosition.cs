@@ -1,6 +1,6 @@
 ﻿/* --------------------------------------------------------------------------------
- * Gear: Parallax Inc. Propeller Debugger
- * Copyright 2007 - Robert Vandiver
+ * Gear: Parallax Inc. Propeller P1 Emulator
+ * Copyright 2020 - Gear Developers
  * --------------------------------------------------------------------------------
  * RememberRTBoxPosition.cs
  * Remember and restore displayed position and insert point for a RichTextBox.

@@ -1,6 +1,6 @@
 /* --------------------------------------------------------------------------------
- * Gear: Parallax Inc. Propeller Debugger
- * Copyright 2007 - Robert Vandiver
+ * Gear: Parallax Inc. Propeller P1 Emulator
+ * Copyright 2020 - Gear Developers
  * --------------------------------------------------------------------------------
  * PluginBase.cs
  * Abstract superclass for emulator plugins
@@ -38,7 +38,7 @@ namespace Gear.PluginSupport
     /// Original thread on GEAR with explanation of plugin class</a>
     /// @remarks To see examples of how to use it, see the directory 'plugins' included with 
     /// the source code.
-    public class PluginBase : UserControl
+    public partial class PluginBase : UserControl
     {
         /// @brief Reference to PropellerCPU for the plugin.
         /// @version V15.03.26 - Added reference to keep PropellerCPU internal to class.
@@ -47,7 +47,10 @@ namespace Gear.PluginSupport
         /// @brief Default constructor.
         /// @note Not to be used by plugin derived class, only by the Designer in MVSC.
         /// @remarks Not to be used in Plugin Editor by user plugins.
-        protected PluginBase() { }
+        protected PluginBase() 
+        {
+            InitializeComponent();
+        }
 
         /// @brief Constructor to initialize with the PropellerCPU reference.
         /// This avoid to declare in each plugin the following example code:
@@ -62,6 +65,7 @@ namespace Gear.PluginSupport
         public PluginBase(PropellerCPU chip)
         {
             Chip = chip;
+            InitializeComponent();
         }
 
         /// @brief Title of the tab window.
@@ -165,6 +169,5 @@ namespace Gear.PluginSupport
         {
             Chip.BreakPoint();
         }
-
     }
 }

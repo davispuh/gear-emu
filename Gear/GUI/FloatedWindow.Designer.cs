@@ -1,6 +1,6 @@
 /* --------------------------------------------------------------------------------
- * Gear: Parallax Inc. Propeller Debugger
- * Copyright 2007 - Robert Vandiver
+ * Gear: Parallax Inc. Propeller P1 Emulator
+ * Copyright 2020 - Gear Developers
  * --------------------------------------------------------------------------------
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -55,6 +55,7 @@ namespace Gear.GUI
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(610, 496);
+            this.DoubleBuffered = true;
             this.Name = "FloatedWindow";
             this.Text = "FloatedWindow";
             this.ResumeLayout(false);

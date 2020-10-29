@@ -1,8 +1,9 @@
 ﻿/* --------------------------------------------------------------------------------
- * Gear: Parallax Inc. Propeller Debugger
- * Copyright 2007 - Robert Vandiver
+ * Gear: Parallax Inc. Propeller P1 Emulator
+ * Copyright 2020 - Gear Developers
  * --------------------------------------------------------------------------------
  * AppPropertiesEditor.cs
+ * Form to edit program properties.
  * --------------------------------------------------------------------------------
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,6 +25,7 @@ using Gear.Properties;
 using System;
 using System.ComponentModel;
 using System.Configuration;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Gear.GUI
@@ -32,15 +34,29 @@ namespace Gear.GUI
     /// @since v15.03.26 - Added. 
     public partial class AppPropertiesEditor : Form
     {
+        /// @brief How many instances are created?
+        /// @version v20.10.01 - Added.
+        private static int instanceNumber = 0;
+
+        /// @brief Default constructor.
+        /// @throws SingleInstanceException If an intent to open a new instance
+        ///  of the same class.
+        /// @version v20.10.01 - Manage only one instance of AppPropertiesEditor.
         // PropertyGrid Control tutorial - https://msdn.microsoft.com/en-us/library/aa302326.aspx
         // also in https://msdn.microsoft.com/en-us/library/aa302334.aspx
         // and http://www.codeproject.com/Articles/22717/Using-PropertyGrid
         public AppPropertiesEditor()
         {
+            if (instanceNumber > 0)
+                throw new SingleInstanceException();
             InitializeComponent();
             GearPropertyGrid.SelectedObject = Settings.Default;
+            instanceNumber++;
         }
 
+        /// @brief Close the window, updating the related values in each formm.
+        /// @param sender Sender object to this event.
+        /// @param e Arguments to this event.
         private void OKButton_Click(object sender, EventArgs e)
         {
             //save to disk
@@ -121,5 +137,24 @@ namespace Gear.GUI
             }
         }
 
+        /// @brief Manage event of closed window.
+        /// @param sender
+        /// @param e
+        /// @version v20.10.01 - Added to manage only one instance of 
+        /// AppPropertiesEditor.
+        private void AppPropertiesEditor_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            instanceNumber--;
+        }
+
+        /// @brief Refresh form's Icon 
+        /// @param sender
+        /// @param e
+        /// @version v20.10.01 - Added.
+        private void AppPropertiesEditor_Load(object sender, EventArgs e)
+        {
+            //workaround of bug on MDI Form (https://stackoverflow.com/a/6701490/10200101)
+            Icon = Icon.Clone() as Icon;
+        }
     }
 }

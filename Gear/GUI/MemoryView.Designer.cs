@@ -1,6 +1,6 @@
 /* --------------------------------------------------------------------------------
- * Gear: Parallax Inc. Propeller Debugger
- * Copyright 2007 - Robert Vandiver
+ * Gear: Parallax Inc. Propeller P1 Emulator
+ * Copyright 2020 - Gear Developers
  * --------------------------------------------------------------------------------
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ namespace Gear.GUI
         private void InitializeComponent()
         {
             this.positionScrollBar = new System.Windows.Forms.VScrollBar();
-            this.memoryPanel = new System.Windows.Forms.Panel();
+            this.memoryPanel = new Gear.GUI.DoubleBufferedPanel();
             this.SuspendLayout();
             // 
             // positionScrollBar
@@ -93,6 +93,6 @@ namespace Gear.GUI
         #endregion
 
         private System.Windows.Forms.VScrollBar positionScrollBar;
-        private System.Windows.Forms.Panel memoryPanel;
+        private Gear.GUI.DoubleBufferedPanel memoryPanel;
     }
 }

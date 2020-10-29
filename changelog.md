@@ -1,7 +1,16 @@
-Read more in forum threads:
+Read more in Parallax forum threads:
 * [Improved GEAR Emulator](http://forums.parallax.com/discussion/156347/improved-gear-emulator)
 * [More GEAR - Improved Emulation of the Propeller](https://forums.parallax.com/discussion/100380/more-gear-improved-emulation-of-the-propeller)
+* [GEAR does not seem to emulate SUBS correctly. (Now resolved/fixed)](http://forums.parallax.com/discussion/116940/gear-does-not-seem-to-emulate-subs-correctly-now-resolved-fixed)
+* [VT100 terminal plugin for the GEAR emulator](https://forums.parallax.com/discussion/106651/vt100-terminal-plugin-for-the-gear-emulator)
 * [GEAR: Propeller Debugging Environment](https://forums.parallax.com/discussion/91084/gear-propeller-debugging-environment)
+
+## Version 20.10.01 - Added icons & images, some refresh improvements
+
+* Icons added to almost all windows and tools, based on Visual Studio 2019 Image Library. They are in svg native format (Gear/Resources/Icons/svg & Gear/Resources/Images/svg).
+* Some changes from commit #17 Prevent pathological copying of brushes, event storms on Linux (@jlunder): using double-buffer flag on Windows.Forms controls and DoubleBufferedPanel class, on every form and some controls (including PluginBase class) to prevent flickering.
+* Updated `readme.md`: Gear Developers list and Third Party Components.
+* Updated header of every file for Gear Developers.
 
 ## Version 20.09.02 - Enhanced UI and fixed bug #20
 

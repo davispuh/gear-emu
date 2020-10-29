@@ -75,6 +75,9 @@
   <ItemGroup>
     <Compile Include="Disassembler\DataUnpacker.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="GUI\DoubleBufferedPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="GUI\SpinView.Designer.cs">
       <DependentUpon>SpinView.cs</DependentUpon>
     </Compile>
@@ -83,6 +86,9 @@
     </Compile>
     <Compile Include="GUI\TimeUnitToolStripComboBox.Designer.cs">
       <DependentUpon>TimeUnitToolStripComboBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PluginSupport\PluginBase.Designer.cs">
+      <DependentUpon>PluginBase.cs</DependentUpon>
     </Compile>
     <Compile Include="Utils\RememberRTBoxPosition.cs" />
     <Compile Include="Utils\TimeUnitCollection.cs" />
@@ -208,6 +214,37 @@
     <Compile Include="PluginSupport\ModuleLoader.cs" />
     <Compile Include="GearProgram.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Content Include="Resources\Icons\Icon_PluginEditor.ico" />
+    <Content Include="Resources\Icons\Icon_PropertiesEditor.ico" />
+    <Content Include="Resources\Icons\Icon_Emulator.ico" />
+    <Content Include="Resources\Images\Image_addPlugin.png" />
+    <Content Include="Resources\Images\Image_cascadeView.png" />
+    <Content Include="Resources\Images\Image_checkCode.png" />
+    <Content Include="Resources\Images\Image_closeAll.png" />
+    <Content Include="Resources\Images\Image_closePlugin.png" />
+    <Content Include="Resources\Images\Image_editPlugin.png" />
+    <Content Include="Resources\Images\Image_embedded.png" />
+    <Content Include="Resources\Images\Image_exit.png" />
+    <Content Include="Resources\Images\Image_iconView.png" />
+    <Content Include="Resources\Images\Image_newPlugin.png" />
+    <Content Include="Resources\Images\Image_openBinary.png" />
+    <Content Include="Resources\Images\Image_openPlugin.png" />
+    <Content Include="Resources\Images\Image_options.png" />
+    <Content Include="Resources\Images\Image_reloadBinary.png" />
+    <Content Include="Resources\Images\Image_restart.png" />
+    <Content Include="Resources\Images\Image_runStatus.png" />
+    <Content Include="Resources\Images\Image_runStill.png" />
+    <Content Include="Resources\Images\Image_save.png" />
+    <Content Include="Resources\Images\Image_saveAs.png" />
+    <Content Include="Resources\Images\Image_separated.png" />
+    <Content Include="Resources\Images\Image_stepClock.png" />
+    <Content Include="Resources\Images\Image_stepInstruction.png" />
+    <Content Include="Resources\Images\Image_stopStatus.png" />
+    <Content Include="Resources\Images\Image_stopStill.png" />
+    <Content Include="Resources\Images\Image_syntaxHighlight.png" />
+    <Content Include="Resources\Images\Image_tileHoriz.png" />
+    <Content Include="Resources\Images\Image_tileVert.png" />
+    <Content Include="Resources\Images\Image_updateGrid.png" />
     <Content Include="Resources\PluginTemplate.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -227,8 +264,14 @@
       <DependentUpon>CogView.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\RingMeter.resx">
+      <DependentUpon>RingMeter.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\TimeUnitComboBox.resx">
       <DependentUpon>TimeUnitComboBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PluginSupport\PluginBase.resx">
+      <DependentUpon>PluginBase.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

@@ -1,6 +1,6 @@
 /* --------------------------------------------------------------------------------
- * Gear: Parallax Inc. Propeller Debugger
- * Copyright 2007 - Robert Vandiver
+ * Gear: Parallax Inc. Propeller P1 Emulator
+ * Copyright 2020 - Gear Developers
  * --------------------------------------------------------------------------------
  * Emulator.cs
  * View class for PropellerCPU emulator instance
@@ -25,9 +25,9 @@ using Gear.EmulationCore;
 using Gear.PluginSupport;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using System.Drawing.Text;
 using System.Xml;
 
 namespace Gear.GUI
@@ -44,6 +44,10 @@ namespace Gear.GUI
 
         /// @brief Stopwatch to periodically rerun a step of the emulation
         private readonly Timer runTimer;
+
+        /// @brief Get if emulator is in running state.
+        /// @version v20.10.01 - Added.
+        private bool IsRunningState { get => runTimer.Enabled; }
 
         /// @brief Get the last binary opened successfully.
         public string LastBinary { get => source; }
@@ -77,6 +81,7 @@ namespace Gear.GUI
                 Interval = 10
             };
             runTimer.Tick += new EventHandler(RunEmulatorStep);
+            UpdateRunningButtons();
 
             hubView.Host = Chip;
             UpdateStepInterval();
@@ -167,7 +172,7 @@ namespace Gear.GUI
         /// @details Delete a plugin from the actives plugins of the propeller instance, 
         /// effectively stopping the plugin. Remove also from pins and clock watch list.
         /// @param plugin Instance of a Gear.PluginSupport.PluginCommon class to be detached.
-        /// @since V15.03.26 - Added.
+        /// @since v15.03.26 - Added.
         //Added method to detach a plugin from the active plugin list of the propeller instance.
         private void DetachPlugin(PluginBase plugin)
         {
@@ -197,12 +202,41 @@ namespace Gear.GUI
             RepaintViews();
         }
 
+        /// @brief Update Text and Images of buttons involved on running and 
+        /// stop state of emulator.
+        /// @version v20.10.01 - Added.
+        private void UpdateRunningButtons()
+        {
+            if (IsRunningState != runEmulatorButton.Checked)
+            {
+                runEmulatorButton.Checked = IsRunningState;
+                if (IsRunningState)
+                {
+                    runEmulatorButton.Text = "Run";
+                    runEmulatorButton.Image = Gear.Properties.Resources.Image_runStatus;
+                    stopEmulatorButton.Text = "&Stop";
+                    stopEmulatorButton.Image = Gear.Properties.Resources.Image_stopStill;
+                    stepInstructionButton.Text = "Step Instruction";
+                }
+                else
+                {
+                    runEmulatorButton.Text = "&Run";
+                    runEmulatorButton.Image = Gear.Properties.Resources.Image_runStill;
+                    stopEmulatorButton.Text = "Stop";
+                    stopEmulatorButton.Image = Gear.Properties.Resources.Image_stopStatus;
+                    stepInstructionButton.Text = "&Step Instruction";
+                }
+            }
+        }
+
         /// @brief Make a stop on the emulation.
         /// @details This method would be called when a plugin want to stop, for example
         /// when a breakpoint condition is satisfied.
+        /// @version v20.10.01 - UpdateRunningButtons.
         public void BreakPoint()
         {
             runTimer.Stop();
+            UpdateRunningButtons();
             RepaintViews();
         }
 
@@ -223,7 +257,7 @@ namespace Gear.GUI
         /// @brief Load a binary image from file.
         /// @details Generate a new instance of a `PropellerCPU` and load the program from 
         /// the binary.
-        /// @version 20.09.02 - Modified to catch exception to fix Issue #20.
+        /// @version v20.10.01 - UpdateRunningButtons.
         public bool OpenFile(string FileName)
         {
             try
@@ -231,6 +265,7 @@ namespace Gear.GUI
                 Chip.Initialize(File.ReadAllBytes(FileName));
                 source = FileName;
                 Properties.Settings.Default.LastBinary = source;
+                UpdateRunningButtons();
                 RepaintViews();
                 return true;
             }
@@ -398,14 +433,16 @@ namespace Gear.GUI
         /// @details It also reset the %Propeller Chip and all the plugins.
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
+        /// @version v20.10.01 - UpdateRunningButtons.
         private void ReloadBinary_Click(object sender, EventArgs e)
         {
             OpenFile(source);
             Chip.Reset();
+            UpdateRunningButtons();
+            RepaintViews();
         }
 
         /// @todo Document Gear.GUI.Emulator.OnClosed()
-        /// 
         protected override void OnClosed(EventArgs e)
         {
             foreach (Control c in FloatControls)
@@ -437,24 +474,28 @@ namespace Gear.GUI
         /// @brief Event to reset the whole %Propeller Chip.
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
+        /// @version v20.10.01 - UpdateRunningButtons.
         private void ResetEmulator_Click(object sender, EventArgs e)
         {
             Chip.Reset();
+            UpdateRunningButtons();
             RepaintViews();
         }
 
         /// @brief Run only one instruction of the active cog, stopping after executed.
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
+        /// @version v20.10.01 - UpdateRunningButtons.
         private void StepEmulator_Click(object sender, EventArgs e)
         {
             Chip.Step();
+            UpdateRunningButtons();
             RepaintViews();
         }
 
         /// @brief Close the plugin window and terminate the plugin instance.
-        /// @details Not only close the tab window, also detach the plugin from the PropellerCPU 
-        /// what uses it.
+        /// @details Not only close the tab window, also detach the plugin 
+        /// from the PropellerCPU what uses it.
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
         private void CloseActiveTab_Click(object sender, EventArgs e)
@@ -554,26 +595,28 @@ namespace Gear.GUI
         /// @brief Event to run the emulator freely.
         /// @param sender Reference to the object where this event was called.
         /// @param e Class with the details event.
+        /// @version v20.10.01 - UpdateRunningButtons.
         private void RunEmulator_Click(object sender, EventArgs e)
         {
             runTimer.Start();
+            UpdateRunningButtons();
         }
 
         /// @brief Stop the emulation.
         /// @param sender Reference to the object where this event was called.
         /// @param e Class with the details event.
-        /// @version V15.03.26 - Added the refresh of the screen.
-        /// @param sender Reference to the object where this event was called.
-        /// @param e Class with the details event.
+        /// @version v20.10.01 - UpdateRunningButtons.
         private void StopEmulator_Click(object sender, EventArgs e)
         {
             runTimer.Stop();
+            UpdateRunningButtons();
             RepaintViews(); //added the repaint, to refresh the views
         }
 
         /// @brief Event to run one instruction in emulator.
         /// @param sender Reference to the object where this event was called.
         /// @param e Class with the details event.
+        /// @version v20.10.01 - UpdateRunningButtons.
         private void StepInstruction_Click(object sender, EventArgs e)
         {
             if (documentsTab.SelectedTab != null)
@@ -588,7 +631,7 @@ namespace Gear.GUI
                         cog.StepInstruction();
                 }
             }
-
+            UpdateRunningButtons();
             RepaintViews();
         }
 
@@ -623,9 +666,11 @@ namespace Gear.GUI
         /// @todo Document Gear.GUI.Emulator.OnDeactivate()
         /// @param sender Reference to the object where this event was called.
         /// @param e Class with the details event.
+        /// @version v20.10.01 - UpdateRunningButtons.
         private void OnDeactivate(object sender, EventArgs e)
         {
             runTimer.Stop();
+            UpdateRunningButtons();
         }
 
         /// @brief Determine availability of close plugin button when tab is changed.
@@ -658,28 +703,46 @@ namespace Gear.GUI
         /// @todo Document Gear.GUI.Emulator.documentsTab_KeyPress()
         /// @param sender Reference to the object where this event was called.
         /// @param e Class with the details event.
+        /// @version v20.10.01 - UpdateRunningButtons.
         private void DocumentsTab_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (ActiveControl is PluginBase)
             {
                 PluginBase b = ActiveControl as PluginBase;
-                if (b.AllowHotKeys != true)
+                if (!b.AllowHotKeys)
                     return;
             }
             if ((e.KeyChar == 's') | (e.KeyChar == 'S'))
             {
                 if (runTimer.Enabled)
+                {
                     runTimer.Stop();
+                    UpdateRunningButtons();
+                }
                 else
                     StepInstruction_Click(sender, e);
             }
             if ((e.KeyChar == 'r') | (e.KeyChar == 'R'))
             {
                 if (!runTimer.Enabled)
+                {
                     runTimer.Start();
+                    UpdateRunningButtons();
+                }
             }
         }
+
+        /// @brief Refresh form's Icon 
+        /// @param sender
+        /// @param e
+        /// @version v20.10.01 - Added.
+        private void Emulator_Load(object sender, EventArgs e)
+        {
+            //workaround of bug on MDI Form (https://stackoverflow.com/a/6701490/10200101)
+            Icon = Icon.Clone() as Icon;
+        }
     }
+
 }
 
 // Reference link to MSCGEN: http://www.mcternan.me.uk/mscgen/

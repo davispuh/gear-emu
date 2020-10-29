@@ -47,7 +47,7 @@
             // 
             // OKButton
             // 
-            this.OKButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.OKButton.Location = new System.Drawing.Point(297, 3);
             this.OKButton.Name = "OKButton";
             this.OKButton.Size = new System.Drawing.Size(75, 23);
@@ -63,7 +63,7 @@
             this.ButtonsPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.ButtonsPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
             this.ButtonsPanel.Location = new System.Drawing.Point(0, 279);
-            this.ButtonsPanel.MaximumSize = new System.Drawing.Size(800, 29);
+            this.ButtonsPanel.MaximumSize = new System.Drawing.Size(0, 29);
             this.ButtonsPanel.MinimumSize = new System.Drawing.Size(250, 29);
             this.ButtonsPanel.Name = "ButtonsPanel";
             this.ButtonsPanel.Size = new System.Drawing.Size(375, 29);
@@ -72,27 +72,31 @@
             // ResetButton
             // 
             this.ResetButton.AutoSize = true;
-            this.ResetButton.Location = new System.Drawing.Point(197, 3);
+            this.ResetButton.Location = new System.Drawing.Point(170, 3);
             this.ResetButton.Name = "ResetButton";
-            this.ResetButton.Size = new System.Drawing.Size(94, 23);
+            this.ResetButton.Size = new System.Drawing.Size(121, 23);
             this.ResetButton.TabIndex = 4;
-            this.ResetButton.Text = "Reset to Default";
+            this.ResetButton.Text = "Reset to default value";
             this.ResetButton.UseVisualStyleBackColor = true;
             this.ResetButton.Click += new System.EventHandler(this.ResetButton_Click);
             // 
             // AppPropertiesEditor
             // 
             this.AcceptButton = this.OKButton;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.AutoScroll = true;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(375, 308);
             this.Controls.Add(this.GearPropertyGrid);
             this.Controls.Add(this.ButtonsPanel);
+            this.DoubleBuffered = true;
+            this.Icon = global::Gear.Properties.Resources.Icon_PropertiesEditor;
             this.MinimumSize = new System.Drawing.Size(270, 290);
             this.Name = "AppPropertiesEditor";
             this.Text = "Gear Properties";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.AppPropertiesEditor_FormClosed);
+            this.Load += new System.EventHandler(this.AppPropertiesEditor_Load);
             this.ButtonsPanel.ResumeLayout(false);
             this.ButtonsPanel.PerformLayout();
             this.ResumeLayout(false);

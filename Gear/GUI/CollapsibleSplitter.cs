@@ -227,6 +227,9 @@ namespace Gear.GUI
             this.MouseLeave += new System.EventHandler(OnMouseLeave);
             this.MouseMove += new MouseEventHandler(OnMouseMove);
 
+            // eliminate flicker (from comment of 'Member 1430126' 17-Aug-11)
+            this.DoubleBuffered = true;
+
             // Setup the animation timer control
             this.animationTimer = new System.Windows.Forms.Timer
             {
@@ -833,7 +836,8 @@ namespace Gear.GUI
 
 
             // dispose the Graphics object
-            g.Dispose();
+            // eliminate flicker (from comment of 'Member 1430126' 17-Aug-11)
+            //g.Dispose();
         }
         #endregion
 

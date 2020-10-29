@@ -1,6 +1,6 @@
 /* --------------------------------------------------------------------------------
- * Gear: Parallax Inc. Propeller Debugger
- * Copyright 2007 - Robert Vandiver
+ * Gear: Parallax Inc. Propeller P1 Emulator
+ * Copyright 2020 - Gear Developers
  * --------------------------------------------------------------------------------
  * GearDesktop.cs
  * Main window class for gear
@@ -22,9 +22,8 @@
  */
 
 using System;
-using System.Drawing.Text;
+using System.Drawing;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 /// @brief Contains the definitions of %GUI objects (controlling objects).
@@ -122,8 +121,8 @@ namespace Gear.GUI
         /// @brief Load plugin editor from file.
         /// @details Load a plugin definition into a new editor window, from user selected file, 
         /// remembering independently from last binary directory.
-        /// @param[in] sender Reference to object where event was raised.
-        /// @param[in] e Event data arguments.
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
         private void OpenPluginButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
@@ -151,6 +150,17 @@ namespace Gear.GUI
             }
         }
 
+        /// @brief Load plugin editor from file.
+        /// @details Load a plugin definition into a new editor window, from user selected file, 
+        /// remembering independently from last binary directory.
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
+        /// @since v20.09.03 - Added.
+        private void EditPluginToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenPluginButton_Click(sender, e);
+        }
+
         /// @brief Open a window with the plugin editor to create a new plugin.
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
@@ -164,27 +174,74 @@ namespace Gear.GUI
             plugin.Show();
         }
 
+        /// @brief Open a window with the plugin editor to create a new plugin.
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
+        /// @since v20.09.03 - Added.
+        private void NewPluginToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NewPluginButton_Click(sender, e);
+        }
+
         /// @brief Open Gear properties editor.
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
-        /// @since 20-05-00 - Added.
+        /// @since v20.10.01 - Edited to manage only one instance of 
+        /// AppPropertiesEditor.
         private void OptionsButton_Click(object sender, EventArgs e)
         {
-            var options = new AppPropertiesEditor
+            try
             {
-                MdiParent = this
-            };
-            options.Show();
+                AppPropertiesEditor options = new AppPropertiesEditor
+                {
+                    MdiParent = this
+                };
+                options.Show();
+            }
+            catch (SingleInstanceException)
+            {
+                foreach(var form in this.MdiChildren)
+                {
+                    if (form is AppPropertiesEditor) 
+                    {
+                        form.Activate();
+                        break;
+                    }
+                }
+            }
         }
 
         /// @brief Open Gear properties editor
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
-        /// @since 20-05-00 - Added.
+        /// @since v20.05.00 - Added.
         private void OptionsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OptionsButton_Click(sender, e);
         }
-
     }
+
+    /// @brief Single instance helper exception class.
+    /// @version 20.10.01 - Added exception class to control a single 
+    /// instance form.
+    [Serializable]
+    public class SingleInstanceException : Exception
+    {
+        public SingleInstanceException() :
+            base()
+        { }
+
+        public SingleInstanceException(string message) :
+            base(message)
+        { }
+
+        public SingleInstanceException(string message, Exception innerException) :
+            base(message, innerException)
+        { }
+
+        protected SingleInstanceException(System.Runtime.Serialization.SerializationInfo serializationInfo, System.Runtime.Serialization.StreamingContext streamingContext) :
+            base(serializationInfo, streamingContext)
+        { }
+    }
+
 }

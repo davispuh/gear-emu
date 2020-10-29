@@ -1,6 +1,6 @@
 ﻿/* --------------------------------------------------------------------------------
- * Gear: Parallax Inc. Propeller Debugger
- * Copyright 2007 - Robert Vandiver
+ * Gear: Parallax Inc. Propeller P1 Emulator
+ * Copyright 2020 - Gear Developers
  * --------------------------------------------------------------------------------
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -390,6 +390,7 @@ namespace Gear.GUI
             this.Controls.Add(this.pinLocksFree);
             this.Controls.Add(this.pinLocks);
             this.Controls.Add(this.ringMeter);
+            this.DoubleBuffered = true;
             this.Name = "HubView";
             this.Size = new System.Drawing.Size(214, 546);
             this.ResumeLayout(false);

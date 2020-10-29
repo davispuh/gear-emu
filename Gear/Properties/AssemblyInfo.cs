@@ -1,6 +1,6 @@
 ﻿/* --------------------------------------------------------------------------------
- * Gear: Parallax Inc. Propeller Debugger
- * Copyright 2007 - Robert Vandiver
+ * Gear: Parallax Inc. Propeller P1 Emulator
+ * Copyright 2020 - Gear Developers
  * --------------------------------------------------------------------------------
  * AssemblyInfo.cs
  * Run-time settings for Gear
@@ -31,23 +31,32 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Gear")]
 [assembly: AssemblyDescription(
     "Current Developers:\r\n" +
-    "   davispuh\r\n" +
-    "   gatuno (Antonio Sanhueza)\r\n" +
+    "   @davispuh (github)\r\n" +
+    "   @gatuno1 (github) - Antonio Sanhueza\r\n" +
     "\r\n" +
     "Past Developers:\r\n" +
-    "   mirror\r\n" +
-    "   benjie (Ben Levitt)\r\n" +
+    "   mirror (parallax forums)\r\n" +
+    "   benjie - Ben Levitt (parallax forums)\r\n" +
+    "   Robert Vandiver (parallax forums)\r\n" +
     "\r\n" +
-    "Original Developer: Robert Vandiver.\r\n" +
+    "Contributors:\r\n" +
+    "   @mbaeten (github)\r\n" +
+    "   @Memotech-Bill (github)\r\n" +
+    "   @jlunder (github)\r\n" +
+    "   Bob Anderson(parallax forums)\r\n" +
+    "   Marc Gebauer(parallax forums)\r\n" +
     "\r\n" +
     "Third Party Components: \r\n" +
     "Windows Forms Collapsible Splitter Control for .Net\r\n" +
-    "(c)Copyright 2002-2003 NJF (furty74@yahoo.com). All rights reserved."
+    "(c)Copyright 2003 NJF (furty74@yahoo.com). Licensed under The Microsoft Public License (Ms-PL)." +
+    "\r\n" +
+    "Icons from and derived of Visual Studio 2019 Image Library.\r\n" +
+    "(c)Copyright 2019 Microsoft Corporation. See Visual Studio 2019 Image Library EULA.rtf for licence details."
     )]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Gear-emu")]
-[assembly: AssemblyProduct("Gear: Parallax Propeller Emulator")]
-[assembly: AssemblyCopyright("Copyright 2020\r\nCopyright mirror 2009\r\nCopyright © sublab research 2007")]
+[assembly: AssemblyProduct("Gear: Parallax Propeller P1 Emulator")]
+[assembly: AssemblyCopyright("Copyright 2020 - Gear Developers")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -66,5 +75,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("20.09.02.0")]
-[assembly: AssemblyFileVersion("20.09.02.0")]
+[assembly: AssemblyVersion("20.10.01.0")]
+[assembly: AssemblyFileVersion("20.10.01.0")]

@@ -1,6 +1,6 @@
 /* --------------------------------------------------------------------------------
- * Gear: Parallax Inc. Propeller Debugger
- * Copyright 2007 - Robert Vandiver
+ * Gear: Parallax Inc. Propeller P1 Emulator
+ * Copyright 2020 - Gear Developers
  * --------------------------------------------------------------------------------
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ namespace Gear.GUI.LogicProbe
             this.analogButton = new System.Windows.Forms.ToolStripButton();
             this.digitalButton = new System.Windows.Forms.ToolStripButton();
             this.viewOffset = new System.Windows.Forms.VScrollBar();
-            this.waveView = new System.Windows.Forms.Panel();
+            this.waveView = new Gear.GUI.DoubleBufferedPanel();
             this.timeAdjustBar = new System.Windows.Forms.HScrollBar();
             toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
@@ -145,12 +145,11 @@ namespace Gear.GUI.LogicProbe
             // 
             // updateGridButton
             // 
-            this.updateGridButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.updateGridButton.Enabled = false;
-            this.updateGridButton.Image = ((System.Drawing.Image)(resources.GetObject("updateGridButton.Image")));
+            this.updateGridButton.Image = global::Gear.Properties.Resources.Image_updateGrid;
             this.updateGridButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.updateGridButton.Name = "updateGridButton";
-            this.updateGridButton.Size = new System.Drawing.Size(49, 22);
+            this.updateGridButton.Size = new System.Drawing.Size(90, 22);
             this.updateGridButton.Text = "Update Grid";
             this.updateGridButton.ToolTipText = "Update grid with new values.";
             this.updateGridButton.Click += new System.EventHandler(this.UpdateGridButton_Click);
@@ -227,6 +226,7 @@ namespace Gear.GUI.LogicProbe
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScroll = true;
             this.Controls.Add(this.waveView);
             this.Controls.Add(this.viewOffset);
             this.Controls.Add(this.timeAdjustBar);
@@ -244,7 +244,7 @@ namespace Gear.GUI.LogicProbe
 
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.VScrollBar viewOffset;
-        private System.Windows.Forms.Panel waveView;
+        private Gear.GUI.DoubleBufferedPanel waveView;
         private System.Windows.Forms.ToolStripTextBox timeFrameBox;
         private System.Windows.Forms.ToolStripTextBox tickMarkBox;
         private System.Windows.Forms.HScrollBar timeAdjustBar;

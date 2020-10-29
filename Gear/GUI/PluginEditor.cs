@@ -1,6 +1,6 @@
 /* --------------------------------------------------------------------------------
- * Gear: Parallax Inc. Propeller Debugger
- * Copyright 2007 - Robert Vandiver
+ * Gear: Parallax Inc. Propeller P1 Emulator
+ * Copyright 2020 - Gear Developers
  * --------------------------------------------------------------------------------
  * PluginEditor.cs
  * Editor window for plugins class
@@ -61,7 +61,7 @@ namespace Gear.GUI
             @"\n",
             RegexOptions.Compiled);
         /// @brief Regex for parse token in lines for syntax highlight.
-        /// @version 15.03.26 - Added.
+        /// @version v15.03.26 - Added.
         private readonly Regex CodeLineRegex = new Regex(
             @"([ \t{}();:])", 
             RegexOptions.Compiled);
@@ -120,6 +120,7 @@ namespace Gear.GUI
         }
 
         /// @brief Tabulation array for editor.
+        /// @version v20.09.01 - Added.
         private readonly int[] tabs = new int[32];
 
         /// @brief Default constructor.
@@ -174,6 +175,7 @@ namespace Gear.GUI
 
         /// @brief Update tab size, considering default tabsize.
         /// @param reloadText To reload text after.
+        /// @version v20.09.01 - Added.
         public void UpdateTabs(bool reloadText)
         {
             RememberRTBoxPosition checkpoint = 
@@ -873,22 +875,34 @@ namespace Gear.GUI
             {
                 EmbeddedCode.Text = "Embedded";
                 EmbeddedCode.ToolTipText = "Embedded code in XML plugin file.";
+                EmbeddedCode.Image = Gear.Properties.Resources.Image_embedded;
             }
             else
             {
                 EmbeddedCode.Text = "Separated";
                 EmbeddedCode.ToolTipText = "Code in separated file from XML plugin file.";
+                EmbeddedCode.Image = Gear.Properties.Resources.Image_separated;
             }
         }
 
         /// @brief On visible property changed, perform layout on tool strip.
-        /// @param[in] sender Object who called this on event.
-        /// @param[in] e `EventArgs` class with a list of argument to the event call.
+        /// @param sender Object who called this on event.
+        /// @param e `EventArgs` class with a list of argument to the event call.
         /// @since v20.08.01 - Added.
         private void ProgressHighlight_VisibleChanged(object sender, EventArgs e)
         {
             toolStripMain.PerformLayout();
             toolStripMain.Refresh();
+        }
+
+        /// @brief Refresh form's Icon 
+        /// @param sender
+        /// @param e
+        /// @version v20.10.01 - Added.
+        private void PluginEditor_Load(object sender, EventArgs e)
+        {
+            //workaround of bug on MDI Form (https://stackoverflow.com/a/6701490/10200101)
+            Icon = Icon.Clone() as Icon;
         }
     }
 }
