@@ -754,8 +754,8 @@ namespace Gear.EmulationCore
                     case 0x37:  // Push Packed Literal
                         {
                             uint value = Hub.DirectReadByte(PC++);
-
-                            uint result = (uint)2 << (int)(value & 0x1F);
+                            //Bugfix issue #23: implement like ROL pasm instruction, not SHL.
+                            uint result = ((uint)2 << (int)(value & 0x1F)) | (uint)2 >> (int)(0x20 - (value & 0x1F));
 
                             if ((value & 0x20) != 0)
                                 result--;

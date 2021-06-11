@@ -22,10 +22,22 @@
 
 using System;
 
+/// <summary>
+/// 
+/// </summary>
 namespace Gear.Disassembler
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class Assembly
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="SourceInstruction"></param>
+        /// <param name="ParsedInstruction"></param>
+        /// <returns></returns>
         public static Propeller.Assembly.SubInstruction GetSubInstruction(Propeller.Assembly.Instruction SourceInstruction, ParsedInstruction ParsedInstruction)
         {
             switch (SourceInstruction.Type)
@@ -51,6 +63,9 @@ namespace Gear.Disassembler
             throw new Exception("Unknown Instruction Type: " + SourceInstruction.Type.ToString());
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public class ParsedInstruction
         {
             public const byte WriteZeroFlag      = 0x8;
@@ -65,10 +80,20 @@ namespace Gear.Disassembler
             public ushort DEST   { get; private set; }  //!< Contains the destination register address
             public ushort SRC    { get; private set; }  //!< Contains the source register address or 9-bit literal value
 
+            /// <summary>
+            /// 
+            /// </summary>
             public Propeller.Assembly.Instruction SourceInstruction { get; private set; }
 
+            /// <summary>
+            /// 
+            /// </summary>
             private Propeller.Assembly.SubInstruction SourceSubInstruction;
 
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="Opcode"></param>
             public ParsedInstruction(uint Opcode)
             {
                 this.Opcode = Opcode;
@@ -82,6 +107,10 @@ namespace Gear.Disassembler
                 this.SourceSubInstruction = null;
             }
 
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <returns></returns>
             public Propeller.Assembly.SubInstruction GetSubInstruction()
             {
                 if (this.SourceSubInstruction == null)
@@ -91,26 +120,45 @@ namespace Gear.Disassembler
                 return this.SourceSubInstruction;
             }
 
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <returns></returns>
             public bool WriteZero()
             {
                 return (this.ZCRI & WriteZeroFlag) == WriteZeroFlag && this.GetSubInstruction().WZ;
             }
 
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <returns></returns>
             public bool WriteCarry()
             {
                 return (this.ZCRI & WriteCarryFlag) == WriteCarryFlag && this.GetSubInstruction().WC;
             }
-
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <returns></returns>
             public bool WriteResult()
             {
                 return (this.ZCRI & WriteResultFlag) == WriteResultFlag && this.GetSubInstruction().WR;
             }
 
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <returns></returns>
             public bool NoResult()
             {
                 return (this.ZCRI & WriteResultFlag) == 0 && this.GetSubInstruction().WR;
             }
 
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <returns></returns>
             public bool ImmediateValue()
             {
                 return (this.ZCRI & ImmediateValueFlag) == ImmediateValueFlag;

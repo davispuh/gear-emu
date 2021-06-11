@@ -24,10 +24,19 @@
 
 namespace Gear.EmulationCore
 {
-    /// @brief Abstract base class for a clock signal provider.
+    /// <summary>
+    /// Abstract base class for a clock signal provider.
+    /// </summary>
     abstract public class ClockSource
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public abstract double TimeUntilClock { get; }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="time"></param>
         public abstract void AdvanceClock(double time);
     }
 }

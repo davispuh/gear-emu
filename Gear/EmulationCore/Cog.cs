@@ -25,6 +25,9 @@ using Gear.Propeller;
 
 namespace Gear.EmulationCore
 {
+    /// <summary>
+    /// States of a %Cog
+    /// </summary>
     public enum CogRunState
     {
         /// @brief Waiting for instruction to finish executing.
@@ -62,6 +65,9 @@ namespace Gear.EmulationCore
         HUB_HUBOP
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public enum FrameState
     {
         frameNone,
@@ -69,7 +75,9 @@ namespace Gear.EmulationCore
         frameMiss
     }
 
-    /// @brief Base class for a %Cog emulator.
+    /// <summary>
+    /// Base class for a %Cog emulator.
+    /// </summary>
     abstract public partial class Cog
     {
         // Runtime variables
@@ -139,12 +147,15 @@ namespace Gear.EmulationCore
             set { BreakPointCogCursor = value; }
         }
 
-        /// @brief Get video frames cont
+        /// @brief Get video frames count
         public uint VideoFrames
         {
             get { return Video.Frames; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string VideoFramesString
         {
             get
@@ -191,6 +202,9 @@ namespace Gear.EmulationCore
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string VideoStateString
         {
             get
@@ -243,8 +257,9 @@ namespace Gear.EmulationCore
             }
         }
 
-        /// @todo Document property Gear.EmulationCore.Cog.DIRA.
+        /// <summary>
         /// 
+        /// </summary>
         public uint DIRA
         {
             get
@@ -253,8 +268,9 @@ namespace Gear.EmulationCore
             }
         }
 
-        /// @todo Document property Gear.EmulationCore.Cog.DIRB.
+        /// <summary>
         /// 
+        /// </summary>
         public uint DIRB
         {
             get
@@ -308,8 +324,11 @@ namespace Gear.EmulationCore
             }
         }
 
-        /// @todo Document property Gear.EmulationCore.Cog.operator[].
+        /// <summary>
         /// 
+        /// </summary>
+        /// <param name="i"></param>
+        /// <returns></returns>
         public uint this[int i]
         {
             get
@@ -342,8 +361,13 @@ namespace Gear.EmulationCore
             }
         }
 
-        /// @todo Document method Gear.EmulationCore.Cog.ConditionCompare.
+        /// <summary>
         /// 
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static bool ConditionCompare(Assembly.ConditionCodes condition, bool a, bool b)
         {
             switch (condition)
@@ -399,8 +423,9 @@ namespace Gear.EmulationCore
             return true;
         }
 
-        /// @todo Document method Gear.EmulationCore.Cog.HubAccessable().
+        /// <summary>
         /// 
+        /// </summary>
         public virtual void HubAccessable()
         {
             switch (State)
@@ -418,8 +443,9 @@ namespace Gear.EmulationCore
             }
         }
 
-        /// @todo Document method Gear.EmulationCore.Cog.DetachVideoHooks()
+        /// <summary>
         /// 
+        /// </summary>
         public void DetachVideoHooks()
         {
             // Detach the video hook
@@ -439,15 +465,19 @@ namespace Gear.EmulationCore
             return result;
         }
 
-        /// @todo Document method Gear.EmulationCore.Cog.SetClock().
+        /// <summary>
         /// 
+        /// </summary>
+        /// <param name="freq"></param>
         public void SetClock(uint freq)
         {
             FreqA.SetClock(freq);
             FreqB.SetClock(freq);
         }
 
-        /// @todo Document method Gear.EmulationCore.Cog.StepInstruction().
+        /// <summary>
+        /// 
+        /// </summary>
         public void StepInstruction()
         {
             int i = 0x2000;    // Maximum of 8k clocks (covers load instruction)
@@ -460,8 +490,11 @@ namespace Gear.EmulationCore
                 (frameFlag <= frameBreak));
         }
 
-        /// @todo Document method Gear.EmulationCore.Cog.ReadLong().
+        /// <summary>
         /// 
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
         public uint ReadLong(uint address)
         {
             // values using Assembly.RegisterAddress enum, instead of direct hex values
@@ -502,7 +535,7 @@ namespace Gear.EmulationCore
         /// @note PAR address is a special case, because unless Propeller Manual V1.2 
         /// specifications says it is a read-only register, there are claims that in reality it 
         /// is writable as explains 
-        /// <a href="http://forums.parallax.com/showthread.php/115909-PASM-simulator-debugger)">
+        /// <a href="http://forums.parallax.com/discussion/115909/pasm-simulator-debugger)">
         /// Forum thread "PASM simulator / debugger?</a>.
         /// They claims that some parallax video drivers in PASM changes the PAR register, 
         /// and GEAR didn't emulate that.
@@ -551,9 +584,16 @@ namespace Gear.EmulationCore
         /// @returns TRUE if it is time to trigger a breakpoint, or FALSE if not.
         abstract public bool DoInstruction();
 
-        /// @todo Document method Gear.EmulationCore.Cog.Boot()
+        /// <summary>
+        /// 
+        /// </summary>
         abstract public void Boot();
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="colours"></param>
+        /// <param name="pixels"></param>
         abstract public void GetVideoData(out uint colours, out uint pixels);
     }
 }

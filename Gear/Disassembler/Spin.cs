@@ -24,8 +24,14 @@ using System;
 
 namespace Gear.Disassembler
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class Spin
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public class ParsedMemoryOperation
         {
             public byte                        Opcode           { get; private set; }
@@ -34,6 +40,10 @@ namespace Gear.Disassembler
             public bool                        AssemblyRegister { get; private set; }
             public Propeller.Spin.MemoryAction Action           { get; private set; }
 
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="Opcode"></param>
             public ParsedMemoryOperation(byte Opcode)
             {
                 this.Opcode           =                                Opcode;
@@ -43,6 +53,10 @@ namespace Gear.Disassembler
                 this.Action           = (Propeller.Spin.MemoryAction)((Opcode >> 5) & 0x00F);
             }
 
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <returns></returns>
             public Propeller.Register GetRegister()
             {
                 if (this.AssemblyRegister)
@@ -56,6 +70,12 @@ namespace Gear.Disassembler
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="SourceAssignment"></param>
+        /// <param name="ParsedAssignment"></param>
+        /// <returns></returns>
         public static Propeller.Spin.SubAssignment GetSubAssignment(Propeller.Spin.Assignment SourceAssignment, ParsedAssignment ParsedAssignment)
         {
             switch (SourceAssignment.Type)
@@ -70,6 +90,9 @@ namespace Gear.Disassembler
             throw new Exception("Unknown Assignment Type: " + SourceAssignment.Type.ToString());
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public class ParsedAssignment
         {
             public  byte                          Opcode            { get; private set; }
@@ -86,6 +109,10 @@ namespace Gear.Disassembler
 
             private Propeller.Spin.SubAssignment   SourceSubAssignment;
 
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="Opcode"></param>
             public ParsedAssignment(byte Opcode)
             {
                 this.Opcode =                   Opcode;
@@ -109,6 +136,10 @@ namespace Gear.Disassembler
                 this.SourceSubAssignment = null;
             }
 
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <returns></returns>
             public Propeller.Spin.SubAssignment GetSubAssignment()
             {
                 if (this.Math)
@@ -122,6 +153,10 @@ namespace Gear.Disassembler
                 return this.SourceSubAssignment;
             }
 
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <returns></returns>
             public Propeller.BasicInstruction GetBasicInstruction()
             {
                 if (this.Math)

@@ -24,8 +24,16 @@ using Gear.Propeller;
 
 namespace Gear.Disassembler
 {
+    /// <summary>
+    /// 
+    /// </summary>
     class DataUnpacker
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="memory"></param>
+        /// <returns></returns>
         public static int GetSignedOffset(MemoryManager memory)
         {
             uint result = memory.ReadByte();
@@ -45,6 +53,11 @@ namespace Gear.Disassembler
             return (int)result;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="memory"></param>
+        /// <returns></returns>
         public static short GetSignedPackedOffset(MemoryManager memory)
         {
             short op = memory.ReadByte();
@@ -58,6 +71,11 @@ namespace Gear.Disassembler
             return (short)((op << 8) | memory.ReadByte());
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="memory"></param>
+        /// <returns></returns>
         public static uint GetPackedLiteral(MemoryManager memory)
         {
             byte op = memory.ReadByte();
@@ -76,6 +94,11 @@ namespace Gear.Disassembler
             return data;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="memory"></param>
+        /// <returns></returns>
         public static int GetPackedOffset(MemoryManager memory)
         {
             ushort op = memory.ReadByte();
@@ -88,6 +111,12 @@ namespace Gear.Disassembler
             return (op << 8) | (memory.ReadByte());
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="memory"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
         public static int GetLiteral(MemoryManager memory, int count)
         {
             int result = 0;
@@ -99,16 +128,31 @@ namespace Gear.Disassembler
             return result;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="memory"></param>
+        /// <returns></returns>
         public static int GetWordLiteral(MemoryManager memory)
         {
             return GetLiteral(memory, 2);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="memory"></param>
+        /// <returns></returns>
         public static int GetNearLongLiteral(MemoryManager memory)
         {
             return GetLiteral(memory, 3);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="memory"></param>
+        /// <returns></returns>
         public static int GetLongLiteral(MemoryManager memory)
         {
             return GetLiteral(memory, 4);
