@@ -115,11 +115,11 @@ namespace Gear.EmulationCore
 
             if (useShortOpcodes)
             {
-                effect += "(" + ParsedAssignment.GetBasicInstruction().NameBrief + ")";
+                effect += "(" + ParsedAssignment.GetBasicInstruction().NameBrief + (ParsedAssignment.Swap ? ",reverse" : "") + ")";
             }
             else
             {
-                effect += ParsedAssignment.GetBasicInstruction().Name;
+                effect += ParsedAssignment.GetBasicInstruction().Name + (ParsedAssignment.Swap ? " REVERSE" : "");
             }
 
             if (!ParsedAssignment.Math)
