@@ -29,10 +29,12 @@ namespace Gear.EmulationCore
     /// @brief Provides a method for creating the string equivalent of a propeller operation.
     public static class InstructionDisassembler
     {
-        static InstructionDisassembler()
-        {
-        }
+        /// @brief Default static constructor
+        static InstructionDisassembler() { }
 
+        /// @brief Translate to text the bytecode opcodes. 
+        /// @param Operation Bytecode opcodes.
+        /// @return Explicative text from decoded bytecode.
         public static string AssemblyText(uint Operation)
         {
             Assembly.ParsedInstruction instr = new Assembly.ParsedInstruction(Operation);
@@ -95,7 +97,7 @@ namespace Gear.EmulationCore
             return text;
         }
 
-        private static string GetEffectCode(Propeller.MemoryManager memory, bool useShortOpcodes)
+        private static string GetUsingCode(Propeller.MemoryManager memory, bool useShortOpcodes)
         {
             Spin.ParsedAssignment ParsedAssignment = new Spin.ParsedAssignment(memory.ReadByte());
 
@@ -137,7 +139,7 @@ namespace Gear.EmulationCore
                 case Propeller.Spin.MemoryAction.POP:
                     return String.Format("POP {0}", Name);
                 case Propeller.Spin.MemoryAction.EFFECT:
-                    return String.Format("EFFECT {0} {1}", Name, GetEffectCode(memory, useShortOpcodes));
+                    return String.Format("USING {0} {1}", Name, GetUsingCode(memory, useShortOpcodes));
                 default:
                     return String.Format("UNKNOWN_{0} {1}", OP.Action, Name);
             }
@@ -166,9 +168,9 @@ namespace Gear.EmulationCore
                 case Propeller.Spin.ArgumentMode.UnsignedOffset:
                     return String.Format(format, Name, DataUnpacker.GetPackedOffset(memory));
                 case Propeller.Spin.ArgumentMode.UnsignedEffectedOffset:
-                    return String.Format("{0} {1} {2}", Name, DataUnpacker.GetPackedOffset(memory), GetEffectCode(memory, useShortOpcodes));
+                    return String.Format("{0} {1} {2}", Name, DataUnpacker.GetPackedOffset(memory), GetUsingCode(memory, useShortOpcodes));
                 case Propeller.Spin.ArgumentMode.Effect:
-                    return String.Format(format, Name, GetEffectCode(memory, useShortOpcodes));
+                    return String.Format(format, Name, GetUsingCode(memory, useShortOpcodes));
                 case Propeller.Spin.ArgumentMode.SignedOffset:
                     return String.Format(format, Name, DataUnpacker.GetSignedOffset(memory));
                 case Propeller.Spin.ArgumentMode.PackedLiteral:
