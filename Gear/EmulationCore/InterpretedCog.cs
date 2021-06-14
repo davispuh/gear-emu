@@ -248,10 +248,10 @@ namespace Gear.EmulationCore
             byte op = Hub.DirectReadByte(PC++);
             frameFlag = FrameState.frameNone;
 
-            // Masked Memory Operations
+            // Math Operations
             if (op >= 0xE0)
             {
-                PushStack(BaseMathOp((byte)(op - 0xE0), false, PopStack()));
+                PushStack(BaseMathOp((byte)(op - 0xE0), false, false, PopStack()));
             }
             // Masked Memory Operations
             else if (op >= 0x80)
@@ -897,7 +897,7 @@ namespace Gear.EmulationCore
             }
         }
 
-        private uint BaseMathOp(byte op, bool inplace, uint initial)
+        private uint BaseMathOp(byte op, bool inplace, bool swap, uint initial)
         {
             // --- Unary Operators ---
             switch (op)
@@ -940,8 +940,13 @@ namespace Gear.EmulationCore
 
             if (inplace)
             {
-                left = initial;
-                right = PopStack();
+                if (swap) {
+                    left = PopStack();
+                    right = initial;
+                } else {
+                    left = initial;
+                    right = PopStack();
+                }
             }
             else
             {
@@ -1196,9 +1201,9 @@ namespace Gear.EmulationCore
             op &= 0x7F;
 
             // Use Main opcode set
-            if (op >= 0x40 && op <= 0x5F)
+            if (op >= 0x40)
             {
-                stored = result = BaseMathOp((byte)(op - 0x40), true, originalValue);
+                stored = result = BaseMathOp((byte)(op & 0x1F), true, (op & 0x20) != 0, originalValue);
             }
             else
             {
