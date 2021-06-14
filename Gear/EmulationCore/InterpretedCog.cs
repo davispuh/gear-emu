@@ -189,7 +189,7 @@ namespace Gear.EmulationCore
             return Hub.HubOp(this, (uint)HubOperationCodes.HUBOP_COGINIT, code, ref temp, ref temp2);
         }
 
-        /// @brief Execute a SPIN instruction in this cog.
+        /// @brief Execute a SPIN bytecode instruction in this cog.
         /// @returns TRUE if it is the opportunity to trigger a breakpoint, or FALSE if not.
         override public bool DoInstruction()
         {
@@ -248,22 +248,19 @@ namespace Gear.EmulationCore
             byte op = Hub.DirectReadByte(PC++);
             frameFlag = FrameState.frameNone;
 
-            // Masked Memory Operations
+            // Math Operations (0xE0..0xFF)
             if (op >= 0xE0)
-            {
-                PushStack(BaseMathOp((byte)(op - 0xE0), false, PopStack()));
-            }
-            // Masked Memory Operations
+                PushStack(BaseMathOp((byte)(op - 0xE0), true, PopStack()));
+            // Masked Memory Operations (0x80..0xDF)
             else if (op >= 0x80)
             {
                 StepMaskedMemoryOp(op);
                 return true;
             }
-            // Implicit Location Memory Ops
+            // Implicit Location Memory Ops (0x40..0x7F)
             else if (op >= 0x40)
-            {
                 StepImplicitMemoryOp(op);
-            }
+            // Special Purpose Ops (0x00..03F)
             else
             {
                 switch (op)
@@ -692,7 +689,7 @@ namespace Gear.EmulationCore
                             WriteLong(address, PopStack());
                         }
                         break;
-                    case 0x26:  // Effect Spr
+                    case 0x26:  // USING Spr
                         {
                             uint address = PopStack();
 
@@ -701,7 +698,7 @@ namespace Gear.EmulationCore
 
                             address += 0x1F0;
 
-                            WriteLong(address, InplaceEffect(ReadLong(address)));
+                            WriteLong(address, InplaceUsingOp(ReadLong(address)));
                         }
                         break;
                     case 0x27:  // Wait Vid
@@ -869,6 +866,10 @@ namespace Gear.EmulationCore
                 PushStack(value);
         }
 
+        /// @brief Execute bytecode operation from cog memory.
+        /// @details Read additional byte that follow a cog memory op (<c>0x3F</c>).
+        /// @param mask
+        /// @param lowestbit
         private void CogMemoryOp(uint mask, int lowestbit)
         {
             byte op = Hub.DirectReadByte(PC++);
@@ -876,19 +877,19 @@ namespace Gear.EmulationCore
 
             switch (op & 0xE0)
             {
-                case 0x80:
+                case 0x80:  // PUSH
                     PushStack((ReadLong(reg) & mask) >> lowestbit);
                     break;
-                case 0xA0:
+                case 0xA0:  // POP
                     {
                         uint val = ReadLong(reg);
                         WriteLong(reg, (val & ~mask) | ((PopStack() << lowestbit) & mask));
                     }
                     break;
-                case 0xC0:
+                case 0xC0:  // USING
                     {
                         uint val = ReadLong(reg);
-                        WriteLong(reg, (val & ~mask) | ((InplaceEffect((val & mask) >> lowestbit) << lowestbit) & mask));
+                        WriteLong(reg, (val & ~mask) | ((InplaceUsingOp((val & mask) >> lowestbit) << lowestbit) & mask));
                     }
                     break;
                 default:
@@ -897,7 +898,13 @@ namespace Gear.EmulationCore
             }
         }
 
-        private uint BaseMathOp(byte op, bool inplace, uint initial)
+        /// @brief Execute a bytecode operation from math group.
+        /// @details Access Unary and Binary logic and math operators.
+        /// @param op Operation code to execute, from range: <c>0xE0..0xFF</c>
+        /// @param swapValues Must swap values from stack (=true ), or maintain order (=false).
+        /// @param initial Initial value.
+        /// @return Result from math operation.
+        private uint BaseMathOp(byte op, bool swapValues, uint initial)
         {
             // --- Unary Operators ---
             switch (op)
@@ -938,15 +945,15 @@ namespace Gear.EmulationCore
             uint left;
             uint right;
 
-            if (inplace)
-            {
-                left = initial;
-                right = PopStack();
-            }
-            else
+            if (swapValues)
             {
                 left = PopStack();
                 right = initial;
+            }
+            else
+            {
+                left = initial;
+                right = PopStack();
             }
 
             switch (op)
@@ -1047,11 +1054,14 @@ namespace Gear.EmulationCore
             return 0;
         }
 
+        /// @brief Execute a bytecode operation from memory group.
+        /// @details Access MEM, OBJ, VAR and LOC.
+        /// @param op Operation code to execute, from range: <c>0x80..0xDF</c>
         private void StepMaskedMemoryOp(byte op)
         {
-            byte Type = (byte)(op & 0x03);  // Bit[0..1] = POP, PUSH, EFFECT, REFERENCE
+            byte Type = (byte)(op & 0x03);  // Bit[0..1] = POP, PUSH, USING, REFERENCE
             byte Base = (byte)(op & 0x0C);  // Bit[2..3] = MAIN, OBJ, VAR, LOCAL
-            byte Indexed = (byte)(op & 0x10);  // Bit[4]    = Indexed ?
+            byte Indexed = (byte)(op & 0x10);  // Bit[4] = Indexed ?
             byte Size = (byte)(op & 0x60);  // Bit[5..6] = BYTE, WORD, LONG
 
             uint address;
@@ -1102,25 +1112,25 @@ namespace Gear.EmulationCore
                         case 0x00:  // byte
                             Hub.DirectWriteByte(address, (byte)PopStack());
                             break;
-                        case 0x20:
+                        case 0x20:  // word
                             Hub.DirectWriteWord(address, (ushort)PopStack());
                             break;
-                        case 0x40:
+                        case 0x40:  // long
                             Hub.DirectWriteLong(address, PopStack());
                             break;
                     }
                     break;
-                case 2: // EFFECT
+                case 2: // USING
                     switch (Size)
                     {
                         case 0x00:  // byte
-                            Hub.DirectWriteByte(address, (byte)InplaceEffect(Hub.DirectReadByte(address)));
+                            Hub.DirectWriteByte(address, (byte)InplaceUsingOp(Hub.DirectReadByte(address)));
                             break;
                         case 0x20:  // word
-                            Hub.DirectWriteWord(address, (ushort)InplaceEffect(Hub.DirectReadWord(address)));
+                            Hub.DirectWriteWord(address, (ushort)InplaceUsingOp(Hub.DirectReadWord(address)));
                             break;
                         case 0x40:  // long
-                            Hub.DirectWriteLong(address, InplaceEffect(Hub.DirectReadLong(address)));
+                            Hub.DirectWriteLong(address, InplaceUsingOp(Hub.DirectReadLong(address)));
                             break;
                     }
                     break;
@@ -1130,11 +1140,14 @@ namespace Gear.EmulationCore
             }
         }
 
+        /// @brief Execute a bytecode operation from variable group.
+        /// @details Fast access VAR and LOC.
+        /// @param op Operation code to execute, from range: <c>0x40..0x7F</c>
         private void StepImplicitMemoryOp(byte op)
         {
-            byte Type = (byte)(op & 0x03);  // Bit[0..1] = POP, PUSH, EFFECT, REFERENCE
-            byte Base = (byte)(op & 0x20);  // Bit[5]    = VAR, LOCAL
+            byte Type = (byte)(op & 0x03);  // Bit[0..1] = POP, PUSH, USING, REFERENCE
             uint Index = (uint)(op & 0x1C); // Bit[2..4] = Index (*4)
+            byte Base = (byte)(op & 0x20);  // Bit[5]    = VAR, LOCAL
 
             Index += ((Base == 0) ? VariableFrame : LocalFrame);
 
@@ -1146,8 +1159,8 @@ namespace Gear.EmulationCore
                 case 1: // POP
                     Hub.DirectWriteLong(Index, PopStack());
                     break;
-                case 2: // EFFECT
-                    Hub.DirectWriteLong(Index, InplaceEffect(Hub.DirectReadLong(Index)));
+                case 2: // USING
+                    Hub.DirectWriteLong(Index, InplaceUsingOp(Hub.DirectReadLong(Index)));
                     break;
                 case 3: // REFERENCE
                     PushStack(Index);
@@ -1186,7 +1199,10 @@ namespace Gear.EmulationCore
             }
         }
 
-        private uint InplaceEffect(uint originalValue)
+        /// @brief Execute bytecode operation for a additional bytecode that follows a USING bytecode.
+        /// @param originalValue Initial value of MEM, OBJ, VAR or LOC.
+        /// @return Stored value from operation.
+        private uint InplaceUsingOp(uint originalValue)
         {
             byte op = Hub.DirectReadByte(PC++);
             bool push = (op & 0x80) != 0;
@@ -1195,11 +1211,22 @@ namespace Gear.EmulationCore
 
             op &= 0x7F;
 
-            // Use Main opcode set
-            if (op >= 0x40 && op <= 0x5F)
+            // Use Fast access VAR, LOC opcode set
+            if (op >= 0x40)
             {
-                stored = result = BaseMathOp((byte)(op - 0x40), true, originalValue);
+                if (op <= 0x5F)
+                    // VAR opcode set
+                    stored = result = BaseMathOp((byte)(op - 0x40), false, originalValue);
+                else if (op <= 0x7F)
+                    // LOC opcode set
+                    stored = result = BaseMathOp((byte)(op - 0x60), true, originalValue);
+                else
+                {
+                    System.Windows.Forms.MessageBox.Show(string.Format("Unkown opcode {0}", op));
+                    stored = result = 0;
+                }
             }
+            // Assigments operators
             else
             {
                 switch (op)

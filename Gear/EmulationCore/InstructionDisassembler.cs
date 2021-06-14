@@ -67,9 +67,7 @@ namespace Gear.EmulationCore
                         DestString = String.Format("{0}", Propeller.Assembly.Registers[instr.DEST - Propeller.Assembly.RegisterBaseAddress].Name);
                     }
                     else
-                    {
                         DestString = String.Format("${0:X3}", instr.DEST);
-                    }
                 }
 
                 text = String.Format("{0} {1} {2}{3}{4}", new object[] {
@@ -81,29 +79,19 @@ namespace Gear.EmulationCore
                 );
 
                 if (instr.WriteResult())
-                {
                     text += " WR";
-                }
 
                 if (instr.NoResult())
-                {
                     text += " NR";
-                }
 
                 if (instr.WriteZero())
-                {
                     text += " WZ";
-                }
 
                 if (instr.WriteCarry())
-                {
                     text += " WC";
-                }
             }
             else
-            {
                 text = String.Format("{0} {1}", new object[] { Propeller.Assembly.Conditions[0][1], Propeller.Assembly.Conditions[0][2] });
-            }
             return text;
         }
 
@@ -114,13 +102,9 @@ namespace Gear.EmulationCore
             string effect = ParsedAssignment.Push ? string.Empty : "POP ";
 
             if (useShortOpcodes)
-            {
-                effect += "(" + ParsedAssignment.GetBasicInstruction().NameBrief + ")";
-            }
+                effect += "(" + ParsedAssignment.GetBasicInstruction().NameBrief + (ParsedAssignment.Swap ? ",reverse" : "") + ")";
             else
-            {
-                effect += ParsedAssignment.GetBasicInstruction().Name;
-            }
+                effect += ParsedAssignment.GetBasicInstruction().Name + (ParsedAssignment.Swap ? " REVERSE" : "");
 
             if (!ParsedAssignment.Math)
             {
@@ -163,25 +147,17 @@ namespace Gear.EmulationCore
         {
             string format;
             if (displayAsHexadecimal)
-            {
                 format = "{0} ${1:X}";
-            }
             else
-            {
                 format = "{0} {1}";
-            }
 
             Propeller.Spin.Instruction Instr = Propeller.Spin.Instructions[memory.ReadByte()];
 
             string Name;
             if (useShortOpcodes)
-            {
                 Name = Instr.NameBrief;
-            }
             else
-            {
                 Name = Instr.Name;
-            }
 
             switch (Instr.ArgumentMode)
             {
