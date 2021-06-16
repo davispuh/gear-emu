@@ -99,10 +99,7 @@ namespace Gear.EmulationCore
 
         public uint CTR
         {
-            get
-            {
-                return Control;
-            }
+            get { return Control; }
             set
             {
                 Control = value;
@@ -140,10 +137,7 @@ namespace Gear.EmulationCore
 
         public uint FRQ
         {
-            get
-            {
-                return Frequency;
-            }
+            get { return Frequency; }
             set
             {
                 Frequency = value;
@@ -170,14 +164,8 @@ namespace Gear.EmulationCore
 
         public uint PHS
         {
-            get
-            {
-                return PhaseAccumulator;
-            }
-            set
-            {
-                PhaseAccumulator = value;
-            }
+            get { return PhaseAccumulator; }
+            set { PhaseAccumulator = value; }
         }
 
         public ulong Output
@@ -279,9 +267,7 @@ namespace Gear.EmulationCore
                 default:
                     // changed to NOT ConditionCompare(.) to repair Logic Modes Counter
                     if (!Cog.ConditionCompare((Assembly.ConditionCodes)((int)CtrMode - 16), PinA, PinB))
-                    {
                         PHS += FRQ;
-                    }
                     break;
             }
 

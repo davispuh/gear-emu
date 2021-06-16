@@ -56,7 +56,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Gear-emu")]
 [assembly: AssemblyProduct("Gear: Parallax Propeller P1 Emulator")]
-[assembly: AssemblyCopyright("Copyright 2020 - Gear Developers")]
+[assembly: AssemblyCopyright("Copyright 2021 - Gear Developers")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -75,5 +75,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("20.10.01.0")]
-[assembly: AssemblyFileVersion("20.10.01.0")]
+[assembly: AssemblyVersion("21.06.01.0")]
+[assembly: AssemblyFileVersion("21.06.01.0")]

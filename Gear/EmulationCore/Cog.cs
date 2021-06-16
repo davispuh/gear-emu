@@ -362,7 +362,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        /// Evaluate a precondition for an PASM instruction
         /// </summary>
         /// <param name="condition"></param>
         /// <param name="a"></param>
@@ -535,7 +535,7 @@ namespace Gear.EmulationCore
         /// @note PAR address is a special case, because unless Propeller Manual V1.2 
         /// specifications says it is a read-only register, there are claims that in reality it 
         /// is writable as explains 
-        /// <a href="http://forums.parallax.com/discussion/115909/pasm-simulator-debugger)">
+        /// <a href="https://forums.parallax.com/discussion/comment/839684/#Comment_839684">
         /// Forum thread "PASM simulator / debugger?</a>.
         /// They claims that some parallax video drivers in PASM changes the PAR register, 
         /// and GEAR didn't emulate that.

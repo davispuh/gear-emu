@@ -5,6 +5,23 @@ Read more in Parallax forum threads:
 * [VT100 terminal plugin for the GEAR emulator](https://forums.parallax.com/discussion/106651/vt100-terminal-plugin-for-the-gear-emulator)
 * [GEAR: Propeller Debugging Environment](https://forums.parallax.com/discussion/91084/gear-propeller-debugging-environment)
 
+## Version 21.06.01 - Cummulative release: bugfixes #23 #24 and bytecode documentation
+* Cummulative release for bugfixes #23 & #24 and bytecode documentation.
+* Include missing example file for Stimulus plugin: test.stm.
+
+## Commits 9979938, c0fb5ae, 90271bd - Ammends to correct issue Wuerfel21#24 & better documentation
+* Refactored code to correct issue Wuerfel21#24.
+* Added documentation to bytecode management, using the notation from Cluso99's SPIN bytecode document on Propeller 1 Forum [https://forums.parallax.com/discussion/comment/796018/#Comment_796018].
+* More documentation on InstructionDisassembler.
+
+## Commits 5eff3e6, 0935b40 - Fix reversed assignment ops
+* Fix reversed assignment ops, base solution.
+
+## Commit 2845f4c - Bugfix Wuerfel21#23: implement opcode 0x37 with ROL pasm instruction
+* Bugfix issue Wuerfel21#23: implement opcode 0x37 (Push Packed Literal) with ROL pasm instruction and not SHL, on SPIN interpreter.
+* Added some documentation placeholders and remove some '@todo Documents'.
+* Corrected a propeller 1 forum link, to new web structure.
+
 ## Version 20.10.01 - Added icons & images, some refresh improvements
 
 * Icons added to almost all windows and tools, based on Visual Studio 2019 Image Library. They are in svg native format (Gear/Resources/Icons/svg & Gear/Resources/Images/svg).

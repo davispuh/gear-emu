@@ -1,0 +1,89 @@
+! Below is some examples of valid stimuli
+!
+! Time indications are in seconds, use 
+! ------------------------------------
+!   n - for nano
+!   u - for micro
+!   m - for milli
+!   K - for Kilo
+!   M - for Mega
+! Time may be given in a relative format by starting the line with a +
+! but once you've done that, mixing absolute times could result in events 
+! that never occur. Times may be floating point eg. 1.237m is valid, and is
+! the same as 1237u
+!
+! Pin states are:
+! ---------------
+!   0 - Low = zero
+!   1 - High = one
+!   x - No longer driven
+!
+! The format for the clock command is:
+! ------------------------------------
+! clock=[pin], but this will NOT start the clock. 
+! One or more of the following words are required:
+! high=[time]  or  low=[time]  or  period=[time]  or  pwm=[0.001 to 0.999]
+!   * the first one used determines the initial state of the clock
+!   * only absolute times are allowed (NO +)
+!   * If only one is given, then the clock is symmetrical
+!
+! The format for the serial port transmitter is:
+! ----------------------------------------------
+! Well have a look at the example, but it is NOT YET IMPLEMENTED
+
+
+! Start some clocks on pins to and 3
+! Clock 2 will start high then go low, clock 3 will start low then go high
+500u clock=2 high=20u low=15u clock=3 low=10u high=20u
+
+! 10 microseconds later send a message on pin 4
+! NOT YET IMPLEMENTED
++10u tx=4 baud=115.2K bytes="G'Day",32,'"World"',13,$A,0 stop=1 mode=01
+! 10 microseconds later send a message on pin 5, with different pin drives
+! NOT YET IMPLEMENTED
++10u tx=5 baud=115.2K bytes="G'Day",32,'"World"',13,$A,0 stop=1 mode=0x
+
+! Do some pin jiggling
++100u 10=001 17=1
++10u 10=010
++10u 10=100
++10u 10=001
++10u 10=010 17=0 stop
++10u 10=100
++10u 10=001 2=x
++10u 10=010
++10u 10=100 17=1
++10u 10=001
++10u 11=x
++10u 10=x
++10u 12=x
++50u 11=1
++50u 10=xxx 17=x stop
++50u 3=x
+
+! Start a clock on pin 2 to demostrate a varying amount of PWM.
++20u clock=2 period=20u pwm=0.05
++20u clock=2 pwm=0.1
++20u clock=2 pwm=0.2
++20u clock=2 pwm=0.3
++20u clock=2 pwm=0.4
++20u clock=2 pwm=0.5
++20u clock=2 pwm=0.6
++20u clock=2 pwm=0.7
++20u clock=2 pwm=0.8
++20u clock=2 pwm=0.9
++20u 2=x stop
+
+! Put the pwm at 70%, and then vary the frequency
++20u clock=3 period=20u pwm=0.2
++20u clock=3 period=25u
++25u clock=3 period=30u
++30u clock=3 period=35u
++35u clock=3 period=40u
++40u clock=3 period=45u
++45u clock=3 period=50u
++50u clock=3 period=55u
++55u clock=3 period=60u
++60u 3=x stop
+! Reset the processor and go do it all again.
++500u reset
