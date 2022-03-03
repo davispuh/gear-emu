@@ -584,6 +584,7 @@ namespace Gear.EmulationCore
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.WAITVID:
+                    InstructionWAITVID();
                     NextState = CogRunState.WAIT_VID;
                     State = CogRunState.WAIT_PREWAIT;
                     StateCount = 4;
@@ -1263,6 +1264,14 @@ namespace Gear.EmulationCore
                 PC = SourceValue & 0x1FF;
 
             return ZeroResult;
+        }
+
+        private void InstructionWAITVID()
+        {
+            ulong result = (ulong)SourceValue + (ulong)DestinationValue;
+            DataResult = (uint)result;
+            ZeroResult = DataResult == 0;
+            CarryResult = (result & 0x100000000) != 0;
         }
     }
 }
