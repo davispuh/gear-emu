@@ -44,7 +44,7 @@ namespace Gear.GUI
         /// @version v20.10.01 - Manage only one instance of AppPropertiesEditor.
         // PropertyGrid Control tutorial - https://msdn.microsoft.com/en-us/library/aa302326.aspx
         // also in https://msdn.microsoft.com/en-us/library/aa302334.aspx
-        // and http://www.codeproject.com/Articles/22717/Using-PropertyGrid
+        // and https://www.codeproject.com/Articles/22717/Using-PropertyGrid
         public AppPropertiesEditor()
         {
             if (instanceNumber > 0)

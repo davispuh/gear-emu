@@ -63,7 +63,7 @@ namespace Gear.Propeller
         /// @note PAR address is a special case, because unless Propeller Manual V1.4 
         /// specifications says it is a read-only register, there are claims that in reality it 
         /// is writable as explains 
-        /// <a href="http://forums.parallax.com/showthread.php/115909-PASM-simulator-debugger)">
+        /// <a href="https://forums.parallax.com/discussion/115909/PASM-simulator-debugger">
         /// Forum thread "PASM simulator / debugger?</a>.
         /// @par They claims that some parallax video drivers in PASM changes the PAR register, 
         /// and GEAR didn't emulate that.

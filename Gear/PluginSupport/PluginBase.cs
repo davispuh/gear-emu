@@ -34,7 +34,7 @@ namespace Gear.PluginSupport
     /// @details Define basic methods and attributes for plugins in GEAR.
     /// Almost every window on GEAR is based on it.
     /// @note See Asterisk's comments:
-    /// Source: <a href="http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment?p=636953&viewfull=1#post636953">
+    /// Source: <a href="https://forums.parallax.com/discussion/comment/636953/#Comment_636953">
     /// Original thread on GEAR with explanation of plugin class</a>
     /// @remarks To see examples of how to use it, see the directory 'plugins' included with 
     /// the source code.
@@ -70,7 +70,7 @@ namespace Gear.PluginSupport
 
         /// @brief Title of the tab window.
         /// @note Changed default name , based on a comment from Asterisk from propeller forum:
-        /// Source: <a href="http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment?p=627190&viewfull=1#post627190">
+        /// Source: <a href="https://forums.parallax.com/discussion/comment/627190/#Comment_627190">
         /// Post #32 from original GEAR post</a>. It shows that the original name of the class 
         /// was "BusModule". Changed to the new name of the class. 
         /// @version V15.03.26 - change the default name.
@@ -78,7 +78,7 @@ namespace Gear.PluginSupport
 
         // @brief Attribute to allow key press detecting on the plugin. 
         // @note Mirror's: allows hot keys to be disabled for a plugin.
-        // @note Source: <a href="http://forums.parallax.com/showthread.php/100380-More-GEAR-Improved-Emulation-of-the-Propeller">
+        // @note Source: <a href="https://forums.parallax.com/discussion/100380/more-gear-improved-emulation-of-the-propeller">
         // Mirror Post for Version V08_10_16 in propeller forums</a>
         public virtual bool AllowHotKeys { get { return true; } }
 
@@ -93,7 +93,7 @@ namespace Gear.PluginSupport
         /// @brief Points to propeller instance.
         /// @note Asterisk's: Occurs once the plugin is loaded. It gives you a reference to the 
         /// propeller chip (so you can drive the pins). 
-        /// @note Source: <a href="http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment?p=625629&viewfull=1#post625629">
+        /// @note Source: <a href="https://forums.parallax.com/discussion/comment/625629/#Comment_625629">
         /// API GEAR described on GEAR original Post</a>
         /// @version V15.03.26 - Changed to method without parameters.
         public virtual void PresentChip() { }    
@@ -120,7 +120,7 @@ namespace Gear.PluginSupport
         /// @note Asterisk's: occurs every time a pin has changed states. PinState tells you if 
         /// either the propeller or another component has set the pin Hi or Lo, or if the pin is 
         /// floating.
-        /// @note Source: <a href="http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment?p=625629&viewfull=1#post625629">
+        /// @note Source: <a href="https://forums.parallax.com/discussion/comment/625629/#Comment_625629">
         /// API GEAR described on GEAR original Post</a>
         /// @param time Time in seconds.
         /// @param pins Array of pins with the current state.
@@ -130,7 +130,7 @@ namespace Gear.PluginSupport
         /// @note Asterisk's: occurs when the GUI has finished executing a emulation 'frame' 
         /// (variable number of clocks). Force is always true (this means that the call wants to 
         /// 'force' an update, this is provided so you can pass a false for non-forced repaints).
-        /// @note Source: <a href="http://forums.parallax.com/showthread.php/91084-GEAR-Propeller-Debugging-Environment?p=625629&viewfull=1#post625629">
+        /// @note Source: <a href="https://forums.parallax.com/discussion/comment/625629/#Comment_625629">
         /// API GEAR described on GEAR original Post</a>
         /// @param force Flag to indicate the intention to force the repaint.
         public virtual void Repaint(bool force) { }

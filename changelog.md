@@ -163,7 +163,7 @@ Read more in Parallax forum threads:
     -Method PresentChip() with no param, beacuse Chip reference now is included in plugin base class definition.
     -New method OnClose() is called for every plugin before closing the emulator (to perform cleanup).
 
-* Added program settings to remember them between sessions (stored in "Gear.exe.config" file in this version): 
+* Added program settings to remember them between sessions (stored in "Gear.exe.config" file in this version):
     -TimeFrame and TickMarkGrid on logic view.
     -LastBinary & LastPlugin on Emulator, GearDesktop & PluginEditor.
     -UpdateEachSteps to enable changes on the screen refresh rate.
@@ -189,7 +189,7 @@ Read more in Parallax forum threads:
     - Logic modes (CTRMODE between %10000 and %11111) didn't work well in past versions of Gear.
 
 * Correction to enable PAR register changes.
-    - As there was some reports of prop forum users that GEAR was of not capable to change the PAR cog register (forum thread ["PASM simulator / debugger?"](http://forums.parallax.com/showthread.php/115909-PASM-simulator-debugger)) then I enabled it. They claims that some parallax video drivers in PASM changes the PAR register, and GEAR didn't emulate that. The Propeller Manual V1.2 specify that is a read-only register, but if parallax did that drivers that really run on the real one...
+    - As there was some reports of prop forum users that GEAR was of not capable to change the PAR cog register (forum thread ["PASM simulator / debugger?"](https://forums.parallax.com/discussion/115909/PASM-simulator-debugger)) then I enabled it. They claims that some parallax video drivers in PASM changes the PAR register, and GEAR didn't emulate that. The Propeller Manual V1.2 specify that is a read-only register, but if parallax did that drivers that really run on the real one...
 
 * Fixes in Logic View.
     - When you reload a binary or reset it, and you had run it before using pins, the logic view show a mix between new and old samples.
@@ -202,7 +202,7 @@ Read more in Parallax forum threads:
     - Added tooltips on hub view on pins and locks views (IN*, DIR*, Floating, Lock Free, Locks), to identify easily which pin or lock is.
 
 * Plugin editor enhancements.
-    - Experimental C# sintax highlighting of code. Now the name of the file is displayed on the title of the window. Added tooltips to be more self explaining. 
+    - Experimental C# sintax highlighting of code. Now the name of the file is displayed on the title of the window. Added tooltips to be more self explaining.
 
 
 ## Version 09.10.26 26 October 2009
@@ -349,4 +349,3 @@ stop - causes a breakpoint - click Run to go to the next stop / breakpoint
 
 * Support for Frequency Generator modes 1-3 (PLL), and VGA video generators.
 * New SPIN memory viewer, but it's incomplete
-

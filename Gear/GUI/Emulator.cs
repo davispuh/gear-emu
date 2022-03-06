@@ -746,7 +746,7 @@ namespace Gear.GUI
 }
 
 // Reference link to MSCGEN: http://www.mcternan.me.uk/mscgen/
-// Reference link to DOXYGEN commands: http://www.stack.nl/~dimitri/doxygen/manual/commands.html
+// Reference link to DOXYGEN commands: https://www.doxygen.nl/manual/commands.html
 //
 /// @defgroup PluginDetails Plugin Loading Details
 /// 
