@@ -72,6 +72,7 @@ namespace Gear.EmulationCore
         private uint PixelLoad;
         private uint ColorLoad;
         private uint ShiftOut;
+        private uint Discrete;
 
         private byte PhaseAccumulator;
         private bool VHFCarrier;
@@ -199,7 +200,7 @@ namespace Gear.EmulationCore
             }
 
             FrameClocks = Scale & 0xFFF;    // Copy our frameclocks out of the scale register
-            PixelClocks = 0;                // Always serialize out the first pixel on first clock
+            PixelClocks = PixelClockStart;                // Always serialize out the first pixel on first clock
         }
 
         private void FillComposite(uint color)
@@ -288,47 +289,11 @@ namespace Gear.EmulationCore
                 return;
             }
 
-            // Decrement clocks
-            --FrameClocks;
-            FrameClocks &= 0xFFF;
-            --PixelClocks;
-            PixelClocks &= 0xFF;
-
-            // Check to see if we are at the end of our frame clocks
-            if (FrameClocks <= 0)
-            {
-                cog.GetVideoData(out uint colours, out uint pixels);
-                Feed(colours, pixels);
-                ++frameCount;
-            }
-
-            // Clock up to our pixel accumulator (wait for pixel)
-            if (PixelClocks <= 0)
-            {
-                // Find the pixel color we need to shift out
-                switch (ColorMode)
-                {
-                    // Four color video
-                    case CMode.FOUR_COLOR:
-                        ShiftOut = (ColorLoad >> (int)((PixelLoad & 3) << 3)) & 0xFF;
-                        PixelLoad = (PixelLoad & 0xC0000000) | (PixelLoad >> 2);
-                        break;
-                    // Two color mode
-                    default:
-                        ShiftOut = (ColorLoad >> (int)((PixelLoad & 1) << 3)) & 0xFF;
-                        PixelLoad = (PixelLoad & 0x80000000) | (PixelLoad >> 1);
-                        break;
-                }
-
-                // Fill our pixel clock countdown using the scale register
-                PixelClocks = PixelClockStart;
-            }
-
             // Output the load to the pins
             switch (VideoMode)
             {
                 case VMode.VGA_MODE:
-                    OutputLoad = ShiftOut << VGroup;
+                    OutputLoad = Discrete << VGroup;
                     break;
                 case VMode.COMPOSITE_1: // 0..3 Baseband 4..7 Broadcast
                     FillComposite(ShiftOut);
@@ -349,6 +314,54 @@ namespace Gear.EmulationCore
                     break;
             }
 
+            ShiftOut = Discrete;
+
+            // Find the pixel color we need to shift out
+            switch (ColorMode)
+            {
+                // Four color video
+                case CMode.FOUR_COLOR:
+                    Discrete = (ColorLoad >> (int)((PixelLoad & 3) << 3)) & 0xFF;
+                    break;
+                // Two color mode
+                default:
+                    Discrete = (ColorLoad >> (int)((PixelLoad & 1) << 3)) & 0xFF;
+                    break;
+            }
+
+            // Decrement clocks
+            --FrameClocks;
+            FrameClocks &= 0xFFF;
+            --PixelClocks;
+            PixelClocks &= 0xFF;
+
+            // Check to see if we are at the end of our frame clocks
+            if (FrameClocks == 0)
+            {
+                cog.GetVideoData(out uint colours, out uint pixels);
+                Feed(colours, pixels);
+                ++frameCount;
+
+            }
+            // Clock up to our pixel accumulator (wait for pixel)
+            else if (PixelClocks == 0)
+            {
+                // Find the pixel color we need to shift out
+                switch (ColorMode)
+                {
+                    // Four color video
+                    case CMode.FOUR_COLOR:
+                        PixelLoad = (PixelLoad & 0xC0000000) | (PixelLoad >> 2);
+                        break;
+                    // Two color mode
+                    default:
+                        PixelLoad = (PixelLoad & 0x80000000) | (PixelLoad >> 1);
+                        break;
+                }
+
+                // Fill our pixel clock countdown using the scale register
+                PixelClocks = PixelClockStart;
+            }
             // Accumulate phase (/16 divider)
             PhaseAccumulator += 0x10;
         }
