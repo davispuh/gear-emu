@@ -602,7 +602,7 @@ namespace Gear.EmulationCore
             colours = DestinationValue;
             pixels = SourceValue;
             if (State == CogRunState.WAIT_VID)
-            { 
+            {
                 State = CogRunState.WAIT_CYCLES;
                 StateCount = 3; // Minimum of 7 clocks in total
                 frameFlag = FrameState.frameHit;
