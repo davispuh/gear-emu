@@ -200,7 +200,7 @@ namespace Gear.EmulationCore
             }
 
             FrameClocks = Scale & 0xFFF;    // Copy our frameclocks out of the scale register
-            PixelClocks = PixelClockStart;                // Always serialize out the first pixel on first clock
+            PixelClocks = PixelClockStart;  // update PixelClock, similar to verilog
         }
 
         private void FillComposite(uint color)
@@ -314,9 +314,10 @@ namespace Gear.EmulationCore
                     break;
             }
 
+            // Composite Processes gets updated one tick later than VGA
             ShiftOut = Discrete;
 
-            // Find the pixel color we need to shift out
+            // Find the pixel color which will be processed by VGA Directly
             switch (ColorMode)
             {
                 // Four color video
