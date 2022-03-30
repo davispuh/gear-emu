@@ -31,7 +31,7 @@ namespace Gear.GUI.LogicProbe
         public abstract string Name { get; }
         public abstract double MinTime { get; }
         public abstract int Height { get; }
-        public abstract int Draw(Graphics g, int top, float left, float width, double minTime, double scale);
+        public abstract int Draw(Graphics graph, int top, float left, float width, double minTime, double scale);
         public abstract void Click();
         public abstract void Reset();   //!< @brief Clear previous samples
     }

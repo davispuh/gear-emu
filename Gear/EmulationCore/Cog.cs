@@ -179,14 +179,17 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Property to return complete OUT pins (P0..P63)
-        /// Analyze all sources of pin changes in the cog: OUTA, OUTB, the two counters 
-        /// and the video generator.
+        /// @details Analyze all sources of pin changes in the cog: <c>OUTA</c>,
+        /// <c>OUTB</c>, the two counters and the video generator.
+        /// @version v22.03.02 - Bugfix corrected LONG registers not assigned
+        /// correctly in %Cog - <c>DIR</c>, <c>OUT</c>.
         public ulong OUT
         {
             get
             {
                 return Memory[(int)Assembly.RegisterAddress.OUTA] |
-                    (Memory[(int)Assembly.RegisterAddress.OUTB] << 32) |
+                    //Bugfix OUTB must be shifted on 64 bits long
+                    ((ulong)Memory[(int)Assembly.RegisterAddress.OUTB] << 32) |
                     FreqA.Output |
                     FreqB.Output |
                     Video.Output;
@@ -247,13 +250,16 @@ namespace Gear.EmulationCore
             }
         }
 
-        /// @brief Property to return complete DIR pins.
+        /// @brief Property to return complete register of <c>DIR</c> pins
+        /// @version v22.03.02 - Bugfix corrected LONG registers not assigned
+        /// correctly in %Cog - <c>DIR</c>, <c>OUT</c>.
         public ulong DIR
         {
             get
             {
-                return (Memory[(int)Assembly.RegisterAddress.DIRB] << 32) |
-                    Memory[(int)Assembly.RegisterAddress.DIRA];
+                //Bugfix DIRB must be shifted on 64 bits long
+                return ((ulong)Memory[(int)Assembly.RegisterAddress.DIRB] << 32) |
+                       Memory[(int)Assembly.RegisterAddress.DIRA];
             }
         }
 

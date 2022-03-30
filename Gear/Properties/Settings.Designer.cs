@@ -91,7 +91,7 @@ namespace Gear.Properties {
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         [CategoryAttribute("Plugin Editor")]
         [DescriptionAttribute("Last plugin loaded or edited (with full path).")]
-        [DisplayNameAttribute("last Plugin loaded")]
+        [DisplayNameAttribute("Last Plugin loaded")]
         public string LastPlugin {
             get {
                 return ((string)(this["LastPlugin"]));

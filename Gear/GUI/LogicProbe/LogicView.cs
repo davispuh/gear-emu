@@ -166,11 +166,14 @@ namespace Gear.GUI.LogicProbe
         }
 
         /// @brief Save the last used settings of the grid view before close.
-        /// @version v20.09.01 - Modified to remember the internal value.
+        /// @version v22.03.02 - Bugfix to save TimeUnitSelected with the other
+        /// properties in logic view.
         public override void OnClose()
         {
             Properties.Settings.Default.LastTimeFrame = TimeScale;
             Properties.Settings.Default.LastTickMarkGrid = Marker;
+            Properties.Settings.Default.LogicViewTimeUnit =
+                toolStripComboBox1.TimeUnitSelected;
             Properties.Settings.Default.Save();
         }
 
@@ -291,7 +294,11 @@ namespace Gear.GUI.LogicProbe
             e.Graphics.DrawImageUnscaled(BackBuffer, 0, 0);
         }
 
-        /// @brief Update the grid view with the new settings of scale and markers.
+        /// <summary>
+        /// Update the grid view with the new settings of scale and markers.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         /// @version v20.09.01 - Modified to manage time units.
         private void UpdateGridButton_Click(object sender, EventArgs e)
         {
@@ -511,17 +518,12 @@ namespace Gear.GUI.LogicProbe
         /// @brief Change the time unit, remembering the user setting.
         /// @param sender
         /// @param e
-        /// @since v20.09.01 - Added.
+        /// @version v22.03.02 - Bugfix to save TimeUnitSelected with the other
+        /// properties in logic view.
         private void ToolStripComboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (!this.DesignMode)
-            {
                 UpdateFrameAndTickText();
-                //remember the setting
-                Properties.Settings.Default.LogicViewTimeUnit =
-                    toolStripComboBox1.TimeUnitSelected;
-                Properties.Settings.Default.Save();
-            }
         }
 
         /// @brief When the value is changed, enable Update button.

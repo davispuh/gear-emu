@@ -118,7 +118,7 @@ namespace Gear.GUI.LogicProbe
             return false;
         }
 
-        public override int Draw(Graphics g, int top, float left, float width, double minTime, double scale)
+        public override int Draw(Graphics graph, int top, float left, float width, double minTime, double scale)
         {
             float height = Height * 2 / 6;
             float center = top + Height / 2;
@@ -162,8 +162,8 @@ namespace Gear.GUI.LogicProbe
                 if (nextX < left)
                     nextX = left;
 
-                g.DrawLine(color, previousX, nextY, nextX, nextY);
-                g.DrawLine(color, previousX, previousY, previousX, nextY);
+                graph.DrawLine(color, previousX, nextY, nextX, nextY);
+                graph.DrawLine(color, previousX, previousY, previousX, nextY);
 
                 previousX = nextX;
                 previousY = nextY;

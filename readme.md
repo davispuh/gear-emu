@@ -37,16 +37,16 @@ Currently it has:
 See [Plugins notes](plug-ins/Plugins_notes.md) for brief explanation of each one.
 
 ---
-## Copyright 2022 - Gear Developers
+## Copyright 2007-2022 - Gear Developers
 
 ### Released under the Lesser GNU Public Licence (LGPL).
 *See [Licence.txt](Licence.txt) for details.*
 
 ### Current Developers:
-* @github/davispuh
 * @github/gatuno1 - Antonio Sanhueza
 
 ### Past Developers:
+* @github/davispuh
 * mirror (parallax forums)
 * benjie (parallax forums) - Ben Levitt
 * Robert Vandiver (parallax forums)

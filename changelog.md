@@ -9,6 +9,19 @@
 
 # Change Log
 
+## Release Version 22.03.02 - Various bugfixes.
+* Fixed bug in `AssemblyInfo.cs`: missing +.
+* Fixed bug corrected `LONG` registers not assigned correctly in Cog - `DIR`, `OUT` on [`Cog.cs`](Gear/EmulationCore/Cog.cs).
+* Fixed bug on `[LogicAnalog](Gear/GUI/LogicProbe/LogicAnalog.cs).Draw()`: was comparing wrong time to activate.
+* Fixed bug in maximum frequency of Cog Counters, to 128Mhz instead of wrong limit of 120Mhz, on [`PLL.cs`](gear/EmulationCore/PLL.cs).
+* Fixed bug on [`LogicView.cs`](Gear/GUI/LogicProbe/LogicView.cs): save TimeUnitSelected with the other properties in logic view.
+* Fixed bug of Form name not updated when open another binary file in [`Emulator.cs`](Gear/GUI/Emulator.cs).
+* Fixed hidden vertical scroll bar on Logic View: [`LogicView.Designer.cs`](Gear/GUI/LogicProbe/LogicView.Designer.cs).
+* Fixed bug of not remembering last binary open from Settings in [`Emulator.cs`](Gear/GUI/Emulator.cs) and [`GearDesktop`](Gear/GUI/GearDesktop.cs).
+* Method [`PluginEditor`](Gear/GUI/PluginEditor.cs).OpenButton_Click(.) refactored on using Open File Dialog.
+* Updated GEAR Developers.
+
+
 ## Release Version 22.03.01 - Improved accuracy of Video generator and improvements in code.
 * Updated version to 22.03.01, and files header copyright updated to 2007-2022.
 * Updated [readme.md](readme.md) with description section, link to new Plugin notes.
@@ -17,8 +30,8 @@
 * Separated big file `NativeCog.cs` in two files: [`NativeCog.cs`](Gear/EmulationCore/NativeCog.cs) with the main definitions, and [`NativeCogInstructions.cs`](Gear/EmulationCore/NativeCogInstructions.cs) with the Instructions methods, for clarity and better mantainability.
 * Created [`BinarySizeException.cs`](Gear/Utils/BinarySizeException.cs) file to contains the class `BinarySizeException`, extracted from `PropellerCPU.cs`.
 * Created [`SingleInstanceException.cs`](Gear/Utils/SingleInstanceException.cs) file to contains the class `SingleInstanceException`, extracted from `GearDesktop.cs`.
-* Changed VisualStudio analizer: from legacy FxCops to NETAnalyzers in Project file (Articles ["Migrate from FxCop analyzers to .NET analyzers"](https://docs.microsoft.com/en-us/visualstudio/code-quality/migrate-from-fxcop-analyzers-to-net-analyzers?view=vs-2019) and ["Install .NET analyzers" ](https://docs.microsoft.com/en-us/visualstudio/code-quality/install-net-analyzers?view=vs-2019)
-* Deleted obsolete file: `Gear\EmulationCore\DisassemblerStrings.cs`
+* Changed VisualStudio analizer: from legacy FxCops to NETAnalyzers in Project file (Articles ["Migrate from FxCop analyzers to .NET analyzers"](https://docs.microsoft.com/en-us/visualstudio/code-quality/migrate-from-fxcop-analyzers-to-net-analyzers?view=vs-2019) and ["Install .NET analyzers" ](https://docs.microsoft.com/en-us/visualstudio/code-quality/install-net-analyzers?view=vs-2019).
+* Deleted obsolete file: `Gear\EmulationCore\DisassemblerStrings.cs`.
 
 
 ## [Merge pull request #[29](https://github.com/davispuh/gear-emu/pull/29) from Sh1nyAnd3o3/vidgen_ordering[1c94a33](https://github.com/davispuh/gear-emu/commit/1c94a337881efa4fadef7cdc8cf2aeec30b0632d), and Commits [cfcccf4c](https://github.com/davispuh/gear-emu/commit/cfcccf4c70799645f47531117cdefc7a17ba8707), [9a386ad](https://github.com/davispuh/gear-emu/commit/9a386ad1aec027fde76de157e1d86f20b0a5481c) and [e0073bf](https://github.com/davispuh/gear-emu/commit/e0073bff348594a73951e542dc8dcce1760970d7).

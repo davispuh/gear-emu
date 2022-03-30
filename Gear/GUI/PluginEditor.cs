@@ -490,36 +490,33 @@ namespace Gear.GUI
         }
 
         /// @brief Show a dialog to load a file with plugin information.
-        /// @details This method checks if the previous plugin data was modified and not saved.
+        /// @details This method checks if the previous plugin data was
+        /// modified and not saved.
         /// @param sender Object who called this on event.
         /// @param e `EventArgs` class with a list of argument to the event call.
+        /// @version v22.03.02 - Refactoring method on using OpenFileDialog.
         private void OpenButton_Click(object sender, EventArgs e)
         {
-            bool continueAnyway = true;
-            if (CodeChanged)
-                continueAnyway = CloseAnyway(PluginFileName); //ask the user to not lost changes
-            if (continueAnyway)
+            //ask the user to not lost changes
+            if (CodeChanged & !CloseAnyway(PluginFileName))
+                return;
+            using (OpenFileDialog dialog = new OpenFileDialog
+                   {
+                       Filter = "Gear plug-in component (*.xml)|*.xml|All Files (*.*)|*.*",
+                       Title = "Open Gear Plug-in..."
+                   })
             {
-                OpenFileDialog dialog = new OpenFileDialog
-                {
-                    Filter = "Gear plug-in component (*.xml)|*.xml|All Files (*.*)|*.*",
-                    Title = "Open Gear Plug-in..."
-                };
-                if (!String.IsNullOrEmpty(LastPlugin))
-                    //retrieve from last plugin edited
+                //retrieve from last plugin edited
+                if (!string.IsNullOrEmpty(LastPlugin))
                     dialog.InitialDirectory = Path.GetDirectoryName(LastPlugin);
-                else
-                    if (!String.IsNullOrEmpty(Properties.Settings.Default.LastPlugin))
-                    //retrieve from global last plugin
+                //retrieve from global last plugin
+                else if (!string.IsNullOrEmpty(Properties.Settings.Default.LastPlugin))
                     dialog.InitialDirectory =
                         Path.GetDirectoryName(Properties.Settings.Default.LastPlugin);
-
-                if (dialog.ShowDialog(this) == DialogResult.OK)
-                {
-                    //try to open the file and load to screen
-                    if (OpenFile(dialog.FileName, false))
-                        UpdateDefaultLastPluginOpened();
-                }
+                //invoke Dialog and open plugin file
+                if (dialog.ShowDialog(this) == DialogResult.OK &
+                        OpenFile(dialog.FileName, false))
+                    UpdateDefaultLastPluginOpened();
             }
         }
 

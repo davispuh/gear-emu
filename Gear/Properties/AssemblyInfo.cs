@@ -31,28 +31,28 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Gear")]
 [assembly: AssemblyDescription(
     "Current Developers:\r\n" +
-    "   @davispuh (github)\r\n" +
-    "   @gatuno1 (github) - Antonio Sanhueza\r\n" +
+    "   @github/gatuno1 - Antonio Sanhueza\r\n" +
     "\r\n" +
     "Past Developers:\r\n" +
+    "   @github/davispuh\r\n" +
     "   mirror (parallax forums)\r\n" +
     "   benjie - Ben Levitt (parallax forums)\r\n" +
     "   Robert Vandiver (parallax forums)\r\n" +
     "\r\n" +
     "Contributors:\r\n" +
-    "   @github/Sh1nyAnd3o3\r\n"
-    "   @mbaeten (github)\r\n" +
-    "   @Memotech-Bill (github)\r\n" +
-    "   @jlunder (github)\r\n" +
+    "   @github/Sh1nyAnd3o3\r\n" +
+    "   @github/mbaeten\r\n" +
+    "   @github/Memotech-Bill\r\n" +
+    "   @github/jlunder\r\n" +
     "   Bob Anderson(parallax forums)\r\n" +
     "   Marc Gebauer(parallax forums)\r\n" +
     "\r\n" +
     "Third Party Components: \r\n" +
     "Windows Forms Collapsible Splitter Control for .Net\r\n" +
-    "(c)Copyright 2003 NJF (furty74@yahoo.com). Licensed under The Microsoft Public License (Ms-PL)." +
+    "  (c)Copyright 2003 NJF (furty74@yahoo.com). Licensed under The Microsoft Public License (Ms-PL)." +
     "\r\n" +
     "Icons from and derived of Visual Studio 2019 Image Library.\r\n" +
-    "(c)Copyright 2019 Microsoft Corporation. See Visual Studio 2019 Image Library EULA.rtf for licence details."
+    "  (c)Copyright 2019 Microsoft Corporation. See Visual Studio 2019 Image Library EULA.rtf for licence details."
     )]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Gear-emu")]
@@ -76,5 +76,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("22.03.01.0")]
-[assembly: AssemblyFileVersion("22.03.01.0")]
+[assembly: AssemblyVersion("22.03.02.0")]
+[assembly: AssemblyFileVersion("22.03.02.0")]

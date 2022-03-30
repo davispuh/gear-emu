@@ -193,10 +193,10 @@ namespace Gear.GUI.LogicProbe
             // 
             this.viewOffset.Dock = System.Windows.Forms.DockStyle.Right;
             this.viewOffset.LargeChange = 1;
-            this.viewOffset.Location = new System.Drawing.Point(696, 25);
+            this.viewOffset.Location = new System.Drawing.Point(680, 25);
             this.viewOffset.Name = "viewOffset";
-            this.viewOffset.Size = new System.Drawing.Size(1, 411);
-            this.viewOffset.TabIndex = 1;
+            this.viewOffset.Size = new System.Drawing.Size(17, 411);
+            this.viewOffset.TabIndex = 2;
             this.viewOffset.Scroll += new System.Windows.Forms.ScrollEventHandler(this.ScrollChanged);
             // 
             // waveView
@@ -204,8 +204,8 @@ namespace Gear.GUI.LogicProbe
             this.waveView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.waveView.Location = new System.Drawing.Point(0, 25);
             this.waveView.Name = "waveView";
-            this.waveView.Size = new System.Drawing.Size(696, 411);
-            this.waveView.TabIndex = 2;
+            this.waveView.Size = new System.Drawing.Size(680, 411);
+            this.waveView.TabIndex = 1;
             this.waveView.SizeChanged += new System.EventHandler(this.OnSized);
             this.waveView.Click += new System.EventHandler(this.OnClick);
             this.waveView.Paint += new System.Windows.Forms.PaintEventHandler(this.WaveView_Paint);
@@ -218,7 +218,7 @@ namespace Gear.GUI.LogicProbe
             this.timeAdjustBar.Maximum = 1000;
             this.timeAdjustBar.Name = "timeAdjustBar";
             this.timeAdjustBar.Size = new System.Drawing.Size(697, 17);
-            this.timeAdjustBar.TabIndex = 0;
+            this.timeAdjustBar.TabIndex = 3;
             this.timeAdjustBar.Value = 1000;
             this.timeAdjustBar.Scroll += new System.Windows.Forms.ScrollEventHandler(this.TimeChanged);
             // 

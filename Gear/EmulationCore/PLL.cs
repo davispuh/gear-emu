@@ -74,6 +74,12 @@ namespace Gear.EmulationCore
             Feed(FixedMultiplier);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="multiplier"></param>
+        /// @version v22.03.02 - Bugfix the max frequency to 128Mhz according to
+        /// <c>%Propeller Datasheet v1.4</c>, section "4.9. Cog Counters".
         public void Feed(double multiplier)
         {
             FixedMultiplier = multiplier;
@@ -81,7 +87,7 @@ namespace Gear.EmulationCore
             double targetFrequency = (double)CyclesPerSecond * multiplier;
 
             // The target frequency must fall between 500KHz and 120MHz
-            if (targetFrequency > 120000000 || targetFrequency < 500000)
+            if (targetFrequency > 128000000 || targetFrequency < 500000)
                 Disable();
             else
                 SetFrequency(targetFrequency * 2);

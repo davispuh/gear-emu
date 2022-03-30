@@ -256,16 +256,19 @@ namespace Gear.GUI
         }
 
         /// @brief Load a binary image from file.
-        /// @details Generate a new instance of a `PropellerCPU` and load the program from 
-        /// the binary.
-        /// @version v20.10.01 - UpdateRunningButtons.
+        /// @details Generate a new instance of a `PropellerCPU` and load
+        /// the program from the binary.
+        /// @version v22.03.02 - Bugfix of Form name not updated when open
+        /// another binary file.
         public bool OpenFile(string FileName)
         {
             try
             {
                 Chip.Initialize(File.ReadAllBytes(FileName));
                 source = FileName;
+                Text = FileName;
                 Properties.Settings.Default.LastBinary = source;
+                Properties.Settings.Default.Save();
                 UpdateRunningButtons();
                 RepaintViews();
                 return true;
@@ -416,18 +419,25 @@ namespace Gear.GUI
         /// @brief Select binary propeller image to load.
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
+        /// @version v22.03.02 - Remember last binary open from Settings.
         private void OpenBinary_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog
+            using (OpenFileDialog openFileDialog = new OpenFileDialog
+                   {
+                       Filter = "Propeller Runtime Image (*.binary;*.eeprom)|*.binary;" +
+                                "*.eeprom|All Files (*.*)|*.*",
+                       Title = "Open Propeller Binary...",
+                       FileName = source
+                   })
             {
-                Filter = "Propeller Runtime Image (*.binary;*.eeprom)|*.binary;" +
-                "*.eeprom|All Files (*.*)|*.*",
-                Title = "Open Propeller Binary...",
-                FileName = source
-            };
-
-            if (openFileDialog.ShowDialog(this) == DialogResult.OK)
-                OpenFile(openFileDialog.FileName);
+                //retrieve last binary location
+                if (!string.IsNullOrEmpty(Properties.Settings.Default.LastBinary))
+                    openFileDialog.InitialDirectory =
+                        Path.GetDirectoryName(Properties.Settings.Default.LastBinary);
+                //invoke Dialog
+                if (openFileDialog.ShowDialog(this) == DialogResult.OK)
+                    OpenFile(openFileDialog.FileName);
+            }
         }
 
         /// @brief Event to reload the whole %Propeller program from binary file.

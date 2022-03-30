@@ -40,33 +40,36 @@ namespace Gear.GUI
         }
 
         /// @brief Load a new emulator from file.
-        /// Load an binary image into a new emulator, from user selected file, remembering last
-        /// binary directory, independently from last plugin directory.
+        /// @details Load an binary image into a new emulator, from user
+        /// selected file, remembering last binary directory, independently
+        /// from last plugin directory.
+        /// @version v22.03.02 - Refactoring using OpenFileDialog.
         private void OpenBinaryButton_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog
+            using (OpenFileDialog openFileDialog = new OpenFileDialog
+                   {
+                       Filter = "Propeller Runtime Image (*.binary;*.eeprom)|*.binary;" +
+                                "*.eeprom|All Files (*.*)|*.*",
+                       Title = "Open Propeller Binary..."
+                   })
             {
-                Filter = "Propeller Runtime Image (*.binary;*.eeprom)|*.binary;" +
-                "*.eeprom|All Files (*.*)|*.*",
-                Title = "Open Propeller Binary..."
-            };
-            if (!String.IsNullOrEmpty(Properties.Settings.Default.LastBinary))
                 //retrieve last binary location
-                openFileDialog.InitialDirectory = 
-                    Path.GetDirectoryName(Properties.Settings.Default.LastBinary);   
-
-            if (openFileDialog.ShowDialog(this) == DialogResult.OK)
-            {
-                Emulator emul = new Emulator(Path.GetFileName(openFileDialog.FileName));
+                if (!string.IsNullOrEmpty(Properties.Settings.Default.LastBinary))
+                    openFileDialog.InitialDirectory =
+                        Path.GetDirectoryName(Properties.Settings.Default.LastBinary);
+                //invoke Dialog
+                if (openFileDialog.ShowDialog(this) != DialogResult.OK)
+                    return;
+                Emulator emulator = new Emulator(Path.GetFileName(openFileDialog.FileName));
                 //if successfully load binary in emulator
-                if (emul.OpenFile(openFileDialog.FileName))
+                if (emulator.OpenFile(openFileDialog.FileName))
                 {
                     //show emulator window
-                    emul.MdiParent = this;
-                    emul.WindowState = FormWindowState.Maximized;
-                    emul.Show();
+                    emulator.MdiParent = this;
+                    emulator.WindowState = FormWindowState.Maximized;
+                    emulator.Show();
                     //remember last binary successfully opened
-                    Properties.Settings.Default.LastBinary = emul.LastBinary;
+                    Properties.Settings.Default.LastBinary = emulator.LastBinary;
                     Properties.Settings.Default.Save();
                 }
             }
