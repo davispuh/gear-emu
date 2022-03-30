@@ -1,6 +1,6 @@
 /* --------------------------------------------------------------------------------
  * Gear: Parallax Inc. Propeller P1 Emulator
- * Copyright 2020 - Gear Developers
+ * Copyright 2007-2022 - Gear Developers
  * --------------------------------------------------------------------------------
  * Cog.CS
  * Base class for a cog processor.  Abstract and must be extended.

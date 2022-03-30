@@ -1,6 +1,6 @@
 /* --------------------------------------------------------------------------------
  * Gear: Parallax Inc. Propeller P1 Emulator
- * Copyright 2020 - Gear Developers
+ * Copyright 2007-2022 - Gear Developers
  * --------------------------------------------------------------------------------
  * PLL.cs
  * Object class providing the logic to drive a PLL clock signal

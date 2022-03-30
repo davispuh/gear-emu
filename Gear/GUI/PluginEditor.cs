@@ -1,6 +1,6 @@
 /* --------------------------------------------------------------------------------
  * Gear: Parallax Inc. Propeller P1 Emulator
- * Copyright 2020 - Gear Developers
+ * Copyright 2007-2022 - Gear Developers
  * --------------------------------------------------------------------------------
  * PluginEditor.cs
  * Editor window for plugins class

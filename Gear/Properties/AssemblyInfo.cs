@@ -40,6 +40,7 @@ using System.Runtime.InteropServices;
     "   Robert Vandiver (parallax forums)\r\n" +
     "\r\n" +
     "Contributors:\r\n" +
+    "   @github/Sh1nyAnd3o3\r\n"
     "   @mbaeten (github)\r\n" +
     "   @Memotech-Bill (github)\r\n" +
     "   @jlunder (github)\r\n" +
@@ -56,7 +57,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Gear-emu")]
 [assembly: AssemblyProduct("Gear: Parallax Propeller P1 Emulator")]
-[assembly: AssemblyCopyright("Copyright 2021 - Gear Developers")]
+[assembly: AssemblyCopyright("Copyright 2007-2022 - Gear Developers")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -75,5 +76,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("21.06.01.0")]
-[assembly: AssemblyFileVersion("21.06.01.0")]
+[assembly: AssemblyVersion("22.03.01.0")]
+[assembly: AssemblyFileVersion("22.03.01.0")]

@@ -1,11 +1,10 @@
-/* --------------------------------------------------------------------------------
+﻿/* --------------------------------------------------------------------------------
  * Gear: Parallax Inc. Propeller P1 Emulator
  * Copyright 2007-2022 - Gear Developers
  * --------------------------------------------------------------------------------
- * ClockSource.CS
- * Abstract base class for a clock signal provider
+ * BinarySizeException.cs
+ * Binary size helper exception class.
  * --------------------------------------------------------------------------------
- *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
@@ -22,21 +21,42 @@
  * --------------------------------------------------------------------------------
  */
 
-namespace Gear.EmulationCore
+using System;
+
+namespace Gear.Utils
 {
-    /// <summary>
-    /// Abstract base class for a clock signal provider.
-    /// </summary>
-    abstract public class ClockSource
+    /// @brief Binary size helper exception class.
+    /// @version 20.09.02 - Added exception class to fix Issue #20.
+    /// @version 22.03.01 - Moved to its own file.
+    [Serializable]
+    public class BinarySizeException : Exception
     {
         /// <summary>
         /// 
         /// </summary>
-        public abstract double TimeUntilClock { get; }
+        public BinarySizeException() :
+            base()
+        { }
+
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="time"></param>
-        public abstract void AdvanceClock(double time);
+        /// <param name="message"></param>
+        public BinarySizeException(string message) :
+            base(message)
+        { }
+
+        public BinarySizeException(string message, Exception innerException) :
+            base(message, innerException)
+        { }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="serializationInfo"></param>
+        /// <param name="streamingContext"></param>
+        protected BinarySizeException(System.Runtime.Serialization.SerializationInfo serializationInfo, System.Runtime.Serialization.StreamingContext streamingContext) :
+            base(serializationInfo, streamingContext)
+        { }
     }
 }

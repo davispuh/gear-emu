@@ -1,6 +1,6 @@
 /* --------------------------------------------------------------------------------
  * Gear: Parallax Inc. Propeller P1 Emulator
- * Copyright 2020 - Gear Developers
+ * Copyright 2007-2022 - Gear Developers
  * --------------------------------------------------------------------------------
  * PropellerCPU.cs
  * Provides the body object of a propeller emulator
@@ -23,7 +23,7 @@
 
 using Gear.GUI;
 using Gear.PluginSupport;
-using System;
+using Gear.Utils;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
@@ -992,23 +992,4 @@ namespace Gear.EmulationCore
         }
 
     }
-
-    /// @brief Binary size helper exception class.
-    /// @version 20.09.02 - Added exception class to fix Issue #20.
-    [Serializable]
-    public class BinarySizeException : Exception
-    {
-        public BinarySizeException() :
-            base() { }
-
-        public BinarySizeException(string message) :
-            base(message) { }
-
-        public BinarySizeException(string message, Exception innerException) :
-            base(message, innerException) { }
-
-        protected BinarySizeException(System.Runtime.Serialization.SerializationInfo serializationInfo, System.Runtime.Serialization.StreamingContext streamingContext) :
-            base(serializationInfo, streamingContext) { }
-    }
-
 }

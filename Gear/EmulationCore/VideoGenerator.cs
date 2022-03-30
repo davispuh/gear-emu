@@ -1,6 +1,6 @@
 /* --------------------------------------------------------------------------------
  * Gear: Parallax Inc. Propeller P1 Emulator
- * Copyright 2020 - Gear Developers
+ * Copyright 2007-2022 - Gear Developers
  * --------------------------------------------------------------------------------
  * VideoGenerator.CS
  * Video Generator Circuit Base
@@ -72,6 +72,8 @@ namespace Gear.EmulationCore
         private uint PixelLoad;
         private uint ColorLoad;
         private uint ShiftOut;
+        /// <summary></summary>
+        /// @version v22.03.01 - Added.
         private uint Discrete;
 
         private byte PhaseAccumulator;
@@ -244,8 +246,6 @@ namespace Gear.EmulationCore
                     else
                         broadcast = (broadcast - 1) & 0x7;
                 }
-
-                //output |= AuralOutput ? (ulong)8 : (ulong)0;
             }
 
             BasebandOut = baseband << VGroup;
@@ -275,7 +275,11 @@ namespace Gear.EmulationCore
             VHFCarrier = level;
             UpdateCompositeOut();
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="level"></param>
+        /// @version v22.03.01 - Improved accuracy of Video generator (pull request #29 from github/Sh1nyAnd3o3).
         public void ColorTick(bool level)
         {
             // Only tick color on rising edge
@@ -325,6 +329,7 @@ namespace Gear.EmulationCore
                     Discrete = (ColorLoad >> (int)((PixelLoad & 3) << 3)) & 0xFF;
                     break;
                 // Two color mode
+                case CMode.TWO_COLOR:
                 default:
                     Discrete = (ColorLoad >> (int)((PixelLoad & 1) << 3)) & 0xFF;
                     break;
@@ -355,6 +360,7 @@ namespace Gear.EmulationCore
                         PixelLoad = (PixelLoad & 0xC0000000) | (PixelLoad >> 2);
                         break;
                     // Two color mode
+                    case CMode.TWO_COLOR:
                     default:
                         PixelLoad = (PixelLoad & 0x80000000) | (PixelLoad >> 1);
                         break;

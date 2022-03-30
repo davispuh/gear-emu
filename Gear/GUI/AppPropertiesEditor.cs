@@ -1,6 +1,6 @@
 ﻿/* --------------------------------------------------------------------------------
  * Gear: Parallax Inc. Propeller P1 Emulator
- * Copyright 2020 - Gear Developers
+ * Copyright 2007-2022 - Gear Developers
  * --------------------------------------------------------------------------------
  * AppPropertiesEditor.cs
  * Form to edit program properties.
@@ -22,6 +22,7 @@
  */
 
 using Gear.Properties;
+using Gear.Utils;
 using System;
 using System.ComponentModel;
 using System.Configuration;

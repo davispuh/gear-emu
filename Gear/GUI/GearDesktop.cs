@@ -1,6 +1,6 @@
 /* --------------------------------------------------------------------------------
  * Gear: Parallax Inc. Propeller P1 Emulator
- * Copyright 2020 - Gear Developers
+ * Copyright 2007-2022 - Gear Developers
  * --------------------------------------------------------------------------------
  * GearDesktop.cs
  * Main window class for gear
@@ -21,8 +21,8 @@
  * --------------------------------------------------------------------------------
  */
 
+using Gear.Utils;
 using System;
-using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
@@ -219,29 +219,6 @@ namespace Gear.GUI
         {
             OptionsButton_Click(sender, e);
         }
-    }
-
-    /// @brief Single instance helper exception class.
-    /// @version 20.10.01 - Added exception class to control a single 
-    /// instance form.
-    [Serializable]
-    public class SingleInstanceException : Exception
-    {
-        public SingleInstanceException() :
-            base()
-        { }
-
-        public SingleInstanceException(string message) :
-            base(message)
-        { }
-
-        public SingleInstanceException(string message, Exception innerException) :
-            base(message, innerException)
-        { }
-
-        protected SingleInstanceException(System.Runtime.Serialization.SerializationInfo serializationInfo, System.Runtime.Serialization.StreamingContext streamingContext) :
-            base(serializationInfo, streamingContext)
-        { }
     }
 
 }

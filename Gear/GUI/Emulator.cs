@@ -1,6 +1,6 @@
 /* --------------------------------------------------------------------------------
  * Gear: Parallax Inc. Propeller P1 Emulator
- * Copyright 2020 - Gear Developers
+ * Copyright 2007-2022 - Gear Developers
  * --------------------------------------------------------------------------------
  * Emulator.cs
  * View class for PropellerCPU emulator instance
@@ -23,6 +23,7 @@
 
 using Gear.EmulationCore;
 using Gear.PluginSupport;
+using Gear.Utils;
 using System;
 using System.Collections.Generic;
 using System.Drawing;

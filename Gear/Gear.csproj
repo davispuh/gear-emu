@@ -42,9 +42,10 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisIgnoreGeneratedCode>false</CodeAnalysisIgnoreGeneratedCode>
     <Prefer32Bit>false</Prefer32Bit>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -55,6 +56,11 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisIgnoreGeneratedCode>false</CodeAnalysisIgnoreGeneratedCode>
+  </PropertyGroup>
+  <PropertyGroup>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>Gear.GearProgram</StartupObject>
@@ -90,25 +96,16 @@
     <Compile Include="PluginSupport\PluginBase.Designer.cs">
       <DependentUpon>PluginBase.cs</DependentUpon>
     </Compile>
+    <Compile Include="Utils\BinarySizeException.cs" />
+    <Compile Include="Utils\SingleInstanceException.cs" />
     <Compile Include="Utils\RememberRTBoxPosition.cs" />
     <Compile Include="Utils\TimeUnitCollection.cs" />
     <Compile Include="Utils\TimeUnitMgmt.cs" />
     <Compile Include="Utils\TimeUnitsList.cs" />
     <Compile Include="Utils\TimeUnitsEnumExtension.cs" />
-    <Compile Include="GUI\AppPropertiesEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\AppPropertiesEditor.Designer.cs">
-      <DependentUpon>AppPropertiesEditor.cs</DependentUpon>
-    </Compile>
     <Compile Include="Utils\NumberFormatEnumExtension.cs" />
-    <Compile Include="GUI\TimeUnitComboBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="GUI\TimeUnitComboBox.Designer.cs">
-      <DependentUpon>TimeUnitComboBox.cs</DependentUpon>
-    </Compile>
     <Compile Include="Propeller\Assembly.cs" />
+    <Compile Include="Propeller\AssemblyConditions.cs" />
     <Compile Include="Propeller\Propeller.cs" />
     <Compile Include="Propeller\Spin.cs" />
     <Compile Include="Propeller\SpinAssignments.cs" />
@@ -116,18 +113,17 @@
     <Compile Include="Propeller\SpinInstructions.cs" />
     <Compile Include="EmulationCore\ClockSource.cs" />
     <Compile Include="EmulationCore\Cog.cs" />
-    <Compile Include="EmulationCore\DisassemblerStrings.cs" />
     <Compile Include="Disassembler\Spin.cs" />
     <Compile Include="Propeller\AssemblyInstructions.cs" />
     <Compile Include="Propeller\SpinRegisters.cs" />
     <Compile Include="Propeller\AssemblyRegisters.cs" />
-    <Compile Include="Propeller\Conditions.cs" />
     <Compile Include="Disassembler\Assembly.cs" />
     <Compile Include="EmulationCore\InstructionDisassembler.cs" />
     <Compile Include="EmulationCore\FreqGenerator.cs" />
     <Compile Include="EmulationCore\InterpretedCog.cs" />
     <Compile Include="Propeller\MemoryManager.cs" />
     <Compile Include="EmulationCore\NativeCog.cs" />
+    <Compile Include="EmulationCore\NativeCogInstructions.cs" />
     <Compile Include="EmulationCore\PLL.cs" />
     <Compile Include="EmulationCore\PLLGroup.cs" />
     <Compile Include="EmulationCore\PropellerCPU.cs" />
@@ -138,6 +134,12 @@
     </Compile>
     <Compile Include="GUI\AboutGear.Designer.cs">
       <DependentUpon>AboutGear.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\AppPropertiesEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\AppPropertiesEditor.Designer.cs">
+      <DependentUpon>AppPropertiesEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\BitView.cs">
       <SubType>UserControl</SubType>
@@ -207,6 +209,12 @@
     </Compile>
     <Compile Include="GUI\SpinView.cs">
       <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\TimeUnitComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI\TimeUnitComboBox.Designer.cs">
+      <DependentUpon>TimeUnitComboBox.cs</DependentUpon>
     </Compile>
     <Compile Include="PluginSupport\PluginBase.cs">
       <SubType>UserControl</SubType>
@@ -350,11 +358,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Framework.4.7.2">
       <Visible>False</Visible>
       <ProductName>.NET Framework 4.7.2</ProductName>
