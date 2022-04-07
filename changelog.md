@@ -9,7 +9,13 @@
 
 # Change Log
 
-## Release Version 22.03.02 - Various bugfixes.
+## Code cleanup 1
+* Corrected initial directory to open plug-ins in programs settings.
+* Corrected files of the project to have coherent line endings (CRLF), and coded in UTF-8.
+* Added generation of manifiest.
+
+
+## Release Version [22.03.02](https://github.com/davispuh/gear-emu/releases/tag/v22.03.02) and commit [eec325f](https://github.com/davispuh/gear-emu/commit/eec325f198981b18e74c7ada62a28cc1322fdf92) - Various bugfixes.
 * Fixed bug in `AssemblyInfo.cs`: missing +.
 * Fixed bug corrected `LONG` registers not assigned correctly in Cog - `DIR`, `OUT` on [`Cog.cs`](Gear/EmulationCore/Cog.cs).
 * Fixed bug on `[LogicAnalog](Gear/GUI/LogicProbe/LogicAnalog.cs).Draw()`: was comparing wrong time to activate.
@@ -18,11 +24,11 @@
 * Fixed bug of Form name not updated when open another binary file in [`Emulator.cs`](Gear/GUI/Emulator.cs).
 * Fixed hidden vertical scroll bar on Logic View: [`LogicView.Designer.cs`](Gear/GUI/LogicProbe/LogicView.Designer.cs).
 * Fixed bug of not remembering last binary open from Settings in [`Emulator.cs`](Gear/GUI/Emulator.cs) and [`GearDesktop`](Gear/GUI/GearDesktop.cs).
-* Method [`PluginEditor`](Gear/GUI/PluginEditor.cs).OpenButton_Click(.) refactored on using Open File Dialog.
+* Method [`PluginEditor.cs`](Gear/GUI/PluginEditor.cs).OpenButton_Click(.) refactored on using Open File Dialog.
 * Updated GEAR Developers.
 
 
-## Release Version 22.03.01 - Improved accuracy of Video generator and improvements in code.
+## Release Version [22.03.01](https://github.com/davispuh/gear-emu/releases/tag/v22.03.01) and commit [bf3cee3](https://github.com/davispuh/gear-emu/commit/bf3cee379990d150e0a27f2bcc4d2035e31008da) - Improved accuracy of Video generator and improvements in code.
 * Updated version to 22.03.01, and files header copyright updated to 2007-2022.
 * Updated [readme.md](readme.md) with description section, link to new Plugin notes.
 * Updated [changelog.md](changelog.md) to fix dead links of Propeller threads. Added links to github commits, pull request and issues.

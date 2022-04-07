@@ -88,7 +88,7 @@ namespace Gear.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute(".\\Plugins\\")]
         [CategoryAttribute("Plugin Editor")]
         [DescriptionAttribute("Last plugin loaded or edited (with full path).")]
         [DisplayNameAttribute("Last Plugin loaded")]
