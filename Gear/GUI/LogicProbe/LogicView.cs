@@ -299,7 +299,7 @@ namespace Gear.GUI.LogicProbe
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        /// @version v22.04.xx - Bugfix on no detecting modification of timeFrame or tickMark on LogicView.
+        /// @version v22.04.01 - Bugfix on no detecting modification of timeFrame or tickMark on LogicView.
         private void UpdateGridButton_Click(object sender, EventArgs e)
         {
             double aux = TimeUnitsEnumExtension.TransformUnitsFactor(
