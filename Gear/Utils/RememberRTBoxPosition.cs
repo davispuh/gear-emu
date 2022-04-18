@@ -27,7 +27,7 @@ using System.Windows.Forms;
 
 namespace Gear.Utils
 {
-    /// @brief Remember and restore displayed position and insert 
+    /// @brief Remember and restore displayed position and insert
     /// point (aka caret in MS documentation) for a RichTextBox.
     /// @details Based on code from https://stackoverflow.com/a/20746931/10200101
     class RememberRTBoxPosition
@@ -47,7 +47,7 @@ namespace Gear.Utils
         /// @brief Store cursor lenght
         private int cursor_lenght;
 
-        /// @brief Default constructor, remembers current position of 
+        /// @brief Default constructor, remembers current position of
         ///  text displayed and selection.
         /// @param textBox RichTextBox object to remember and restore state.
         public RememberRTBoxPosition(RichTextBox textBox)
@@ -80,7 +80,7 @@ namespace Gear.Utils
             obj.SelectionLength = 0;
             obj.SelectionStart = end;
             obj.ScrollToCaret();
-            obj.SelectionStart = 
+            obj.SelectionStart =
                 start + obj.Lines[obj.GetLineFromCharIndex(start)].Length + 1;
             obj.ScrollToCaret();
 

@@ -32,14 +32,14 @@ namespace Gear.Utils
     public class BinarySizeException : Exception
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public BinarySizeException() :
             base()
         { }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="message"></param>
         public BinarySizeException(string message) :
@@ -51,7 +51,7 @@ namespace Gear.Utils
         { }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="serializationInfo"></param>
         /// <param name="streamingContext"></param>

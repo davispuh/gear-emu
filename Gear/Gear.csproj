@@ -29,7 +29,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>22.03.02.0</ApplicationVersion>
+    <ApplicationVersion>22.04.01.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>false</BootstrapperEnabled>
   </PropertyGroup>
@@ -79,6 +79,12 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\Icons\LogoGear.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>true</SignManifests>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationFramework" />
@@ -237,6 +243,15 @@
     <Content Include="Resources\Icons\Icon_PluginEditor.ico" />
     <Content Include="Resources\Icons\Icon_PropertiesEditor.ico" />
     <Content Include="Resources\Icons\Icon_Emulator.ico" />
+    <Content Include="Resources\Icons\LogoGear.ico" />
+    <Content Include="Resources\Images\Gear_Control00.png" />
+    <Content Include="Resources\Images\Gear_Control01.png" />
+    <Content Include="Resources\Images\Gear_Control02.png" />
+    <Content Include="Resources\Images\Gear_Control03.png" />
+    <Content Include="Resources\Images\Gear_Control04.png" />
+    <Content Include="Resources\Images\Gear_Control05.png" />
+    <Content Include="Resources\Images\Gear_Control06.png" />
+    <Content Include="Resources\Images\Gear_Control07.png" />
     <Content Include="Resources\Images\Image_addPlugin.png" />
     <Content Include="Resources\Images\Image_cascadeView.png" />
     <Content Include="Resources\Images\Image_checkCode.png" />
@@ -265,6 +280,7 @@
     <Content Include="Resources\Images\Image_tileHoriz.png" />
     <Content Include="Resources\Images\Image_tileVert.png" />
     <Content Include="Resources\Images\Image_updateGrid.png" />
+    <Content Include="Resources\Images\LogoGear.png" />
     <Content Include="Resources\PluginTemplate.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -370,6 +386,12 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 y x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

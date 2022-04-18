@@ -58,7 +58,7 @@ namespace Gear.GUI
         }
 
         /// @brief Identify a plugin as user (=true) or system (=false).
-        /// @since V15.03.26 - Added.
+        /// @version V15.03.26 - Added.
         public override bool IsUserPlugin
         {
             get { return false; }
@@ -277,7 +277,7 @@ namespace Gear.GUI
         }
 
         /// @brief Repaint the Cog state and data.
-        /// @param force 
+        /// @param force
         public override void Repaint(bool force)
         {
             if (Chip == null)
@@ -296,9 +296,9 @@ namespace Gear.GUI
 
             positionScroll.Minimum = 0;
 
-            if (Host is InterpretedCog) 
+            if (Host is InterpretedCog)
                 positionScroll.Maximum = PropellerCPU.MAX_RAM_ADDR;
-            else if (Host is NativeCog) 
+            else if (Host is NativeCog)
                 positionScroll.Maximum = Cog.TOTAL_COG_MEMORY;
 
             positionScroll.LargeChange = 10;
@@ -327,7 +327,7 @@ namespace Gear.GUI
 
             if (Host is NativeCog cog)
                 Repaint(force, cog);
-            else if (Host is InterpretedCog _cog) 
+            else if (Host is InterpretedCog _cog)
                 Repaint(force, _cog);
 
             programCounterLabel.Text = "PC: " + String.Format("{0:X8}", Host.ProgramCursor);

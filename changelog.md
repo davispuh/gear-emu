@@ -9,7 +9,14 @@
 
 # Change Log
 
-## Code cleanup 1
+## Bugfix in LogicView, New icon for program and Code cleanup 2
+* Fixed bug in [`LogicView.cs`](Gear/GUI/LogicView.cs): no detecting modification of timeFrame or tickMark.
+* New Icon for Gear program.
+* Removed extra spaces in line endings on all files.
+* Changed tag @since to @version in all documentation.
+
+
+## Commit [dd92658](https://github.com/davispuh/gear-emu/commit/dd92658c7309b0872ab4a3cd41cd39bbd45ca70f) - Corrected initial directory to open plug-ins and code cleanup 1
 * Corrected initial directory to open plug-ins in programs settings.
 * Corrected files of the project to have coherent line endings (CRLF), and coded in UTF-8.
 * Added generation of manifiest.

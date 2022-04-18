@@ -59,8 +59,8 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="https://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="https://www.w3.org/XML/1998/namespace" />
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
         <xsd:choice maxOccurs="unbounded">
@@ -118,97 +118,100 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="Icon_Emulator" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\Icon_Emulator.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Icon_PluginEditor" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\Icon_PluginEditor.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Icon_PropertiesEditor" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Icons\Icon_PropertiesEditor.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Image_addPlugin" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Images\Image_addPlugin.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Image_cascadeView" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Images\Image_cascadeView.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Image_checkCode" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Images\Image_checkCode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Image_closeAll" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Images\Image_closeAll.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Image_closePlugin" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Images\Image_closePlugin.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Image_editPlugin" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Images\Image_editPlugin.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Image_embedded" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Images\Image_embedded.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Image_options" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Image_options.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Image_exit" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Images\Image_exit.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Image_iconView" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Images\Image_iconView.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Image_newPlugin" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Images\Image_newPlugin.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Image_openBinary" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Images\Image_openBinary.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Image_openPlugin" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Images\Image_openPlugin.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Image_options" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Images\Image_options.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Image_reloadBinary" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Images\Image_reloadBinary.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Image_restart" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Images\Image_restart.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Image_runStatus" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Images\Image_runStatus.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Image_runStill" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Images\Image_runStill.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Image_save" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Images\Image_save.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Icon_PropertiesEditor" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Icon_PropertiesEditor.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Image_saveAs" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Images\Image_saveAs.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Image_separated" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Images\Image_separated.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Image_stepClock" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Images\Image_stepClock.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Image_stepInstruction" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Images\Image_stepInstruction.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Image_stopStatus" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Images\Image_stopStatus.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Image_stopStill" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Images\Image_stopStill.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Image_runStatus" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Image_runStatus.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Image_syntaxHighlight" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Images\Image_syntaxHighlight.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Icon_PluginEditor" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Icon_PluginEditor.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Image_reloadBinary" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Image_reloadBinary.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Image_checkCode" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Image_checkCode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Image_openPlugin" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Image_openPlugin.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Image_save" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Image_save.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Image_editPlugin" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Image_editPlugin.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Image_tileHoriz" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Images\Image_tileHoriz.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Image_newPlugin" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Image_newPlugin.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Icon_Emulator" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Icons\Icon_Emulator.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Image_stopStatus" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Image_stopStatus.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Image_iconView" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Image_iconView.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Image_updateGrid" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Image_updateGrid.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Image_closeAll" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Image_closeAll.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Image_tileVert" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Images\Image_tileVert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Image_updateGrid" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Images\Image_updateGrid.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Image_stepInstruction" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Image_stepInstruction.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Image_cascadeView" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Image_cascadeView.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Image_addPlugin" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Image_addPlugin.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Image_openBinary" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Image_openBinary.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Image_restart" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Image_restart.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Image_embedded" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Image_embedded.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Image_stopStill" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Image_stopStill.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Image_runStill" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Image_runStill.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Image_separated" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Image_separated.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Image_closePlugin" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Image_closePlugin.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Image_stepClock" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Image_stepClock.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="LogoGear" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\LogoGear.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

@@ -14,4 +14,7 @@
     <VerifyUploadedFiles>false</VerifyUploadedFiles>
     <ErrorReportUrlHistory />
   </PropertyGroup>
+  <PropertyGroup>
+    <EnableSecurityDebugging>true</EnableSecurityDebugging>
+  </PropertyGroup>
 </Project>

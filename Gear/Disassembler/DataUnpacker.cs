@@ -25,12 +25,12 @@ using Gear.Propeller;
 namespace Gear.Disassembler
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     class DataUnpacker
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="memory"></param>
         /// <returns></returns>
@@ -54,7 +54,7 @@ namespace Gear.Disassembler
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="memory"></param>
         /// <returns></returns>
@@ -72,7 +72,7 @@ namespace Gear.Disassembler
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="memory"></param>
         /// <returns></returns>
@@ -95,7 +95,7 @@ namespace Gear.Disassembler
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="memory"></param>
         /// <returns></returns>
@@ -112,7 +112,7 @@ namespace Gear.Disassembler
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="memory"></param>
         /// <param name="count"></param>
@@ -129,7 +129,7 @@ namespace Gear.Disassembler
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="memory"></param>
         /// <returns></returns>
@@ -139,7 +139,7 @@ namespace Gear.Disassembler
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="memory"></param>
         /// <returns></returns>
@@ -149,7 +149,7 @@ namespace Gear.Disassembler
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="memory"></param>
         /// <returns></returns>

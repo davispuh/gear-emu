@@ -53,9 +53,9 @@ namespace Gear.GUI
             this.positionScrollBar = new System.Windows.Forms.VScrollBar();
             this.memoryPanel = new Gear.GUI.DoubleBufferedPanel();
             this.SuspendLayout();
-            // 
+            //
             // positionScrollBar
-            // 
+            //
             this.positionScrollBar.Dock = System.Windows.Forms.DockStyle.Right;
             this.positionScrollBar.LargeChange = 16;
             this.positionScrollBar.Location = new System.Drawing.Point(208, 0);
@@ -64,9 +64,9 @@ namespace Gear.GUI
             this.positionScrollBar.TabIndex = 0;
             this.positionScrollBar.TabStop = true;
             this.positionScrollBar.Scroll += new System.Windows.Forms.ScrollEventHandler(this.PositionChanged);
-            // 
+            //
             // memoryPanel
-            // 
+            //
             this.memoryPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.memoryPanel.Location = new System.Drawing.Point(0, 0);
             this.memoryPanel.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -76,9 +76,9 @@ namespace Gear.GUI
             this.memoryPanel.SizeChanged += new System.EventHandler(this.SizeChange);
             this.memoryPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintMemoryView);
             this.memoryPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.MemoryPanel_MouseClick);
-            // 
+            //
             // MemoryView
-            // 
+            //
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.memoryPanel);

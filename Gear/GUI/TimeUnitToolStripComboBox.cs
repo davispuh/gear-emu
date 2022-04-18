@@ -28,7 +28,7 @@ using System.Windows.Forms;
 namespace Gear.GUI
 {
     /// @brief ToolStripCombobox specialization for time unit management.
-    /// @since v20.09.01 - Added.
+    /// @version v20.09.01 - Added.
     public partial class TimeUnitToolStripComboBox : ToolStripComboBox, Gear.Utils.ITimeUnitMgmt
     {
         /// @brief Time Units Management Instance

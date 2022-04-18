@@ -46,7 +46,7 @@ namespace Gear.Propeller
         public ushort DirectReadWord(uint address)
         {
             address &= 0xFFFFFFFE;
-            return (ushort)(Memory[(address++) & PropellerCPU.MAX_RAM_ADDR] | 
+            return (ushort)(Memory[(address++) & PropellerCPU.MAX_RAM_ADDR] |
                 (Memory[(address++) & PropellerCPU.MAX_RAM_ADDR] << 8));
         }
 

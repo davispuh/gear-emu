@@ -72,7 +72,7 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Default constructor for the derived class.
-        public InterpretedCog(PropellerCPU host, uint paramAddress, 
+        public InterpretedCog(PropellerCPU host, uint paramAddress,
             uint frequency, PLLGroup pll)
             : base(host, 0xF004, paramAddress, frequency, pll)
         {
@@ -202,7 +202,7 @@ namespace Gear.EmulationCore
         /// @brief Execute a SPIN bytecode instruction in this cog.
         /// @returns TRUE if it is the opportunity to trigger a breakpoint, or FALSE if not.
         /// @version 21.06.01 - Documentation of SPIN bytecode
-        /// 
+        ///
         /// Spin Bytecodes Summary
         /// ======================
         /// |Opcode set|Byte      |Description                                               |Extra bytes              ||
@@ -212,7 +212,7 @@ namespace Gear.EmulationCore
         /// |0x80..0xDF|`1ssibbqq`|[Memory ops, access MEM, OBJ, VAR and LOC](@ref MemoryOps)|+1..2 if base|+1 if assign|
         /// |0xE0..0xFF|`111xxxxx`|[Math ops, Unary and Binary operators](@ref MathOpcodes)  |                         ||
         /// Source: [Cluso99's SPIN bytecode document revision RR20080721, on %Propeller 1 Forum](https://forums.parallax.com/discussion/comment/796018/#Comment_796018)
-        /// 
+        ///
         /// 0x00..0x3F Special purpose opcodes {#SpecialOps}
         /// ==================================
         /// Bytecode Table: 48 operations
@@ -298,13 +298,13 @@ namespace Gear.EmulationCore
         /// |Note: if the optional second byte is used then the first byte will be shifted left by 8 bits.||
         /// |`    s    `|`0`= higher order bits will be zero.|
         /// |     ^     |`1`= if sign-extend then 1's will be propagated to the left, otherwise 0's will be propagated to the left.|
-        /// 
+        ///
         /// Note 2: Details of 0x37 operation {#N2SpecialOpcodes}
         /// ---------------------------------
         /// |Structure: Additional byte used as a constant||||
         /// |:--:|:--:|:--:|:---------:|
         /// |`-` |`n` |`d` |` r r r r r`|
-        /// |`b7`|`b6`|`b5`|`b4b3b2b1b0`| 
+        /// |`b7`|`b6`|`b5`|`b4b3b2b1b0`|
         /// where
         /// |Bit(s)     |Description                                    |
         /// |:---------:|:----------------------------------------------|
@@ -315,7 +315,7 @@ namespace Gear.EmulationCore
         /// |     ^     |`   then...                                   `|
         /// |`r r r r r`|`X := 2 << rrrrr (#2 rotate left "rrrrr" bits)`|
         /// |     ^     |`   then...                                   `|
-        /// 
+        ///
         override public bool DoInstruction()
         {
             switch (State)
@@ -1040,7 +1040,7 @@ namespace Gear.EmulationCore
         /// @param initial Initial value.
         /// @return Result from math operation.
         /// @version 21.06.01 - Documentation of SPIN bytecode
-        /// 
+        ///
         /// 0xE0..0xFF Math operations opcodes {#MathOpcodes}
         /// ==================================
         /// 1. Regular math operation
@@ -1054,7 +1054,7 @@ namespace Gear.EmulationCore
         /// |:---------:|:------------------------------|
         /// |`1 1 1`    |Fixed bits equivalent to `0xE0`|
         /// |`q q q q q`|Bits on table                  |
-        /// 
+        ///
         /// 2. Math Assigment operation (USING)
         /// -----------------------------------
         /// When an operation in Memory or Variables ops groups define USING 2nd opcode,
@@ -1455,7 +1455,7 @@ namespace Gear.EmulationCore
         ///     </tr>
         /// </table>
         /// Source: [Cluso99's SPIN bytecode document revision RR20080721, on %Propeller 1 Forum](https://forums.parallax.com/discussion/comment/796018/#Comment_796018)
-        /// 
+        ///
         private uint BaseMathOp(byte op, bool swapValues, uint initial)
         {
             // --- Unary Operators ---
@@ -1609,7 +1609,7 @@ namespace Gear.EmulationCore
         /// @brief Execute a bytecode operation from memory group.
         /// @param op Operation code to execute, from range: <c>0x80..0xDF</c>
         /// @version 21.06.01 - Documentation of SPIN bytecode
-        /// 
+        ///
         /// 0x80..0xDF Memory ops (Access MEM, OBJ, VAR and LOC) {#MemoryOps}
         /// ====================================================
         /// |Structure: Stack load/save opcodes|||||
@@ -1825,8 +1825,8 @@ namespace Gear.EmulationCore
         ///
         /// 0x40..0x7F Variables ops (Fast access VAR, LOC) {#VariableOps}
         /// ===============================================
-        /// These opcodes allow fast access by making long access to the first 
-        /// few long entries in the variable space or stack a single byte opcode. 
+        /// These opcodes allow fast access by making long access to the first
+        /// few long entries in the variable space or stack a single byte opcode.
         /// The single byte opcodes are effectively expanded within the interpreter.
         /// |Structure: Variables opcodes||||
         /// |:----:|:--:|:------:|:----:|
@@ -1978,7 +1978,7 @@ namespace Gear.EmulationCore
         /// @param originalValue Initial value of MEM, OBJ, VAR or LOC.
         /// @return Stored value from operation.
         /// @version 21.06.01 - Bugfix #24 & Documentation of SPIN bytecode
-        /// 
+        ///
         /// Assignment Operators opcodes
         /// ============================
         /// This is an additional bytecode and follows a USING bytecode.

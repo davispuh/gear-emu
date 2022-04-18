@@ -25,7 +25,7 @@ namespace Gear.EmulationCore
 {
     /// @brief Video mode Field.
     /// The 2-bit VMode (video mode) field selects the type and orientation of video output.
-    /// 
+    ///
     /// Source: Table 8 - The Video Mode Field, %Propeller P8X32A Datasheet V1.4.0.
     public enum VMode : int
     {
@@ -276,7 +276,7 @@ namespace Gear.EmulationCore
             UpdateCompositeOut();
         }
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="level"></param>
         /// @version v22.03.01 - Improved accuracy of Video generator (pull request #29 from github/Sh1nyAnd3o3).

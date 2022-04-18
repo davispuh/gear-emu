@@ -30,11 +30,11 @@ namespace Gear.EmulationCore
     abstract public class ClockSource
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public abstract double TimeUntilClock { get; }
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="time"></param>
         public abstract void AdvanceClock(double time);

@@ -26,7 +26,7 @@ namespace Gear.EmulationCore
     partial class NativeCog
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionRCR()
         {
@@ -40,7 +40,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionRCL()
         {
@@ -54,7 +54,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionROR()
         {
@@ -67,7 +67,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionROL()
         {
@@ -80,7 +80,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionSHR()
         {
@@ -92,7 +92,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionSHL()
         {
@@ -104,7 +104,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionSAR()
         {
@@ -119,7 +119,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionOR()
         {
@@ -136,7 +136,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionXOR()
         {
@@ -153,7 +153,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionAND()
         {
@@ -170,7 +170,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionANDN()
         {
@@ -187,7 +187,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionMUXC()
         {
@@ -208,7 +208,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionMUXNC()
         {
@@ -229,7 +229,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionMUXZ()
         {
@@ -250,7 +250,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionMUXNZ()
         {
@@ -271,7 +271,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionREV()
         {
@@ -292,7 +292,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionABS()
         {
@@ -306,7 +306,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionABSNEG()
         {
@@ -320,7 +320,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionNEG()
         {
@@ -330,7 +330,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionNEGC()
         {
@@ -344,7 +344,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionNEGNC()
         {
@@ -358,7 +358,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionNEGZ()
         {
@@ -372,7 +372,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionNEGNZ()
         {
@@ -414,7 +414,7 @@ namespace Gear.EmulationCore
             CarryResult = Carry;
         }
 
-        /// @brief Execute instruction MOVI: Set a register's instruction and effects fields 
+        /// @brief Execute instruction MOVI: Set a register's instruction and effects fields
         /// to a value.
         /// @details Effects: Insert S[8..0] into D[31..23]
         private void InstructionMOVI()
@@ -425,7 +425,7 @@ namespace Gear.EmulationCore
             CarryResult = Carry;
         }
 
-        /// @brief Execute instruction JMPRET: Jump to address with intention to "return" 
+        /// @brief Execute instruction JMPRET: Jump to address with intention to "return"
         /// to another address.
         /// @details Effects: Insert PC+1 into D[8..0] and set PC to S[8..0].
         /// @version V15.03.26 - corrected Carry flag according to Propeller Manual v1.2.
@@ -434,14 +434,14 @@ namespace Gear.EmulationCore
             DataResult = (DestinationValue & 0xFFFFFE00) | (PC & 0x000001FF);
             PC = SourceValue & 0x1FF;
             ZeroResult = (DataResult == 0);
-            //Note from Propeller Manual v1.2: "The C flag is set (1) unless PC+1 equals 0; very 
-            // unlikely since it would require the JMPRET to be executed from the top of 
+            //Note from Propeller Manual v1.2: "The C flag is set (1) unless PC+1 equals 0; very
+            // unlikely since it would require the JMPRET to be executed from the top of
             // cog RAM ($1FF; special purpose register VSCL)."
             CarryResult = (PC != 0);
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionMINS()
         {
@@ -460,7 +460,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionMAXS()
         {
@@ -479,7 +479,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionMIN()
         {
@@ -498,7 +498,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionMAX()
         {
@@ -517,7 +517,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionADD()
         {
@@ -528,7 +528,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionADDABS()
         {
@@ -545,7 +545,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionADDX()
         {
@@ -557,7 +557,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionADDS()
         {
@@ -570,7 +570,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionADDSX()
         {
@@ -583,7 +583,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionSUB()
         {
@@ -594,7 +594,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionSUBABS()
         {
@@ -611,7 +611,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionSUBX()
         {
@@ -626,7 +626,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionSUBS()
         {
@@ -639,7 +639,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionSUBSX()
         {
@@ -655,7 +655,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionSUMC()
         {
@@ -673,7 +673,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionSUMNC()
         {
@@ -691,7 +691,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionSUMZ()
         {
@@ -709,7 +709,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionSUMNZ()
         {
@@ -727,7 +727,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionCMPS()
         {
@@ -739,7 +739,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionCMPSX()
         {
@@ -754,9 +754,9 @@ namespace Gear.EmulationCore
             if (((SourceValue ^ DestinationValue) & 0x80000000) != 0)
                 CarryResult = !CarryResult;
         }
-        
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionCMPSUB()
         {
@@ -774,7 +774,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <returns></returns>
         private bool InstructionDJNZ()
@@ -790,7 +790,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <returns></returns>
         private bool InstructionTJNZ()
@@ -806,7 +806,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <returns></returns>
         private bool InstructionTJZ()
@@ -822,7 +822,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void InstructionWAITVID()
         {

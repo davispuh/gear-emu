@@ -75,7 +75,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="multiplier"></param>
         /// @version v22.03.02 - Bugfix the max frequency to 128Mhz according to

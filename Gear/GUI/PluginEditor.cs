@@ -40,34 +40,34 @@ namespace Gear.GUI
     public partial class PluginEditor : Form
     {
         /// @brief Flag if the plugin definition has changed.
-        /// To determine changes, it includes not only the C# code, but also class name and 
+        /// To determine changes, it includes not only the C# code, but also class name and
         /// reference list.
-        /// @since v15.03.26 - Added.
+        /// @version v15.03.26 - Added.
         private bool codeChanged;
         /// @brief Enable or not change detection event.
-        /// @since v15.03.26 - Added.
+        /// @version v15.03.26 - Added.
         private bool changeDetectEnabled;
 
         /// @brief Regex to looking for class name inside the code of plugin.
-        /// @since v15.03.26 - Added.
+        /// @version v15.03.26 - Added.
         private static readonly Regex ClassNameExpressionRegex = new Regex(
             @"\bclass\s+" +
             @"(?<classname>[@]?[_]*[A-Z|a-z|0-9]+[A-Z|a-z|0-9|_]*)" +
             @"\s*\:\s*PluginBase\b",
             RegexOptions.Compiled);
         /// @brief Regex for syntax highlight.
-        /// @since v15.03.26 - Added.
+        /// @version v15.03.26 - Added.
         private static readonly Regex LineExpressionRegex = new Regex(
             @"\n",
             RegexOptions.Compiled);
         /// @brief Regex for parse token in lines for syntax highlight.
         /// @version v15.03.26 - Added.
         private readonly Regex CodeLineRegex = new Regex(
-            @"([ \t{}();:])", 
+            @"([ \t{}();:])",
             RegexOptions.Compiled);
 
         /// @brief keywords to highlight in editor code
-        private static readonly HashSet<string> keywords = new HashSet<string> 
+        private static readonly HashSet<string> keywords = new HashSet<string>
         {
             "add", "abstract", "alias", "as", "ascending", "async", "await",
             "base", "bool", "break", "byte", "case", "catch", "char", "checked",
@@ -92,7 +92,7 @@ namespace Gear.GUI
         private string LastPlugin { get; set; }
 
         /// @brief Attribute for changed plugin detection.
-        /// @since v15.03.26 - Added.
+        /// @version v15.03.26 - Added.
         public bool CodeChanged
         {
             get { return codeChanged; }
@@ -104,11 +104,11 @@ namespace Gear.GUI
         }
 
         /// @brief Detection of separated file for code.
-        /// @since v20.08.01 - Added.
+        /// @version v20.08.01 - Added.
         private bool SeparatedFileExist { get; set; }
 
         /// @brief Complete Name for plugin, including path, for presentation purposes.
-        /// @since v15.03.26 - Added.
+        /// @version v15.03.26 - Added.
         private string PluginFileName
         {
             get
@@ -124,11 +124,11 @@ namespace Gear.GUI
         private readonly int[] tabs = new int[32];
 
         /// @brief Default constructor.
-        /// Initialize the class, defines columns for error grid, setting changes   
+        /// Initialize the class, defines columns for error grid, setting changes
         /// detection, and trying to load the default template for plugin.
-        /// @param loadDefaultTemplate Indicate to load default template (=true) or 
+        /// @param loadDefaultTemplate Indicate to load default template (=true) or
         /// no template at all(=false).
-        /// @since v15.03.26 - Added parameter for loading default template for plugin.
+        /// @version v15.03.26 - Added parameter for loading default template for plugin.
         public PluginEditor(bool loadDefaultTemplate)
         {
             InitializeComponent();
@@ -178,7 +178,7 @@ namespace Gear.GUI
         /// @version v20.09.01 - Added.
         public void UpdateTabs(bool reloadText)
         {
-            RememberRTBoxPosition checkpoint = 
+            RememberRTBoxPosition checkpoint =
                 new RememberRTBoxPosition(codeEditorView);
             // setting tab width
             for (int i = 0; i < tabs.Length; i++)
@@ -204,7 +204,7 @@ namespace Gear.GUI
         }
 
         /// @brief Update titles of window and metadata, considering modified state.
-        /// @details Considering name of the plugin and showing modified state, to tell the user 
+        /// @details Considering name of the plugin and showing modified state, to tell the user
         /// if need to save.
         private void UpdateTitles()
         {
@@ -212,11 +212,11 @@ namespace Gear.GUI
         }
 
         /// @brief Load a plugin from File in Plugin Editor, updating the screen.
-        /// @details This method take care of update change state of the window. 
+        /// @details This method take care of update change state of the window.
         /// @param FileName Name of the file to open.
         /// @param displayErrors Flag to show errors in the error grid.
         /// @returns Success on load the file on the editor (=true) or fail (=false).
-        /// @version v20.08.01 - Changed plugin code to a XML CDATA section, 
+        /// @version v20.08.01 - Changed plugin code to a XML CDATA section,
         /// added encoding and DTD sections.
         public bool OpenFile(string FileName, bool displayErrors)
         {
@@ -228,7 +228,7 @@ namespace Gear.GUI
                 DtdProcessing = DtdProcessing.Parse,
                 ValidationType = ValidationType.DTD
             };
-            settings.ValidationEventHandler += 
+            settings.ValidationEventHandler +=
                 new ValidationEventHandler(DTDValidationErrHandler);
             XmlReader tr = XmlReader.Create(FileName, settings);
 
@@ -236,7 +236,7 @@ namespace Gear.GUI
             string codeFileName = string.Empty;
             string pluginVersion = "0.1";
 
-            if (referencesList.Items.Count > 0) 
+            if (referencesList.Items.Count > 0)
                 referencesList.Items.Clear();   //clear out the reference list
             try
             {
@@ -332,16 +332,16 @@ namespace Gear.GUI
         /// @brief Show message on DTD validation error.
         /// @param sender
         /// @param e
-        /// @since v20.08.01 - Added.
+        /// @version v20.08.01 - Added.
         private static void DTDValidationErrHandler(object sender, ValidationEventArgs e)
         {
             Console.WriteLine("DTD Validation Error on plugin file: {0}", e.Message);
         }
 
         /// @brief Save a XML file with the plugin information.
-        /// @details Take care of update change state of the window. No need to do it in 
+        /// @details Take care of update change state of the window. No need to do it in
         /// methods who call this.
-        /// @version v20.08.01 - Changed plugin code to a XML CDATA section, 
+        /// @version v20.08.01 - Changed plugin code to a XML CDATA section,
         /// added encoding and DTD sections.
         public void SaveFile(string FileName)
         {
@@ -417,8 +417,8 @@ namespace Gear.GUI
             if (String.IsNullOrEmpty(codeEditorView.Text))
             {
                 MessageBox.Show("No source code to check. Please add code.",
-                    "Plugin Editor - Check source.", 
-                    MessageBoxButtons.OK, 
+                    "Plugin Editor - Check source.",
+                    MessageBoxButtons.OK,
                     MessageBoxIcon.Exclamation);
             }
             else
@@ -520,7 +520,7 @@ namespace Gear.GUI
             }
         }
 
-        /// @brief Update the default for last plugin opened or saved in 
+        /// @brief Update the default for last plugin opened or saved in
         /// the editor.
         /// @version v20.09.01 - Changed method name.
         public void UpdateDefaultLastPluginOpened()
@@ -635,14 +635,14 @@ namespace Gear.GUI
         /// @brief Check syntax on the C# source code.
         /// @param sender Object who called this on event.
         /// @param e `EventArgs` class with a list of argument to the event call.
-        /// @since V14.07.03 - Added.
+        /// @version V14.07.03 - Added.
         private void SyntaxButton_Click(object sender, EventArgs e)
         {
             int pos = 0;
             RememberRTBoxPosition checkpoint = new RememberRTBoxPosition(codeEditorView);
             changeDetectEnabled = false;    //not enable change detection
             bool commentMultiline = false;  //initially not in comment mode
-            //For each line in input, identify key words and format them when 
+            //For each line in input, identify key words and format them when
             // adding to the rich text box.
             string[] lines = LineExpressionRegex.Split(codeEditorView.Text);
             //update progress bar
@@ -670,9 +670,9 @@ namespace Gear.GUI
         /// @brief Auxiliary method to check syntax.
         /// Examines line by line, parsing reserved C# words.
         /// @param line Text line from the source code.
-        /// @param[in,out] commentMultiline Flag to indicate if it is on comment mode 
+        /// @param[in,out] commentMultiline Flag to indicate if it is on comment mode
         /// between multi lines (=true) or normal mode (=false).
-        /// @since v14.07.03 - Added.
+        /// @version v14.07.03 - Added.
         /// @warning Experimental highlighting. Probably will be changes in the future.
         private void ParseLine(string line, ref bool commentMultiline)
         {
@@ -778,7 +778,7 @@ namespace Gear.GUI
         /// It marks as changed, to prevent not averted loses at closure of the window.
         /// @param sender Object who called this on event.
         /// @param e `EventArgs` class with a list of argument to the event call.
-        /// @since v15.03.26 - Added.
+        /// @version v15.03.26 - Added.
         private void CodeEditorView_TextChanged(object sender, EventArgs e)
         {
             if (changeDetectEnabled)
@@ -786,11 +786,11 @@ namespace Gear.GUI
         }
 
         /// @brief Detect the plugin class name from the code text given as parameter.
-        /// @param code Text of the source code of plugin to look for the class 
+        /// @param code Text of the source code of plugin to look for the class
         /// name declaration.
         /// @param[out] match Name of the plugin class found. If not, it will be null.
         /// @returns If a match had found =True, else =False.
-        /// @since v15.03.26 - Added.
+        /// @version v15.03.26 - Added.
         private bool DetectClassName(string code, out string match)
         {
             match = null;
@@ -813,11 +813,11 @@ namespace Gear.GUI
         }
 
         /// @brief Event handler for closing plugin window.
-        /// If code, references or class name have changed and them are not saved, a Dialog is 
+        /// If code, references or class name have changed and them are not saved, a Dialog is
         /// presented to the user to proceed or abort the closing.
         /// @param sender Object who called this on event.
         /// @param e `FormClosingEventArgs` class with a list of argument to the event call.
-        /// @since v15.03.26 - Added.
+        /// @version v15.03.26 - Added.
         private void PluginEditor_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (CodeChanged)
@@ -828,7 +828,7 @@ namespace Gear.GUI
         /// @brief Ask the user to not loose changes.
         /// @param fileName Filename to show in dialog.
         /// @returns Boolean to close (=true) or not (=false).
-        /// @since v15.03.26 - Added.
+        /// @version v15.03.26 - Added.
         private bool CloseAnyway(string fileName)
         {
             //dialog to not lost changes
@@ -849,7 +849,7 @@ namespace Gear.GUI
         /// @brief Toggle the button state, updating the name & tooltip text.
         /// @param sender Object who called this on event.
         /// @param e `EventArgs` class with a list of argument to the event call.
-        /// @since v15.03.26 - Added.
+        /// @version v15.03.26 - Added.
         private void EmbeddedCode_Click(object sender, EventArgs e)
         {
             SetEmbeddedCodeButton(EmbeddedCode.Checked);
@@ -865,7 +865,7 @@ namespace Gear.GUI
         }
 
         /// @brief Update the name & tooltip text depending on state.
-        /// @since v20.08.01 - Added.
+        /// @version v20.08.01 - Added.
         public void UpdateTextEmbeddedCodeButton()
         {
             if (EmbeddedCode.Checked)
@@ -885,14 +885,14 @@ namespace Gear.GUI
         /// @brief On visible property changed, perform layout on tool strip.
         /// @param sender Object who called this on event.
         /// @param e `EventArgs` class with a list of argument to the event call.
-        /// @since v20.08.01 - Added.
+        /// @version v20.08.01 - Added.
         private void ProgressHighlight_VisibleChanged(object sender, EventArgs e)
         {
             toolStripMain.PerformLayout();
             toolStripMain.Refresh();
         }
 
-        /// @brief Refresh form's Icon 
+        /// @brief Refresh form's Icon
         /// @param sender
         /// @param e
         /// @version v20.10.01 - Added.

@@ -75,7 +75,7 @@ namespace Gear.GUI.LogicProbe
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public override void Click() { }
 
@@ -87,7 +87,7 @@ namespace Gear.GUI.LogicProbe
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="graph"></param>
         /// <param name="top"></param>

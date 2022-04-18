@@ -37,7 +37,7 @@ namespace Gear.Utils
         /// @brief Default constructor.
         public TimeUnitCollection() : base() { }
 
-        /// @brief Constructor with a list interface compliant class. Each 
+        /// @brief Constructor with a list interface compliant class. Each
         /// value is unique and the list are sorted by enum value.
         /// @param values Time unit enumeration values.
         public TimeUnitCollection(IList<TimeUnitsEnum> values) : base(values)
@@ -49,7 +49,7 @@ namespace Gear.Utils
                 base.Add(item);
         }
 
-        /// @brief Add the item if it isn't already in the list, maintaining 
+        /// @brief Add the item if it isn't already in the list, maintaining
         /// it ordered by TimeUnitsEnum value.
         /// @param newItem Item to add to collection.
         public new void Add(TimeUnitsEnum newItem)
@@ -87,7 +87,7 @@ namespace Gear.Utils
 
         /// @brief Equality operator
         /// @param other Other object to compare.
-        /// @returns If both are the same object or have the same 
+        /// @returns If both are the same object or have the same
         /// items (=true), else (=false).
         public bool Equals(TimeUnitCollection other)
         {
@@ -111,7 +111,7 @@ namespace Gear.Utils
     }
 
     /// @brief Converter class for TimeUnitCollection.
-    /// @details This is necessary to expose the TimeUnitCollection on design 
+    /// @details This is necessary to expose the TimeUnitCollection on design
     /// time in HubView.
     class TimeUnitCollectionConverter : TypeConverter
     {
@@ -121,7 +121,7 @@ namespace Gear.Utils
             return TypeDescriptor.GetProperties(typeof(TimeUnitCollection));
         }
 
-        public override bool CanConvertTo(ITypeDescriptorContext context, 
+        public override bool CanConvertTo(ITypeDescriptorContext context,
             Type destinationType)
         {
             if (destinationType == typeof(InstanceDescriptor))
@@ -129,7 +129,7 @@ namespace Gear.Utils
             return base.CanConvertTo(context, destinationType);
         }
 
-        public override object ConvertTo(ITypeDescriptorContext context, 
+        public override object ConvertTo(ITypeDescriptorContext context,
             CultureInfo culture, object value, Type destinationType)
         {
             if (destinationType == typeof(InstanceDescriptor))

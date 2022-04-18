@@ -33,7 +33,7 @@ namespace Gear.Utils
         public TimeUnitsList() : base() { }
 
         /// @brief Constructor with excluded units.
-        /// @param excludedUnits Time units collection to exclude values 
+        /// @param excludedUnits Time units collection to exclude values
         /// on creation.
         public TimeUnitsList(TimeUnitCollection excludedUnits) : base()
         {
@@ -75,10 +75,10 @@ namespace Gear.Utils
                 }
         }
 
-        /// @brief Determine if a text format method had been assigned to 
+        /// @brief Determine if a text format method had been assigned to
         /// the key.
         /// @param key Time unit to inquire.
-        /// @return If a valid delegate method is assigned (=true); if it is 
+        /// @return If a valid delegate method is assigned (=true); if it is
         /// null reference or the key isn't in the list (=false).
         public bool HaveAssignedTextFormat(TimeUnitsEnum key)
         {
@@ -88,10 +88,10 @@ namespace Gear.Utils
                 return false;
         }
 
-    } //end class TimeUnitsList 
+    } //end class TimeUnitsList
 
     /// @brief List of format text delegates assigned to each time unit.
-    public class DelegatesPerTimeUnitsList : 
+    public class DelegatesPerTimeUnitsList :
         SortedList<TimeUnitsEnum, FormatToTextDelegate>
     {
         private readonly TimeUnitCollection excludedItems;
@@ -99,8 +99,8 @@ namespace Gear.Utils
         /// @brief Default constructor
         /// @param excluded Excluded items.
         /// @param listaInicial List of assigments
-        public DelegatesPerTimeUnitsList(TimeUnitCollection excluded, 
-            SortedList<TimeUnitsEnum, FormatToTextDelegate> listaInicial) : 
+        public DelegatesPerTimeUnitsList(TimeUnitCollection excluded,
+            SortedList<TimeUnitsEnum, FormatToTextDelegate> listaInicial) :
                 base()
         {
             excludedItems = excluded;
@@ -108,11 +108,11 @@ namespace Gear.Utils
                 AddOrReplace(pair.Key, pair.Value);
         }
 
-        /// @brief Add or replace the delegate member method associated with 
+        /// @brief Add or replace the delegate member method associated with
         /// the time unit.
         /// @param value Time unit.
         /// @param _delegate Method to format text for this time unit.
-        private void AddOrReplace(TimeUnitsEnum value, 
+        private void AddOrReplace(TimeUnitsEnum value,
             FormatToTextDelegate _delegate)
         {
             if ((excludedItems != null) | (excludedItems.Count > 0))
@@ -139,12 +139,12 @@ namespace Gear.Utils
             }
         }
 
-        /// @brief Inheritated Add method, marked as obsolete, to force 
+        /// @brief Inheritated Add method, marked as obsolete, to force
         /// to use AddOrReplace(.) method.
         /// @param value Time unit.
         /// @param _delegate Method to format text for this time unit.
         [ObsoleteAttribute("Use AddOrReplace(.) method instead", error: true)]
-        public new void Add(TimeUnitsEnum value, 
+        public new void Add(TimeUnitsEnum value,
             FormatToTextDelegate _delegate)
         {
             base.Add(value, _delegate);

@@ -35,7 +35,7 @@ namespace Gear.GUI.LogicProbe
     public partial class LogicView : Gear.PluginSupport.PluginBase
     {
         /// @brief Current Culture to modify its Number format.
-        /// @since @version v20.09.01 - Added.
+        /// @version @version v20.09.01 - Added.
         private readonly CultureInfo currentCultureMod =
             (CultureInfo)CultureInfo.CurrentCulture.Clone();
 
@@ -101,29 +101,29 @@ namespace Gear.GUI.LogicProbe
         }
 
         /// @brief Update the value of TimeScale from default setting.
-        /// @since v20.09.01 - Added.
+        /// @version v20.09.01 - Added.
         public void UpdateLastTimeFrame()
         {
             TimeScale = Properties.Settings.Default.LastTimeFrame;
         }
 
         /// @brief Update the value of Marker from default setting.
-        /// @since v20.09.01 - Added.
+        /// @version v20.09.01 - Added.
         public void UpdateLastTickMarkGrid()
         {
             Marker = Properties.Settings.Default.LastTickMarkGrid;
         }
 
         /// @brief Update the time unit for logic view from default setting.
-        /// @since v20.09.01 - Added.
+        /// @version v20.09.01 - Added.
         public void UpdateTimeUnit()
         {
-            toolStripComboBox1.TimeUnitSelected = 
+            toolStripComboBox1.TimeUnitSelected =
                 Properties.Settings.Default.LogicViewTimeUnit;
         }
 
         /// @brief Update UI values for TimeScale and Marker using Format.
-        /// @since v20.09.01 - Added.
+        /// @version v20.09.01 - Added.
         public void UpdateFrameAndTickText()
         {
             timeFrameBox.Text = toolStripComboBox1.GetFormatedText(TimeScale).Trim();
@@ -137,7 +137,7 @@ namespace Gear.GUI.LogicProbe
         /// @param unit Time unit to use.
         /// @param val Value to format to string.
         /// @returns The formatted text.
-        /// @since v20.09.01 - Added.
+        /// @version v20.09.01 - Added.
         private string StandardTimeFormatText(TimeUnitsEnum unit, double val)
         {
             double factor = toolStripComboBox1.FactorSelected;
@@ -149,14 +149,14 @@ namespace Gear.GUI.LogicProbe
         }
 
         /// @todo document Gear.GUI.LogicProbe.PresentChip()
-        /// 
+        ///
         public override void PresentChip()
         {
             Chip.NotifyOnPins(this);
         }
 
         /// @brief Clean samples of LogicRow
-        /// 
+        ///
         public override void OnReset()
         {
             for (int i = 0; i < DigitalPins.Length; i++)
@@ -178,7 +178,7 @@ namespace Gear.GUI.LogicProbe
         }
 
         /// @todo document Gear.GUI.LogicProbe.OnPinChange()
-        /// 
+        ///
         public override void OnPinChange(double time, PinState[] states)
         {
             for (int i = 0; i < states.Length; i++)
@@ -299,7 +299,7 @@ namespace Gear.GUI.LogicProbe
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        /// @version v20.09.01 - Modified to manage time units.
+        /// @version v22.04.xx - Bugfix on no detecting modification of timeFrame or tickMark on LogicView.
         private void UpdateGridButton_Click(object sender, EventArgs e)
         {
             double aux = TimeUnitsEnumExtension.TransformUnitsFactor(
@@ -328,6 +328,9 @@ namespace Gear.GUI.LogicProbe
                 tickMarkBox.Text = Marker.ToString();
             }
 
+            //Bugfix to detect next modification of timeFrame or tickMark
+            timeFrameBox.Modified = false;
+            tickMarkBox.Modified = false;
             updateGridButton.Enabled = false;
             updateGridButton.Checked = false;
 
@@ -531,8 +534,11 @@ namespace Gear.GUI.LogicProbe
         /// @param e
         private void TimeFrameBox_ModifiedChanged(object sender, EventArgs e)
         {
-            updateGridButton.Enabled = true;
-            updateGridButton.Checked = true;
+            if (!updateGridButton.Enabled)
+            {
+                updateGridButton.Enabled = true;
+                updateGridButton.Checked = true;
+            }
         }
 
         /// @brief When the value is changed, enable Update button.
@@ -540,8 +546,11 @@ namespace Gear.GUI.LogicProbe
         /// @param e
         private void TickMarkBox_ModifiedChanged(object sender, EventArgs e)
         {
-            updateGridButton.Enabled = true;
-            updateGridButton.Checked = true;
+            if (!updateGridButton.Enabled)
+            {
+                updateGridButton.Enabled = true;
+                updateGridButton.Checked = true;
+            }
         }
     }
 }

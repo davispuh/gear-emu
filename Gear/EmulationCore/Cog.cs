@@ -66,7 +66,7 @@ namespace Gear.EmulationCore
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public enum FrameState
     {
@@ -154,7 +154,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public string VideoFramesString
         {
@@ -206,7 +206,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public string VideoStateString
         {
@@ -222,7 +222,7 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Property to return only OUTA pins.
-        /// Analyze all sources of pin changes in the cog for OUTA pins (P31..P0): the two 
+        /// Analyze all sources of pin changes in the cog for OUTA pins (P31..P0): the two
         /// counters and the video generator.
         public uint OUTA
         {
@@ -236,7 +236,7 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Property to return only OUTB pins.
-        /// Analyze all sources of pin changes in the cog for OUTB pins (P63..P32): the 
+        /// Analyze all sources of pin changes in the cog for OUTB pins (P63..P32): the
         /// two counters and the video generator.
         public uint OUTB
         {
@@ -264,7 +264,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public uint DIRA
         {
@@ -275,7 +275,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public uint DIRB
         {
@@ -331,7 +331,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="i"></param>
         /// <returns></returns>
@@ -430,7 +430,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public virtual void HubAccessable()
         {
@@ -450,7 +450,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public void DetachVideoHooks()
         {
@@ -472,7 +472,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="freq"></param>
         public void SetClock(uint freq)
@@ -482,7 +482,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public void StepInstruction()
         {
@@ -491,13 +491,13 @@ namespace Gear.EmulationCore
             {
                 Hub.Step();
             }
-            while ( (State != CogRunState.EXEC_INTERPRETER) && 
+            while ( (State != CogRunState.EXEC_INTERPRETER) &&
                 (State != CogRunState.STATE_EXECUTE && --i > 0) &&
                 (frameFlag <= frameBreak));
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>
@@ -534,16 +534,16 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Write cog RAM with a specified value.
-        /// @details This method take care of special cog address that in this class aren't 
+        /// @details This method take care of special cog address that in this class aren't
         /// write in memory array Cog.Memory.
         /// @param address Address to write.
         /// @param data Data to write in address.
-        /// @note PAR address is a special case, because unless Propeller Manual V1.2 
-        /// specifications says it is a read-only register, there are claims that in reality it 
-        /// is writable as explains 
+        /// @note PAR address is a special case, because unless Propeller Manual V1.2
+        /// specifications says it is a read-only register, there are claims that in reality it
+        /// is writable as explains
         /// <a href="https://forums.parallax.com/discussion/comment/839684/#Comment_839684">
         /// Forum thread "PASM simulator / debugger?</a>.
-        /// They claims that some parallax video drivers in PASM changes the PAR register, 
+        /// They claims that some parallax video drivers in PASM changes the PAR register,
         /// and GEAR didn't emulate that.
         protected void WriteLong(uint address, uint data)
         {
@@ -591,12 +591,12 @@ namespace Gear.EmulationCore
         abstract public bool DoInstruction();
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         abstract public void Boot();
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="colours"></param>
         /// <param name="pixels"></param>

@@ -57,7 +57,7 @@ namespace Gear.Utils
         /// @brief Select the previous value of enabled values of ComboBox.
         void SelectPrev();
 
-        /// @brief Assign the list of TextFormats methods to corresponding 
+        /// @brief Assign the list of TextFormats methods to corresponding
         /// enum values.
         void AssignTextFormats(DelegatesPerTimeUnitsList assigments);
 
@@ -168,7 +168,7 @@ namespace Gear.Utils
                 throw new ArgumentNullException(nameof(baseObj));
         }
 
-        /// @brief Syncronize values dependent of excludedUnits: 
+        /// @brief Syncronize values dependent of excludedUnits:
         /// EnabledValuesList and comboBox list values.
         public void SyncValues()
         {
@@ -177,7 +177,7 @@ namespace Gear.Utils
             Owner.Items.AddRange(EnabledValuesList.GetNames());
         }
 
-        /// @brief Select the next value of enabled values of ComboBox. If it 
+        /// @brief Select the next value of enabled values of ComboBox. If it
         /// is the last one, starts from the begining.
         public void SelectNext()
         {
@@ -188,20 +188,20 @@ namespace Gear.Utils
             }
         }
 
-        /// @brief Select the previous value of enabled values of ComboBox. If it 
+        /// @brief Select the previous value of enabled values of ComboBox. If it
         /// is the first one, starts from the end.
         public void SelectPrev()
         {
             if (Owner.SelectedIndex != -1)
             {
                 int prev = Owner.SelectedIndex - 1;
-                Owner.SelectedIndex = (prev >= 0) ? 
-                    prev : 
+                Owner.SelectedIndex = (prev >= 0) ?
+                    prev :
                     EnabledValuesList.Count - 1;
             }
         }
 
-        /// @brief Assign the list of TextFormats methods to corresponding 
+        /// @brief Assign the list of TextFormats methods to corresponding
         /// enum values.
         /// @param assigments List of assigments.
         public void AssignTextFormats(DelegatesPerTimeUnitsList assigments)
@@ -216,7 +216,7 @@ namespace Gear.Utils
         public string GetFormatedText(double val)
         {
             TimeUnitsEnum sel = TimeUnitSelected;
-            if (EnabledValuesList.TryGetValue(sel, 
+            if (EnabledValuesList.TryGetValue(sel,
                 out TimeUnitsEnumExtension obj) && (obj != null))
             {
                 if (EnabledValuesList.HaveAssignedTextFormat(sel))

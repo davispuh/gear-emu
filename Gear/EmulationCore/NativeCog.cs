@@ -106,7 +106,7 @@ namespace Gear.EmulationCore
             Operation = ReadLong(0);
         }
 
-        /// @brief Determine if the Hub is accessible in that moment of time, setting the state 
+        /// @brief Determine if the Hub is accessible in that moment of time, setting the state
         /// accordantly.
         /// @version v15.03.26 - corrected zero and carry values for missing HUBOPS.
         public override void HubAccessable()
@@ -114,7 +114,7 @@ namespace Gear.EmulationCore
             switch (State)
             {
                 case CogRunState.HUB_HUBOP:
-                    DataResult = Hub.HubOp(this, SourceValue, DestinationValue, ref CarryResult, 
+                    DataResult = Hub.HubOp(this, SourceValue, DestinationValue, ref CarryResult,
                         ref ZeroResult);
                     WriteBackResult();
                     return;

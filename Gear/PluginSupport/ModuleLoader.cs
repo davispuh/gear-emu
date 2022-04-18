@@ -50,20 +50,20 @@ namespace Gear.PluginSupport
 
         /// @brief Dynamic compiling & loading for a plugin.
         /// @details Try to dynamically compile a className for the plugin, based on supplied C# code
-        /// and other C# modules referenced. If the compiling fails, it gives a list of errors, 
+        /// and other C# modules referenced. If the compiling fails, it gives a list of errors,
         /// intended to be showed in the plugin view.
         /// @param code C# Source code based on PluginBase class, to implement your plugin.
         /// @param className Class name of the plugin.
-        /// @param references String array with auxiliary references used by your plugin. 
+        /// @param references String array with auxiliary references used by your plugin.
         /// See notes for defaults used.
-        /// @param obj Reference to a PropellerCPU of this instance, to be passed as a 
+        /// @param obj Reference to a PropellerCPU of this instance, to be passed as a
         /// parameter to the constructor of the new plugin class instance.
         /// @returns New Plugin class instance compiled (on success), or NULL (on fail).
-        /// @note There are some references already added, so you don't need to include on your plugins: 
+        /// @note There are some references already added, so you don't need to include on your plugins:
         /// @li `using System;` @li `using System.Data;` @li `using System.Drawing;`
         /// @li `using System.Windows.Forms;` @li `using System.Xml;`
         /// @version v20.08.01 - Added compiler version definition.
-        static public PluginBase LoadModule(string code, string className, 
+        static public PluginBase LoadModule(string code, string className,
             string[] references, object obj)
         {
             //set compiler version
@@ -102,7 +102,7 @@ namespace Gear.PluginSupport
             }
 
             //compile plugin with parameters
-            object target = results.CompiledAssembly.CreateInstance(           
+            object target = results.CompiledAssembly.CreateInstance(
                 className,                                    //name of class
                 false,                                        //=false: case sensitive
                 BindingFlags.Public | BindingFlags.Instance,  //flags to delimit the candidates

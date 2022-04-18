@@ -56,9 +56,9 @@ namespace Gear.GUI
             this.ResetButton = new System.Windows.Forms.Button();
             this.ButtonsPanel.SuspendLayout();
             this.SuspendLayout();
-            // 
+            //
             // GearPropertyGrid
-            // 
+            //
             this.GearPropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.GearPropertyGrid.Location = new System.Drawing.Point(0, 0);
             this.GearPropertyGrid.MinimumSize = new System.Drawing.Size(250, 210);
@@ -66,9 +66,9 @@ namespace Gear.GUI
             this.GearPropertyGrid.Size = new System.Drawing.Size(375, 279);
             this.GearPropertyGrid.TabIndex = 0;
             this.GearPropertyGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.GearPropertyGrid_PropertyValueChanged);
-            // 
+            //
             // OKButton
-            // 
+            //
             this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.OKButton.Location = new System.Drawing.Point(297, 3);
             this.OKButton.Name = "OKButton";
@@ -77,9 +77,9 @@ namespace Gear.GUI
             this.OKButton.Text = "OK";
             this.OKButton.UseVisualStyleBackColor = true;
             this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
-            // 
+            //
             // ButtonsPanel
-            // 
+            //
             this.ButtonsPanel.Controls.Add(this.OKButton);
             this.ButtonsPanel.Controls.Add(this.ResetButton);
             this.ButtonsPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -90,9 +90,9 @@ namespace Gear.GUI
             this.ButtonsPanel.Name = "ButtonsPanel";
             this.ButtonsPanel.Size = new System.Drawing.Size(375, 29);
             this.ButtonsPanel.TabIndex = 5;
-            // 
+            //
             // ResetButton
-            // 
+            //
             this.ResetButton.AutoSize = true;
             this.ResetButton.Location = new System.Drawing.Point(170, 3);
             this.ResetButton.Name = "ResetButton";
@@ -101,9 +101,9 @@ namespace Gear.GUI
             this.ResetButton.Text = "Reset to default value";
             this.ResetButton.UseVisualStyleBackColor = true;
             this.ResetButton.Click += new System.EventHandler(this.ResetButton_Click);
-            // 
+            //
             // AppPropertiesEditor
-            // 
+            //
             this.AcceptButton = this.OKButton;
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.AutoScroll = true;

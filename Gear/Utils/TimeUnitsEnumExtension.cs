@@ -41,7 +41,7 @@ namespace Gear.Utils
         min_s   //!< @brief minutes and seconds
     }
 
-    /// @brief Delegate to Format to text a numeric value considering its 
+    /// @brief Delegate to Format to text a numeric value considering its
     /// associated time unit value.
     public delegate string FormatToTextDelegate(TimeUnitsEnum unit, double val);
 
@@ -57,7 +57,7 @@ namespace Gear.Utils
 
         /// @brief Name to display property.
         /// @return Name to display.
-        public string Name 
+        public string Name
         {
             get => name;
             private set {
@@ -68,7 +68,7 @@ namespace Gear.Utils
             }
         }
 
-        /// @brief External defined method to format to text a value using 
+        /// @brief External defined method to format to text a value using
         /// time unit support.
         public FormatToTextDelegate FormatToTextDel { get; set; }
 
@@ -92,7 +92,7 @@ namespace Gear.Utils
                     return true;
             }
         }
-    
+
         /// @brief Default constructor.
         /// @param id Time unit with extended atributes.
         public TimeUnitsEnumExtension(TimeUnitsEnum id)
@@ -140,7 +140,7 @@ namespace Gear.Utils
                 return true;
         }
 
-        /// @brief Factor referenced to baseUnit, to transform between 
+        /// @brief Factor referenced to baseUnit, to transform between
         /// TimeUnitsEnum values.
         /// @param unitToTransform Time unit to transform.
         /// @param isMultiplyFactor
@@ -210,9 +210,9 @@ namespace Gear.Utils
         /// @brief Comparison between current instance and the parameter object.
         /// @details Implements IComparable interface.
         /// @param other Other object to compare.
-        /// @return Comparison result, this instance precedes the other (< 0), both are 
+        /// @return Comparison result, this instance precedes the other (< 0), both are
         /// in the same position (= 0), or the other instance precedes this (> 0).
-        public int CompareTo(object other) => 
+        public int CompareTo(object other) =>
             Id.CompareTo(((TimeUnitsEnumExtension)other).Id);
 
         /// @brief @todo Document method TimeUnitsEnumExtension.
@@ -244,8 +244,8 @@ namespace Gear.Utils
         /// @returns
         public static bool operator <(TimeUnitsEnumExtension left, TimeUnitsEnumExtension right)
         {
-            return left is null ? 
-                right is object : 
+            return left is null ?
+                right is object :
                 left.CompareTo(right) < 0;
         }
 
@@ -277,7 +277,7 @@ namespace Gear.Utils
         public static bool operator >=(TimeUnitsEnumExtension left, TimeUnitsEnumExtension right)
         {
             return left is null ?
-                right is null : 
+                right is null :
                 left.CompareTo(right) >= 0;
         }
 

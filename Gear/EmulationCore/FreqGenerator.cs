@@ -26,7 +26,7 @@ using Gear.Propeller;
 namespace Gear.EmulationCore
 {
     /// @brief Counter modes of operation.
-    /// @remark Source: Table 6 - Counter Modes (CTRMODE Field Values), %Propeller 
+    /// @remark Source: Table 6 - Counter Modes (CTRMODE Field Values), %Propeller
     /// P8X32A Datasheet V1.4.0.
     /// @version v14.7.3 - Missing logic modes implemented (LOGIC_NEVER ... LOGIC_ALWAYS)
     public enum CounterMode : uint
@@ -172,8 +172,8 @@ namespace Gear.EmulationCore
         {
             get
             {
-                return (OutA ? PinAMask : 0) | 
-                    (OutB ? PinBMask : 0) | 
+                return (OutA ? PinAMask : 0) |
+                    (OutB ? PinBMask : 0) |
                     PhaseLockLoop.Pins;
             }
         }

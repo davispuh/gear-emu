@@ -27,9 +27,9 @@ namespace Gear.PluginSupport
         private void InitializeComponent()
         {
             this.SuspendLayout();
-            // 
+            //
             // PluginBase
-            // 
+            //
             this.DoubleBuffered = true;
             this.Name = "PluginBase";
             this.ResumeLayout(false);

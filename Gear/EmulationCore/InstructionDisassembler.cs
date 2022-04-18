@@ -32,7 +32,7 @@ namespace Gear.EmulationCore
         /// @brief Default static constructor
         static InstructionDisassembler() { }
 
-        /// @brief Translate to text the bytecode opcodes. 
+        /// @brief Translate to text the bytecode opcodes.
         /// @param Operation Bytecode opcodes.
         /// @return Explicative text from decoded bytecode.
         public static string AssemblyText(uint Operation)

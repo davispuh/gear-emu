@@ -40,29 +40,29 @@ namespace Gear.GUI
         private PropellerCPU m_Host;
 
         /// @brief Current Culture to modify its Number format.
-        /// @since @version v20.09.01 - Added.
-        private readonly CultureInfo currentCultureMod = 
+        /// @version @version v20.09.01 - Added.
+        private readonly CultureInfo currentCultureMod =
             (CultureInfo)CultureInfo.CurrentCulture.Clone();
 
         /// @brief Storage for frequency format.
-        /// @since @version v20.09.01 - Added.
+        /// @version @version v20.09.01 - Added.
         private NumberFormatEnum _reqFormatValue;
 
         /// @brief Frequency format to be displayed.
-        /// @since @version v20.09.01 - Added.
+        /// @version @version v20.09.01 - Added.
         private NumberFormatEnum FreqFormatValue
         {
             get => _reqFormatValue;
             set
             {
                 _reqFormatValue = value;
-                currentCultureMod.NumberFormat = 
+                currentCultureMod.NumberFormat =
                     NumberFormatEnumExtension.GetFormatInfo(_reqFormatValue);
             }
         }
 
         /// @brief Time format to be displayed.
-        /// @since v20.09.01 - Added.
+        /// @version v20.09.01 - Added.
         public TimeUnitsEnum TimeUnit { get; set; }
 
         /// @brief Property to set the %Propeller %Host.
@@ -103,7 +103,7 @@ namespace Gear.GUI
         }
 
         /// @brief Update the value of FreqFormat from default setting.
-        /// @since v20.09.01 - Added.
+        /// @version v20.09.01 - Added.
         public void UpdateFreqFormat()
         {
             FreqFormatValue = Properties.Settings.Default.FreqFormat;
@@ -117,10 +117,10 @@ namespace Gear.GUI
         }
 
         /// @brief Update Counter and Frequency labels with Monospace fonf.
-        /// @since v20.09.01 - Added.
+        /// @version v20.09.01 - Added.
         public void SetFontSpecialLabels()
         {
-            Font MonoFont = new Font(FontFamily.GenericMonospace, 8.25F, 
+            Font MonoFont = new Font(FontFamily.GenericMonospace, 8.25F,
                 FontStyle.Regular, GraphicsUnit.Point);
             coreFrequency.Font = MonoFont;
             xtalFrequency.Font = MonoFont;
@@ -150,7 +150,7 @@ namespace Gear.GUI
         }
 
         /// @brief Update Counter and Frequency labels with current format.
-        /// @since v20.09.01 - Added.
+        /// @version v20.09.01 - Added.
         public void UpdateCounterFreqTexts()
         {
             systemCounter.Text = FreqFormatText(m_Host.Counter);
@@ -159,32 +159,32 @@ namespace Gear.GUI
         }
 
         /// @brief Update Time labels with current format and unit.
-        /// @since v20.09.01 - Added.
+        /// @version v20.09.01 - Added.
         public void UpdateTimeText()
         {
             if (m_Host != null)
-                elapsedTime.Text = 
+                elapsedTime.Text =
                     timeUnitSelector.GetFormatedText(m_Host.EmulatorTime);
         }
 
-        /// @brief Format the value to string, considering the value 
+        /// @brief Format the value to string, considering the value
         ///  of FreqFormatValue.
         /// @param val Value to format to string.
         /// @returns The text formatted.
-        /// @since v20.09.01 - Added.
+        /// @version v20.09.01 - Added.
         private string FreqFormatText(uint val)
         {
             return string.Format(currentCultureMod, "{0,17:#,##0}", val);
         }
 
 
-        /// @brief Format the value to string, for all time units except 
+        /// @brief Format the value to string, for all time units except
         ///  Minutes (TimeUnitsEnum.min_s).
         /// @details Implements Gear.Utils.FormatToTextDelegate delegate.
         /// @param unit Time unit to use.
         /// @param val Value to format to string.
         /// @returns The formatted text.
-        /// @since v20.09.01 - Added.
+        /// @version v20.09.01 - Added.
         private string StandardTimeFormatText(TimeUnitsEnum unit, double val)
         {
             double factor = ((unit <= TimeUnitsEnum.s) ?
@@ -201,24 +201,24 @@ namespace Gear.GUI
         /// @param unit Time unit to use.
         /// @param val Value to format to string.
         /// @returns The formatted text.
-        /// @since v20.09.01 - Added.
+        /// @version v20.09.01 - Added.
         private string MinutesTimeFormatText(TimeUnitsEnum unit, double val)
         {
             if (!timeUnitSelector.IsMultiplyFactor)
                 return string.Format(currentCultureMod,
                     "{0,3:#0}:{1,13:00.0000000000}",
-                    Math.Floor(val / timeUnitSelector.FactorSelected), 
+                    Math.Floor(val / timeUnitSelector.FactorSelected),
                         val % timeUnitSelector.FactorSelected);
             else
                 return string.Format(currentCultureMod,
                     "{0,3:#0}:{1,13:00.0000000000}",
-                    Math.Floor(val * timeUnitSelector.FactorSelected), 
+                    Math.Floor(val * timeUnitSelector.FactorSelected),
                         val % (1.0 / timeUnitSelector.FactorSelected));
         }
 
         /// @brief Update frequency labels tool tips.
         /// @param val Format to use for frequency labels.
-        /// @since v20.09.01 - Added.
+        /// @version v20.09.01 - Added.
         private void UpdateFreqToolTips()
         {
             string txt = string.Format("\r\n(Click to change Format from [{0}])", FreqFormatValue);
@@ -230,7 +230,7 @@ namespace Gear.GUI
         /// @brief Change the frequencies labels format, remembering the user setting.
         /// @param sender
         /// @param e
-        /// @since v20.09.01 - Added.
+        /// @version v20.09.01 - Added.
         private void FrequencyLabels_Click(object sender, EventArgs e)
         {
             if (FreqFormatValue < NumberFormatEnum.GetValues(typeof(NumberFormatEnum)).Cast<NumberFormatEnum>().Max())
@@ -246,7 +246,7 @@ namespace Gear.GUI
         /// @brief Change the time unit, remembering the user setting.
         /// @param sender
         /// @param e
-        /// @since v20.09.01 - Added.
+        /// @version v20.09.01 - Added.
         private void TimeUnitSelector_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (!this.DesignMode)
@@ -262,7 +262,7 @@ namespace Gear.GUI
         /// @brief Change the time unit, remembering the user setting.
         /// @param sender
         /// @param e
-        /// @since v20.09.01 - Added.
+        /// @version v20.09.01 - Added.
         private void ElapsedTime_MouseClick(object sender, MouseEventArgs e)
         {
             switch (e.Button)
@@ -278,7 +278,7 @@ namespace Gear.GUI
             }
         }
 
-    } //end class HubView 
+    } //end class HubView
 
 } //end namespace Gear.GUI
 

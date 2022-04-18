@@ -59,7 +59,7 @@ namespace Gear.GUI.LogicProbe
             get { return "P" + PinNumber.ToString(); }
         }
 
-        /// @brief Default Constructor 
+        /// @brief Default Constructor
         /// @param pin Pin map to use
         public LogicDigital(int pin) : base()
         {

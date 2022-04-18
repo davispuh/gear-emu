@@ -26,20 +26,20 @@ using System;
 namespace Gear.Utils
 {
     /// @brief Single instance helper exception class.
-    /// @version 20.10.01 - Added exception class to control a single 
+    /// @version 20.10.01 - Added exception class to control a single
     /// instance form.
     [Serializable]
     public class SingleInstanceException : Exception
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public SingleInstanceException() :
             base()
         { }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="message"></param>
         public SingleInstanceException(string message) :
@@ -47,7 +47,7 @@ namespace Gear.Utils
         { }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="message"></param>
         /// <param name="innerException"></param>
@@ -56,7 +56,7 @@ namespace Gear.Utils
         { }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="serializationInfo"></param>
         /// <param name="streamingContext"></param>

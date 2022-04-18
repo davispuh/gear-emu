@@ -34,7 +34,7 @@ using System.Xml;
 namespace Gear.GUI
 {
     /// @brief View class for PropellerCPU emulator instance.
-    /// @details This class implements a view over a propeller emulator, with interface to control 
+    /// @details This class implements a view over a propeller emulator, with interface to control
     /// the chip, like start, go through steps, reset or reload.
     public partial class Emulator : Form
     {
@@ -88,9 +88,9 @@ namespace Gear.GUI
             UpdateStepInterval();
         }
 
-        /// @brief Update value of system properties inside of 
+        /// @brief Update value of system properties inside of
         /// contained controls.
-        /// @since v20.09.01 - Added.
+        /// @version v20.09.01 - Added.
         public void UpdateVarValue(string variableName)
         {
             switch (variableName)
@@ -108,7 +108,7 @@ namespace Gear.GUI
                     foreach (TabPage tabCtl in documentsTab.TabPages)
                         foreach (Control ctl in tabCtl.Controls)
                             if (ctl is LogicProbe.LogicView logic)
-                            { 
+                            {
                                 logic.UpdateLastTimeFrame();
                                 logic.UpdateFrameAndTickText();
                             }
@@ -143,14 +143,14 @@ namespace Gear.GUI
         }
 
         /// @brief Update step interval from default value.
-        /// @since v20.09.01 - Added.
+        /// @version v20.09.01 - Added.
         private void UpdateStepInterval()
         {
             stepInterval = Properties.Settings.Default.UpdateEachSteps;
         }
 
         /// @brief Include a plugin to a propeller chip instance.
-        /// @details Attach a plugin, linking the propeller instance to the plugin, opening a new 
+        /// @details Attach a plugin, linking the propeller instance to the plugin, opening a new
         /// tab window and enabling the close button by plugin's isClosable property.
         /// @param plugin Instance of a Gear.PluginSupport.PluginBase class to be attached.
         private void AttachPlugin(PluginBase plugin)
@@ -170,10 +170,10 @@ namespace Gear.GUI
         }
 
         /// @brief Delete a plugin from a propeller chip instance.
-        /// @details Delete a plugin from the actives plugins of the propeller instance, 
+        /// @details Delete a plugin from the actives plugins of the propeller instance,
         /// effectively stopping the plugin. Remove also from pins and clock watch list.
         /// @param plugin Instance of a Gear.PluginSupport.PluginCommon class to be detached.
-        /// @since v15.03.26 - Added.
+        /// @version v15.03.26 - Added.
         //Added method to detach a plugin from the active plugin list of the propeller instance.
         private void DetachPlugin(PluginBase plugin)
         {
@@ -186,9 +186,9 @@ namespace Gear.GUI
         }
 
         /// @brief Run the emulator updating the screen between a number of steps.
-        /// @details The program property "UpdateEachSteps" gives the number of steps before 
+        /// @details The program property "UpdateEachSteps" gives the number of steps before
         /// screen repaint.
-        /// Adjusting this number in configuration (like increasing the number) enable to obtain 
+        /// Adjusting this number in configuration (like increasing the number) enable to obtain
         /// faster execution at expense of less screen responsiveness.
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
@@ -203,7 +203,7 @@ namespace Gear.GUI
             RepaintViews();
         }
 
-        /// @brief Update Text and Images of buttons involved on running and 
+        /// @brief Update Text and Images of buttons involved on running and
         /// stop state of emulator.
         /// @version v20.10.01 - Added.
         private void UpdateRunningButtons()
@@ -281,7 +281,7 @@ namespace Gear.GUI
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
                 return false;
-            }  
+            }
             catch (BinarySizeException e)
             {
                 MessageBox.Show(this,
@@ -294,10 +294,10 @@ namespace Gear.GUI
         }
 
         /// @brief Load a plugin from XML file.
-        /// @details Try to open the XML definition for the plugin from the file name given as 
-        /// parameter. Then extract information from the XML (class name, auxiliary references 
-        /// and source code to compile), trying to compile the C# source code (based on 
-        /// Gear.PluginSupport.PluginBase class) and returning the new class instance. If the 
+        /// @details Try to open the XML definition for the plugin from the file name given as
+        /// parameter. Then extract information from the XML (class name, auxiliary references
+        /// and source code to compile), trying to compile the C# source code (based on
+        /// Gear.PluginSupport.PluginBase class) and returning the new class instance. If the
         /// compilation fails, then it opens the plugin editor to show errors and source code.
         /// @param FileName Name and path to the XML plugin file to open
         /// @returns Reference to the new plugin instance (on success) or NULL (on fail).
@@ -336,7 +336,7 @@ namespace Gear.GUI
                         }
                         else
                         {
-                            codeFileName = 
+                            codeFileName =
                                 Path.Combine(Path.GetDirectoryName(FileName), codeFileName);
                             code = File.ReadAllText(codeFileName);
                         }
@@ -364,7 +364,7 @@ namespace Gear.GUI
                     }
                 }
 
-                //Dynamic load and compile the plugin module as a class, giving the chip 
+                //Dynamic load and compile the plugin module as a class, giving the chip
                 // instance as a parameter.
                 PluginBase plugin = ModuleCompiler.LoadModule(
                     code,
@@ -505,7 +505,7 @@ namespace Gear.GUI
         }
 
         /// @brief Close the plugin window and terminate the plugin instance.
-        /// @details Not only close the tab window, also detach the plugin 
+        /// @details Not only close the tab window, also detach the plugin
         /// from the PropellerCPU what uses it.
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
@@ -516,7 +516,7 @@ namespace Gear.GUI
 
             if (p != null)          //test if cast to PluginBase works...
             {
-                if (p.IsClosable)   //... so, test if we can close the tab 
+                if (p.IsClosable)   //... so, test if we can close the tab
                 {
                     if (documentsTab.SelectedIndex > 0)
                     {
@@ -646,7 +646,7 @@ namespace Gear.GUI
             RepaintViews();
         }
 
-        /// @brief Try to open a plugin, compiling it and attaching to the active 
+        /// @brief Try to open a plugin, compiling it and attaching to the active
         /// emulator instance.
         /// @param sender Reference to the object where this event was called.
         /// @param e Class with the details event.
@@ -685,13 +685,13 @@ namespace Gear.GUI
         }
 
         /// @brief Determine availability of close plugin button when tab is changed.
-        /// @details Enable close plugin button based on if active tab is subclass of 
-        /// Gear.PluginSupport.PluginBase and if that class permit close the window. Typically 
-        /// the user plugins enabled it; but the cog window, main memory, logic probe, etc, 
+        /// @details Enable close plugin button based on if active tab is subclass of
+        /// Gear.PluginSupport.PluginBase and if that class permit close the window. Typically
+        /// the user plugins enabled it; but the cog window, main memory, logic probe, etc,
         /// don't allow to close.
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
-        /// @since V14.07.03 - Added.
+        /// @version V14.07.03 - Added.
         private void DocumentsTab_Click(object sender, EventArgs e)
         {
             TabPage tp = documentsTab.SelectedTab;
@@ -743,7 +743,7 @@ namespace Gear.GUI
             }
         }
 
-        /// @brief Refresh form's Icon 
+        /// @brief Refresh form's Icon
         /// @param sender
         /// @param e
         /// @version v20.10.01 - Added.
@@ -760,24 +760,24 @@ namespace Gear.GUI
 // Reference link to DOXYGEN commands: https://www.doxygen.nl/manual/commands.html
 //
 /// @defgroup PluginDetails Plugin Loading Details
-/// 
+///
 
 /// @ingroup PluginDetails
 /// @page PluginLoadingSequencePage Loading Sequence for a Plugin.
 /// @par Main Sequence.
-/// Sequence of plugin loading, since the user presses the button in the emulator window (ideal 
+/// Sequence of plugin loading, since the user presses the button in the emulator window (ideal
 /// flow case).
 /// @anchor PluginLoadingSequenceFig1
 /// @par
 /// @mscfile "Load plugin Callings-fig1.mcsgen" "Fig.1: Main sequence for a Plugin loading."
 /// @par Detail for Registering OnPinChange & OnClock Methods.
-/// This is a detail of main sequence of 
-/// @ref PluginLoadingSequenceFig1 "\"Fig.1: Main sequence for a Plugin loading.\"", to show 
-/// the possible flows of invocations when the program calls the Method `PresentChip()`, but not 
-/// from PluginBase; is the method defined in the plugin class derived by the loaded & compiled 
-/// plugin class. So the plugin programmer could choose to call or not either `OnClock()` and 
+/// This is a detail of main sequence of
+/// @ref PluginLoadingSequenceFig1 "\"Fig.1: Main sequence for a Plugin loading.\"", to show
+/// the possible flows of invocations when the program calls the Method `PresentChip()`, but not
+/// from PluginBase; is the method defined in the plugin class derived by the loaded & compiled
+/// plugin class. So the plugin programmer could choose to call or not either `OnClock()` and
 /// `OnPinChange()` derived methods.
 /// @anchor PluginLoadingSequenceFig2
 /// @par
 /// @mscfile "Load plugin Callings-fig2.mcsgen" "Fig.2: details of invocation for Plugin members."
-/// 
+///

@@ -58,9 +58,9 @@ namespace Gear.GUI
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
-            // 
+            //
             // objectView
-            // 
+            //
             this.objectView.Dock = System.Windows.Forms.DockStyle.Left;
             this.objectView.FullRowSelect = true;
             this.objectView.Indent = 10;
@@ -69,9 +69,9 @@ namespace Gear.GUI
             this.objectView.Size = new System.Drawing.Size(260, 428);
             this.objectView.TabIndex = 0;
             this.objectView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.SelectChanged);
-            // 
+            //
             // hexView
-            // 
+            //
             this.hexView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.hexView.Location = new System.Drawing.Point(260, 25);
             this.hexView.Name = "hexView";
@@ -80,9 +80,9 @@ namespace Gear.GUI
             this.hexView.SizeChanged += new System.EventHandler(this.OnSize);
             this.hexView.Paint += new System.Windows.Forms.PaintEventHandler(this.OnPaint);
             this.hexView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.HexView_MouseClick);
-            // 
+            //
             // toolStrip1
-            // 
+            //
             this.toolStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.analyzeButton});
@@ -91,9 +91,9 @@ namespace Gear.GUI
             this.toolStrip1.Size = new System.Drawing.Size(644, 25);
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
-            // 
+            //
             // analyzeButton
-            // 
+            //
             this.analyzeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.analyzeButton.Image = ((System.Drawing.Image)(resources.GetObject("analyzeButton.Image")));
             this.analyzeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -101,9 +101,9 @@ namespace Gear.GUI
             this.analyzeButton.Size = new System.Drawing.Size(60, 22);
             this.analyzeButton.Text = "Reanalize";
             this.analyzeButton.Click += new System.EventHandler(this.AnalizeButton_Click);
-            // 
+            //
             // scrollPosition
-            // 
+            //
             this.scrollPosition.Dock = System.Windows.Forms.DockStyle.Right;
             this.scrollPosition.LargeChange = 16;
             this.scrollPosition.Location = new System.Drawing.Point(627, 25);
@@ -113,17 +113,17 @@ namespace Gear.GUI
             this.scrollPosition.TabIndex = 0;
             this.scrollPosition.TabStop = true;
             this.scrollPosition.Scroll += new System.Windows.Forms.ScrollEventHandler(this.OnScroll);
-            // 
+            //
             // splitter1
-            // 
+            //
             this.splitter1.Location = new System.Drawing.Point(260, 25);
             this.splitter1.Name = "splitter1";
             this.splitter1.Size = new System.Drawing.Size(3, 428);
             this.splitter1.TabIndex = 2;
             this.splitter1.TabStop = false;
-            // 
+            //
             // SpinView
-            // 
+            //
             this.Controls.Add(this.splitter1);
             this.Controls.Add(this.hexView);
             this.Controls.Add(this.objectView);

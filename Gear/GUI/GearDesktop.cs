@@ -29,7 +29,7 @@ using System.Windows.Forms;
 /// @brief Contains the definitions of %GUI objects (controlling objects).
 namespace Gear.GUI
 {
-    /// @brief Implements the graphical Desktop to the emulator, plugin editor and 
+    /// @brief Implements the graphical Desktop to the emulator, plugin editor and
     /// related windows.
     public partial class GearDesktop : Form
     {
@@ -93,7 +93,7 @@ namespace Gear.GUI
             LayoutMdi(MdiLayout.TileVertical);
         }
 
-        /// @brief Arrange the emulator windows in Horizontal Tiles. 
+        /// @brief Arrange the emulator windows in Horizontal Tiles.
         private void TileHorizontalToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LayoutMdi(MdiLayout.TileHorizontal);
@@ -122,7 +122,7 @@ namespace Gear.GUI
         }
 
         /// @brief Load plugin editor from file.
-        /// @details Load a plugin definition into a new editor window, from user selected file, 
+        /// @details Load a plugin definition into a new editor window, from user selected file,
         /// remembering independently from last binary directory.
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
@@ -134,7 +134,7 @@ namespace Gear.GUI
                 Title = "Open Gear Plug-in..."
             };
             if (!String.IsNullOrEmpty(Properties.Settings.Default.LastPlugin))
-                openFileDialog.InitialDirectory = 
+                openFileDialog.InitialDirectory =
                     Path.GetDirectoryName(Properties.Settings.Default.LastPlugin);
 
             if (openFileDialog.ShowDialog(this) == DialogResult.OK)
@@ -154,11 +154,11 @@ namespace Gear.GUI
         }
 
         /// @brief Load plugin editor from file.
-        /// @details Load a plugin definition into a new editor window, from user selected file, 
+        /// @details Load a plugin definition into a new editor window, from user selected file,
         /// remembering independently from last binary directory.
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
-        /// @since v20.09.03 - Added.
+        /// @version v20.09.03 - Added.
         private void EditPluginToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenPluginButton_Click(sender, e);
@@ -180,7 +180,7 @@ namespace Gear.GUI
         /// @brief Open a window with the plugin editor to create a new plugin.
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
-        /// @since v20.09.03 - Added.
+        /// @version v20.09.03 - Added.
         private void NewPluginToolStripMenuItem_Click(object sender, EventArgs e)
         {
             NewPluginButton_Click(sender, e);
@@ -189,7 +189,7 @@ namespace Gear.GUI
         /// @brief Open Gear properties editor.
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
-        /// @since v20.10.01 - Edited to manage only one instance of 
+        /// @version v20.10.01 - Edited to manage only one instance of
         /// AppPropertiesEditor.
         private void OptionsButton_Click(object sender, EventArgs e)
         {
@@ -205,7 +205,7 @@ namespace Gear.GUI
             {
                 foreach(var form in this.MdiChildren)
                 {
-                    if (form is AppPropertiesEditor) 
+                    if (form is AppPropertiesEditor)
                     {
                         form.Activate();
                         break;
@@ -217,7 +217,7 @@ namespace Gear.GUI
         /// @brief Open Gear properties editor
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
-        /// @since v20.05.00 - Added.
+        /// @version v20.05.00 - Added.
         private void OptionsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OptionsButton_Click(sender, e);

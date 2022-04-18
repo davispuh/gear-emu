@@ -23,11 +23,11 @@
 using System.Globalization;
 
 /// @brief Utilities classes.
-/// @since v20.09.01 - Added.
+/// @version v20.09.01 - Added.
 namespace Gear.Utils
 {
     /// @brief Available Number Formats.
-    /// @since v20.09.01 - Added.
+    /// @version v20.09.01 - Added.
     public enum NumberFormatEnum
     {
         /// @brief No format (old default).
@@ -39,12 +39,12 @@ namespace Gear.Utils
     }
 
     /// @brief Provides number separators formats for clock and counters.
-    /// @since v20.09.01 - Added.
+    /// @version v20.09.01 - Added.
     public static class NumberFormatEnumExtension
     {
         public static NumberFormatInfo GetFormatInfo(NumberFormatEnum value)
         {
-           NumberFormatInfo retVal = 
+           NumberFormatInfo retVal =
                 (NumberFormatInfo)CultureInfo.CurrentCulture.NumberFormat.Clone();
             switch (value)
             {

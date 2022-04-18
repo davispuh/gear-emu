@@ -34,7 +34,7 @@ namespace Gear.GUI
     partial class SpinView : Gear.PluginSupport.PluginBase
     {
         /// @brief Current Culture to modify its Number format.
-        /// @since @version v20.09.01 - Added.
+        /// @version @version v20.09.01 - Added.
         private readonly CultureInfo currentCultureMod =
             (CultureInfo)CultureInfo.CurrentCulture.Clone();
 
@@ -73,7 +73,7 @@ namespace Gear.GUI
         }
 
         /// @brief Update frequency format to be displayed.
-        /// @since v20.09.01 - Added.
+        /// @version v20.09.01 - Added.
         public void UpdateFreqFormat()
         {
             currentCultureMod.NumberFormat =
@@ -83,16 +83,16 @@ namespace Gear.GUI
 
         public override void PresentChip() { }
 
-        /// @brief Format the value to string, considering the value 
+        /// @brief Format the value to string, considering the value
         ///  of FreqFormatValue.
         /// @param val Value to format to string.
         /// @returns The text formatted.
-        /// @since v20.09.01 - Added.
+        /// @version v20.09.01 - Added.
         private string FreqFormatText(uint val)
         {
             return string.Format(currentCultureMod, "{0:#,##0}", val);
         }
-        
+
         private void ColorCode()
         {
             int i;

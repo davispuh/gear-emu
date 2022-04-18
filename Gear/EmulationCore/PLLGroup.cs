@@ -26,7 +26,7 @@ using System.Collections.Generic;
 
 namespace Gear.EmulationCore
 {
-    /// @brief Provides PLLA and PLLB to a Cog, as well as forwards internal 
+    /// @brief Provides PLLA and PLLB to a Cog, as well as forwards internal
     /// signals to a video generator object.
     public class PLLGroup : ClockSource
     {

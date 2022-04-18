@@ -28,7 +28,7 @@ using System.Windows.Forms;
 namespace Gear.GUI
 {
     /// @brief Combobox specialization for time unit management.
-    /// @since v20.09.01 - Added.
+    /// @version v20.09.01 - Added.
     public partial class TimeUnitComboBox : ComboBox, ITimeUnitMgmt
     {
         /// @brief Time Units Management Instance
@@ -109,7 +109,7 @@ namespace Gear.GUI
         /// @details Implements ITimeUnitMgmt interface.
         /// @param val Value to convert to text.
         /// @return Formated text of the value.
-        public string GetFormatedText(double val) => 
+        public string GetFormatedText(double val) =>
             Mgmt.GetFormatedText(val);
 
     }

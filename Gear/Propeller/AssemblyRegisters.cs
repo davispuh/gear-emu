@@ -27,8 +27,8 @@ namespace Gear.Propeller
     public partial class Assembly
     {
         /// @brief %Cog RAM Special Purpose Registers.
-        /// 
-        /// @remark Source: Table 15 - %Cog RAM Special Purpose Registers, %Propeller 
+        ///
+        /// @remark Source: Table 15 - %Cog RAM Special Purpose Registers, %Propeller
         /// P8X32A Datasheet V1.4.0.
         /// @version v15.03.26 - added NONE to enum, to follow best practices and do not
         /// have an illegal value when is instantiated.
@@ -60,12 +60,12 @@ namespace Gear.Propeller
         /// @brief %Cog RAM Special Purpose Registers.
         /// Specify the write and read status of special registers of cog RAM.
         /// Source: Table 15 - %Cog RAM Special Purpose Registers, %Propeller P8X32A Datasheet V1.4.0.
-        /// @note PAR address is a special case, because unless Propeller Manual V1.4 
-        /// specifications says it is a read-only register, there are claims that in reality it 
-        /// is writable as explains 
+        /// @note PAR address is a special case, because unless Propeller Manual V1.4
+        /// specifications says it is a read-only register, there are claims that in reality it
+        /// is writable as explains
         /// <a href="https://forums.parallax.com/discussion/115909/PASM-simulator-debugger">
         /// Forum thread "PASM simulator / debugger?</a>.
-        /// @par They claims that some parallax video drivers in PASM changes the PAR register, 
+        /// @par They claims that some parallax video drivers in PASM changes the PAR register,
         /// and GEAR didn't emulate that.
         static public readonly Register[] Registers = new Register[] {
             //Constructor Register(string Name, bool Read, bool Write)

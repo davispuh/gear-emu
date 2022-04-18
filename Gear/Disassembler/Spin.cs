@@ -25,12 +25,12 @@ using System;
 namespace Gear.Disassembler
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public static class Spin
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public class ParsedMemoryOperation
         {
@@ -41,7 +41,7 @@ namespace Gear.Disassembler
             public Propeller.Spin.MemoryAction Action           { get; private set; }
 
             /// <summary>
-            /// 
+            ///
             /// </summary>
             /// <param name="Opcode"></param>
             public ParsedMemoryOperation(byte Opcode)
@@ -54,7 +54,7 @@ namespace Gear.Disassembler
             }
 
             /// <summary>
-            /// 
+            ///
             /// </summary>
             /// <returns></returns>
             public Propeller.Register GetRegister()
@@ -71,7 +71,7 @@ namespace Gear.Disassembler
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="SourceAssignment"></param>
         /// <param name="ParsedAssignment"></param>
@@ -91,7 +91,7 @@ namespace Gear.Disassembler
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public class ParsedAssignment
         {
@@ -110,7 +110,7 @@ namespace Gear.Disassembler
             private Propeller.Spin.SubAssignment   SourceSubAssignment;
 
             /// <summary>
-            /// 
+            ///
             /// </summary>
             /// <param name="Opcode"></param>
             public ParsedAssignment(byte Opcode)
@@ -137,7 +137,7 @@ namespace Gear.Disassembler
             }
 
             /// <summary>
-            /// 
+            ///
             /// </summary>
             /// <returns></returns>
             public Propeller.Spin.SubAssignment GetSubAssignment()
@@ -154,7 +154,7 @@ namespace Gear.Disassembler
             }
 
             /// <summary>
-            /// 
+            ///
             /// </summary>
             /// <returns></returns>
             public Propeller.BasicInstruction GetBasicInstruction()

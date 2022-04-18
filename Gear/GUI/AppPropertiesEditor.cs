@@ -32,7 +32,7 @@ using System.Windows.Forms;
 namespace Gear.GUI
 {
     /// @brief Form to edit program properties.
-    /// @since v15.03.26 - Added. 
+    /// @version v15.03.26 - Added.
     public partial class AppPropertiesEditor : Form
     {
         /// @brief How many instances are created?
@@ -75,7 +75,7 @@ namespace Gear.GUI
         {
             PropertyDescriptor prop;    //to get the underlying property
             //check if a property is selected and if it is writeable
-            if (GearPropertyGrid.SelectedGridItem.GridItemType == GridItemType.Property && 
+            if (GearPropertyGrid.SelectedGridItem.GridItemType == GridItemType.Property &&
                 !(prop = GearPropertyGrid.SelectedGridItem.PropertyDescriptor).IsReadOnly)
             {
                 //try to get the default value of the property
@@ -99,7 +99,7 @@ namespace Gear.GUI
             }
         }
 
-        /// @brief Event when a property had changed its value, used to update copies of the 
+        /// @brief Event when a property had changed its value, used to update copies of the
         /// property values used in other forms.
         /// @param s Sender object to this event.
         /// @param e Arguments to this event, including the old value.
@@ -141,14 +141,14 @@ namespace Gear.GUI
         /// @brief Manage event of closed window.
         /// @param sender
         /// @param e
-        /// @version v20.10.01 - Added to manage only one instance of 
+        /// @version v20.10.01 - Added to manage only one instance of
         /// AppPropertiesEditor.
         private void AppPropertiesEditor_FormClosed(object sender, FormClosedEventArgs e)
         {
             instanceNumber--;
         }
 
-        /// @brief Refresh form's Icon 
+        /// @brief Refresh form's Icon
         /// @param sender
         /// @param e
         /// @version v20.10.01 - Added.
