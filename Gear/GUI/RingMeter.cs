@@ -30,66 +30,83 @@ namespace Gear.GUI
     /// @brief Rotating gear hub view object.
     public partial class RingMeter : UserControl
     {
-        private uint m_RingPosition;
+        /// <summary></summary>
+        private uint _ringPosition;
 
+        /// <summary></summary>
+        private static readonly StringFormat DrawFormat = new StringFormat();
+
+        /// <summary>Number of tooth for gear representation.</summary>
+        private const int ToothNumber = 8;
+
+        /// <summary></summary>
         public uint Value
         {
-            get { return m_RingPosition; }
+            get => _ringPosition;
             set
             {
-                uint old = m_RingPosition;
-                m_RingPosition = (value & 0xF);
-                if (old != m_RingPosition)
+                uint old = _ringPosition;
+                _ringPosition = (value & 0xF);
+                if (old != _ringPosition)
                     Invalidate();
             }
         }
 
+        /// <summary>Default constructor</summary>
         public RingMeter()
         {
             InitializeComponent();
+            DrawFormat.LineAlignment = StringAlignment.Center;
+            DrawFormat.Alignment = StringAlignment.Center;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnSizeChanged(EventArgs e)
         {
-            this.Height = this.Width;
+            Height = Width;
             base.OnSizeChanged(e);
-            this.Refresh();
+            Refresh();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="e"></param>
+        /// <exception cref="ArgumentNullException"></exception>
         protected override void OnPaint(PaintEventArgs e)
         {
+            if (e is null)
+                throw new ArgumentNullException(nameof(e));
             double scale = this.Width;
-            double rotation = 14.50 - m_RingPosition * 2;
-            double BaseLocationX = scale / 2;
-            double BaseLocationY = scale / 2;
-            double InnerSize = scale / 2 - 16;
-            double OuterSize = InnerSize * 0.75;
-            double TopShift = Math.PI / 24;
+            double rotation = 14.50 - _ringPosition * 2;
+            double baseLocationX = scale / 2;
+            double baseLocationY = scale / 2;
+            double innerSize = scale / 2 - 16;
+            double outerSize = innerSize * 0.75;
+            double topShift = Math.PI / 24;
 
-            Point[] points = new Point[8 * 4];
-            StringFormat drawFormat = new StringFormat
-            {
-                LineAlignment = StringAlignment.Center,
-                Alignment = StringAlignment.Center
-            };
+            Point[] points = new Point[ToothNumber * 4];
 
             for (int i = 0; i < points.Length; i += 4)
             {
                 points[i + 0] = new Point(
-                    (int)(-Math.Sin((i + TopShift + rotation) * Math.PI / 16.0) * OuterSize + BaseLocationX),
-                    (int)(Math.Cos((i + TopShift + rotation) * Math.PI / 16.0) * OuterSize + BaseLocationY)
+                    (int)(-Math.Sin((i + topShift + rotation) * Math.PI / 16.0) * outerSize + baseLocationX),
+                    (int)(Math.Cos((i + topShift + rotation) * Math.PI / 16.0) * outerSize + baseLocationY)
                 );
                 points[i + 1] = new Point(
-                    (int)(-Math.Sin((i + 1 + rotation) * Math.PI / 16.0) * InnerSize + BaseLocationX),
-                    (int)(Math.Cos((i + 1 + rotation) * Math.PI / 16.0) * InnerSize + BaseLocationY)
+                    (int)(-Math.Sin((i + 1 + rotation) * Math.PI / 16.0) * innerSize + baseLocationX),
+                    (int)(Math.Cos((i + 1 + rotation) * Math.PI / 16.0) * innerSize + baseLocationY)
                 );
                 points[i + 2] = new Point(
-                    (int)(-Math.Sin((i + 2 + rotation) * Math.PI / 16.0) * InnerSize + BaseLocationX),
-                    (int)(Math.Cos((i + 2 + rotation) * Math.PI / 16.0) * InnerSize + BaseLocationY)
+                    (int)(-Math.Sin((i + 2 + rotation) * Math.PI / 16.0) * innerSize + baseLocationX),
+                    (int)(Math.Cos((i + 2 + rotation) * Math.PI / 16.0) * innerSize + baseLocationY)
                 );
                 points[i + 3] = new Point(
-                    (int)(-Math.Sin((i + 3 - TopShift + rotation) * Math.PI / 16.0) * OuterSize + BaseLocationX),
-                    (int)(Math.Cos((i + 3 - TopShift + rotation) * Math.PI / 16.0) * OuterSize + BaseLocationY)
+                    (int)(-Math.Sin((i + 3 - topShift + rotation) * Math.PI / 16.0) * outerSize + baseLocationX),
+                    (int)(Math.Cos((i + 3 - topShift + rotation) * Math.PI / 16.0) * outerSize + baseLocationY)
                 );
             }
 
@@ -97,10 +114,10 @@ namespace Gear.GUI
             e.Graphics.DrawPolygon(Pens.Black, points);
             e.Graphics.DrawEllipse(Pens.Black,
                 new Rectangle(
-                    (int)(BaseLocationX - OuterSize / 5),
-                    (int)(BaseLocationY - OuterSize / 5),
-                    (int)(OuterSize / 2.5),
-                    (int)(OuterSize / 2.5)
+                    (int)(baseLocationX - outerSize / 5),
+                    (int)(baseLocationY - outerSize / 5),
+                    (int)(outerSize / 2.5),
+                    (int)(outerSize / 2.5)
                 )
             );
 
@@ -109,14 +126,14 @@ namespace Gear.GUI
                 float x = points[i].X + points[i + 1].X + points[i + 2].X + points[i + 3].X;
                 float y = points[i].Y + points[i + 1].Y + points[i + 2].Y + points[i + 3].Y;
 
-                e.Graphics.DrawString((i / 4).ToString(), this.Font, Brushes.Black, x / 4, y / 4, drawFormat);
+                e.Graphics.DrawString((i / 4).ToString(), this.Font, Brushes.Black, x / 4, y / 4, DrawFormat);
             }
 
             points = new Point[3];
 
-            points[0] = new Point((int)(BaseLocationX), (int)(BaseLocationY - OuterSize + scale * 0.02));
-            points[1] = new Point((int)(BaseLocationX - scale * 0.06), (int)(BaseLocationY - OuterSize + scale * 0.06));
-            points[2] = new Point((int)(BaseLocationX + scale * 0.06), (int)(BaseLocationY - OuterSize + scale * 0.06));
+            points[0] = new Point((int)(baseLocationX), (int)(baseLocationY - outerSize + scale * 0.02));
+            points[1] = new Point((int)(baseLocationX - scale * 0.06), (int)(baseLocationY - outerSize + scale * 0.06));
+            points[2] = new Point((int)(baseLocationX + scale * 0.06), (int)(baseLocationY - outerSize + scale * 0.06));
 
             e.Graphics.DrawPolygon(Pens.Black, points);
             base.OnPaint(e);

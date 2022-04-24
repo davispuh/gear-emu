@@ -78,7 +78,7 @@ namespace Gear.EmulationCore
     /// <summary>
     /// Base class for a %Cog emulator.
     /// </summary>
-    abstract public partial class Cog
+    public abstract class Cog
     {
         // Runtime variables
         protected uint[] Memory;            //!< %Cog Memory.
@@ -91,15 +91,15 @@ namespace Gear.EmulationCore
         protected CogRunState State;        //!< Current %Cog state
         protected CogRunState NextState;    //!< Next state %Cog state
 
-        protected uint ProgramAddress;      //!< @todo Document member Cog.ProgramAddress
-        protected uint ParamAddress;        //!< @todo Document member Cog.ParamAddress
+        protected uint ProgramAddress;      //!< @brief
+        protected uint ParamAddress;        //!< @brief
         protected FrameState frameFlag;     //!< @brief Indicates video frame end and whether in WAIT_VID
         protected FrameState frameBreak;    //!< @brief Break if frameFlag higher
 
-        protected FreqGenerator FreqA;      //!< @todo Document member Cog.FreqA
-        protected FreqGenerator FreqB;      //!< @todo Document member Cog.FreqB
-        protected VideoGenerator Video;     //!< @todo Document member Cog.Video
-        protected PLLGroup PhaseLockedLoop; //!< @todo Document member Cog.PhaseLockedLoop
+        protected FreqGenerator FreqA;      //!< @brief
+        protected FreqGenerator FreqB;      //!< @brief
+        protected VideoGenerator Video;     //!< @brief
+        protected PLLGroup PhaseLockedLoop; //!< @brief
 
         /// @brief Total %Cog memory implemented on P1 Chip.
         public const int TOTAL_COG_MEMORY = 0x200;  // 512 longs of memory
@@ -588,18 +588,18 @@ namespace Gear.EmulationCore
 
         /// @brief Execute a instruction in this cog.
         /// @returns TRUE if it is time to trigger a breakpoint, or FALSE if not.
-        abstract public bool DoInstruction();
+        public abstract bool DoInstruction();
 
         /// <summary>
         ///
         /// </summary>
-        abstract public void Boot();
+        public abstract void Boot();
 
         /// <summary>
         ///
         /// </summary>
         /// <param name="colours"></param>
         /// <param name="pixels"></param>
-        abstract public void GetVideoData(out uint colours, out uint pixels);
+        public abstract void GetVideoData(out uint colours, out uint pixels);
     }
 }

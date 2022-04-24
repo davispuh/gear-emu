@@ -353,6 +353,7 @@ MigrationBackup/
 
 #doxygen & mcsgen documentation
 Doc/html/**
+Doc/xml/**
 Doc/[Mm]csgen-files/*.png
 Doc/[Mm]csgen-files/*.svg
 Doc/[Mm]csgen-files/*.eps

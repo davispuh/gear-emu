@@ -129,7 +129,7 @@ namespace Gear.Utils
             }
         }
 
-        /// @brief @todo Document method TimeUnitsEnumExtension.GetIsMultiplyFactor(.)
+        /// @brief
         /// @param unit
         /// @return
         public static bool GetIsMultiplyFactor(TimeUnitsEnum unit)
@@ -163,7 +163,10 @@ namespace Gear.Utils
             }
         }
 
-        /// @brief @todo Document method TimeUnitsEnumExtension.ToString()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return string.Concat(
@@ -178,7 +181,7 @@ namespace Gear.Utils
                 "}");
         }
 
-        /// @brief @todo Document method TimeUnitsEnumExtension.GetAll<T>()
+        /// @brief
         /// @tparam T
         /// @return
         public static IEnumerable<T> GetAll<T>() where T : TimeUnitsEnumExtension
@@ -190,7 +193,11 @@ namespace Gear.Utils
             return fields.Select(f => f.GetValue(null)).Cast<T>();
         }
 
-        /// @brief @todo Document method TimeUnitsEnumExtension.Equals(.)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public override bool Equals(object obj)
         {
             TimeUnitsEnumExtension otherValue = obj as TimeUnitsEnumExtension;
@@ -201,7 +208,10 @@ namespace Gear.Utils
             return typeMatches && valueMatches;
         }
 
-        /// @brief @todo Document method TimeUnitsEnumExtension.GetHashCode()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
             return Tuple.Create<TimeUnitsEnum, string>(Id, Name).GetHashCode();
@@ -215,7 +225,7 @@ namespace Gear.Utils
         public int CompareTo(object other) =>
             Id.CompareTo(((TimeUnitsEnumExtension)other).Id);
 
-        /// @brief @todo Document method TimeUnitsEnumExtension.
+        /// @brief
         /// @details Implements IComparable interface.
         /// @param left
         /// @param right
@@ -227,7 +237,7 @@ namespace Gear.Utils
             return left.Equals(right);
         }
 
-        /// @brief @todo Document method TimeUnitsEnumExtension.
+        /// @brief
         /// @details Implements IComparable interface.
         /// @param left
         /// @param right
@@ -237,7 +247,7 @@ namespace Gear.Utils
             return !(left == right);
         }
 
-        /// @brief @todo Document method TimeUnitsEnumExtension.
+        /// @brief
         /// @details Implements IComparable interface.
         /// @param left
         /// @param right
@@ -249,7 +259,7 @@ namespace Gear.Utils
                 left.CompareTo(right) < 0;
         }
 
-        /// @brief @todo Document method TimeUnitsEnumExtension.
+        /// @brief
         /// @details Implements IComparable interface.
         /// @param left
         /// @param right
@@ -259,7 +269,7 @@ namespace Gear.Utils
             return left is null || left.CompareTo(right) <= 0;
         }
 
-        /// @brief @todo Document method TimeUnitsEnumExtension.
+        /// @brief
         /// @details Implements IComparable interface.
         /// @param left
         /// @param right
@@ -269,7 +279,7 @@ namespace Gear.Utils
             return left is object && left.CompareTo(right) > 0;
         }
 
-        /// @brief @todo Document method TimeUnitsEnumExtension.
+        /// @brief
         /// @details Implements IComparable interface.
         /// @param left
         /// @param right

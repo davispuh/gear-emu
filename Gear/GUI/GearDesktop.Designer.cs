@@ -213,7 +213,7 @@ namespace Gear.GUI
             this.tileVerticalToolStripMenuItem.Name = "tileVerticalToolStripMenuItem";
             this.tileVerticalToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.tileVerticalToolStripMenuItem.Text = "Tile &Vertical";
-            this.tileVerticalToolStripMenuItem.Click += new System.EventHandler(this.TileVerticleToolStripMenuItem_Click);
+            this.tileVerticalToolStripMenuItem.Click += new System.EventHandler(this.TileVerticalToolStripMenuItem_Click);
             //
             // tileHorizontalToolStripMenuItem
             //
@@ -338,8 +338,8 @@ namespace Gear.GUI
             // toolStripStatusLabel
             //
             this.toolStripStatusLabel.Name = "toolStripStatusLabel";
-            this.toolStripStatusLabel.Size = new System.Drawing.Size(39, 17);
-            this.toolStripStatusLabel.Text = "Status";
+            this.toolStripStatusLabel.Size = new System.Drawing.Size(343, 17);
+            this.toolStripStatusLabel.Text = "Emulator shortcut keys:  R - Run; S - Stop or Step Instruction; C - Step Clock";
             //
             // GearDesktop
             //

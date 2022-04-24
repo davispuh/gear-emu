@@ -37,26 +37,28 @@ namespace Gear.GUI
     public partial class HubView : UserControl
     {
         /// @brief Reference to propeller cpu instance.
-        private PropellerCPU m_Host;
+        private PropellerCPU _cpuHost;
 
         /// @brief Current Culture to modify its Number format.
-        /// @version @version v20.09.01 - Added.
-        private readonly CultureInfo currentCultureMod =
+        /// @version v20.09.01 - Added.
+        private readonly CultureInfo _currentCultureMod =
             (CultureInfo)CultureInfo.CurrentCulture.Clone();
 
         /// @brief Storage for frequency format.
-        /// @version @version v20.09.01 - Added.
+        /// @version v20.09.01 - Added.
         private NumberFormatEnum _reqFormatValue;
 
         /// @brief Frequency format to be displayed.
-        /// @version @version v20.09.01 - Added.
+        /// @version v22.04.02 - Check to update only on changes.
         private NumberFormatEnum FreqFormatValue
         {
             get => _reqFormatValue;
             set
             {
+                if (_reqFormatValue == value)
+                    return;
                 _reqFormatValue = value;
-                currentCultureMod.NumberFormat =
+                _currentCultureMod.NumberFormat =
                     NumberFormatEnumExtension.GetFormatInfo(_reqFormatValue);
             }
         }
@@ -64,16 +66,6 @@ namespace Gear.GUI
         /// @brief Time format to be displayed.
         /// @version v20.09.01 - Added.
         public TimeUnitsEnum TimeUnit { get; set; }
-
-        /// @brief Property to set the %Propeller %Host.
-        public PropellerCPU Host
-        {
-            set
-            {
-                m_Host = value;
-                DataChanged();
-            }
-        }
 
         /// @brief Default constructor
         /// @version v20.09.01 - Modified to retrieve last formats.
@@ -102,6 +94,15 @@ namespace Gear.GUI
             UpdateTimeText();
         }
 
+        /// <summary>Set the %Propeller %Host.</summary>
+        /// <exception cref="ArgumentNullException">If host is null.</exception>
+        /// @version v22.04.02 - Converted to Set method from Property.
+        public void SetHost(PropellerCPU host)
+        {
+            _cpuHost = host ?? throw new ArgumentNullException(nameof(host));
+            DataChanged();
+        }
+
         /// @brief Update the value of FreqFormat from default setting.
         /// @version v20.09.01 - Added.
         public void UpdateFreqFormat()
@@ -109,6 +110,10 @@ namespace Gear.GUI
             FreqFormatValue = Properties.Settings.Default.FreqFormat;
         }
 
+        /// <summary>
+        /// Update the value of TimeUnit from default setting.
+        /// </summary>
+        /// @version v20.09.01 - Added.
         public void UpdateHubTimeUnit()
         {
             TimeUnit = Properties.Settings.Default.HubTimeUnit;
@@ -120,51 +125,53 @@ namespace Gear.GUI
         /// @version v20.09.01 - Added.
         public void SetFontSpecialLabels()
         {
-            Font MonoFont = new Font(FontFamily.GenericMonospace, 8.25F,
+            Font monoFont = new Font(FontFamily.GenericMonospace, 8.25F,
                 FontStyle.Regular, GraphicsUnit.Point);
-            coreFrequency.Font = MonoFont;
-            xtalFrequency.Font = MonoFont;
-            clockMode.Font = MonoFont;
-            systemCounter.Font = MonoFont;
-            elapsedTime.Font = MonoFont;
+            coreFrequency.Font = monoFont;
+            xtalFrequency.Font = monoFont;
+            clockMode.Font = monoFont;
+            systemCounter.Font = monoFont;
+            elapsedTime.Font = monoFont;
         }
 
         /// @brief Update screen data on event.
         /// @version v20.09.01 - Modified to use custom format.
         public void DataChanged()
         {
-            if (m_Host == null)
+            if (_cpuHost == null)
                 return;
 
-            pinDIR.Value = m_Host.DIR;
-            pinIN.Value = m_Host.IN;
-            pinFloating.Value = m_Host.Floating;
-            pinLocksFree.Value = m_Host.LocksFree;
-            pinLocks.Value = m_Host.Locks;
+            pinDIR.Value = _cpuHost.DIR;
+            pinIN.Value = _cpuHost.IN;
+            pinFloating.Value = _cpuHost.Floating;
+            pinLocksFree.Value = _cpuHost.LocksFree;
+            pinLocks.Value = _cpuHost.Locks;
 
             UpdateCounterFreqTexts();
             UpdateTimeText();
-            clockMode.Text = m_Host.Clock;
+            clockMode.Text = _cpuHost.Clock;
 
-            ringMeter.Value = m_Host.Ring;
+            ringMeter.Value = _cpuHost.Ring;
         }
 
         /// @brief Update Counter and Frequency labels with current format.
-        /// @version v20.09.01 - Added.
+        /// @version v22.04.02 - Check for non null.
         public void UpdateCounterFreqTexts()
         {
-            systemCounter.Text = FreqFormatText(m_Host.Counter);
-            coreFrequency.Text = FreqFormatText(m_Host.CoreFrequency);
-            xtalFrequency.Text = FreqFormatText(m_Host.XtalFrequency);
+            if (_cpuHost == null)
+                return;
+            systemCounter.Text = FreqFormatText(_cpuHost.Counter);
+            coreFrequency.Text = FreqFormatText(_cpuHost.CoreFrequency);
+            xtalFrequency.Text = FreqFormatText(_cpuHost.XtalFrequency);
         }
 
         /// @brief Update Time labels with current format and unit.
         /// @version v20.09.01 - Added.
         public void UpdateTimeText()
         {
-            if (m_Host != null)
+            if (_cpuHost != null)
                 elapsedTime.Text =
-                    timeUnitSelector.GetFormatedText(m_Host.EmulatorTime);
+                    timeUnitSelector.GetFormatedText(_cpuHost.EmulatorTime);
         }
 
         /// @brief Format the value to string, considering the value
@@ -174,7 +181,7 @@ namespace Gear.GUI
         /// @version v20.09.01 - Added.
         private string FreqFormatText(uint val)
         {
-            return string.Format(currentCultureMod, "{0,17:#,##0}", val);
+            return string.Format(_currentCultureMod, "{0,17:#,##0}", val);
         }
 
 
@@ -193,7 +200,7 @@ namespace Gear.GUI
             string numFormat = $"{{0,17:#,##0.{decimalsSymbols}}}";
             double value = (timeUnitSelector.IsMultiplyFactor) ?
                 val * factor : val / factor;
-            return string.Format(currentCultureMod, numFormat, value);
+            return string.Format(_currentCultureMod, numFormat, value);
         }
 
         /// @brief Format the value to string, only for Minutes (TimeUnitsEnum.min_s).
@@ -205,12 +212,12 @@ namespace Gear.GUI
         private string MinutesTimeFormatText(TimeUnitsEnum unit, double val)
         {
             if (!timeUnitSelector.IsMultiplyFactor)
-                return string.Format(currentCultureMod,
+                return string.Format(_currentCultureMod,
                     "{0,3:#0}:{1,13:00.0000000000}",
                     Math.Floor(val / timeUnitSelector.FactorSelected),
                         val % timeUnitSelector.FactorSelected);
             else
-                return string.Format(currentCultureMod,
+                return string.Format(_currentCultureMod,
                     "{0,3:#0}:{1,13:00.0000000000}",
                     Math.Floor(val * timeUnitSelector.FactorSelected),
                         val % (1.0 / timeUnitSelector.FactorSelected));
@@ -218,13 +225,13 @@ namespace Gear.GUI
 
         /// @brief Update frequency labels tool tips.
         /// @param val Format to use for frequency labels.
-        /// @version v20.09.01 - Added.
+        /// @version v22.04.02 - Changed to string interpolation.
         private void UpdateFreqToolTips()
         {
-            string txt = string.Format("\r\n(Click to change Format from [{0}])", FreqFormatValue);
-            toolTip1.SetToolTip(this.systemCounter, "System Counter Value" + txt);
-            toolTip1.SetToolTip(this.xtalFrequency, "Crystal Frequency" + txt);
-            toolTip1.SetToolTip(this.coreFrequency, "Core Frequency" + txt);
+            string txt = $"\r\n(Click to change Format from [{FreqFormatValue}])";
+            toolTip1.SetToolTip(systemCounter, "System Counter Value" + txt);
+            toolTip1.SetToolTip(xtalFrequency, "Crystal Frequency" + txt);
+            toolTip1.SetToolTip(coreFrequency, "Core Frequency" + txt);
         }
 
         /// @brief Change the frequencies labels format, remembering the user setting.
@@ -233,9 +240,9 @@ namespace Gear.GUI
         /// @version v20.09.01 - Added.
         private void FrequencyLabels_Click(object sender, EventArgs e)
         {
-            if (FreqFormatValue < NumberFormatEnum.GetValues(typeof(NumberFormatEnum)).Cast<NumberFormatEnum>().Max())
+            if (FreqFormatValue < Enum.GetValues(typeof(NumberFormatEnum)).Cast<NumberFormatEnum>().Max())
                 ++FreqFormatValue;            else
-                FreqFormatValue = NumberFormatEnum.GetValues(typeof(NumberFormatEnum)).Cast<NumberFormatEnum>().Min();
+                FreqFormatValue = Enum.GetValues(typeof(NumberFormatEnum)).Cast<NumberFormatEnum>().Min();
             UpdateFreqToolTips();
             DataChanged();
             //remember the setting

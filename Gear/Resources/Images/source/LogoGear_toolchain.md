@@ -1,5 +1,5 @@
-# Logo of Gear Emulator
-# Toolchain to build the logo
+# Toolchain to build the Logo of Gear Emulator
+![Logo Gear](../LogoGear-64.png)
 
 1. Color disk: Open `PropellerColorDisk.svg` in [Inkscape](https://inkscape.org/), at least 1.1 version. Export PNG Image of page, to a 800x800 px PNG, with name `PropellerColorDisk.png`.
  
@@ -17,7 +17,7 @@
    To preserve from inadverted changes, the final POV-Ray scene saved to GitHub is named `LogoGear-final.pov`. Copy the changes from new generated files, to final ones.
 
 |File exported from FreeCAD|Destination of exported|Final file|Destination of final|Description|
-|:------------------------:|----------:|:--------:|----------:|-----------|
+|:------------------------:|:---------:|:--------:|----------:|-----------|
 |`LogoGear.pov`|Delete|`LogoGear-final.pov`|Persistent|Main scene definition file|
 |`LogoGear.ini`|Delete|`LogoGear-final.ini`|Persistent|Settings to render files|
 |`LogoGear_meshes.inc`|Delete|`LogoGear_meshes-final.inc`|Persistent|Mesh definitions of each object|

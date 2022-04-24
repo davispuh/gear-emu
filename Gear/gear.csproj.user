@@ -15,6 +15,6 @@
     <ErrorReportUrlHistory />
   </PropertyGroup>
   <PropertyGroup>
-    <EnableSecurityDebugging>true</EnableSecurityDebugging>
+    <EnableSecurityDebugging>false</EnableSecurityDebugging>
   </PropertyGroup>
 </Project>

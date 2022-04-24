@@ -56,6 +56,7 @@ namespace Gear.GUI
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.DoubleBuffered = true;
             this.Name = "RingMeter";
+            this.Size = new System.Drawing.Size(214, 214);
             this.ResumeLayout(false);
 
         }

@@ -43,12 +43,20 @@ namespace Gear.Properties
             //
         }
 
-        /// @todo Document Gear.Properties.SettingChangingEventHandler(.)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SettingChangingEventHandler(object sender, System.Configuration.SettingChangingEventArgs e) {
             // Agregar código para administrar aquí el evento SettingChangingEvent.
         }
 
-        /// @todo Document Gear.Properties.SettingsSavingEventHandler(.)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SettingsSavingEventHandler(object sender, System.ComponentModel.CancelEventArgs e) {
             // Agregar código para administrar aquí el evento SettingsSaving.
         }

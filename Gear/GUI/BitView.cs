@@ -37,9 +37,9 @@ namespace Gear.GUI
         private int shown;
 
         // tooltip helpers
-        private String prefix;
-        private String postfix;
-        private String text;
+        private string prefix;
+        private string postfix;
+        private string text;
 
         private int last_box;   // last value of index
         const int nil = -1;     // constant for none value selected
@@ -95,7 +95,7 @@ namespace Gear.GUI
         }
 
         // set property of prefix for tooltip
-        public String Prefix
+        public string Prefix
         {
             set
             {
@@ -108,7 +108,7 @@ namespace Gear.GUI
         }
 
         // set property of postfix for tooltip
-        public String Postfix
+        public string Postfix
         {
             set
             {
@@ -121,7 +121,7 @@ namespace Gear.GUI
         }
 
         // get text for tooltip
-        private String ToolTipText
+        private string ToolTipText
         {
             get
             {

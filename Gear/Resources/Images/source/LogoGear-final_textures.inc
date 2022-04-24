@@ -1,132 +1,29 @@
+/* --------------------------------------------------------------------------------
+ * Gear: Parallax Inc. Propeller P1 Emulator
+ * Copyright 2007-2022 - Gear Developers
+ * --------------------------------------------------------------------------------
+ * LogoGear-final_textures.inc
+ * --------------------------------------------------------------------------------
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * --------------------------------------------------------------------------------
+ */
+
 #include "metals.inc"
+
 #declare GearBody_material = material { 
-	texture { Chrome_Metal
-	}
-}
-
-#declare Marker_material = material { 
-	texture { 
-		pigment { color Black }
-	finish {
-	ambient 0.35
-brilliance 2
-diffuse 0.3
-metallic
-specular 0.80
-roughness 1/20
-reflection 0.1	}
-	}
-}
-
-#declare Num1_material = material { 
-	texture { 
-		pigment { color Black }
-	finish {
-	ambient 0.35
-brilliance 2
-diffuse 0.3
-metallic
-specular 0.80
-roughness 1/20
-reflection 0.1	}
-	}
-}
-
-#declare Num2_material = material { 
-	texture { 
-		pigment { color Black }
-	finish {
-	ambient 0.35
-brilliance 2
-diffuse 0.3
-metallic
-specular 0.80
-roughness 1/20
-reflection 0.1	}
-	}
-}
-
-#declare Num3_material = material { 
-	texture { 
-		pigment { color Black }
-	finish {
-	ambient 0.35
-brilliance 2
-diffuse 0.3
-metallic
-specular 0.80
-roughness 1/20
-reflection 0.1	}
-	}
-}
-
-#declare Num4_material = material { 
-	texture { 
-		pigment { color Black }
-	finish {
-	ambient 0.35
-brilliance 2
-diffuse 0.3
-metallic
-specular 0.80
-roughness 1/20
-reflection 0.1	}
-	}
-}
-
-#declare Num5_material = material { 
-	texture { 
-		pigment { color Black }
-	finish {
-	ambient 0.35
-brilliance 2
-diffuse 0.3
-metallic
-specular 0.80
-roughness 1/20
-reflection 0.1	}
-	}
-}
-
-#declare Num6_material = material { 
-	texture { 
-		pigment { color Black }
-	finish {
-	ambient 0.35
-brilliance 2
-diffuse 0.3
-metallic
-specular 0.80
-roughness 1/20
-reflection 0.1	}
-	}
-}
-
-#declare Num7_material = material { 
-	texture { 
-		pigment { color Black }
-	finish {
-	ambient 0.35
-brilliance 2
-diffuse 0.3
-metallic
-specular 0.80
-roughness 1/20
-reflection 0.1	}
-	}
-}
-
-#declare Num0_material = material { 
-	texture { 
-		pigment { color Black }
-	finish {
-	ambient 0.35
-brilliance 2
-diffuse 0.3
-metallic
-specular 0.80
-roughness 1/20
-reflection 0.1	}
-	}
+   texture { Chrome_Metal
+   }
 }
 

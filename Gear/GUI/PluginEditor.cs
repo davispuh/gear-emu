@@ -113,7 +113,7 @@ namespace Gear.GUI
         {
             get
             {
-                if (!String.IsNullOrEmpty(LastPlugin))
+                if (!string.IsNullOrEmpty(LastPlugin))
                     return new FileInfo(LastPlugin).Name;
                 else return "<New plugin>";
             }
@@ -414,7 +414,7 @@ namespace Gear.GUI
         /// @param e `EventArgs` class with a list of argument to the event call.
         private void CheckSource_Click(object sender, EventArgs e)
         {
-            if (String.IsNullOrEmpty(codeEditorView.Text))
+            if (string.IsNullOrEmpty(codeEditorView.Text))
             {
                 MessageBox.Show("No source code to check. Please add code.",
                     "Plugin Editor - Check source.",
@@ -562,7 +562,7 @@ namespace Gear.GUI
                 //retrieve from last plugin edited
                 dialog.InitialDirectory = Path.GetDirectoryName(LastPlugin);
             else
-                if (!String.IsNullOrEmpty(Properties.Settings.Default.LastPlugin))
+                if (!string.IsNullOrEmpty(Properties.Settings.Default.LastPlugin))
                 //retrieve from global last plugin
                 dialog.InitialDirectory =
                     Path.GetDirectoryName(Properties.Settings.Default.LastPlugin);
@@ -800,7 +800,7 @@ namespace Gear.GUI
             {
                 //detect class name from the detected groups
                 string name = suspect.Groups["classname"].Value;
-                if (String.IsNullOrEmpty(name))
+                if (string.IsNullOrEmpty(name))
                     return false;
                 else
                 {

@@ -34,7 +34,7 @@ namespace Gear.GUI
     partial class SpinView : Gear.PluginSupport.PluginBase
     {
         /// @brief Current Culture to modify its Number format.
-        /// @version @version v20.09.01 - Added.
+        /// @version v20.09.01 - Added.
         private readonly CultureInfo currentCultureMod =
             (CultureInfo)CultureInfo.CurrentCulture.Clone();
 
@@ -101,22 +101,22 @@ namespace Gear.GUI
             TreeNode root = objectView.Nodes.Add("Spin");
             TreeNode node;
 
-            node = root.Nodes.Add(String.Format("System Frequency: {0} Mhz",
+            node = root.Nodes.Add(string.Format("System Frequency: {0} Mhz",
                 FreqFormatText(Chip.DirectReadLong(0))));
             node.Tag = (int)0;
-            node = root.Nodes.Add(String.Format("Clock Mode: {0:X2}", Chip.DirectReadByte(4)));
+            node = root.Nodes.Add(string.Format("Clock Mode: {0:X2}", Chip.DirectReadByte(4)));
             node.Tag = (int)4;
-            node = root.Nodes.Add(String.Format("Check Sum: {0:X2}", Chip.DirectReadByte(5)));
+            node = root.Nodes.Add(string.Format("Check Sum: {0:X2}", Chip.DirectReadByte(5)));
             node.Tag = (int)5;
-            node = root.Nodes.Add(String.Format("Root Object: {0:X4}", Chip.DirectReadWord(6)));
+            node = root.Nodes.Add(string.Format("Root Object: {0:X4}", Chip.DirectReadWord(6)));
             node.Tag = (int)6;
-            node = root.Nodes.Add(String.Format("Variable Base: {0:X4}", Chip.DirectReadWord(8)));
+            node = root.Nodes.Add(string.Format("Variable Base: {0:X4}", Chip.DirectReadWord(8)));
             node.Tag = (int)8;
-            node = root.Nodes.Add(String.Format("Local Frame: {0:X4}", Chip.DirectReadWord(10)));
+            node = root.Nodes.Add(string.Format("Local Frame: {0:X4}", Chip.DirectReadWord(10)));
             node.Tag = (int)10;
-            node = root.Nodes.Add(String.Format("Entry PC: {0:X4}", Chip.DirectReadWord(12)));
+            node = root.Nodes.Add(string.Format("Entry PC: {0:X4}", Chip.DirectReadWord(12)));
             node.Tag = (int)12;
-            node = root.Nodes.Add(String.Format("Starting Stack: {0:X4}", Chip.DirectReadWord(14)));
+            node = root.Nodes.Add(string.Format("Starting Stack: {0:X4}", Chip.DirectReadWord(14)));
             node.Tag = (int)14;
 
             for (i = 0; i < 16; i++)
@@ -135,10 +135,10 @@ namespace Gear.GUI
         {
             uint i, addr, addrnext;
 
-            root = root.Nodes.Add(String.Format("Object {0:X}", objFrame));
+            root = root.Nodes.Add(string.Format("Object {0:X}", objFrame));
             root.Tag = (int)objFrame;
 
-            root.Nodes.Add(String.Format("Variable Space {0:X4}", varFrame)).Tag = (int)varFrame;
+            root.Nodes.Add(string.Format("Variable Space {0:X4}", varFrame)).Tag = (int)varFrame;
             Colorize[varFrame] = Brushes.LightBlue;
 
             ushort size = Chip.DirectReadWord(objFrame);
@@ -173,7 +173,7 @@ namespace Gear.GUI
 
         private void ColorFunction(uint functFrame, uint functFrameEnd, TreeNode root)
         {
-            root = root.Nodes.Add(String.Format("Function {0:X} ({1:d})", functFrame, functFrameEnd - functFrame));
+            root = root.Nodes.Add(string.Format("Function {0:X} ({1:d})", functFrame, functFrameEnd - functFrame));
             root.Tag = (int)functFrame;
 
             Colorize[functFrame] = Brushes.Yellow;
@@ -195,13 +195,13 @@ namespace Gear.GUI
             {
                 // Draw the address
                 g.FillRectangle(Brushes.White, new Rectangle(0, dy, a.Width, s.Height));
-                g.DrawString(String.Format("{0:X4}:", y), MonoSpace, SystemBrushes.ControlText, 0, dy);
+                g.DrawString(string.Format("{0:X4}:", y), MonoSpace, SystemBrushes.ControlText, 0, dy);
                 // Draw the line of data
                 for (int x = 0, dx = a.Width; y < 0x10000 && x < 16; x++, dx += s.Width, y++)
                 {
                     byte data = Chip.DirectReadByte((uint)y);
                     g.FillRectangle(Colorize[y], new Rectangle(dx, dy, s.Width, s.Height));
-                    g.DrawString(String.Format("{0:X2}", data), MonoSpace, SystemBrushes.ControlText, dx, dy);
+                    g.DrawString(string.Format("{0:X2}", data), MonoSpace, SystemBrushes.ControlText, dx, dy);
                 }
             }
 

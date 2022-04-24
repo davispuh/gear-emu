@@ -35,7 +35,7 @@ namespace Gear.Propeller
         public enum RegisterAddress : uint
         {
             COGID     = 0x1E9,    //!< Identification number of this cog.
-            INITCOGID = 0x1EF,    //!< @todo Document enum value Assembly.RegisterAddress.INITCOGID.
+            INITCOGID = 0x1EF,    //!< @brief
             PAR       = 0x1F0,    //!< Boot Parameter
             CNT       = 0x1F1,    //!< System Counter
             INA       = 0x1F2,    //!< Input States for P31 - P0.

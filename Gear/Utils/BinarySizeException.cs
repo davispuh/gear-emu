@@ -25,33 +25,40 @@ using System;
 
 namespace Gear.Utils
 {
-    /// @brief Binary size helper exception class.
-    /// @version 20.09.02 - Added exception class to fix Issue #20.
-    /// @version 22.03.01 - Moved to its own file.
+    /// <summary>
+    /// Binary size helper exception class.
+    /// </summary>
+    /// @issue{20} Added exception class to fix it.
+    /// @version v22.03.01 - Moved to its own file.
     [Serializable]
     public class BinarySizeException : Exception
     {
         /// <summary>
-        ///
+        /// Default constructor.
         /// </summary>
         public BinarySizeException() :
             base()
         { }
 
         /// <summary>
-        ///
+        /// Constructor with a message.
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="message">Message string.</param>
         public BinarySizeException(string message) :
             base(message)
         { }
 
+        /// <summary>
+        /// Constructor with a message and an inner exception.
+        /// </summary>
+        /// <param name="message">Message string.</param>
+        /// <param name="innerException">Inner exception which throw this one.</param>
         public BinarySizeException(string message, Exception innerException) :
             base(message, innerException)
         { }
 
         /// <summary>
-        ///
+        /// Constructor in a serialization context.
         /// </summary>
         /// <param name="serializationInfo"></param>
         /// <param name="streamingContext"></param>

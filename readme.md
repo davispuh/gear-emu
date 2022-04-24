@@ -1,7 +1,10 @@
-# Gear: Parallax Inc. Propeller P1 emulator
-![Gear Emulator](./images/Gear_LogicProbe.png)
+# Gear: Parallax Inc. Propeller P1 Emulator
+![Logo Gear](Gear/Resources/Images/LogoGear-64.png)
+---
 
 **What is GEAR?** Is a C# program that simulates the inner workings of the Propeller P1 chip.
+
+![Gear Emulator](./images/Gear_LogicProbe.png)
 
 It is NOT intended to be a replacement for the board, as it is considerably slower (for the sake of accuracy).
 
@@ -35,6 +38,16 @@ Currently it has:
 ## Plugins notes
 
 See [Plugins notes](plug-ins/Plugins_notes.md) for brief explanation of each one.
+
+
+## Related Parallax forum threads:
+* [Improved GEAR Emulator](http://forums.parallax.com/discussion/156347/improved-gear-emulator) [2014-07-03 ]
+  * [Gear plugin confusion - plugin scripts and Gear are both C# !](https://forums.parallax.com/discussion/160898/gear-plugin-confusion-plugin-scripts-and-gear-are-both-c) [2015-04-26]
+  * [Building a plugin to emulate audio in GEAR ](https://forums.parallax.com/discussion/comment/1327930/#Comment_1327930) [2015-04-26]
+* [More GEAR - Improved Emulation of the Propeller](https://forums.parallax.com/discussion/100380/more-gear-improved-emulation-of-the-propeller) [2008-01-13]
+  * [GEAR does not seem to emulate SUBS correctly. (Now resolved/fixed)](http://forums.parallax.com/discussion/116940/gear-does-not-seem-to-emulate-subs-correctly-now-resolved-fixed)
+  * [VT100 terminal plugin for the GEAR emulator](https://forums.parallax.com/discussion/106651/vt100-terminal-plugin-for-the-gear-emulator) [2008-09-17]
+* [GEAR: Propeller Debugging Environment](https://forums.parallax.com/discussion/91084/gear-propeller-debugging-environment) [2007-01-10]
 
 ---
 ## Copyright 2007-2022 - Gear Developers

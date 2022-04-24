@@ -49,22 +49,10 @@ namespace Gear.GUI
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.Label label8;
-            System.Windows.Forms.Label label7;
-            System.Windows.Forms.Label label6;
-            System.Windows.Forms.Label label13;
-            System.Windows.Forms.Label label12;
-            System.Windows.Forms.Label label11;
-            System.Windows.Forms.Label label5;
-            System.Windows.Forms.Label label4;
-            System.Windows.Forms.Label label3;
-            System.Windows.Forms.Label label9;
             this.coreFrequency = new System.Windows.Forms.Label();
             this.xtalFrequency = new System.Windows.Forms.Label();
             this.clockMode = new System.Windows.Forms.Label();
             this.systemCounter = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.elapsedTime = new System.Windows.Forms.Label();
             this.timeUnitSelector = new Gear.GUI.TimeUnitComboBox();
@@ -75,117 +63,106 @@ namespace Gear.GUI
             this.pinLocksFree = new Gear.GUI.BitView();
             this.pinLocks = new Gear.GUI.BitView();
             this.ringMeter = new Gear.GUI.RingMeter();
-            label8 = new System.Windows.Forms.Label();
-            label7 = new System.Windows.Forms.Label();
-            label6 = new System.Windows.Forms.Label();
-            label13 = new System.Windows.Forms.Label();
-            label12 = new System.Windows.Forms.Label();
-            label11 = new System.Windows.Forms.Label();
-            label5 = new System.Windows.Forms.Label();
-            label4 = new System.Windows.Forms.Label();
-            label3 = new System.Windows.Forms.Label();
-            label9 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             //
             // label8
             //
-            label8.AutoSize = true;
-            label8.Location = new System.Drawing.Point(3, 299);
-            label8.Name = "label8";
-            label8.Size = new System.Drawing.Size(49, 13);
-            label8.TabIndex = 18;
-            label8.Text = "Core [hz]";
-            label8.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(3, 299);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(49, 13);
+            this.label8.TabIndex = 18;
+            this.label8.Text = "Core [hz]";
+            this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             //
             // label7
             //
-            label7.AutoSize = true;
-            label7.Location = new System.Drawing.Point(3, 280);
-            label7.Name = "label7";
-            label7.Size = new System.Drawing.Size(45, 13);
-            label7.TabIndex = 17;
-            label7.Text = "Xtal [hz]";
-            label7.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(3, 280);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(45, 13);
+            this.label7.TabIndex = 17;
+            this.label7.Text = "Xtal [hz]";
+            this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             //
             // label6
             //
-            label6.AutoSize = true;
-            label6.Location = new System.Drawing.Point(3, 261);
-            label6.Name = "label6";
-            label6.Size = new System.Drawing.Size(64, 13);
-            label6.TabIndex = 16;
-            label6.Text = "Clock Mode";
-            label6.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(3, 261);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(64, 13);
+            this.label6.TabIndex = 16;
+            this.label6.Text = "Clock Mode";
+            this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             //
             // label13
             //
-            label13.AutoSize = true;
-            label13.Location = new System.Drawing.Point(3, 217);
-            label13.Name = "label13";
-            label13.Size = new System.Drawing.Size(44, 13);
-            label13.TabIndex = 12;
-            label13.Text = "Counter";
-            label13.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(3, 217);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(44, 13);
+            this.label13.TabIndex = 12;
+            this.label13.Text = "Counter";
+            this.label13.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             //
             // label12
             //
-            label12.AutoSize = true;
-            label12.Location = new System.Drawing.Point(3, 368);
-            label12.Name = "label12";
-            label12.Size = new System.Drawing.Size(22, 13);
-            label12.TabIndex = 11;
-            label12.Text = "IN*";
-            label12.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(3, 368);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(22, 13);
+            this.label12.TabIndex = 11;
+            this.label12.Text = "IN*";
+            this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             //
             // label11
             //
-            label11.AutoSize = true;
-            label11.Location = new System.Drawing.Point(3, 406);
-            label11.Name = "label11";
-            label11.Size = new System.Drawing.Size(30, 13);
-            label11.TabIndex = 10;
-            label11.Text = "DIR*";
-            label11.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(3, 406);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(30, 13);
+            this.label11.TabIndex = 10;
+            this.label11.Text = "DIR*";
+            this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             //
             // label5
             //
-            label5.AutoSize = true;
-            label5.Location = new System.Drawing.Point(3, 343);
-            label5.Name = "label5";
-            label5.Size = new System.Drawing.Size(36, 13);
-            label5.TabIndex = 4;
-            label5.Text = "Locks";
-            label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(3, 343);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(36, 13);
+            this.label5.TabIndex = 4;
+            this.label5.Text = "Locks";
+            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             //
             // label4
             //
-            label4.AutoSize = true;
-            label4.Location = new System.Drawing.Point(3, 324);
-            label4.Name = "label4";
-            label4.Size = new System.Drawing.Size(55, 13);
-            label4.TabIndex = 3;
-            label4.Text = "Lock Free";
-            label4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(3, 324);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(55, 13);
+            this.label4.TabIndex = 3;
+            this.label4.Text = "Lock Free";
+            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             //
             // label3
             //
-            label3.AutoSize = true;
-            label3.Location = new System.Drawing.Point(3, 444);
-            label3.Name = "label3";
-            label3.Size = new System.Drawing.Size(44, 13);
-            label3.TabIndex = 2;
-            label3.Text = "Floating";
-            label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            //
-            // label9
-            //
-            label9.AutoSize = true;
-            label9.Location = new System.Drawing.Point(3, 488);
-            label9.Name = "label9";
-            label9.Size = new System.Drawing.Size(61, 13);
-            label9.TabIndex = 29;
-            label9.Text = "Quick Keys";
-            label9.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(3, 444);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(44, 13);
+            this.label3.TabIndex = 2;
+            this.label3.Text = "Floating";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             //
             // coreFrequency
             //
@@ -232,26 +209,6 @@ namespace Gear.GUI
             this.systemCounter.Text = "SystemCounter";
             this.systemCounter.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.systemCounter.Click += new System.EventHandler(this.FrequencyLabels_Click);
-            //
-            // label1
-            //
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(76, 507);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(82, 13);
-            this.label1.TabIndex = 31;
-            this.label1.Text = "S - Stop or Step";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            //
-            // label2
-            //
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(76, 488);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(44, 13);
-            this.label2.TabIndex = 30;
-            this.label2.Text = "R - Run";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             //
             // elapsedTime
             //
@@ -368,22 +325,19 @@ namespace Gear.GUI
             this.Controls.Add(this.timeUnitSelector);
             this.Controls.Add(this.elapsedTime);
             this.Controls.Add(this.timeLabel);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(label9);
             this.Controls.Add(this.coreFrequency);
             this.Controls.Add(this.xtalFrequency);
             this.Controls.Add(this.clockMode);
             this.Controls.Add(this.systemCounter);
-            this.Controls.Add(label8);
-            this.Controls.Add(label7);
-            this.Controls.Add(label6);
-            this.Controls.Add(label5);
-            this.Controls.Add(label4);
-            this.Controls.Add(label3);
-            this.Controls.Add(label11);
-            this.Controls.Add(label13);
-            this.Controls.Add(label12);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label11);
+            this.Controls.Add(this.label13);
+            this.Controls.Add(this.label12);
             this.Controls.Add(this.pinIN);
             this.Controls.Add(this.pinDIR);
             this.Controls.Add(this.pinFloating);
@@ -400,6 +354,15 @@ namespace Gear.GUI
 
         #endregion
 
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label3;
         private RingMeter ringMeter;
         private System.Windows.Forms.Label coreFrequency;
         private System.Windows.Forms.Label xtalFrequency;
@@ -410,8 +373,6 @@ namespace Gear.GUI
         private BitView pinFloating;
         private BitView pinLocksFree;
         private BitView pinLocks;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.Label timeLabel;
         private System.Windows.Forms.Label elapsedTime;

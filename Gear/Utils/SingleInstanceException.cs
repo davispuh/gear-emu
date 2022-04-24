@@ -26,7 +26,7 @@ using System;
 namespace Gear.Utils
 {
     /// @brief Single instance helper exception class.
-    /// @version 20.10.01 - Added exception class to control a single
+    /// @version v20.10.01 - Added exception class to control a single
     /// instance form.
     [Serializable]
     public class SingleInstanceException : Exception

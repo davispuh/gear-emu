@@ -214,4 +214,28 @@
   <data name="LogoGear" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Images\LogoGear.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Gear_Control0" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Gear_Control0.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Gear_Control1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Gear_Control1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Gear_Control2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Gear_Control2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Gear_Control3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Gear_Control3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Gear_Control4" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Gear_Control4.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Gear_Control5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Gear_Control5.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Gear_Control6" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Gear_Control6.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Gear_Control7" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\Gear_Control7.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

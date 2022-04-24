@@ -201,7 +201,7 @@ namespace Gear.EmulationCore
 
         /// @brief Execute a SPIN bytecode instruction in this cog.
         /// @returns TRUE if it is the opportunity to trigger a breakpoint, or FALSE if not.
-        /// @version 21.06.01 - Documentation of SPIN bytecode
+        /// @version v21.06.01 - Documentation of SPIN bytecode
         ///
         /// Spin Bytecodes Summary
         /// ======================
@@ -994,7 +994,7 @@ namespace Gear.EmulationCore
         /// @brief Execute bytecode operation from cog memory.
         /// @param mask
         /// @param lowestbit
-        /// @version 21.06.01 - Documentation of SPIN bytecode
+        /// @version v21.06.01 - Documentation of SPIN bytecode
         ///
         /// Note 3: Details of 0x3F operations {#N3SpecialOpcodes}
         /// ==================================
@@ -1039,7 +1039,7 @@ namespace Gear.EmulationCore
         /// @param swapValues Must swap values from stack (=true ), or maintain order (=false).
         /// @param initial Initial value.
         /// @return Result from math operation.
-        /// @version 21.06.01 - Documentation of SPIN bytecode
+        /// @version v21.06.01 - Documentation of SPIN bytecode
         ///
         /// 0xE0..0xFF Math operations opcodes {#MathOpcodes}
         /// ==================================
@@ -1608,7 +1608,7 @@ namespace Gear.EmulationCore
 
         /// @brief Execute a bytecode operation from memory group.
         /// @param op Operation code to execute, from range: <c>0x80..0xDF</c>
-        /// @version 21.06.01 - Documentation of SPIN bytecode
+        /// @version v21.06.01 - Documentation of SPIN bytecode
         ///
         /// 0x80..0xDF Memory ops (Access MEM, OBJ, VAR and LOC) {#MemoryOps}
         /// ====================================================
@@ -1821,7 +1821,7 @@ namespace Gear.EmulationCore
 
         /// @brief Execute a bytecode operation from variable group.
         /// @param op Operation code to execute, from range: <c>0x40..0x7F</c>
-        /// @version 21.06.01 - Documentation of SPIN bytecode
+        /// @version v21.06.01 - Documentation of SPIN bytecode
         ///
         /// 0x40..0x7F Variables ops (Fast access VAR, LOC) {#VariableOps}
         /// ===============================================
@@ -1977,7 +1977,7 @@ namespace Gear.EmulationCore
         /// @brief Execute bytecode operation for a additional bytecode that follows a USING bytecode.
         /// @param originalValue Initial value of MEM, OBJ, VAR or LOC.
         /// @return Stored value from operation.
-        /// @version 21.06.01 - Bugfix #24 & Documentation of SPIN bytecode
+        /// @version v21.06.01 - Bugfix #24 & Documentation of SPIN bytecode
         ///
         /// Assignment Operators opcodes
         /// ============================

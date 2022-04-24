@@ -65,7 +65,7 @@ namespace Gear.GUI
 
             hubView.SetFontSpecialLabels();
 
-            this.Text = "Propeller: " + source;
+            Text = "Propeller: " + source;
 
             // Create default layout
             for (int i = 0; i < PropellerCPU.TOTAL_COGS; i++)  //using constant TOTAL_COGS
@@ -79,12 +79,12 @@ namespace Gear.GUI
             // TEMPORARY RUN FUNCTION
             runTimer = new Timer
             {
-                Interval = 10
+                Interval = 60
             };
             runTimer.Tick += new EventHandler(RunEmulatorStep);
             UpdateRunningButtons();
 
-            hubView.Host = Chip;
+            hubView.SetHost(Chip);
             UpdateStepInterval();
         }
 
@@ -205,7 +205,8 @@ namespace Gear.GUI
 
         /// @brief Update Text and Images of buttons involved on running and
         /// stop state of emulator.
-        /// @version v20.10.01 - Added.
+        /// @version v22.04.02 - Incorporated step Instruction and step Clock
+        /// buttons to be controlled.
         private void UpdateRunningButtons()
         {
             if (IsRunningState != runEmulatorButton.Checked)
@@ -214,45 +215,24 @@ namespace Gear.GUI
                 if (IsRunningState)
                 {
                     runEmulatorButton.Text = "Run";
-                    runEmulatorButton.Image = Gear.Properties.Resources.Image_runStatus;
+                    runEmulatorButton.Image = Properties.Resources.Image_runStatus;
                     stopEmulatorButton.Text = "&Stop";
-                    stopEmulatorButton.Image = Gear.Properties.Resources.Image_stopStill;
+                    stopEmulatorButton.Image = Properties.Resources.Image_stopStill;
                     stepInstructionButton.Text = "Step Instruction";
+                    stepInstructionButton.Enabled = false;
+                    stepClockButton.Enabled = false;
                 }
                 else
                 {
                     runEmulatorButton.Text = "&Run";
-                    runEmulatorButton.Image = Gear.Properties.Resources.Image_runStill;
+                    runEmulatorButton.Image = Properties.Resources.Image_runStill;
                     stopEmulatorButton.Text = "Stop";
-                    stopEmulatorButton.Image = Gear.Properties.Resources.Image_stopStatus;
+                    stopEmulatorButton.Image = Properties.Resources.Image_stopStatus;
                     stepInstructionButton.Text = "&Step Instruction";
+                    stepInstructionButton.Enabled = true;
+                    stepClockButton.Enabled = true;
                 }
             }
-        }
-
-        /// @brief Make a stop on the emulation.
-        /// @details This method would be called when a plugin want to stop, for example
-        /// when a breakpoint condition is satisfied.
-        /// @version v20.10.01 - UpdateRunningButtons.
-        public void BreakPoint()
-        {
-            runTimer.Stop();
-            UpdateRunningButtons();
-            RepaintViews();
-        }
-
-        /// @brief Unfloat the tab object.
-        /// @param c Tab object.
-        public void Unfloat(Control c)
-        {
-            TabPage tp = new TabPage(c.Text)
-            {
-                Parent = documentsTab
-            };
-            c.Parent = tp;
-            c.Dock = DockStyle.Fill;
-
-            FloatControls.Remove(c.Parent);
         }
 
         /// @brief Load a binary image from file.
@@ -453,7 +433,10 @@ namespace Gear.GUI
             RepaintViews();
         }
 
-        /// @todo Document Gear.GUI.Emulator.OnClosed()
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnClosed(EventArgs e)
         {
             foreach (Control c in FloatControls)
@@ -493,17 +476,6 @@ namespace Gear.GUI
             RepaintViews();
         }
 
-        /// @brief Run only one instruction of the active cog, stopping after executed.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
-        /// @version v20.10.01 - UpdateRunningButtons.
-        private void StepEmulator_Click(object sender, EventArgs e)
-        {
-            Chip.Step();
-            UpdateRunningButtons();
-            RepaintViews();
-        }
-
         /// @brief Close the plugin window and terminate the plugin instance.
         /// @details Not only close the tab window, also detach the plugin
         /// from the PropellerCPU what uses it.
@@ -533,7 +505,7 @@ namespace Gear.GUI
             }
         }
 
-        /// @todo Document Gear.GUI.Emulator.floatActiveTab_Click()
+        /// @brief
         /// @param sender Reference to the object where this event was called.
         /// @param e Class with the details event.
         private void FloatActiveTab_Click(object sender, EventArgs e)
@@ -555,7 +527,21 @@ namespace Gear.GUI
             FloatControls.Add(fw);
         }
 
-        /// @todo Document Gear.GUI.Emulator.pinActiveTab_Click()
+        /// @brief Unfloat the tab object.
+        /// @param c Tab object.
+        public void Unfloat(Control c)
+        {
+            TabPage tp = new TabPage(c.Text)
+            {
+                Parent = documentsTab
+            };
+            c.Parent = tp;
+            c.Dock = DockStyle.Fill;
+
+            FloatControls.Remove(c.Parent);
+        }
+
+        /// @brief
         /// @param sender Reference to the object where this event was called.
         /// @param e Class with the details event.
         private void PinActiveTab_Click(object sender, EventArgs e)
@@ -583,7 +569,7 @@ namespace Gear.GUI
             }
         }
 
-        /// @todo Document Gear.GUI.Emulator.unpinButton_Click()
+        /// @brief
         /// @param sender Reference to the object where this event was called.
         /// @param e Class with the details event.
         private void UnpinButton_Click(object sender, EventArgs e)
@@ -624,7 +610,18 @@ namespace Gear.GUI
             RepaintViews(); //added the repaint, to refresh the views
         }
 
-        /// @brief Event to run one instruction in emulator.
+        /// @brief Run one clock tick of the active cog, stopping after executed.
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
+        /// @version v22.04.02 - Corrected method name.
+        private void StepClock_Click(object sender, EventArgs e)
+        {
+            Chip.Step();
+            UpdateRunningButtons();
+            RepaintViews();
+        }
+
+        /// @brief Event to run one instruction in emulator, stopping after executed.
         /// @param sender Reference to the object where this event was called.
         /// @param e Class with the details event.
         /// @version v20.10.01 - UpdateRunningButtons.
@@ -646,6 +643,17 @@ namespace Gear.GUI
             RepaintViews();
         }
 
+        /// @brief Make a stop on the emulation, when a breakpoint is requested by a plugin.
+        /// @details This method would be called when a plugin want to stop, for example
+        /// when a breakpoint condition is satisfied.
+        /// @version v20.10.01 - UpdateRunningButtons.
+        public void BreakPoint()
+        {
+            runTimer.Stop();
+            UpdateRunningButtons();
+            RepaintViews();
+        }
+
         /// @brief Try to open a plugin, compiling it and attaching to the active
         /// emulator instance.
         /// @param sender Reference to the object where this event was called.
@@ -658,7 +666,7 @@ namespace Gear.GUI
                 Title = "Open Gear Plug-in..."
             };
             //get the path of last plugin like a hint to open a new one
-            if (!String.IsNullOrEmpty(Properties.Settings.Default.LastPlugin))
+            if (!string.IsNullOrEmpty(Properties.Settings.Default.LastPlugin))
                 dialog.InitialDirectory =
                     Path.GetDirectoryName(Properties.Settings.Default.LastPlugin);
             //ask the user what plugin file to open
@@ -674,7 +682,7 @@ namespace Gear.GUI
             Chip.OnClose(sender, e);
         }
 
-        /// @todo Document Gear.GUI.Emulator.OnDeactivate()
+        /// @brief
         /// @param sender Reference to the object where this event was called.
         /// @param e Class with the details event.
         /// @version v20.10.01 - UpdateRunningButtons.
@@ -711,10 +719,10 @@ namespace Gear.GUI
             tp.Invalidate();
         }
 
-        /// @todo Document Gear.GUI.Emulator.documentsTab_KeyPress()
+        /// @brief Process key press to manage the run state of emulator.
         /// @param sender Reference to the object where this event was called.
         /// @param e Class with the details event.
-        /// @version v20.10.01 - UpdateRunningButtons.
+        /// @version v22.04.02 - Added input key for clock step.
         private void DocumentsTab_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (ActiveControl is PluginBase)
@@ -723,29 +731,32 @@ namespace Gear.GUI
                 if (!b.AllowHotKeys)
                     return;
             }
-            if ((e.KeyChar == 's') | (e.KeyChar == 'S'))
+
+            string key = e.KeyChar.ToString().ToLowerInvariant();
+            if (key == "s")
             {
-                if (runTimer.Enabled)
+                if (IsRunningState)
                 {
                     runTimer.Stop();
                     UpdateRunningButtons();
                 }
                 else
-                    StepInstruction_Click(sender, e);
+                    StepInstruction_Click(this, EventArgs.Empty);
             }
-            if ((e.KeyChar == 'r') | (e.KeyChar == 'R'))
+
+            if ((key == "r") & !IsRunningState)
             {
-                if (!runTimer.Enabled)
-                {
-                    runTimer.Start();
-                    UpdateRunningButtons();
-                }
+                runTimer.Start();
+                UpdateRunningButtons();
             }
+
+            if ((key == "c") & !IsRunningState)
+                StepClock_Click(this, EventArgs.Empty);
         }
 
         /// @brief Refresh form's Icon
-        /// @param sender
-        /// @param e
+        /// @param sender Reference to the object where this event was called.
+        /// @param e Class with the details event.
         /// @version v20.10.01 - Added.
         private void Emulator_Load(object sender, EventArgs e)
         {

@@ -1,0 +1,4 @@
+# Ignore 
+*.bak
+# Except this file and directory
+!.gitignore

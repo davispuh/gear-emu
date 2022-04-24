@@ -76,7 +76,7 @@ namespace Gear.GUI
         [BrowsableAttribute(false)]
         public double FactorSelected => Mgmt.FactorSelected;
 
-        /// @brief @todo Document class TimeUnitsComboBox.IsMultiplyFactor
+        /// @brief
         /// @details Implements ITimeUnitMgmt interface.
         [BrowsableAttribute(false)]
         public bool IsMultiplyFactor => Mgmt.IsMultiplyFactor;
@@ -88,7 +88,7 @@ namespace Gear.GUI
             InitializeComponent();
         }
 
-        /// @brief Syncronize values dependent of excludedUnits
+        /// @brief Synchronize values dependent of excludedUnits
         public void SyncValues() => Mgmt.SyncValues();
 
         /// @brief Select the next valid value, rolling over if it is necesary.

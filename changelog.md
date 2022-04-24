@@ -1,34 +1,44 @@
-## Read more in Parallax forum threads:
-* [Improved GEAR Emulator](http://forums.parallax.com/discussion/156347/improved-gear-emulator) [2014-07-03 ]
-  * [Gear plugin confusion - plugin scripts and Gear are both C# !](https://forums.parallax.com/discussion/160898/gear-plugin-confusion-plugin-scripts-and-gear-are-both-c) [2015-04-26]
-  * [Building a plugin to emulate audio in GEAR ](https://forums.parallax.com/discussion/comment/1327930/#Comment_1327930) [2015-04-26]
-* [More GEAR - Improved Emulation of the Propeller](https://forums.parallax.com/discussion/100380/more-gear-improved-emulation-of-the-propeller) [2008-01-13]
-  * [GEAR does not seem to emulate SUBS correctly. (Now resolved/fixed)](http://forums.parallax.com/discussion/116940/gear-does-not-seem-to-emulate-subs-correctly-now-resolved-fixed)
-  * [VT100 terminal plugin for the GEAR emulator](https://forums.parallax.com/discussion/106651/vt100-terminal-plugin-for-the-gear-emulator) [2008-09-17]
-* [GEAR: Propeller Debugging Environment](https://forums.parallax.com/discussion/91084/gear-propeller-debugging-environment) [2007-01-10]
-
 # Change Log
 
-## Release Version [22.04.01](https://github.com/davispuh/gear-emu/releases/tag/v22.04.01) and Commit  Bugfix in LogicView, New icon for program and Code cleanup 2 and Commit Version correction
-* Fixed bug in [`LogicView.cs`](Gear/GUI/LogicView.cs): no detecting modification of timeFrame or tickMark.
+## Commit Improved Emulator run mode and Code cleanup 3
+
+- Improved logic to enable/disable buttons (step Instruction and step Clock) when the emulator is running/stopped in [`Emulator.cs`](Gear/GUI/Emulator.cs). Added shorcut 'c' to make a clock step in emulator.
+- Moved legend about emulator shortcuts in `Hubview` control to be show in Status label of `GearDesktop` form.
+- Changed all labels to be private in class `HubView` ([`HubView.Designer.cs`](Gear/GUI/HubView.Designer.cs)).
+- Corrected more links on `changelog.md`.
+- CodeUtils Added: bash scripts to update things of code files:
+   - [`makeDistribution.sh`](CodeUtils/makeDistribution.sh): copy files to prepare a distribution ZIP.
+   - [`Date-Show_CS_Files.sh`](CodeUtils/Date-Show_CS_Files.sh) and [`Date-Update_CS_Files.sh`](CodeUtils/Date-Update_CS_Files.sh): show and update copyright dates on headers of  `.cs` files, like `Copyright 2007-2022 - Gear Developers`.
+   - [`Utils_CS_Files.sh`](CodeUtils/Utils_CS_Files.sh): Utils for show/modify characteristics of files, like line ending style (Win/Linux), or show/remove extra spaces at line ending.
+- Icon added to [`readme.md`](readme.md) and doxygen html documentation.
+- Documentation of toolchain to generate Gear Logo: [`LogoGear_toolchain.md`](Gear/Resources/Images/source/LogoGear_toolchain.md). Included geometry definition of Gear control [`Gear_Control_Geometry.svg`](Gear/Resources/Images/source/Gear_Control_Geometry.svg), based on open source tools as [FreeCAD](https://www.freecadweb.org/), [Inkscape](https://inkscape.org/) and [POV-Ray](http://www.povray.org/).
+- Code cleanup on POV-Ray files for Gear Logo: copyright texts, corrected indentation, tabs to spaces, dead code cleanup, more documentation.
+- Upgrade [Doxygen](https://www.doxygen.nl/) version to v1.9.
+- Added tag `@issue` to document links to github issues.
+- Improved documentation in some `.cs` files.
+- Corrected use of `string` instead of `String` in `.cs` files.
+- Removed `@todo Document` tags in all Doxygen documentation.
+
+## Release Version [22.04.01](https://github.com/davispuh/gear-emu/releases/tag/v22.04.01) and Commit  [4f1928a](https://github.com/davispuh/gear-emu/commit/4f1928acc4ab042efce3294ab99670290b8fe37c) Bugfix in LogicView, New icon for program and Code cleanup 2 and Commit [19c525d](https://github.com/davispuh/gear-emu/commit/19c525d432ce31729a38af4712d24b8c506521cc) Version correction
+* Fixed bug in [`LogicView.cs`](Gear/GUI/LogicProbe/LogicView.cs): no detecting modification of timeFrame or tickMark.
 * New Icon for Gear program.
 * Update to v22.04.01.
 * Updated default value for plugins directory on [`app.config`](Gear/app.config).
 * Removed extra spaces in line endings on all files.
-* Changed tag `@since` to `@version` in all documentation.
+* Changed tag `@since` to `@version` in all Doxygen documentation.
 
 
 ## Commit [dd92658](https://github.com/davispuh/gear-emu/commit/dd92658c7309b0872ab4a3cd41cd39bbd45ca70f) - Corrected initial directory to open plug-ins and code cleanup 1
 * Corrected initial directory to open plug-ins in programs settings.
 * Corrected files of the project to have coherent line endings (CRLF), and coded in UTF-8.
-* Added generation of manifiest.
+* Added generation of manifest.
 
 
 ## Release Version [22.03.02](https://github.com/davispuh/gear-emu/releases/tag/v22.03.02) and commit [eec325f](https://github.com/davispuh/gear-emu/commit/eec325f198981b18e74c7ada62a28cc1322fdf92) - Various bugfixes.
-* Fixed bug in `AssemblyInfo.cs`: missing +.
+* Fixed bug in [`AssemblyInfo.cs`](Gear/Properties/AssemblyInfo.cs): missing '+' on string concatenation.
 * Fixed bug corrected `LONG` registers not assigned correctly in Cog - `DIR`, `OUT` on [`Cog.cs`](Gear/EmulationCore/Cog.cs).
 * Fixed bug on `[LogicAnalog](Gear/GUI/LogicProbe/LogicAnalog.cs).Draw()`: was comparing wrong time to activate.
-* Fixed bug in maximum frequency of Cog Counters, to 128Mhz instead of wrong limit of 120Mhz, on [`PLL.cs`](gear/EmulationCore/PLL.cs).
+* Fixed bug in maximum frequency of Cog Counters, to 128Mhz instead of wrong limit of 120Mhz, on [`PLL.cs`](Gear/EmulationCore/PLL.cs).
 * Fixed bug on [`LogicView.cs`](Gear/GUI/LogicProbe/LogicView.cs): save TimeUnitSelected with the other properties in logic view.
 * Fixed bug of Form name not updated when open another binary file in [`Emulator.cs`](Gear/GUI/Emulator.cs).
 * Fixed hidden vertical scroll bar on Logic View: [`LogicView.Designer.cs`](Gear/GUI/LogicProbe/LogicView.Designer.cs).
@@ -85,7 +95,7 @@
 
 ## Release Version [20.10.01](https://github.com/davispuh/gear-emu/releases/tag/v20.10.01) & Commit [c76aa43](https://github.com/davispuh/gear-emu/commit/c76aa434168acb0eb32a884c9870deefa483898d) - Added icons & images, some refresh improvements
 
-* Icons added to almost all windows and tools, based on Visual Studio 2019 Image Library. They are in svg native format ([Gear/Resources/Icons/svg](Gear/Resources/Icons/svg) & [Gear/Resources/Images/svg](Gear/Resources/Images/svg) directories).
+* Icons added to almost all windows and tools, based on Visual Studio 2019 Image Library. They are in svg native format (`Gear/Resources/Icons/svg` & `Gear/Resources/Images/svg`) directories).
 * Some changes from pull request #[17 Prevent pathological copying of brushes, event storms on Linux](https://github.com/davispuh/gear-emu/pull/17) (@github/jlunder): using double-buffer flag on `Windows.Forms` controls and `DoubleBufferedPanel` class, on every form and some controls (including `PluginBase` class) to prevent flickering.
 * Updated [readme.md](readme.md): Gear Developers list and Third Party Components.
 * Updated header of every file for Gear Developers.
@@ -175,12 +185,12 @@
     ## Commit [b41c66a](https://github.com/davispuh/gear-emu/commit/b41c66a01b5de4b55cfd4a624a37683c588f7b05) - Plugin 1.0 Changes 3
 
     * Overhead eliminated on run emulator step (calling to a default setting every time).
-    * Some DOXYGEN documentation on [Emulator.cs](Emulator.cs)
+    * Some DOXYGEN documentation on [Emulator.cs](Gear/GUI/Emulator.cs)
 
 
     ## Commit [7eb43c6](https://github.com/davispuh/gear-emu/commit/7eb43c69b2b98f3efe33c48328d2d8b6e2ebcb2f) - Plugin 1.0 Changes 2
 
-    * Correction on some missing `Z` and `C` flags on [NativeCogs.cs](Emulator.cs).
+    * Correction on some missing `Z` and `C` flags on [NativeCog.cs](Gear/EmulationCore/NativeCog.cs).
     * A lot of DOXYGEN documentation on `*.cs`.
     * Ordering on Using libraries on `*.cs`.
     * Some corrections of mispellings.
@@ -203,8 +213,8 @@
     ## Commit [789b325](https://github.com/davispuh/gear-emu/commit/789b325cf9421fa42f6dc905e1c8ecf496ede4b4) - Merge Correction 2
 
     * [EmulationCore/PropellerCPU.cs](Gear/EmulationCore/PropellerCPU.cs) - for `PropellerCPU` class changed ancestor to `Propeller.DirectMemory` and consequences, spelling errors. Now it compiles well.
-    * [EmulationCore/Cog.cs](Gear/EmulationCore/Cog.cs) - changed references of `CogSpecialAddress` to `Assembly.RegisterAddress`, and references of `CogConditionCodes` to `Assembly.ConditionCodes`, using the definitions of [Propeller/AssemblyRegisters.cs](Gear/Propeller/AssemblyRegisters.cs) and [Propeller/Conditions.cs](Gear/Propeller/Conditions.cs). Also deleted obsolete definitions of enum `CogSpecialAddress` and `CogConditionCodes`. Corrected spelling errors.
-    * [Propeller/AssemblyRegisters.cs](Gear/Propeller/AssemblyRegisters.cs) - Added comments from old code in [EmulationCore/Cogs.cs](Gear/EmulationCore/Cogs.cs), principally by adding the correction for `PAR` register (allowing writes) in PASM.
+    * [EmulationCore/Cog.cs](Gear/EmulationCore/Cog.cs) - changed references of `CogSpecialAddress` to `Assembly.RegisterAddress`, and references of `CogConditionCodes` to `Assembly.ConditionCodes`, using the definitions of [Propeller/AssemblyRegisters.cs](Gear/Propeller/AssemblyRegisters.cs) and [Propeller/Conditions.cs](https://github.com/davispuh/gear-emu/blob/789b325cf9421fa42f6dc905e1c8ecf496ede4b4/Gear/Propeller/Conditions.cs). Also deleted obsolete definitions of enum `CogSpecialAddress` and `CogConditionCodes`. Corrected spelling errors.
+    * [Propeller/AssemblyRegisters.cs](Gear/Propeller/AssemblyRegisters.cs) - Added comments from old code in [EmulationCore/Cog.cs](Gear/EmulationCore/Cog.cs), principally by adding the correction for `PAR` register (allowing writes) in PASM.
     * [GUI/SpinView.cs](Gear/GUI/SpinView.cs) - Changed invocations of methods `Propeller.ReadYYY()` and `Propeller.WriteYYY()` to `Propeller.DirectReadYYY()` and `Propeller.DirectWriteYYY()`, following the changes in [Propeller/MemoryManager.cs](Gear/Propeller/MemoryManager.cs).
 
 

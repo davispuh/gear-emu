@@ -88,7 +88,7 @@ namespace Gear.GUI
         }
 
         /// @brief Arrange the emulator windows in Vertical Tiles.
-        private void TileVerticleToolStripMenuItem_Click(object sender, EventArgs e)
+        private void TileVerticalToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LayoutMdi(MdiLayout.TileVertical);
         }
@@ -133,7 +133,7 @@ namespace Gear.GUI
                 Filter = "Gear plug-in component (*.xml)|*.xml|All Files (*.*)|*.*",
                 Title = "Open Gear Plug-in..."
             };
-            if (!String.IsNullOrEmpty(Properties.Settings.Default.LastPlugin))
+            if (!string.IsNullOrEmpty(Properties.Settings.Default.LastPlugin))
                 openFileDialog.InitialDirectory =
                     Path.GetDirectoryName(Properties.Settings.Default.LastPlugin);
 

@@ -29,7 +29,7 @@ namespace Gear.GUI
 {
     /// @brief Combobox specialization for time unit management.
     /// @version v20.09.01 - Added.
-    public partial class TimeUnitComboBox : ComboBox, ITimeUnitMgmt
+    public partial class TimeUnitComboBox : ComboBox, Gear.Utils.ITimeUnitMgmt
     {
         /// @brief Time Units Management Instance
         public TimeUnitMgmt Mgmt;
@@ -76,7 +76,7 @@ namespace Gear.GUI
         [BrowsableAttribute(false)]
         public double FactorSelected => Mgmt.FactorSelected;
 
-        /// @brief @todo Document class TimeUnitsComboBox.IsMultiplyFactor
+        /// @brief
         /// @details Implements ITimeUnitMgmt interface.
         [BrowsableAttribute(false)]
         public bool IsMultiplyFactor => Mgmt.IsMultiplyFactor;

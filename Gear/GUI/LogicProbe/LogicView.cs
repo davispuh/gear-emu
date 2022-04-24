@@ -35,7 +35,7 @@ namespace Gear.GUI.LogicProbe
     public partial class LogicView : Gear.PluginSupport.PluginBase
     {
         /// @brief Current Culture to modify its Number format.
-        /// @version @version v20.09.01 - Added.
+        /// @version v20.09.01 - Added.
         private readonly CultureInfo currentCultureMod =
             (CultureInfo)CultureInfo.CurrentCulture.Clone();
 
@@ -148,7 +148,7 @@ namespace Gear.GUI.LogicProbe
             return string.Format(currentCultureMod, numFormat, value);
         }
 
-        /// @todo document Gear.GUI.LogicProbe.PresentChip()
+        /// @brief
         ///
         public override void PresentChip()
         {
@@ -177,8 +177,11 @@ namespace Gear.GUI.LogicProbe
             Properties.Settings.Default.Save();
         }
 
-        /// @todo document Gear.GUI.LogicProbe.OnPinChange()
-        ///
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="time"></param>
+        /// <param name="states"></param>
         public override void OnPinChange(double time, PinState[] states)
         {
             for (int i = 0; i < states.Length; i++)
@@ -187,8 +190,10 @@ namespace Gear.GUI.LogicProbe
             }
         }
 
-        /// @todo document Gear.GUI.LogicProbe.Repaint()
-        ///
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tick"></param>
         public override void Repaint(bool tick)
         {
             if (Chip == null || Pins == null)
@@ -266,8 +271,11 @@ namespace Gear.GUI.LogicProbe
             waveView.CreateGraphics().DrawImageUnscaled(BackBuffer, 0, 0);
         }
 
-        /// @todo document Gear.GUI.LogicProbe.OnSized()
-        ///
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnSized(object sender, EventArgs e)
         {
             if (waveView.Width > 0 && waveView.Height > 0)
@@ -280,15 +288,21 @@ namespace Gear.GUI.LogicProbe
             Repaint(true);
         }
 
-        /// @todo document Gear.GUI.LogicProbe.ScrollChanged()
-        ///
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ScrollChanged(object sender, ScrollEventArgs e)
         {
             Repaint(false);
         }
 
-        /// @todo document Gear.GUI.LogicProbe.WaveView_Paint()
-        ///
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void WaveView_Paint(object sender, PaintEventArgs e)
         {
             e.Graphics.DrawImageUnscaled(BackBuffer, 0, 0);
@@ -337,15 +351,21 @@ namespace Gear.GUI.LogicProbe
             Repaint(true);
         }
 
-        /// @todo document Gear.GUI.LogicProbe.TimeChanged()
-        ///
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TimeChanged(object sender, ScrollEventArgs e)
         {
             Repaint(false);
         }
 
-        /// @todo document Gear.GUI.LogicProbe.OnClick()
-        ///
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnClick(object sender, EventArgs e)
         {
             if (Pins.Count == 0)
@@ -369,8 +389,11 @@ namespace Gear.GUI.LogicProbe
             }
         }
 
-        /// @todo document Gear.GUI.LogicProbe.OnDblClick()
-        ///
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnDblClick(object sender, EventArgs e)
         {
             if (Pins.Count == 0)
@@ -395,8 +418,11 @@ namespace Gear.GUI.LogicProbe
 
         }
 
-        /// @todo document Gear.GUI.LogicProbe.digitalButton_Click()
-        ///
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DigitalButton_Click(object sender, EventArgs e)
         {
             try
@@ -453,8 +479,11 @@ namespace Gear.GUI.LogicProbe
             Repaint(true);
         }
 
-        /// @todo document Gear.GUI.LogicProbe.analogButton_Click()
-        ///
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void AnalogButton_Click(object sender, EventArgs e)
         {
             string[] numbers = pinsTextBox.Text.Split(',');
