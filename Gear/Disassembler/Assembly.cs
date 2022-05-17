@@ -40,15 +40,15 @@ namespace Gear.Disassembler
         /// <returns></returns>
         public static Propeller.Assembly.SubInstruction GetSubInstruction(Propeller.Assembly.Instruction SourceInstruction, ParsedInstruction ParsedInstruction)
         {
-            switch (SourceInstruction.Type)
+            switch (SourceInstruction.InstructionType)
             {
-                case Propeller.Assembly.InstructionType.Normal:
+                case Propeller.Assembly.InstructionTypeEnum.Normal:
                     return SourceInstruction.SubInstructions[0];
-                case Propeller.Assembly.InstructionType.WR:
+                case Propeller.Assembly.InstructionTypeEnum.WR:
                     return SourceInstruction.SubInstructions[(ParsedInstruction.ZCRI & ParsedInstruction.WriteResultFlag) == ParsedInstruction.WriteResultFlag ? 0 : 1];
-                case Propeller.Assembly.InstructionType.Hub:
+                case Propeller.Assembly.InstructionTypeEnum.Hub:
                     return SourceInstruction.SubInstructions[ParsedInstruction.SRC & 0x7];
-                case Propeller.Assembly.InstructionType.Jump:
+                case Propeller.Assembly.InstructionTypeEnum.Jump:
                     int num = ParsedInstruction.ZCRI & 0x3;
                     if (num <= 1)
                     {
@@ -60,7 +60,7 @@ namespace Gear.Disassembler
                     }
                     return SourceInstruction.SubInstructions[num];
             }
-            throw new Exception("Unknown Instruction Type: " + SourceInstruction.Type.ToString());
+            throw new Exception("Unknown Instruction Type: " + SourceInstruction.InstructionType.ToString());
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace Gear.Disassembler
             /// <returns></returns>
             public bool WriteZero()
             {
-                return (this.ZCRI & WriteZeroFlag) == WriteZeroFlag && this.GetSubInstruction().WZ;
+                return (this.ZCRI & WriteZeroFlag) == WriteZeroFlag && this.GetSubInstruction().WZEffect;
             }
 
             /// <summary>
@@ -135,7 +135,7 @@ namespace Gear.Disassembler
             /// <returns></returns>
             public bool WriteCarry()
             {
-                return (this.ZCRI & WriteCarryFlag) == WriteCarryFlag && this.GetSubInstruction().WC;
+                return (this.ZCRI & WriteCarryFlag) == WriteCarryFlag && this.GetSubInstruction().WCEffect;
             }
             /// <summary>
             ///
@@ -143,7 +143,7 @@ namespace Gear.Disassembler
             /// <returns></returns>
             public bool WriteResult()
             {
-                return (this.ZCRI & WriteResultFlag) == WriteResultFlag && this.GetSubInstruction().WR;
+                return (this.ZCRI & WriteResultFlag) == WriteResultFlag && this.GetSubInstruction().WREffect;
             }
 
             /// <summary>
@@ -152,7 +152,7 @@ namespace Gear.Disassembler
             /// <returns></returns>
             public bool NoResult()
             {
-                return (this.ZCRI & WriteResultFlag) == 0 && this.GetSubInstruction().WR;
+                return (this.ZCRI & WriteResultFlag) == 0 && this.GetSubInstruction().WREffect;
             }
 
             /// <summary>

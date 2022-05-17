@@ -99,7 +99,7 @@ OUTPUT_LANGUAGE        = English
 # Possible values are: None, LTR, RTL and Context.
 # The default value is: None.
 
-OUTPUT_TEXT_DIRECTION  = None
+OUTPUT_TEXT_DIRECTION  = LTR
 
 # If the BRIEF_MEMBER_DESC tag is set to YES, doxygen will include brief member
 # descriptions after the members that are listed in the file and class
@@ -269,7 +269,8 @@ TAB_SIZE               = 2
 # commands \{ and \} for these it is advised to use the version @{ and @} or use
 # a double escape (\\{ and \\})
 
-ALIASES                = "issue{1}=@par Issue^^[#\1](https://github.com/davispuh/gear-emu/issues/\1) -"
+ALIASES                = "issue{1}=@par Issue^^<a href=\"https://github.com/davispuh/gear-emu/issues/\1\" rel=\"external\" target=\"_blank\">#\1</a> -" \
+                         "pullreq{1}=@par Pull Request^^<a href=\"https://github.com/davispuh/gear-emu/pull/\1\" rel=\"external\" target=\"_blank\">#\1</a> -"
 
 # Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C sources
 # only. Doxygen will then generate output that is more tailored for C. For
@@ -987,7 +988,10 @@ EXCLUDE_SYMBOLS        = Form \
                          ToolStripComboBox \
                          IEquatable \
                          Panel \
-                         Exception
+                         Exception \
+                         Splitter \
+                         INotifyPropertyChanged \
+                         TabControl
 
 # The EXAMPLE_PATH tag can be used to specify one or more files or directories
 # that contain example code fragments that are included (see the \include
@@ -2126,7 +2130,7 @@ XML_PROGRAMLISTING     = YES
 # The default value is: NO.
 # This tag requires that the tag GENERATE_XML is set to YES.
 
-XML_NS_MEMB_FILE_SCOPE = NO
+XML_NS_MEMB_FILE_SCOPE = YES
 
 #---------------------------------------------------------------------------
 # Configuration options related to the DOCBOOK output

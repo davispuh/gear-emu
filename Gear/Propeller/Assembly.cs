@@ -22,60 +22,140 @@
 
 namespace Gear.Propeller
 {
+    /// <summary></summary>
     public static partial class Assembly
     {
-        public enum InstructionType
+        /// <summary>Instructions types.</summary>
+        /// @version v22.05.01 - Name changed to clarify meaning of it.
+        public enum InstructionTypeEnum : byte
         {
+            /// <summary></summary>
             Normal,
+            /// <summary></summary>
             WR,
+            /// <summary></summary>
             Hub,
+            /// <summary></summary>
             Jump
         }
 
+        /// <summary>
+        /// Container for PASM registers names and Read/Write characteristics.
+        /// </summary>
         public class Register : Propeller.Register
         {
-            public bool Read  { get; private set; }
-            public bool Write { get; private set; }
+            /// <summary>Could be read.</summary>
+            /// @version v22.05.01 - Name changed to clarify meaning of it.
+            public bool CanRead  { get; }
+            /// <summary>Could be written.</summary>
+            /// @version v22.05.01 - Name changed to clarify meaning of it.
+            public bool CanWrite { get; }
 
-            public Register(string Name, bool Read, bool Write)
+            /// <summary>Default constructor.</summary>
+            /// <param name="name">Name of register.</param>
+            /// <param name="readEnable">Permit Read.</param>
+            /// <param name="writeEnable">Permit Write.</param>
+            /// @version v22.05.01 - Parameter names changed to clarify meaning of it.
+            public Register(string name, bool readEnable, bool writeEnable)
             {
-                this.Name  = Name;
-                this.Read  = Read;
-                this.Write = Write;
+                Name  = name;
+                CanRead  = readEnable;
+                CanWrite = writeEnable;
             }
         }
 
+        /// <summary></summary>
         public class SubInstruction
         {
-            public string Name           { get; private set; }
-            public bool   Destination    { get; private set; }
-            public bool   Source         { get; private set; }
-            public bool   WZ             { get; private set; }
-            public bool   WC             { get; private set; }
-            public bool   WR             { get; private set; }
-            public bool   ImmediateValue { get; private set; }
+            /// <summary></summary>
+            public string Name { get; }
+            /// <summary></summary>
+            public bool Destination { get; }
+            /// <summary></summary>
+            public bool Source { get; }
+            /// <summary></summary>
+            /// @version v22.05.01 - Name changed to clarify meaning of it.
+            public bool WZEffect { get; }
+            /// <summary></summary>
+            /// @version v22.05.01 - Name changed to clarify meaning of it.
+            public bool WCEffect { get; }
+            /// <summary></summary>
+            /// @version v22.05.01 - Name changed to clarify meaning of it.
+            public bool WREffect { get; }
+            /// <summary></summary>
+            public bool ImmediateValue { get; }
 
-            public SubInstruction(string Name, bool Destination, bool Source, bool WZ, bool WC, bool WR, bool ImmediateValue)
+            /// <summary>Default constructor.</summary>
+            /// <param name="name"></param>
+            /// <param name="destination"></param>
+            /// <param name="source"></param>
+            /// <param name="wzEffect"></param>
+            /// <param name="wcEffect"></param>
+            /// <param name="wrEffect"></param>
+            /// <param name="immediateValue"></param>
+            /// @version v22.05.01 - 
+            public SubInstruction(string name, bool destination, bool source, bool wzEffect, bool wcEffect, bool wrEffect, bool immediateValue)
             {
-                this.Name           = Name;
-                this.Destination    = Destination;
-                this.Source         = Source;
-                this.WZ             = WZ;
-                this.WC             = WC;
-                this.WR             = WR;
-                this.ImmediateValue = ImmediateValue;
+                Name           = name;
+                Destination    = destination;
+                Source         = source;
+                WZEffect       = wzEffect;
+                WCEffect       = wcEffect;
+                WREffect       = wrEffect;
+                ImmediateValue = immediateValue;
             }
         }
 
+        /// <summary>
+        /// Container for PASM instructions and associated sub instructions.
+        /// </summary>
         public class Instruction
         {
-            public InstructionType Type             { get; private set; }
-            public SubInstruction[] SubInstructions { get; private set; }
+            /// <summary></summary>
+            public InstructionTypeEnum InstructionType { get; }
+            /// <summary></summary>
+            public SubInstruction[] SubInstructions { get; }
 
-            public Instruction(InstructionType Type, SubInstruction[] SubInstructions)
+            /// <summary></summary>
+            /// <param name="instructionType"></param>
+            /// <param name="subInstructions"></param>
+            public Instruction(InstructionTypeEnum instructionType, SubInstruction[] subInstructions)
             {
-                this.Type = Type;
-                this.SubInstructions = SubInstructions;
+                InstructionType = instructionType;
+                SubInstructions = subInstructions;
+            }
+        }
+
+        /// <summary>Container to define PASM conditions names.</summary>
+        /// @version v22.05.01 - Added to be a specific container suitable
+        /// to be used in a static ReadOnlyCollection<>.
+        public class Condition
+        {
+            /// <summary></summary>
+            public string Inst1 { get; }
+            /// <summary></summary>
+            public string Inst2 { get; }
+            /// <summary></summary>
+            public string Inst3 { get; }
+
+            /// <summary>Constructor with 3 parameters.</summary>
+            /// <param name="inst1"></param>
+            /// <param name="inst2"></param>
+            /// <param name="inst3"></param>
+            public Condition(string inst1, string inst2, string inst3)
+            {
+                Inst1 = inst1;
+                Inst2 = inst2;
+                Inst3 = inst3;
+            }
+            /// <summary>Constructor with 2 parameters.</summary>
+            /// <param name="inst1"></param>
+            /// <param name="inst2"></param>
+            public Condition(string inst1, string inst2)
+            {
+                Inst1 = inst1;
+                Inst2 = inst2;
+                Inst3 = string.Empty;
             }
         }
     }

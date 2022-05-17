@@ -35,6 +35,8 @@ namespace Gear.EmulationCore
         /// @brief Translate to text the bytecode opcodes.
         /// @param Operation Bytecode opcodes.
         /// @return Explicative text from decoded bytecode.
+        /// @version v22.05.01 - Adapted to use the new class
+        /// Gear.Propeller.Assembly.Condition for condition names.
         public static string AssemblyText(uint Operation)
         {
             Assembly.ParsedInstruction instr = new Assembly.ParsedInstruction(Operation);
@@ -73,7 +75,7 @@ namespace Gear.EmulationCore
                 }
 
                 text = string.Format("{0} {1} {2}{3}{4}", new object[] {
-                    Propeller.Assembly.Conditions[instr.CON][0],
+                    Propeller.Assembly.Conditions[instr.CON].Inst1,
                     ActualInstruction.Name,
                     DestString,
                     (ActualInstruction.Source && ActualInstruction.Destination) ? ", " : string.Empty,
@@ -93,7 +95,7 @@ namespace Gear.EmulationCore
                     text += " WC";
             }
             else
-                text = string.Format("{0} {1}", new object[] { Propeller.Assembly.Conditions[0][1], Propeller.Assembly.Conditions[0][2] });
+                text = string.Format("{0} {1}", new object[] { Propeller.Assembly.Conditions[0].Inst2, Propeller.Assembly.Conditions[0].Inst3 });
             return text;
         }
 
@@ -122,7 +124,6 @@ namespace Gear.EmulationCore
                         throw new Exception("Unexpected Spin Argument Mode: " + SubAssignment.ArgumentMode.ToString());
                 }
             }
-
             return effect;
         }
 

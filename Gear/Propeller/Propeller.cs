@@ -23,14 +23,19 @@
 /// @brief %Propeller P1 Definitions.
 namespace Gear.Propeller
 {
+    /// <summary>%Register base class.</summary>
     public class Register
     {
-        public string Name { get; protected set; }
+        /// <summary>Name of register</summary>
+        public string Name { get; private protected set; }
     }
 
+    /// <summary>Basic instruction base class.</summary>
     public class BasicInstruction
     {
-        public string Name { get; protected set; }
-        public string NameBrief { get; protected set; }
+        /// <summary>Full name of instruction.</summary>
+        public string Name { get; private protected set; }
+        /// <summary>Brief name of instruction.</summary>
+        public string NameBrief { get; private protected set; }
     }
 }

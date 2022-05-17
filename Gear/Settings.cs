@@ -44,7 +44,7 @@ namespace Gear.Properties
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -53,7 +53,7 @@ namespace Gear.Properties
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -92,7 +92,7 @@ namespace Gear.Properties
         /// @version V20.09.01 - Added as a User property of the program.
 
         /// @property FreqFormat
-        /// @brief Format of frequency labels in GUI.
+        /// @brief Format of frequency labels in %GUI.
         /// @version V20.06.01 - Added as a User property of the program.
 
         /// @property HubTimeUnit

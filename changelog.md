@@ -1,6 +1,15 @@
 # Change Log
 
-## Commit Improved Emulator run mode and Code cleanup 3
+## Commit Code cleanup 4
+
+- Code cleanup in files: [`Propeller/Assembly.cs`](Gear/Propeller/Assembly.cs), [`AssemblyConditions.cs`](Gear/Propeller/AssemblyConditions.cs), [`AssemblyInstructions.cs`](Gear/Propeller/AssemblyInstructions.cs), [`AssemblyRegisters.cs`](Gear/Propeller/AssemblyRegisters.cs), [`MemoryManager.cs`](Gear/Propeller/MemoryManager.cs), [`Propeller.cs`](Gear/Propeller/Propeller.cs), [`GearProgram.cs`](Gear/GearProgram.cs).
+  - Refactored naming and visibility of members, parameters and local variables in classes, methods and enums. 
+  - Added XML & Doxygen comments in files.
+- Fix security warning CA2105: 'Array fields should not be read only', adopting ReadOnlyCollection static object as storage in files [`AssemblyConditions.cs`](Gear/Propeller/AssemblyConditions.cs`), [`AssemblyInstructions.cs`](Gear/Propeller/AssemblyInstructions.cs`) & [`AssemblyRegisters.cs`](Gear/Propeller/AssemblyRegisters.cs`).
+- Added custom tag to Doxygen: `pullreq{<num>}` to link to specific github pull request. Corrected custom tag `issue{<num>}` to the same implementation.
+
+
+## Commit [a5ccb86](https://github.com/davispuh/gear-emu/commit/a5ccb868cf4b73498c2ed42219d6a8e218b5d843) Improved Emulator run mode and Code cleanup 3
 
 - Improved logic to enable/disable buttons (step Instruction and step Clock) when the emulator is running/stopped in [`Emulator.cs`](Gear/GUI/Emulator.cs). Added shorcut 'c' to make a clock step in emulator.
 - Moved legend about emulator shortcuts in `Hubview` control to be show in Status label of `GearDesktop` form.
@@ -67,7 +76,7 @@
 * Pull request #[26](https://github.com/davispuh/gear-emu/pull/26) by @github/Sh1nyAnd3o3 : the carry and zero flag of an `WAITVID` instruction are set like the opcode of the `WAITVID` command tells.
 
 
-## Comit [94c3c2c](https://github.com/davispuh/gear-emu/commit/94c3c2c20bacaa498519d69c02b2fc8a04792e0b) - Updated http address for documentation links
+## Commit [94c3c2c](https://github.com/davispuh/gear-emu/commit/94c3c2c20bacaa498519d69c02b2fc8a04792e0b) - Updated http address for documentation links
 * Broken links fixed: parallax forums fixed.
 
 
@@ -158,7 +167,7 @@
     * Remember last directories binary files and plugins loaded or edited.
 
 
-    ## Commit [970064d](https://github.com/davispuh/gear-emu/commit/970064d03c85c995e4dd3c3e1dfff49983beecb1) & [a35ab06](https://github.com/davispuh/gear-emu/commit/a35ab062dc844b0a768878bd1c49e6ab5f1b4ea3)- Merge pull request #[18](https://github.com/davispuh/gear-emu/issues/18) from Memotech-Bill/master
+    ## Commit [970064d](https://github.com/davispuh/gear-emu/commit/970064d03c85c995e4dd3c3e1dfff49983beecb1) & [a35ab06](https://github.com/davispuh/gear-emu/commit/a35ab062dc844b0a768878bd1c49e6ab5f1b4ea3)- Merge pull request #[18](https://github.com/davispuh/gear-emu/pull/18) from Memotech-Bill/master
 
     * Corrected timing of Video Generator Frame Reload.
     * Added the ability to set breaks on video frame reloads, either all or just those that do not coinside with a `WAIT_VID`.
