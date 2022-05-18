@@ -119,9 +119,9 @@ class Television : PluginBase
 	double chroma;
 	double baseChroma;
 
-	//Called every time a pin changes, only if it was registered on 
+	//Called every time a pin changes, only if it was registered on
 	//method PresentChip() above.
-	public override void OnPinChange(double time, PinState[] pins)
+	public override void OnPinChange(double time, PinState[] pinStates)
 	{
 		double delta = time - LastTime;
 		LastTime = time;
@@ -183,9 +183,9 @@ class Television : PluginBase
 		}
 
 		Voltage =
-			((pins[12] == PinState.OUTPUT_HI) ? 1 : 0) +
-			((pins[13] == PinState.OUTPUT_HI) ? 2 : 0) +
-			((pins[14] == PinState.OUTPUT_HI) ? 4 : 0);
+			((pinStates[12] == PinState.OUTPUT_HI) ? 1 : 0) +
+			((pinStates[13] == PinState.OUTPUT_HI) ? 2 : 0) +
+			((pinStates[14] == PinState.OUTPUT_HI) ? 4 : 0);
 
 		if (Voltage == 0)
 		{
@@ -226,5 +226,6 @@ class Television : PluginBase
 			}
 		}
 	}
-}]]></code>
+}
+]]></code>
 </plugin>

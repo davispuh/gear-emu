@@ -22,6 +22,7 @@
  */
 
 using Microsoft.CSharp;
+using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Reflection;
@@ -29,22 +30,31 @@ using System.Windows.Forms;
 
 namespace Gear.PluginSupport
 {
-    public delegate void ErrorEnumProc(CompilerError e);
+    /// <summary></summary>
+    /// <param name="compErr"></param>
+    public delegate void ErrorEnumProc(CompilerError compErr);
 
     /// @brief Compile a PluginBase Module, keeping the errors if they appears.
-    static class ModuleCompiler
+    public static class ModuleCompiler
     {
         /// @brief Collection for error list on compile a dynamic plugin.
-        static private CompilerErrorCollection m_Errors = null;
+        private static CompilerErrorCollection _errorColl;
 
         /// @brief Enumerate errors from the compiling process.
         /// @param proc Method to invoke for each error.
-        static public void EnumerateErrors(ErrorEnumProc proc)
+        /// @throws InvalidOperationException If the collection of compiler
+        /// errors is null.
+        /// @throws ArgumentNullException If delegate <c>proc</c> is null.
+        /// @version v22.05.02 - Throws exceptions on errors.
+        public static void EnumerateErrors(ErrorEnumProc proc)
         {
-            if (m_Errors == null)
-                return;
-
-            foreach (CompilerError e in m_Errors)
+            if (_errorColl == null)
+                throw new InvalidOperationException(
+                    $"CompilerErrorCollection '{nameof(_errorColl)}' is null. " +
+                    "Had ModuleCompiler.LoadModule() successfully run?");
+            if (proc == null)
+                throw new ArgumentNullException(nameof(proc));
+            foreach (CompilerError e in _errorColl)
                 proc(e);
         }
 
@@ -56,22 +66,25 @@ namespace Gear.PluginSupport
         /// @param className Class name of the plugin.
         /// @param references String array with auxiliary references used by your plugin.
         /// See notes for defaults used.
-        /// @param obj Reference to a PropellerCPU of this instance, to be passed as a
+        /// @param cpuHost Reference to a PropellerCPU of this instance, to be passed as a
         /// parameter to the constructor of the new plugin class instance.
         /// @returns New Plugin class instance compiled (on success), or NULL (on fail).
+        /// @throws ArgumentNullException If parameter references is null.
         /// @note There are some references already added, so you don't need to include on your plugins:
         /// @li `using System;` @li `using System.Data;` @li `using System.Drawing;`
         /// @li `using System.Windows.Forms;` @li `using System.Xml;`
-        /// @version v20.08.01 - Added compiler version definition.
-        static public PluginBase LoadModule(string code, string className,
-            string[] references, object obj)
+        /// @version v22.05.02 - Changes as throw exception, changed parameter and
+        /// local variable name for better comprehension, use string interpolation,
+        /// and no need of use cast to return value.
+        public static PluginBase LoadModule(string code, string className,
+            string[] references, object cpuHost)
         {
-            //set compiler version
+            //set compiler version: is the maximum allowed by Microsoft.CSharp
             Dictionary<string, string> provOptions =
-                new Dictionary<string, string>() { { "CompilerVersion", "v4.0" } };
+                new Dictionary<string, string> { { "CompilerVersion", "v4.0" } };
             //create new compiler version
             CodeDomProvider provider = new CSharpCodeProvider(provOptions);
-            CompilerParameters cp = new CompilerParameters
+            CompilerParameters compilerParameters = new CompilerParameters
             {
 #if DEBUG
                 IncludeDebugInformation = true,
@@ -83,21 +96,23 @@ namespace Gear.PluginSupport
                 CompilerOptions = "/optimize"
             };
 
-            cp.ReferencedAssemblies.Add(Application.ExecutablePath);
-            cp.ReferencedAssemblies.Add("System.dll");
-            cp.ReferencedAssemblies.Add("System.Data.dll");
-            cp.ReferencedAssemblies.Add("System.Drawing.dll");
-            cp.ReferencedAssemblies.Add("System.Xml.dll");
-            cp.ReferencedAssemblies.Add("System.Windows.Forms.dll");
+            compilerParameters.ReferencedAssemblies.Add(Application.ExecutablePath);
+            compilerParameters.ReferencedAssemblies.Add("System.dll");
+            compilerParameters.ReferencedAssemblies.Add("System.Data.dll");
+            compilerParameters.ReferencedAssemblies.Add("System.Drawing.dll");
+            compilerParameters.ReferencedAssemblies.Add("System.Xml.dll");
+            compilerParameters.ReferencedAssemblies.Add("System.Windows.Forms.dll");
 
-            foreach (string s in references)
-                cp.ReferencedAssemblies.Add(s);
+            if (references == null)
+                throw new ArgumentNullException(nameof(references));
+            foreach (string reference in references)
+                compilerParameters.ReferencedAssemblies.Add(reference);
 
-            CompilerResults results = provider.CompileAssemblyFromSource(cp, code);
+            CompilerResults results = provider.CompileAssemblyFromSource(compilerParameters, code);
 
             if (results.Errors.HasErrors | results.Errors.HasWarnings)
             {
-                m_Errors = results.Errors;
+                _errorColl = results.Errors;
                 return null;
             }
 
@@ -107,7 +122,7 @@ namespace Gear.PluginSupport
                 false,                                        //=false: case sensitive
                 BindingFlags.Public | BindingFlags.Instance,  //flags to delimit the candidates
                 null,                                         //default binder object
-                new object[] { obj },                         //parameter lists
+                new[] { cpuHost },                            //parameter lists
                 null,                                         //default culture
                 null                                          //default activation object
             );
@@ -115,22 +130,19 @@ namespace Gear.PluginSupport
             if (target == null)
             {
                 CompilerError c = new CompilerError(string.Empty, 0, 0, "CS0103",
-                    "The name '" + className + "' does not exist in the current context." +
-                    " Does the class name is the same that is declared in c# code?");
-                m_Errors = new CompilerErrorCollection(new CompilerError[] { c });
+                    $"The name '{className}' does not exist in the current context. Does the class name is the same that is declared in c# code?");
+                _errorColl = new CompilerErrorCollection(new[] { c });
                 return null;
             }
-            else if (!(target is PluginBase))
+            if (!(target is PluginBase pluginBase))
             {
                 CompilerError c = new CompilerError(string.Empty, 0, 0, "CS0029",
-                    "Cannot implicitly convert type '" + target.GetType().FullName +
-                    "' to 'Gear.PluginSupport.PluginBase'");
-                m_Errors = new CompilerErrorCollection(new CompilerError[] { c });
+                    $"Cannot implicitly convert type '{target.GetType().FullName}' to 'Gear.PluginSupport.PluginBase'");
+                _errorColl = new CompilerErrorCollection(new[] { c });
                 return null;
             }
-
-            m_Errors = null;
-            return (PluginBase)target;
+            _errorColl = null;
+            return pluginBase;
         }
     }
 }

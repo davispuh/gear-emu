@@ -78,9 +78,9 @@ class VGAMonitor : PluginBase
 		NotifyOnPins();
 	}
 
-	//Called every time a pin changes, only if it was registered on 
+	//Called every time a pin changes, only if it was registered on
 	//method PresentChip() above.
-	public override void OnPinChange(double time, PinState[] pins)
+	public override void OnPinChange(double time, PinState[] pinStates)
 	{
 		double delta = time - LastTime;
 		LastTime = time;
@@ -93,28 +93,28 @@ class VGAMonitor : PluginBase
 			Screen.SetPixel(Pixel++, ScanLine, Output);
 
 		// Check to see if the scanline pins have changed
-		if (pins[16] == PinState.OUTPUT_LO && !VSync)
+		if (pinStates[16] == PinState.OUTPUT_LO && !VSync)
 		{
 			if (!VSync)
 				ScanLine = 0;
 		}
 
-		if (pins[17] == PinState.OUTPUT_LO && !HSync)
+		if (pinStates[17] == PinState.OUTPUT_LO && !HSync)
 		{
 			if (++ScanLine == Screen.Height)
 				ScanLine = 0;
 			Pixel = 0;
 		}
 
-		VSync = pins[16] == PinState.OUTPUT_LO;
-		HSync = pins[17] == PinState.OUTPUT_LO;
+		VSync = pinStates[16] == PinState.OUTPUT_LO;
+		HSync = pinStates[17] == PinState.OUTPUT_LO;
 
 
 		// Drive color off PropellerCPU demo board pins
 		int index = 0;
 
 		for (int b = 0, p = 18; b < 6; b++, p++)
-			if (pins[p] == PinState.OUTPUT_HI)
+			if (pinStates[p] == PinState.OUTPUT_HI)
 				index |= 1 << b;
 
 		Output = Palette[index];

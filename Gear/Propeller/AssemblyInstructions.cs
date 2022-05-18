@@ -27,9 +27,7 @@ namespace Gear.Propeller
 {
     public partial class Assembly
     {
-        /// <summary>
-        /// P1 PASM Instruction codes.
-        /// </summary>
+        /// <summary>P1 PASM Instruction codes.</summary>
         public enum InstructionCodes : uint
         {
             RWBYTE  = 0x00000000,
@@ -101,8 +99,9 @@ namespace Gear.Propeller
         /// <summary>
         /// Declaration of P1 PASM %Instructions, with its sub instructions.
         /// </summary>
-        /// @version v22.05.01 - Fix warning CA2105: Array fields should not be
-        /// read only, adopting ReadOnlyCollection static object as storage.
+        /// @version v22.05.01 - Fix security warning CA2105: 'Array fields
+        /// should not be read only', adopting ReadOnlyCollection static
+        /// object as storage.
         public static readonly ReadOnlyCollection<Instruction> Instructions =
             new ReadOnlyCollection<Instruction>(new[]
             {

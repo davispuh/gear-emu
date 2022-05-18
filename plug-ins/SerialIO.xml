@@ -115,7 +115,7 @@ class SerialIO : PluginBase
 		get { return "Serial"; }
 	}
 
-	//Allow or not key press detecting on the plugin. 
+	//Allow or not key press detecting on the plugin.
 	public override Boolean AllowHotKeys
 	{
 		get { return false; }
@@ -296,7 +296,7 @@ class SerialIO : PluginBase
 		DrivePin(txPin, false, true);
 	}
 
-	//Called every clock tick, only if it was registered on method 
+	//Called every clock tick, only if it was registered on method
 	//PresentChip() above.
 	public override void OnClock(double time, uint sysCounter)
 	{

@@ -79,7 +79,7 @@ namespace Gear.GUI
             // TEMPORARY RUN FUNCTION
             runTimer = new Timer
             {
-                Interval = 60
+                Interval = 10
             };
             runTimer.Tick += new EventHandler(RunEmulatorStep);
             UpdateRunningButtons();

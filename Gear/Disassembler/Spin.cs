@@ -78,16 +78,16 @@ namespace Gear.Disassembler
         /// <returns></returns>
         public static Propeller.Spin.SubAssignment GetSubAssignment(Propeller.Spin.Assignment SourceAssignment, ParsedAssignment ParsedAssignment)
         {
-            switch (SourceAssignment.Type)
+            switch (SourceAssignment.AssignmentType)
             {
-                case Propeller.Spin.AssignmentType.WriteRepeat:
-                    return SourceAssignment.SubAssignments[ParsedAssignment.Bit1 ? 1 : 0];
-                case Propeller.Spin.AssignmentType.Normal:
-                    return SourceAssignment.SubAssignments[ParsedAssignment.Bit2 ? 1 : 0];
-                case Propeller.Spin.AssignmentType.Size:
-                    return SourceAssignment.SubAssignments[(int)ParsedAssignment.Size];
+                case Propeller.Spin.AssignmentTypeEnum.WriteRepeat:
+                    return SourceAssignment.SubAssignmentsArray[ParsedAssignment.Bit1 ? 1 : 0];
+                case Propeller.Spin.AssignmentTypeEnum.Normal:
+                    return SourceAssignment.SubAssignmentsArray[ParsedAssignment.Bit2 ? 1 : 0];
+                case Propeller.Spin.AssignmentTypeEnum.Size:
+                    return SourceAssignment.SubAssignmentsArray[(int)ParsedAssignment.Size];
             }
-            throw new Exception("Unknown Assignment Type: " + SourceAssignment.Type.ToString());
+            throw new Exception("Unknown Assignment Type: " + SourceAssignment.AssignmentType.ToString());
         }
 
         /// <summary>

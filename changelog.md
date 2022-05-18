@@ -1,11 +1,23 @@
 # Change Log
 
-## Commit Code cleanup 4
+## Release Version [22.05.02](https://github.com/davispuh/gear-emu/releases/tag/v22.05.02) and Commit  Emulator speedup and code cleanup 5
+
+- Temporal emulator speedup: Corrected latency on rerun emulator. The definitive solution is use a new background thread to run the emulation cicle and incorporate paralellism to `Emulator.Step()`.
+- Code cleanup in files: [`Propeller/Spin.cs`](Gear/Propeller/Spin.cs), [`SpinAssignments.cs`](Gear/Propeller/SpinAssignments.cs), [`SpinInstructions.cs`](Gear/Propeller/SpinInstructions.cs), [`SpinMathInstruction.cs`](Gear/Propeller/SpinMathInstructions.cs), [`SpinRegisters.cs`](Gear/Propeller/SpinRegisters.cs), [`PluginBase.cs`](Gear/PluginSupport/PluginBase.cs), [`BinarySizeException.cs`](Gear/Utils/BinarySizeException.cs), [`SingleInstanceException.cs`](Gear/Utils/SingleInstanceException.cs).
+  - Refactored naming and visibility of members, parameters and local variables in classes, methods and enums. 
+  - Added XML & Doxygen comments in files.
+
+- Fix security warning CA2105: 'Array fields should not be read only', adopting ReadOnlyCollection static object as storage in files [`SpinAssignments.cs`](Gear/Propeller/SpinAssignments.cs), [`SpinInstructions.cs`](Gear/Propeller/SpinInstructions.cs), [`SpinMathInstruction.cs`](Gear/Propeller/SpinMathInstructions.cs), [`SpinRegisters.cs`](Gear/Propeller/SpinRegisters.cs).
+- File name changed from `ModuleLoader.cs` to [`ModuleCompiler.cs`](Gear/PluginSupport/ModuleCompiler.cs), to be sincronized the class name with the file, as good practice.
+- Updated documentation for plugins in [`Plugins_notes`](plug-ins/Plugins_notes.md), [`PluginTemplate.cs`](Gear/Resources/PluginTemplate.cs) and correspondly format corrections on xml plugins [`PinNoise.xml`](plug-ins/PinNoise.xml), [`SerialIO.xml`](plug-ins/SerialIO.xml), [`Stimulus.xml`](plug-ins/Stimulus.xml), [`Television.xml`](plug-ins/Television.xml), [`vgamonitor.xml`](plug-ins/vgamonitor.xml).
+
+
+## Release Version [22.05.01](https://github.com/davispuh/gear-emu/releases/tag/v22.05.01) and Commit [56ce3b6](https://github.com/davispuh/gear-emu/commit/56ce3b6c126d3cfb75f107a906dbe8d754e97422) Code cleanup 4
 
 - Code cleanup in files: [`Propeller/Assembly.cs`](Gear/Propeller/Assembly.cs), [`AssemblyConditions.cs`](Gear/Propeller/AssemblyConditions.cs), [`AssemblyInstructions.cs`](Gear/Propeller/AssemblyInstructions.cs), [`AssemblyRegisters.cs`](Gear/Propeller/AssemblyRegisters.cs), [`MemoryManager.cs`](Gear/Propeller/MemoryManager.cs), [`Propeller.cs`](Gear/Propeller/Propeller.cs), [`GearProgram.cs`](Gear/GearProgram.cs).
   - Refactored naming and visibility of members, parameters and local variables in classes, methods and enums. 
   - Added XML & Doxygen comments in files.
-- Fix security warning CA2105: 'Array fields should not be read only', adopting ReadOnlyCollection static object as storage in files [`AssemblyConditions.cs`](Gear/Propeller/AssemblyConditions.cs`), [`AssemblyInstructions.cs`](Gear/Propeller/AssemblyInstructions.cs`) & [`AssemblyRegisters.cs`](Gear/Propeller/AssemblyRegisters.cs`).
+- Fix security warning CA2105: 'Array fields should not be read only', adopting ReadOnlyCollection static object as storage in files [`AssemblyConditions.cs`](Gear/Propeller/AssemblyConditions.cs), [`AssemblyInstructions.cs`](Gear/Propeller/AssemblyInstructions.cs) & [`AssemblyRegisters.cs`](Gear/Propeller/AssemblyRegisters.cs).
 - Added custom tag to Doxygen: `pullreq{<num>}` to link to specific github pull request. Corrected custom tag `issue{<num>}` to the same implementation.
 
 
@@ -272,7 +284,7 @@
 
 * Improvements on LogicView, to show more helpful messages on errors, labels on buttons and text boxes.
 
-* In Plugin Editor now you can start with a default plugin template (new default) or empty window (old default style). The program recovers it from "[`Resource/PluginTemplate.cs`](Gear/bin/Debug/Resources/PluginTemplate.cs)".
+* In Plugin Editor now you can start with a default plugin template (new default) or empty window (old default style). The program recovers it from "[`Resources/PluginTemplate.cs`](Gear/bin/Debug/Resources/PluginTemplate.cs)".
 
 * Updated `PluginBase` class structure, so all the old plugins have to be updated:
     - Constructor invocation must call Base constructor.

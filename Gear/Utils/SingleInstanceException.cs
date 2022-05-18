@@ -31,32 +31,28 @@ namespace Gear.Utils
     [Serializable]
     public class SingleInstanceException : Exception
     {
-        /// <summary>
-        ///
-        /// </summary>
-        public SingleInstanceException() :
-            base()
-        { }
+        /// <summary>Default constructor.</summary>
+        public SingleInstanceException() { }
 
         /// <summary>
-        ///
+        /// Constructor with a message.
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="message">Message string.</param>
         public SingleInstanceException(string message) :
             base(message)
         { }
 
         /// <summary>
-        ///
+        /// Constructor with a message and an inner exception.
         /// </summary>
-        /// <param name="message"></param>
-        /// <param name="innerException"></param>
+        /// <param name="message">Message string.</param>
+        /// <param name="innerException">Inner exception which throw this one.</param>
         public SingleInstanceException(string message, Exception innerException) :
             base(message, innerException)
         { }
 
         /// <summary>
-        ///
+        /// Constructor in a serialization context.
         /// </summary>
         /// <param name="serializationInfo"></param>
         /// <param name="streamingContext"></param>
@@ -64,5 +60,4 @@ namespace Gear.Utils
             base(serializationInfo, streamingContext)
         { }
     }
-
 }

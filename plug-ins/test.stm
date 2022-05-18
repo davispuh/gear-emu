@@ -1,6 +1,6 @@
 ! Below is some examples of valid stimuli
 !
-! Time indications are in seconds, use 
+! Time indications are in seconds, use
 ! ------------------------------------
 !   n - for nano
 !   u - for micro
@@ -8,7 +8,7 @@
 !   K - for Kilo
 !   M - for Mega
 ! Time may be given in a relative format by starting the line with a +
-! but once you've done that, mixing absolute times could result in events 
+! but once you've done that, mixing absolute times could result in events
 ! that never occur. Times may be floating point eg. 1.237m is valid, and is
 ! the same as 1237u
 !
@@ -20,7 +20,7 @@
 !
 ! The format for the clock command is:
 ! ------------------------------------
-! clock=[pin], but this will NOT start the clock. 
+! clock=[pin], but this will NOT start the clock.
 ! One or more of the following words are required:
 ! high=[time]  or  low=[time]  or  period=[time]  or  pwm=[0.001 to 0.999]
 !   * the first one used determines the initial state of the clock

@@ -33,33 +33,23 @@ namespace Gear.Utils
     [Serializable]
     public class BinarySizeException : Exception
     {
-        /// <summary>
-        /// Default constructor.
-        /// </summary>
-        public BinarySizeException() :
-            base()
-        { }
+        /// <summary>Default constructor.</summary>
+        public BinarySizeException() { }
 
-        /// <summary>
-        /// Constructor with a message.
-        /// </summary>
+        /// <summary>Constructor with a message.</summary>
         /// <param name="message">Message string.</param>
         public BinarySizeException(string message) :
             base(message)
         { }
 
-        /// <summary>
-        /// Constructor with a message and an inner exception.
-        /// </summary>
+        /// <summary>Constructor with a message and an inner exception.</summary>
         /// <param name="message">Message string.</param>
         /// <param name="innerException">Inner exception which throw this one.</param>
         public BinarySizeException(string message, Exception innerException) :
             base(message, innerException)
         { }
 
-        /// <summary>
-        /// Constructor in a serialization context.
-        /// </summary>
+        /// <summary>Constructor in a serialization context.</summary>
         /// <param name="serializationInfo"></param>
         /// <param name="streamingContext"></param>
         protected BinarySizeException(System.Runtime.Serialization.SerializationInfo serializationInfo, System.Runtime.Serialization.StreamingContext streamingContext) :

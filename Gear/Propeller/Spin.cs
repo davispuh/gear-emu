@@ -22,116 +22,192 @@
 
 namespace Gear.Propeller
 {
-    public partial class Spin
+    /// <summary></summary>
+    public static partial class Spin
     {
-        public enum MemoryAction
+        /// <summary></summary>
+        public enum MemoryAction : byte
         {
+            /// <summary></summary>
             UNKNOWN_0,
+            /// <summary></summary>
             UNKNOWN_1,
+            /// <summary></summary>
             UNKNOWN_2,
+            /// <summary></summary>
             UNKNOWN_3,
+            /// <summary></summary>
             PUSH,
+            /// <summary></summary>
             POP,
+            /// <summary></summary>
             EFFECT,
+            /// <summary></summary>
             UNKNOWN_7
         }
 
-        public enum ArgumentMode
+        /// <summary></summary>
+        public enum ArgumentMode : byte
         {
+            /// <summary></summary>
             None,
+            /// <summary></summary>
             Effect,
+            /// <summary></summary>
             SignedOffset,
+            /// <summary></summary>
             SignedPackedOffset,
+            /// <summary></summary>
             PackedLiteral,
+            /// <summary></summary>
             UnsignedOffset,
+            /// <summary></summary>
             UnsignedEffectedOffset,
+            /// <summary></summary>
             ByteLiteral,
+            /// <summary></summary>
             WordLiteral,
+            /// <summary></summary>
             NearLongLiteral,
+            /// <summary></summary>
             LongLiteral,
+            /// <summary></summary>
             ObjCallPair,
+            /// <summary></summary>
             MemoryOpCode
         }
 
-        public enum AssignmentType
+        /// <summary>Assignment type.</summary>
+        public enum AssignmentTypeEnum : byte
         {
+            /// <summary></summary>
             WriteRepeat,
+            /// <summary></summary>
             Normal,
+            /// <summary></summary>
             Size
         }
 
-        public enum AssignmentSize
+        /// <summary>Possible size of an assignment.</summary>
+        public enum AssignmentSize : byte
         {
+            /// <summary></summary>
             Bit,
+            /// <summary></summary>
             Byte,
+            /// <summary></summary>
             Word,
+            /// <summary></summary>
             Long
         }
 
-        public enum AssignmentSizeType
+        /// <summary></summary>
+        public enum AssignmentSizeTypeEnum : byte
         {
+            /// <summary></summary>
             Unspecified,
+            /// <summary></summary>
             Mask,
+            /// <summary></summary>
             Bit,
+            /// <summary></summary>
             Byte,
+            /// <summary></summary>
             Word,
+            /// <summary></summary>
             Long
         }
 
+        /// <summary>Container for %Spin %Register.</summary>
         public class Register : Propeller.Register
         {
-            public Register(string Name)
+            /// <summary>Default Constructor.</summary>
+            /// <param name="name">Name of %Spin register</param>
+            public Register(string name)
             {
-                this.Name = Name;
+                Name = name;
             }
         }
 
-        public class SubAssignment : Propeller.BasicInstruction
+        /// <summary>Container for %Spin %SubAssignment.</summary>
+        public class SubAssignment : BasicInstruction
         {
-            public bool               Post         { get; private set; }
-            public ArgumentMode       ArgumentMode { get; private set; }
-            public AssignmentSizeType SizeType     { get; private set; }
+            /// <summary></summary>
+            /// @version v22.05.02 - Name changed to clarify meaning of it.
+            public bool CanPost { get; }
+            /// <summary></summary>
+            public ArgumentMode ArgumentMode { get; }
+            /// <summary></summary>
+            /// @version v22.05.02 - Name changed to clarify meaning of it.
+            public AssignmentSizeTypeEnum AssignmentSizeType { get; }
 
-            public SubAssignment(string Name, string NameBrief, bool Post, ArgumentMode ArgumentMode, AssignmentSizeType SizeType)
+            /// <summary>Default Constructor.</summary>
+            /// <param name="name">Full name of sub assignment.</param>
+            /// <param name="nameBrief">Brief name of sub assignment.</param>
+            /// <param name="postEnable"></param>
+            /// <param name="argumentMode"></param>
+            /// <param name="assignmentSizeType"></param>
+            /// @version v22.05.02 - Changed parameters names to clarify meaning of each one.
+            public SubAssignment(string name, string nameBrief, bool postEnable,
+            ArgumentMode argumentMode, AssignmentSizeTypeEnum assignmentSizeType)
             {
-                this.Name         = Name;
-                this.NameBrief    = NameBrief;
-                this.Post         = Post;
-                this.ArgumentMode = ArgumentMode;
-                this.SizeType     = SizeType;
+                Name = name;
+                NameBrief = nameBrief;
+                CanPost = postEnable;
+                ArgumentMode = argumentMode;
+                AssignmentSizeType = assignmentSizeType;
             }
         }
 
+        /// <summary>Container to define %Spin %Assignment for variables.</summary>
         public class Assignment
         {
-            public AssignmentType Type { get; private set; }
-            public SubAssignment[] SubAssignments { get; private set; }
+            /// <summary>Type of assignment.</summary>
+            /// @version v22.05.02 - Name changed to clarify meaning of it.
+            public AssignmentTypeEnum AssignmentType { get; }
+            /// <summary></summary>
+            /// @version v22.05.02 - Name changed to clarify meaning of it.
+            public SubAssignment[] SubAssignmentsArray { get; }
 
-            public Assignment(AssignmentType Type, SubAssignment[] SubAssignments)
+            /// <summary>Default Constructor.</summary>
+            /// <param name="assignmentType"></param>
+            /// <param name="subAssignmentsArray"></param>
+            /// @version v22.05.02 - Changed parameters names to clarify meaning of each one.
+            public Assignment(AssignmentTypeEnum assignmentType, SubAssignment[] subAssignmentsArray)
             {
-                this.Type           = Type;
-                this.SubAssignments = SubAssignments;
+                AssignmentType = assignmentType;
+                SubAssignmentsArray = subAssignmentsArray;
             }
         }
 
-        public class MathInstruction : Propeller.BasicInstruction
+        /// <summary>Container to define %Spin math instruction.</summary>
+        public class MathInstruction : BasicInstruction
         {
-            public MathInstruction(string Name, string NameBrief)
+            /// <summary>Default Constructor.</summary>
+            /// <param name="name">Full name of math instruction.</param>
+            /// <param name="nameBrief">Brief name of math instruction.</param>
+            public MathInstruction(string name, string nameBrief)
             {
-                this.Name      = Name;
-                this.NameBrief = NameBrief;
+                Name = name;
+                NameBrief = nameBrief;
             }
         }
 
-        public class Instruction : Propeller.BasicInstruction
+        /// <summary>Container to define %Spin instructions.</summary>
+        public class Instruction : BasicInstruction
         {
-            public ArgumentMode ArgumentMode { get; private set; }
+            /// <summary></summary>
+            public ArgumentMode ArgumentMode { get; }
 
-            public Instruction(string Name, string NameBrief, ArgumentMode ArgumentMode)
+            /// <summary>Default Constructor.</summary>
+            /// <param name="name">Full name of %Spin instruction.</param>
+            /// <param name="nameBrief">Brief name of %Spin instruction.</param>
+            /// <param name="argumentMode"></param>
+            public Instruction(string name, string nameBrief, ArgumentMode argumentMode)
             {
-                this.Name          = Name;
-                this.NameBrief     = NameBrief;
-                this.ArgumentMode  = ArgumentMode;
+                Name = name;
+                NameBrief = nameBrief;
+                ArgumentMode = argumentMode;
             }
         }
     }

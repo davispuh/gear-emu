@@ -65,8 +65,11 @@ namespace Gear.PluginSupport
         /// @brief Title of the tab window.
         public virtual string Title { }
 
-        /// Called once when the plugin is loaded. It gives you a reference
-        /// to the propeller chip (so you can drive the pins).
+        /// Register the events to be notified to this plugin and occurs once the
+        /// plugin is loaded.
+        /// Also, if you need the plugin be notified on pin or clock changes, you 
+        /// need to add inside this method calls to NotifyOnPins or NotifyOnClock. 
+        /// To keep good performance, use only the essentials ones.
         public virtual void PresentChip() { }
 
         /// Event when the chip is reset. Useful to reset plugin's components
@@ -90,8 +93,8 @@ namespace Gear.PluginSupport
         /// either the propeller or another component has set the pin Hi or Lo,
         /// or if the pin is floating.
         /// @param time Time in seconds.
-        /// @param pins Array of pins with the current state.
-        public virtual void OnPinChange(double time, PinState[] pins) { }
+        /// @param pinStates Array of pins with the current state.
+        public virtual void OnPinChange(double time, PinState[] pinStates) { }
 
         /// Event to repaint the plugin screen (if used).
         /// Occurs when the GUI has finished executing a emulation 'frame'
@@ -171,11 +174,11 @@ class YourPluginClassName : PluginBase
 
 	//Called every time a pin changes, if called Chip.NotifyOnPins() in
 	//  method PresentChip(.) above.
-    //You could set or test pin states like "pins[0] == PinState.FLOATING;"
-    //  or "if (pins[1] == PinState.FLOATING)..."
+    //You could set or test pin states like "pinStates[0] == PinState.FLOATING;"
+    //  or "if (pinStates[1] == PinState.FLOATING)..."
     //Possible values for PinState enum are:
     //  FLOATING, OUTPUT_LO, OUTPUT_HI, INPUT_LO, INPUT_HI.
-	public override void OnPinChange(double time, PinState[] pins)
+	public override void OnPinChange(double time, PinState[] pinStates)
 	{
 		//Put your code here.
 	}
@@ -192,7 +195,7 @@ class YourPluginClassName : PluginBase
     //For initial setup of the plugin (but not the creation of interface
     //  objects), you can add your code here. The idea if you have to reset
     //  the pins state, you can use here the DrivePin() method. Example:
-    //  DrivePin(int pin_number, bool Floating, bool Hi);
+    //  DrivePin(int pin_number, bool isFloating, bool isHigh);
 	public override void OnReset()
 	{
 		//Put your code here.

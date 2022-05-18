@@ -27,9 +27,7 @@ namespace Gear.Propeller
 {
     public partial class Assembly
     {
-        /// <summary>
-        /// Condition codes
-        /// </summary>
+        /// <summary>Condition codes.</summary>
         public enum ConditionCodes : byte
         {
             /// <Summary>Never execute</summary>

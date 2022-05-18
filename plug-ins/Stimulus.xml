@@ -211,11 +211,11 @@ class Stimulus : PluginBase
 		get { return "Stimulus"; }
 	}
 
-	public override Boolean AllowHotKeys 
-	{ 
-		get { return false; } 
+	public override Boolean AllowHotKeys
+	{
+		get { return false; }
 	}
-	
+
 	//Register the events to be notified to this plugin
 	public override void PresentChip()
 	{
@@ -227,7 +227,7 @@ class Stimulus : PluginBase
 		OnReset();
 	}
 
-	//Called when you press the Reset button, to reset the plugin to a 
+	//Called when you press the Reset button, to reset the plugin to a
 	//initial state.
 	public override void OnReset()
 	{
@@ -240,15 +240,15 @@ class Stimulus : PluginBase
 		ParseLine();
 	}
 
-	//Called every time a pin changes, only if it was registered on 
-	//method PresentChip() above. 
-	public override void OnPinChange(double time, PinState[] pins)
+	//Called every time a pin changes, only if it was registered on
+	//method PresentChip() above.
+	public override void OnPinChange(double time, PinState[] pinStates)
 	{
 		// Not Used
 	}
 
-	//Called every clock tick, only if it was registered on method 
-	//PresentChip() above. 
+	//Called every clock tick, only if it was registered on method
+	//PresentChip() above.
 	public override void OnClock(double time, uint sysCounter)
 	{
 		thisTime = time;

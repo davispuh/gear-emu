@@ -114,8 +114,9 @@ namespace Gear.Propeller
         /// Forum thread "PASM simulator / debugger?</a>.
         /// They show that some parallax video drivers in PASM changes the <c>PAR</c> register,
         /// and GEAR didn't emulate that.
-        /// @version v22.04.xx - Fix warning CA2105: Array fields should not be
-        /// read only, adopting ReadOnlyCollection static object as storage.
+        /// @version v22.05.01 - Fix security warning CA2105: 'Array fields
+        /// should not be read only', adopting ReadOnlyCollection static
+        /// object as storage.
         public static readonly ReadOnlyCollection<Register> Registers =
             new ReadOnlyCollection<Register>(new[]
             {

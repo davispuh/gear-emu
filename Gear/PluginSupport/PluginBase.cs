@@ -44,8 +44,30 @@ namespace Gear.PluginSupport
         /// @version V15.03.26 - Added reference to keep PropellerCPU internal to class.
         protected PropellerCPU Chip;
 
+        /// @brief Title of the tab window.
+        /// @note Changed default value , based on a comment from Asterisk from propeller forum:
+        /// Source: <a href="https://forums.parallax.com/discussion/comment/627190/#Comment_627190">
+        /// Post #32 from original GEAR post</a>. It shows that the original name of the class
+        /// was "BusModule". Changed to the new name of the class.
+        /// @version V15.03.26 - change the default name.
+        public virtual string Title => "Plugin Base";
+
+        // @brief Attribute to allow key press detecting on the plugin.
+        // @note Mirror's: allows hot keys to be disabled for a plugin.
+        // @note Source: <a href="https://forums.parallax.com/discussion/100380/more-gear-improved-emulation-of-the-propeller">
+        // Mirror Post for Version V08_10_16 in propeller forums</a>
+        public virtual bool AllowHotKeys => true;
+
+        /// @brief Attribute to allow the window to be closed (default) or not (like cog windows).
+        /// @remarks Not to be used in Plugin Editor by user plugins.
+        public virtual bool IsClosable => true;
+
+        /// @brief Identify a plugin as user (=true) or system (=false).
+        /// @version V15.03.26 - Added.
+        public virtual bool IsUserPlugin => true;
+
         /// @brief Default constructor.
-        /// @note Not to be used by plugin derived class, only by the Designer in MVSC.
+        /// @note Not to be used by plugin derived class, only by the Designer in MSVC.
         /// @remarks Not to be used in Plugin Editor by user plugins.
         protected PluginBase()
         {
@@ -68,43 +90,23 @@ namespace Gear.PluginSupport
             InitializeComponent();
         }
 
-        /// @brief Title of the tab window.
-        /// @note Changed default name , based on a comment from Asterisk from propeller forum:
-        /// Source: <a href="https://forums.parallax.com/discussion/comment/627190/#Comment_627190">
-        /// Post #32 from original GEAR post</a>. It shows that the original name of the class
-        /// was "BusModule". Changed to the new name of the class.
-        /// @version V15.03.26 - change the default name.
-        public virtual string Title { get { return "Plugin Base"; } }
-
-        // @brief Attribute to allow key press detecting on the plugin.
-        // @note Mirror's: allows hot keys to be disabled for a plugin.
-        // @note Source: <a href="https://forums.parallax.com/discussion/100380/more-gear-improved-emulation-of-the-propeller">
-        // Mirror Post for Version V08_10_16 in propeller forums</a>
-        public virtual bool AllowHotKeys { get { return true; } }
-
-        /// @brief Attribute to allow the window to be closed (default) or not (like cog windows).
-        /// @remarks Not to be used in Plugin Editor by user plugins.
-        public virtual bool IsClosable { get { return true; } }
-
-        /// @brief Identify a plugin as user (=true) or system (=false).
-        /// @version V15.03.26 - Added.
-        public virtual bool IsUserPlugin { get { return true; } }
-
-        /// @brief Points to propeller instance.
-        /// @note Asterisk's: Occurs once the plugin is loaded. It gives you a reference to the
-        /// propeller chip (so you can drive the pins).
-        /// @note Source: <a href="https://forums.parallax.com/discussion/comment/625629/#Comment_625629">
+        /// @brief Register the events to be notified to this plugin.
+        /// @details Set the reference to the emulated chip. Occurs once the plugin is loaded.
+        /// Also, if you need the plugin be notified on pin or clock changes, you 
+        /// need to add inside this method calls to NotifyOnPins or NotifyOnClock. 
+        /// To keep good performance, use only the essentials ones.
+        /// @note Original documentation: <a href="https://forums.parallax.com/discussion/comment/625629/#Comment_625629">
         /// API GEAR described on GEAR original Post</a>
         /// @version V15.03.26 - Changed to method without parameters.
         public virtual void PresentChip() { }
 
         /// @brief Event when the chip is reset.
-        /// Handy to reset plugin's components or data, to their initial states.
+        /// Useful to reset plugin's components or data, to their initial states.
         public virtual void OnReset() { }
 
         /// @brief Event when the plugin is closing.
         /// @details Useful to reset pins states or direction to initial state before loading the
-        /// plugin, or to release pins drive by the plugin.
+        /// plugin, or to release pins driven by the plugin.
         /// @version V15.03.26 - Added.
         public virtual void OnClose() { }
 
@@ -123,8 +125,9 @@ namespace Gear.PluginSupport
         /// @note Source: <a href="https://forums.parallax.com/discussion/comment/625629/#Comment_625629">
         /// API GEAR described on GEAR original Post</a>
         /// @param time Time in seconds.
-        /// @param pins Array of pins with the current state.
-        public virtual void OnPinChange(double time, PinState[] pins) { }
+        /// @param pinStates Array of pins with the current state.
+        /// @version v22.05.02 - Changed parameter name to clarify meaning of it.
+        public virtual void OnPinChange(double time, PinState[] pinStates) { }
 
         /// @brief Event to repaint the plugin screen (if used).
         /// @note Asterisk's: occurs when the GUI has finished executing a emulation 'frame'
@@ -151,19 +154,21 @@ namespace Gear.PluginSupport
             Chip.NotifyOnClock(this);
         }
 
-        /// @brief Drive a pin of PropellerCPU
-        /// This method is for isolate the access to the underline Chip.
-        /// @param pin Pin number to drive
-        /// @param Floating Boolean to left floating (=true) or to set on input/output (=false).
-        /// @param Hi Boolean to set on Hi state (=true) or to set on Low (=false).
-        /// @version V15.03.26 - Added.
-        public void DrivePin(int pin, bool Floating, bool Hi)
+        /// @brief Drive a pin of PropellerCPU.
+        /// @details The purpose of this method is to isolate the access to
+        /// the underline Chip.
+        /// @param pin Pin number to drive.
+        /// @param isFloating Boolean to left the pin floating (=true) or to set on input/output mode (=false).
+        /// @param isHigh Boolean to set on High state (=true) or to set on Low (=false).
+        /// @version V22.04.02 - Parameter names changed, to clarify purpose of each one.
+        public void DrivePin(int pin, bool isFloating, bool isHigh)
         {
-            Chip.DrivePin(pin, Floating, Hi);
+            Chip.DrivePin(pin, isFloating, isHigh);
         }
 
         /// @brief Set an immediate breakpoint.
-        /// This method is for isolate the access to the underline Chip.
+        /// @details The purpose of this method is to isolate the access to
+        /// the underline Chip.
         /// @version V15.03.26 - Added.
         public void BreakPoint()
         {
