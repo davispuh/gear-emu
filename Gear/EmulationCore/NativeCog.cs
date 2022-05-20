@@ -65,16 +65,18 @@ namespace Gear.EmulationCore
             set { Zero = value; }
         }
 
-        /// @brief Default constructor for a Cog running in PASM mode.
-        /// @param host PropellerCPU where this cog resides.
+        /// @brief Default constructor for a %Cog running in PASM mode.
+        /// @param cpuHost PropellerCPU where this cog resides.
+        /// @param cogNum
         /// @param programAddress Start of program to load from main memory.
         /// @param paramAddress PARAM value given to the Cog.
-        /// @param frequency Frequency running the cog (the same as the Propeller).
-        /// @param pll PLL Multiplier running the cog (the same as the Propeller).
-        public NativeCog(PropellerCPU host,
-            uint programAddress, uint paramAddress, uint frequency,
-            PLLGroup pll)
-            : base(host, programAddress, paramAddress, frequency, pll)
+        /// @param frequency Frequency running the cog (the same as the propeller cpu).
+        /// @param pllGroup PLL Multiplier running the cog (the same as the propeller cpu).
+        /// @version v22.05.03 - Parameter name changed to use the same
+        /// convention for a PropellerCPU instance reference.
+        public NativeCog(PropellerCPU cpuHost, int cogNum, uint programAddress,
+            uint paramAddress, uint frequency, PLLGroup pllGroup)
+            : base(cpuHost, cogNum, programAddress, paramAddress, frequency, pllGroup)
         {
             Carry = false;
             Zero = false;
@@ -91,65 +93,62 @@ namespace Gear.EmulationCore
             if (WriteCarry)
                 Carry = CarryResult;
 
-            State = CogRunState.STATE_EXECUTE;
+            State = CogRunState.StateExecute;
         }
 
         /// @brief Setup the cog to a initial state after boot it.
         public override void Boot()
         {
-            State = CogRunState.STATE_EXECUTE;
+            State = CogRunState.StateExecute;
             Carry = false;
             Zero = false;
 
-            PC = 0;
+            ProgramCursor = 0;
             // Prefetch first instruction
             Operation = ReadLong(0);
         }
 
         /// @brief Determine if the Hub is accessible in that moment of time, setting the state
-        /// accordantly.
-        /// @version v15.03.26 - corrected zero and carry values for missing HUBOPS.
-        public override void HubAccessable()
+        /// accordant.
+        /// @version v22.05.03 - Method name changed to clarify meaning of it.
+        public override void ExecuteHubOperation()
         {
             switch (State)
             {
-                case CogRunState.HUB_HUBOP:
-                    DataResult = Hub.HubOp(this, SourceValue, DestinationValue, ref CarryResult,
+                case CogRunState.HubHubOperation:
+                    DataResult = CpuHost.HubOp(this, SourceValue, DestinationValue, ref CarryResult,
                         ref ZeroResult);
                     WriteBackResult();
                     return;
-
-                case CogRunState.HUB_RDBYTE:
+                case CogRunState.HubReadByte:
                     if (WriteResult)
-                        DataResult = Hub.DirectReadByte(SourceValue);
+                        DataResult = CpuHost.DirectReadByte(SourceValue);
                     else
-                        Hub.DirectWriteByte(SourceValue, (byte)DestinationValue);
+                        CpuHost.DirectWriteByte(SourceValue, (byte)DestinationValue);
                     ZeroResult = (DataResult == 0); //set as state Manual v1.2
                     // Don't affect Carry as state Manual v1.2
                     WriteBackResult();
                     return;
-
-                case CogRunState.HUB_RDWORD:
+                case CogRunState.HubReadWord:
                     if (WriteResult)
-                        DataResult = Hub.DirectReadWord(SourceValue);
+                        DataResult = CpuHost.DirectReadWord(SourceValue);
                     else
-                        Hub.DirectWriteWord(SourceValue, (ushort)DestinationValue);
+                        CpuHost.DirectWriteWord(SourceValue, (ushort)DestinationValue);
                     ZeroResult = (DataResult == 0); //set as state Manual v1.2
                     // Don't affect Carry as state Manual v1.2
                     WriteBackResult();
                     return;
-                case CogRunState.HUB_RDLONG:
+                case CogRunState.HubReadLong:
                     if (WriteResult)
-                        DataResult = Hub.DirectReadLong(SourceValue);
+                        DataResult = CpuHost.DirectReadLong(SourceValue);
                     else
-                        Hub.DirectWriteLong(SourceValue, DestinationValue);
+                        CpuHost.DirectWriteLong(SourceValue, DestinationValue);
                     ZeroResult = (DataResult == 0);  //set as state Manual v1.2
                     // Don't affect Carry as state Manual v1.2
                     WriteBackResult();
                     return;
             }
-
-            base.HubAccessable();
+            base.ExecuteHubOperation();
         }
 
         /// @brief Execute a PASM instruction in this cog.
@@ -159,23 +158,23 @@ namespace Gear.EmulationCore
             switch (State)
             {
                 // Delay State
-                case CogRunState.WAIT_CYCLES:
+                case CogRunState.WaitCycles:
                     if (--StateCount == 1)
                         WriteBackResult();
                     return true;
                 // Clocked, but not executed
-                case CogRunState.WAIT_PREWAIT:
+                case CogRunState.WaitPreWait:
                     if (--StateCount == 1)
                         State = NextState;
                     return true;
 
                 // Execute State
-                case CogRunState.STATE_EXECUTE:
+                case CogRunState.StateExecute:
                     break;
 
-                case CogRunState.WAIT_PNE:
+                case CogRunState.WaitPinsNotEqual:
                     {
-                        uint maskedIn = (Carry ? Hub.INB : Hub.INA) & SourceValue;
+                        uint maskedIn = (Carry ? CpuHost.INB : CpuHost.INA) & SourceValue;
                         if (maskedIn != DestinationValue)
                         {
                             DataResult = maskedIn;
@@ -185,9 +184,9 @@ namespace Gear.EmulationCore
                         }
                         return true;
                     }
-                case CogRunState.WAIT_PEQ:
+                case CogRunState.WaitPinsEqual:
                     {
-                        uint maskedIn = (Carry ? Hub.INB : Hub.INA) & SourceValue;
+                        uint maskedIn = (Carry ? CpuHost.INB : CpuHost.INA) & SourceValue;
                         if (maskedIn == DestinationValue)
                         {
                             DataResult = maskedIn;
@@ -198,9 +197,9 @@ namespace Gear.EmulationCore
                         }
                         return true;
                     }
-                case CogRunState.WAIT_CNT:
+                case CogRunState.WaitCount:
                     {
-                        long target = Hub.Counter;
+                        long target = CpuHost.Counter;
 
                         if (DestinationValue == target)
                         {
@@ -213,7 +212,7 @@ namespace Gear.EmulationCore
                         }
                         return true;
                     }
-                case CogRunState.WAIT_VID:
+                case CogRunState.WaitVideo:
                     // Logic Changed: GetVideoData now clears VAIT_VID state
                     // if (Video.Ready)
                     // {
@@ -228,9 +227,9 @@ namespace Gear.EmulationCore
                     return true;
             }
 
-            PC = (PC + 1) & 0x1FF;
+            ProgramCursor = (ProgramCursor + 1) & MaskCogMemory;
 
-            frameFlag = FrameState.frameNone;
+            FrameFlag = FrameState.FrameNone;
 
             InstructionCode = (Assembly.InstructionCodes)(Operation & 0xFC000000);
             ConditionCode = (Assembly.ConditionCodes)((Operation & 0x003C0000) >> 18);
@@ -240,19 +239,19 @@ namespace Gear.EmulationCore
             WriteResult = (Operation & 0x00800000) != 0;
             ImmediateValue = (Operation & 0x00400000) != 0;
 
-            SourceValue = Operation & 0x1FF;
+            SourceValue = Operation & MaskCogMemory;
 
             if (!ImmediateValue)
                 SourceValue = ReadLong(SourceValue);
 
-            Destination = (Operation >> 9) & 0x1FF;
+            Destination = (Operation >> 9) & MaskCogMemory;
             DestinationValue = ReadLong(Destination);
 
             if (ConditionCompare(ConditionCode, Zero, Carry))
             {
-                Operation = ReadLong(PC);
-                State = CogRunState.WAIT_PREWAIT;
-                NextState = CogRunState.STATE_EXECUTE;
+                Operation = ReadLong(ProgramCursor);
+                State = CogRunState.WaitPreWait;
+                NextState = CogRunState.StateExecute;
                 StateCount = 4;
                 return true;
             }
@@ -270,347 +269,347 @@ namespace Gear.EmulationCore
                     Carry = true;
                     Zero = true;
 
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
 
                 // HUB Operations (6 cycles for instruction decode... 1-15 cycles for operation)
                 case Assembly.InstructionCodes.RWBYTE:
-                    State = CogRunState.WAIT_PREWAIT;
-                    NextState = CogRunState.HUB_RDBYTE;
+                    State = CogRunState.WaitPreWait;
+                    NextState = CogRunState.HubReadByte;
                     StateCount = 6;
                     break;
                 case Assembly.InstructionCodes.RWWORD:
-                    State = CogRunState.WAIT_PREWAIT;
-                    NextState = CogRunState.HUB_RDWORD;
+                    State = CogRunState.WaitPreWait;
+                    NextState = CogRunState.HubReadWord;
                     StateCount = 6;
                     break;
                 case Assembly.InstructionCodes.RWLONG:
-                    State = CogRunState.WAIT_PREWAIT;
-                    NextState = CogRunState.HUB_RDLONG;
+                    State = CogRunState.WaitPreWait;
+                    NextState = CogRunState.HubReadLong;
                     StateCount = 6;
                     break;
                 case Assembly.InstructionCodes.HUBOP:
-                    State = CogRunState.WAIT_PREWAIT;
-                    NextState = CogRunState.HUB_HUBOP;
+                    State = CogRunState.WaitPreWait;
+                    NextState = CogRunState.HubHubOperation;
                     StateCount = 6;
                     break;
 
                 // Standard operations (4 cycles)
                 case Assembly.InstructionCodes.ROR:
                     InstructionROR();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.ROL:
                     InstructionROL();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.RCR:
                     InstructionRCR();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.RCL:
                     InstructionRCL();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.SHR:
                     InstructionSHR();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.SHL:
                     InstructionSHL();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.SAR:
                     InstructionSAR();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
 
                 case Assembly.InstructionCodes.OR:
                     InstructionOR();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.XOR:
                     InstructionXOR();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.AND:
                     InstructionAND();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.ANDN:
                     InstructionANDN();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
 
                 case Assembly.InstructionCodes.MUXC:
                     InstructionMUXC();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.MUXNC:
                     InstructionMUXNC();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.MUXZ:
                     InstructionMUXZ();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.MUXNZ:
                     InstructionMUXNZ();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
 
                 case Assembly.InstructionCodes.REV:
                     InstructionREV();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
 
                 case Assembly.InstructionCodes.NEG:
                     InstructionNEG();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.ABS:
                     InstructionABS();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.ABSNEG:
                     InstructionABSNEG();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.NEGC:
                     InstructionNEGC();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.NEGNC:
                     InstructionNEGNC();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.NEGZ:
                     InstructionNEGZ();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.NEGNZ:
                     InstructionNEGNZ();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
 
                 case Assembly.InstructionCodes.MOV:
                     InstructionMOV();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.MOVS:
                     InstructionMOVS();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.MOVD:
                     InstructionMOVD();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.MOVI:
                     InstructionMOVI();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.JMPRET:
                     InstructionJMPRET();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
 
                 case Assembly.InstructionCodes.MINS:
                     InstructionMINS();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.MAXS:
                     InstructionMAXS();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.MIN:
                     InstructionMIN();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.MAX:
                     InstructionMAX();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
 
                 case Assembly.InstructionCodes.ADD:
                     InstructionADD();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.ADDABS:
                     InstructionADDABS();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.ADDX:
                     InstructionADDX();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.ADDS:
                     InstructionADDS();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.ADDSX:
                     InstructionADDSX();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
 
                 case Assembly.InstructionCodes.SUB:
                     InstructionSUB();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.SUBABS:
                     InstructionSUBABS();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.SUBX:
                     InstructionSUBX();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.SUBS:
                     InstructionSUBS();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.SUBSX:
                     InstructionSUBSX();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
 
                 case Assembly.InstructionCodes.SUMC:
                     InstructionSUMC();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.SUMNC:
                     InstructionSUMNC();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.SUMZ:
                     InstructionSUMZ();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.SUMNZ:
                     InstructionSUMNZ();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
 
                 case Assembly.InstructionCodes.CMPS:
                     InstructionCMPS();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.CMPSX:
                     InstructionCMPSX();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.CMPSUB:
                     InstructionCMPSUB();
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
 
                 // Decrement and continue instructions ( 4/8 cycles )
                 case Assembly.InstructionCodes.DJNZ:
                     StateCount = InstructionDJNZ() ? 4 : 8;
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     break;
                 case Assembly.InstructionCodes.TJNZ:
                     StateCount = InstructionTJNZ() ? 4 : 8;
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     break;
                 case Assembly.InstructionCodes.TJZ:
                     StateCount = InstructionTJZ() ? 4 : 8;
-                    State = CogRunState.WAIT_CYCLES;
+                    State = CogRunState.WaitCycles;
                     break;
 
                 // Delay execution instructions ( 4 cycles for instruction decode, 1+ for instruction )
                 case Assembly.InstructionCodes.WAITPEQ:
-                    NextState = CogRunState.WAIT_PEQ;
-                    State = CogRunState.WAIT_PREWAIT;
+                    NextState = CogRunState.WaitPinsEqual;
+                    State = CogRunState.WaitPreWait;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.WAITPNE:
-                    NextState = CogRunState.WAIT_PNE;
-                    State = CogRunState.WAIT_PREWAIT;
+                    NextState = CogRunState.WaitPinsNotEqual;
+                    State = CogRunState.WaitPreWait;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.WAITCNT:
-                    NextState = CogRunState.WAIT_CNT;
-                    State = CogRunState.WAIT_PREWAIT;
+                    NextState = CogRunState.WaitCount;
+                    State = CogRunState.WaitPreWait;
                     StateCount = 4;
                     break;
                 case Assembly.InstructionCodes.WAITVID:
                     InstructionWAITVID();
-                    NextState = CogRunState.WAIT_VID;
-                    State = CogRunState.WAIT_PREWAIT;
+                    NextState = CogRunState.WaitVideo;
+                    State = CogRunState.WaitPreWait;
                     StateCount = 4;
                     break;
             }
 
             // Prefetch instruction
-            Operation = ReadLong(PC);
+            Operation = ReadLong(ProgramCursor);
             // Check if it's time to trigger a breakpoint
-            return PC != BreakPointCogCursor;
+            return ProgramCursor != BreakPointCogCursor;
         }
 
-        override public void GetVideoData (out uint colours, out uint pixels)
+        override public void GetVideoData (out uint colors, out uint pixels)
         {
-            colours = DestinationValue;
+            colors = DestinationValue;
             pixels = SourceValue;
-            if (State == CogRunState.WAIT_VID)
+            if (State == CogRunState.WaitVideo)
             {
-                State = CogRunState.WAIT_CYCLES;
+                State = CogRunState.WaitCycles;
                 StateCount = 3; // Minimum of 7 clocks in total
-                frameFlag = FrameState.frameHit;
+                FrameFlag = FrameState.FrameHit;
             }
             else
             {
                 // Frame counter ran out while not in WAIT_VID
-                frameFlag = FrameState.frameMiss;
+                FrameFlag = FrameState.FrameMiss;
             }
         }
 

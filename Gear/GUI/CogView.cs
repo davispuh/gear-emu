@@ -84,7 +84,7 @@ namespace Gear.GUI
             breakNone.Checked = true;
             breakMiss.Checked = false;
             breakAll.Checked = false;
-            breakVideo = FrameState.frameMiss;
+            breakVideo = FrameState.FrameMiss;
         }
 
         public Cog GetViewCog()
@@ -118,7 +118,7 @@ namespace Gear.GUI
                 y < ClientRectangle.Height;
                 y += (uint)MonoFont.Height, i++, line++)
             {
-                if ((i > 0x1FF) || (i < 0))
+                if (i >= Cog.TotalCogMemory)
                     continue;
 
                 uint mem = host[(int)i];
@@ -143,7 +143,7 @@ namespace Gear.GUI
                         mem);
                 }
 
-                if ((uint)positionScroll.Value + line - 1 == host.BreakPoint)
+                if ((uint)positionScroll.Value + line - 1 == host.BreakPointCogCursor)
                     brush = System.Drawing.Brushes.Pink;
                 else if ((!followPCButton.Checked) || (line <= topLine) || (line >= bottomLine))
                     brush = SystemBrushes.Control;
@@ -240,7 +240,7 @@ namespace Gear.GUI
 
                     display += "  " + inst;
 
-                    if (InterpAddress[line] == host.BreakPoint)
+                    if (InterpAddress[line] == host.BreakPointCogCursor)
                         brush = System.Drawing.Brushes.Pink;
                     else if ((!followPCButton.Checked) || (line <= topLine) || (line >= bottomLine))
                         brush = SystemBrushes.Control;
@@ -299,7 +299,7 @@ namespace Gear.GUI
             if (Host is InterpretedCog)
                 positionScroll.Maximum = PropellerCPU.MAX_RAM_ADDR;
             else if (Host is NativeCog)
-                positionScroll.Maximum = Cog.TOTAL_COG_MEMORY;
+                positionScroll.Maximum = Cog.TotalCogMemory;
 
             positionScroll.LargeChange = 10;
             positionScroll.SmallChange = 1;
@@ -331,8 +331,8 @@ namespace Gear.GUI
                 Repaint(force, _cog);
 
             programCounterLabel.Text = "PC: " + string.Format("{0:X8}", Host.ProgramCursor);
-            processorStateLabel.Text = "CPU State: " + Host.CogState; // + Host.VideoStateString;
-            frameCountLabel.Text = "Frames: " + Host.VideoFramesString;
+            processorStateLabel.Text = "CPU State: " + Host.CogStateString; // + Host.VideoStateString;
+            frameCountLabel.Text = "Frames: " + Host.VideoFrameString;
             // frameCountLabel.Text = String.Format("Frames: {0}", Host.VideoFrames);
 
             assemblyPanel.CreateGraphics().DrawImageUnscaled(BackBuffer, 0, 0);
@@ -378,8 +378,8 @@ namespace Gear.GUI
                 if (Host is NativeCog) bp += positionScroll.Value;
                 else if (Host is InterpretedCog) bp = (int)InterpAddress[bp + 1];
                 //Toggle/move the breakpoint
-                if (bp == Host.BreakPoint) Host.BreakPoint = -1;
-                else Host.BreakPoint = bp;
+                if (bp == Host.BreakPointCogCursor) Host.BreakPointCogCursor = -1;
+                else Host.BreakPointCogCursor = bp;
                 //Show the user what happened
                 Repaint(false);
             }
@@ -440,7 +440,7 @@ namespace Gear.GUI
                 return;
             NativeCog host = (NativeCog)Chip.GetCog(HostID);
             line = (uint)positionScroll.Value + (uint)(e.Y / MonoFont.Height);
-            if (line > 0x1FF)
+            if (line >= Cog.TotalCogMemory)
                 return;
 
             //Update tooltip only if line has change to prevent flickering
@@ -463,24 +463,24 @@ namespace Gear.GUI
                 breakNone.Checked = true;
                 breakMiss.Checked = false;
                 breakAll.Checked = false;
-                breakVideo = FrameState.frameMiss;
+                breakVideo = FrameState.FrameMiss;
             }
             if (sender == breakMiss)
             {
                 breakNone.Checked = false;
                 breakMiss.Checked = true;
                 breakAll.Checked = false;
-                breakVideo = FrameState.frameMiss;
+                breakVideo = FrameState.FrameMiss;
             }
             if (sender == breakAll)
             {
                 breakNone.Checked = true;
                 breakMiss.Checked = false;
                 breakAll.Checked = false;
-                breakVideo = FrameState.frameNone;
+                breakVideo = FrameState.FrameNone;
             }
             Cog cog = Chip.GetCog(HostID);
-            cog.VideoBreak = breakVideo;
+            cog.SetVideoBreak(breakVideo);
         }
 
     }

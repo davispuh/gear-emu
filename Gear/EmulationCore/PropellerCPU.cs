@@ -244,14 +244,14 @@ namespace Gear.EmulationCore
                 for (int i = 0; i < Cogs.Length; i++)
                 {
                     if (Cogs[i] != null)
-                        direction |= Cogs[i].DIRA;
+                        direction |= Cogs[i].RegisterDIRA;
                 }
                 return direction;
             }
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public uint DIRB
         {
@@ -260,13 +260,13 @@ namespace Gear.EmulationCore
                 uint direction = 0;
                 for (int i = 0; i < Cogs.Length; i++)
                     if (Cogs[i] != null)
-                        direction |= Cogs[i].DIRB;
+                        direction |= Cogs[i].RegisterDIRB;
                 return direction;
             }
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public uint INA
         {
@@ -277,14 +277,14 @@ namespace Gear.EmulationCore
 
                 for (int i = 0; i < Cogs.Length; i++)
                     if (Cogs[i] != null)
-                        localOut |= Cogs[i].OUTA;
+                        localOut |= Cogs[i].RegisterOUTA;
 
                 return (localOut & directionOut) | ((uint)PinHi & ~directionOut);
             }
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public uint INB
         {
@@ -295,7 +295,7 @@ namespace Gear.EmulationCore
 
                 for (int i = 0; i < Cogs.Length; i++)
                     if (Cogs[i] != null)
-                        localOut |= Cogs[i].OUTB;
+                        localOut |= Cogs[i].RegisterOUTB;
 
                 return (localOut & directionOut) | ((uint)(PinHi >> 32) & ~directionOut);
             }
@@ -310,7 +310,7 @@ namespace Gear.EmulationCore
                 ulong direction = 0;
                 for (int i = 0; i < Cogs.Length; i++)
                     if (Cogs[i] != null)
-                        direction |= Cogs[i].DIR;
+                        direction |= Cogs[i].RegisterDIR;
                 return direction;
             }
         }
@@ -328,7 +328,7 @@ namespace Gear.EmulationCore
                 {
                     if (Cogs[i] == null)
                         continue;
-                    localOut |= Cogs[i].OUT;
+                    localOut |= Cogs[i].RegisterOUT;
                 }
 
                 return (localOut & directionOut) | (PinHi & ~directionOut);
@@ -346,7 +346,7 @@ namespace Gear.EmulationCore
                 for (int i = 0; i < Cogs.Length; i++)
                 {
                     if (Cogs[i] != null)
-                        localOut |= Cogs[i].OUT;
+                        localOut |= Cogs[i].RegisterOUT;
                 }
 
                 return localOut;
@@ -354,7 +354,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public ulong Floating
         {
@@ -365,7 +365,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public byte Locks
         {
@@ -381,7 +381,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public string Clock
         {
@@ -401,7 +401,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public uint XtalFrequency
         {
@@ -409,7 +409,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public uint CoreFrequency
         {
@@ -417,7 +417,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public byte LocksFree
         {
@@ -486,7 +486,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="cog"></param>
         /// <returns></returns>
@@ -560,7 +560,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="mode"></param>
         public void SetClockMode(byte mode)
@@ -609,8 +609,10 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Reset the propeller CPU to initial state.
-        /// @details Release cog instances, clock sources, clear locks and pins, and reset plugins.
-        /// @version 15.03.26 - Separate reset loops for clock sources, cogs and locks.
+        /// @details Release cog instances, clock sources, clear locks
+        /// and pins, and reset plugins.
+        /// @version v22.05.03 - Added new required parameter cog number to
+        /// new Interpreted cog.
         public void Reset()
         {
             ResetMemory.CopyTo(Memory, 0);
@@ -658,7 +660,7 @@ namespace Gear.EmulationCore
             // Boot parameter is Initial PC in the lo word, and the stack frame in the hi word
             ClockSources[0] = new PLLGroup();
 
-            Cogs[0] = new InterpretedCog(this, InitFrame, CoreFreq, (PLLGroup)ClockSources[0]);
+            Cogs[0] = new InterpretedCog(this, 0, InitFrame, CoreFreq, (PLLGroup)ClockSources[0]);
             CogsRunning = 1;
         }
 
@@ -745,7 +747,7 @@ namespace Gear.EmulationCore
             {
                 uint cog = RingPosition >> 1;
                 if (Cogs[cog] != null)
-                    Cogs[cog].HubAccessable();
+                    Cogs[cog].ExecuteHubOperation();
             }
 
             if (pinsPrev != IN || dirPrev != DIR || pinChange)
@@ -826,7 +828,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="number"></param>
         /// <param name="set"></param>
@@ -839,7 +841,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="number"></param>
         public void LockReturn(uint number)
@@ -874,11 +876,12 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Execute the hub operations.
-        /// @details This method is called from a cog to do the operations related to all the CPU.
-        /// @version 15.03.26 - corrected problem in COGSTOP return.
+        /// @details This method is called from a cog to do the operations
+        /// related to all the CPU.
         /// @param caller Reference to the caller Cog of this method.
         /// @param operation Hub operation to execute.
-        /// @param argument Parameter given to the opcode (destination field in PASM).
+        /// @param argument Parameter given to the OpCode (destination
+        /// field in PASM).
         /// @param[in,out] carry Carry flag that could be affected by the operation.
         /// @param[in,out] zero Zero flag that could be affected by the operation.
         /// @returns Value depending on operation.
@@ -891,6 +894,8 @@ namespace Gear.EmulationCore
         /// @arg HUBOP_LOCKRET - page 305.
         /// @arg HUBOP_LOCKSET - page 306.
         /// @arg HUBOP_LOCKCLR - page 303.
+        /// @version v22.05.03 - Added new required parameter cog number to
+        /// new cogs created.
         public uint HubOp(Cog caller, uint operation, uint argument, ref bool carry, ref bool zero)
         {
             uint maskedArg = (argument & 0x7);
@@ -939,9 +944,9 @@ namespace Gear.EmulationCore
                     uint param = (argument >> 16) & 0xFFFC;   //decode param value
                     uint progm = (argument >> 2) & 0xFFFC;    //decode program address to load to
                     if (progm == 0xF004)
-                        Cogs[cog] = new InterpretedCog(this, param, CoreFreq, pll);
+                        Cogs[cog] = new InterpretedCog(this, (int)cog, param, CoreFreq, pll);
                     else
-                        Cogs[cog] = new NativeCog(this, progm, param, CoreFreq, pll);
+                        Cogs[cog] = new NativeCog(this, (int)cog, progm, param, CoreFreq, pll);
                     CogsRunning++;
                     return (uint)cog;
 

@@ -22,6 +22,8 @@
 
 using System.Collections.ObjectModel;
 
+// ReSharper disable InconsistentNaming
+// ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
 namespace Gear.Propeller
 {
@@ -99,221 +101,220 @@ namespace Gear.Propeller
         /// <summary>
         /// Declaration of P1 PASM %Instructions, with its sub instructions.
         /// </summary>
-        /// @version v22.05.01 - Fix security warning CA2105: 'Array fields
-        /// should not be read only', adopting ReadOnlyCollection static
-        /// object as storage.
+        /// @version v22.05.03 - String representation of each
+        /// sub instruction incorporated to it.
         public static readonly ReadOnlyCollection<Instruction> Instructions =
             new ReadOnlyCollection<Instruction>(new[]
             {
-                new Instruction(InstructionTypeEnum.WR,     new[] {              //       0
-                    new SubInstruction("RDBYTE ", true, true, true, true, false, false),    //  000000 001i 1111 ddddddddd sssssssss
-                    new SubInstruction("WRBYTE ", true, true, true, true, false, false)     //  000000 000i 1111 ddddddddd sssssssss
+                new Instruction(InstructionTypeEnum.ReadWrite,     new[] {       //       0
+                    new SubInstruction("RDBYTE ", true, true, true, true, false, false, "000000 001i 1111 ddddddddd sssssssss"),
+                    new SubInstruction("WRBYTE ", true, true, true, true, false, false, "000000 000i 1111 ddddddddd sssssssss")
                 }),
-                new Instruction(InstructionTypeEnum.WR,     new[] {              //       1
-                    new SubInstruction("RDWORD ", true, true, true, true, false, false),    //  000001 001i 1111 ddddddddd sssssssss
-                    new SubInstruction("WRWORD ", true, true, true, true, false, false)     //  000001 000i 1111 ddddddddd sssssssss
+                new Instruction(InstructionTypeEnum.ReadWrite,     new[] {       //       1
+                    new SubInstruction("RDWORD ", true, true, true, true, false, false, "000001 001i 1111 ddddddddd sssssssss"),
+                    new SubInstruction("WRWORD ", true, true, true, true, false, false, "000001 000i 1111 ddddddddd sssssssss")
                 }),
-                new Instruction(InstructionTypeEnum.WR,     new[] {              //       2
-                    new SubInstruction("RDLONG ", true, true, true, true, false, false),    //  000010 001i 1111 ddddddddd sssssssss
-                    new SubInstruction("WRLONG ", true, true, true, true, false, false)     //  000010 000i 1111 ddddddddd sssssssss
+                new Instruction(InstructionTypeEnum.ReadWrite,     new[] {       //       2
+                    new SubInstruction("RDLONG ", true, true, true, true, false, false, "000010 001i 1111 ddddddddd sssssssss"),
+                    new SubInstruction("WRLONG ", true, true, true, true, false, false, "000010 000i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Hub,    new[] {              //       3
-                    new SubInstruction("CLKSET ", true, false, true, true, true,  false),   //  000011 0001 1111 ddddddddd ------000
-                    new SubInstruction("COGID  ", true, false, true, true, false, false),   //  000011 0011 1111 ddddddddd ------001
-                    new SubInstruction("COGINIT", true, false, true, true, true,  false),   //  000011 0001 1111 ddddddddd ------010
-                    new SubInstruction("COGSTOP", true, false, true, true, true,  false),   //  000011 0001 1111 ddddddddd ------011
-                    new SubInstruction("LOCKNEW", true, false, true, true, false, false),   //  000011 0011 1111 ddddddddd ------100
-                    new SubInstruction("LOCKRET", true, false, true, true, true,  false),   //  000011 0001 1111 ddddddddd ------101
-                    new SubInstruction("LOCKSET", true, false, true, true, true,  false),   //  000011 0001 1111 ddddddddd ------110
-                    new SubInstruction("LOCKCLR", true, false, true, true, true,  false),   //  000011 0001 1111 ddddddddd ------111
-                    new SubInstruction("HUBOP  ", true, true,  true, true, false, false)    //  000011 000i 1111 ddddddddd sssssssss
+                    new SubInstruction("CLKSET ", true, false, true, true, true,  false, "000011 0001 1111 ddddddddd ------000"),
+                    new SubInstruction("COGID  ", true, false, true, true, false, false, "000011 0011 1111 ddddddddd ------001"),
+                    new SubInstruction("COGINIT", true, false, true, true, true,  false, "000011 0001 1111 ddddddddd ------010"),
+                    new SubInstruction("COGSTOP", true, false, true, true, true,  false, "000011 0001 1111 ddddddddd ------011"),
+                    new SubInstruction("LOCKNEW", true, false, true, true, false, false, "000011 0011 1111 ddddddddd ------100"),
+                    new SubInstruction("LOCKRET", true, false, true, true, true,  false, "000011 0001 1111 ddddddddd ------101"),
+                    new SubInstruction("LOCKSET", true, false, true, true, true,  false, "000011 0001 1111 ddddddddd ------110"),
+                    new SubInstruction("LOCKCLR", true, false, true, true, true,  false, "000011 0001 1111 ddddddddd ------111"),
+                    new SubInstruction("HUBOP  ", true, true,  true, true, false, false, "000011 000i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //       4
-                    new SubInstruction("MUL    ", true, true, true, true, false, false)     //  000100 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("MUL    ", true, true, true, true, false, false, "000100 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //       5
-                    new SubInstruction("MULS   ", true, true, true, true, false, false)     //  000101 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("MULS   ", true, true, true, true, false, false, "000101 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //       6
-                    new SubInstruction("ENC    ", true, true, true, true, false, false)     //  000110 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("ENC    ", true, true, true, true, false, false, "000110 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //       7
-                    new SubInstruction("ONES   ", true, true, true, true, false, false)     //  000111 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("ONES   ", true, true, true, true, false, false, "000111 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //       8
-                    new SubInstruction("ROR    ", true, true, true, true, false, false)     //  001000 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("ROR    ", true, true, true, true, false, false, "001000 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //       9
-                    new SubInstruction("ROL    ", true, true, true, true, false, false)     //  001001 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("ROL    ", true, true, true, true, false, false, "001001 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      10
-                    new SubInstruction("SHR    ", true, true, true, true, false, false)     //  001010 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("SHR    ", true, true, true, true, false, false, "001010 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      11
-                    new SubInstruction("SHL    ", true, true, true, true, false, false)     //  001011 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("SHL    ", true, true, true, true, false, false, "001011 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      12
-                    new SubInstruction("RCR    ", true, true, true, true, false, false)     //  001100 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("RCR    ", true, true, true, true, false, false, "001100 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      13
-                    new SubInstruction("RCL    ", true, true, true, true, false, false)     //  001101 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("RCL    ", true, true, true, true, false, false, "001101 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      14
-                    new SubInstruction("SAR    ", true, true, true, true, false, false)     //  001110 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("SAR    ", true, true, true, true, false, false, "001110 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      15
-                    new SubInstruction("REV    ", true, true, true, true, false, false)     //  001111 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("REV    ", true, true, true, true, false, false, "001111 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      16
-                    new SubInstruction("MINS   ", true, true, true, true, false, false)     //  010000 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("MINS   ", true, true, true, true, false, false, "010000 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      17
-                    new SubInstruction("MAXS   ", true, true, true, true, false, false)     //  010001 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("MAXS   ", true, true, true, true, false, false, "010001 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      18
-                    new SubInstruction("MIN    ", true, true, true, true, false, false)     //  010010 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("MIN    ", true, true, true, true, false, false, "010010 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      19
-                    new SubInstruction("MAX    ", true, true, true, true, false, false)     //  010011 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("MAX    ", true, true, true, true, false, false, "010011 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      20
-                    new SubInstruction("MOVS   ", true, true, true, true, false, false)     //  010100 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("MOVS   ", true, true, true, true, false, false, "010100 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      21
-                    new SubInstruction("MOVD   ", true, true, true, true, false, false)     //  010101 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("MOVD   ", true, true, true, true, false, false, "010101 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      22
-                    new SubInstruction("MOVI   ", true, true, true, true, false, false)     //  010110 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("MOVI   ", true, true, true, true, false, false, "010110 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Jump,   new[] {              //      23
-                    new SubInstruction("JMP    ", false, true,  true, true, true,  false),  //  010111 000i 1111 --------- sssssssss
-                    new SubInstruction("RET    ", false, false, true, true, false, false),  //  010111 0001 1111 --------- ---------
-                    new SubInstruction("JMPRET ", true,  true,  true, true, false, false),  //  010111 001i 1111 ddddddddd sssssssss
-                    new SubInstruction("CALL   ", false, true,  true, true, false, false)   //  010111 0011 1111 ????????? sssssssss
+                    new SubInstruction("JMP    ", false, true,  true, true, true,  false, "010111 000i 1111 --------- sssssssss"),
+                    new SubInstruction("RET    ", false, false, true, true, false, false, "010111 0001 1111 --------- ---------"),
+                    new SubInstruction("JMPRET ", true,  true,  true, true, false, false, "010111 001i 1111 ddddddddd sssssssss"),
+                    new SubInstruction("CALL   ", false, true,  true, true, false, false, "010111 0011 1111 ????????? sssssssss")
                 }),
-                new Instruction(InstructionTypeEnum.WR,     new[] {              //      24
-                    new SubInstruction("AND    ", true, true, true, true, false, false),    //  011000 001i 1111 ddddddddd sssssssss
-                    new SubInstruction("TEST   ", true, true, true, true, true,  false)     //  011000 000i 1111 ddddddddd sssssssss
+                new Instruction(InstructionTypeEnum.ReadWrite,     new[] {       //      24
+                    new SubInstruction("AND    ", true, true, true, true, false, false, "011000 001i 1111 ddddddddd sssssssss"),
+                    new SubInstruction("TEST   ", true, true, true, true, true,  false, "011000 000i 1111 ddddddddd sssssssss")
                 }),
-                new Instruction(InstructionTypeEnum.WR,     new[] {              //      25
-                    new SubInstruction("ANDN   ", true, true, true, true, false, false),    //  011001 001i 1111 ddddddddd sssssssss
-                    new SubInstruction("TESTN  ", true, true, true, true, true,  false)     //  011001 000i 1111 ddddddddd sssssssss
+                new Instruction(InstructionTypeEnum.ReadWrite,     new[] {       //      25
+                    new SubInstruction("ANDN   ", true, true, true, true, false, false, "011001 001i 1111 ddddddddd sssssssss"),
+                    new SubInstruction("TESTN  ", true, true, true, true, true,  false, "011001 000i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      26
-                    new SubInstruction("OR     ", true, true, true, true, false, false)     //  011010 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("OR     ", true, true, true, true, false, false, "011010 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      27
-                    new SubInstruction("XOR    ", true, true, true, true, false, false)     //  011011 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("XOR    ", true, true, true, true, false, false, "011011 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      28
-                    new SubInstruction("MUXC   ", true, true, true, true, false, false)     //  011100 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("MUXC   ", true, true, true, true, false, false, "011100 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      29
-                    new SubInstruction("MUXNC  ", true, true, true, true, false, false)     //  011101 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("MUXNC  ", true, true, true, true, false, false, "011101 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      30
-                    new SubInstruction("MUXZ   ", true, true, true, true, false, false)     //  011110 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("MUXZ   ", true, true, true, true, false, false, "011110 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      31
-                    new SubInstruction("MUXNZ  ", true, true, true, true, false, false)     //  011111 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("MUXNZ  ", true, true, true, true, false, false, "011111 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      32
-                    new SubInstruction("ADD    ", true, true, true, true, false, false)     //  100000 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("ADD    ", true, true, true, true, false, false, "100000 001i 1111 ddddddddd sssssssss")
                 }),
-                new Instruction(InstructionTypeEnum.WR,     new[] {              //      33
-                    new SubInstruction("SUB    ", true, true, true, true, false, false),    //  100001 001i 1111 ddddddddd sssssssss
-                    new SubInstruction("CMP    ", true, true, true, true, true,  false)     //  100001 000i 1111 ddddddddd sssssssss
+                new Instruction(InstructionTypeEnum.ReadWrite,     new[] {       //      33
+                    new SubInstruction("SUB    ", true, true, true, true, false, false, "100001 001i 1111 ddddddddd sssssssss"),
+                    new SubInstruction("CMP    ", true, true, true, true, true,  false, "100001 000i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      34
-                    new SubInstruction("ADDABS ", true, true, true, true, false, false)     //  100010 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("ADDABS ", true, true, true, true, false, false, "100010 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      35
-                    new SubInstruction("SUBABS ", true, true, true, true, false, false)     //  100011 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("SUBABS ", true, true, true, true, false, false, "100011 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      36
-                    new SubInstruction("SUMC   ", true, true, true, true, false, false)     //  100100 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("SUMC   ", true, true, true, true, false, false, "100100 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      37
-                    new SubInstruction("SUMNC  ", true, true, true, true, false, false)     //  100101 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("SUMNC  ", true, true, true, true, false, false, "100101 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      38
-                    new SubInstruction("SUMZ   ", true, true, true, true, false, false)     //  100110 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("SUMZ   ", true, true, true, true, false, false, "100110 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      39
-                    new SubInstruction("SUMNZ  ", true, true, true, true, false, false)     //  100111 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("SUMNZ  ", true, true, true, true, false, false, "100111 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      40
-                    new SubInstruction("MOV    ", true, true, true, true, false, false)     //  101000 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("MOV    ", true, true, true, true, false, false, "101000 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      41
-                    new SubInstruction("NEG    ", true, true, true, true, false, false)     //  101001 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("NEG    ", true, true, true, true, false, false, "101001 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      42
-                    new SubInstruction("ABS    ", true, true, true, true, false, false)     //  101010 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("ABS    ", true, true, true, true, false, false, "101010 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      43
-                    new SubInstruction("ABSNEG ", true, true, true, true, false, false)     //  101011 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("ABSNEG ", true, true, true, true, false, false, "101011 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      44
-                    new SubInstruction("NEGC   ", true, true, true, true, false, false)     //  101100 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("NEGC   ", true, true, true, true, false, false, "101100 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      45
-                    new SubInstruction("NEGNC  ", true, true, true, true, false, false)     //  101101 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("NEGNC  ", true, true, true, true, false, false, "101101 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      46
-                    new SubInstruction("NEGZ   ", true, true, true, true, false, false)     //  101110 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("NEGZ   ", true, true, true, true, false, false, "101110 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      47
-                    new SubInstruction("NEGNZ  ", true, true, true, true, false, false)     //  101111 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("NEGNZ  ", true, true, true, true, false, false, "101111 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      48
-                    new SubInstruction("CMPS   ", true, true, true, true, true,  false)     //  110000 000i 1111 ddddddddd sssssssss
+                    new SubInstruction("CMPS   ", true, true, true, true, true,  false, "110000 000i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      49
-                    new SubInstruction("CMPSX  ", true, true, true, true, true,  false)     //  110001 000i 1111 ddddddddd sssssssss
+                    new SubInstruction("CMPSX  ", true, true, true, true, true,  false, "110001 000i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      50
-                    new SubInstruction("ADDX   ", true, true, true, true, false, false)     //  110010 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("ADDX   ", true, true, true, true, false, false, "110010 001i 1111 ddddddddd sssssssss")
                 }),
-                new Instruction(InstructionTypeEnum.WR,     new[] {              //      51
-                    new SubInstruction("SUBX   ", true, true, true, true, false, false),    //  110011 001i 1111 ddddddddd sssssssss
-                    new SubInstruction("CMPX   ", true, true, true, true, true,  false)     //  110011 000i 1111 ddddddddd sssssssss
+                new Instruction(InstructionTypeEnum.ReadWrite,     new[] {       //      51
+                    new SubInstruction("SUBX   ", true, true, true, true, false, false, "110011 001i 1111 ddddddddd sssssssss"),
+                    new SubInstruction("CMPX   ", true, true, true, true, true,  false, "110011 000i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      52
-                    new SubInstruction("ADDS   ", true, true, true, true, false, false)     //  110100 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("ADDS   ", true, true, true, true, false, false, "110100 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      53
-                    new SubInstruction("SUBS   ", true, true, true, true, false, false)     //  110101 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("SUBS   ", true, true, true, true, false, false, "110101 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      54
-                    new SubInstruction("ADDSX  ", true, true, true, true, false, false)     //  110110 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("ADDSX  ", true, true, true, true, false, false, "110110 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      55
-                    new SubInstruction("SUBSX  ", true, true, true, true, false, false)     //  110111 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("SUBSX  ", true, true, true, true, false, false, "110111 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      56
-                    new SubInstruction("CMPSUB ", true, true, true, true, false, false)     //  111000 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("CMPSUB ", true, true, true, true, false, false, "111000 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      57
-                    new SubInstruction("DJNZ   ", true, true, true, true, false, false)     //  111001 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("DJNZ   ", true, true, true, true, false, false, "111001 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      58
-                    new SubInstruction("TJNZ   ", true, true, true, true, true,  false)     //  111010 000i 1111 ddddddddd sssssssss
+                    new SubInstruction("TJNZ   ", true, true, true, true, true,  false, "111010 000i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      59
-                    new SubInstruction("TJZ    ", true, true, true, true, true,  false)     //  111011 000i 1111 ddddddddd sssssssss
+                    new SubInstruction("TJZ    ", true, true, true, true, true,  false, "111011 000i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      60
-                    new SubInstruction("WAITPEQ", true, true, true, true, true,  false)     //  111100 000i 1111 ddddddddd sssssssss
+                    new SubInstruction("WAITPEQ", true, true, true, true, true,  false, "111100 000i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      61
-                    new SubInstruction("WAITPNE", true, true, true, true, true,  false)     //  111101 000i 1111 ddddddddd sssssssss
+                    new SubInstruction("WAITPNE", true, true, true, true, true,  false, "111101 000i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      62
-                    new SubInstruction("WAITCNT", true, true, true, true, false, false)     //  111110 001i 1111 ddddddddd sssssssss
+                    new SubInstruction("WAITCNT", true, true, true, true, false, false, "111110 001i 1111 ddddddddd sssssssss")
                 }),
                 new Instruction(InstructionTypeEnum.Normal, new[] {              //      63
-                    new SubInstruction("WAITVID", true, true, true, true, true,  false)     //  111111 000i 1111 ddddddddd sssssssss
+                    new SubInstruction("WAITVID", true, true, true, true, true,  false, "111111 000i 1111 ddddddddd sssssssss")
                 })
             });
     }

@@ -1,6 +1,14 @@
 # Change Log
 
-## Release Version [22.05.02](https://github.com/davispuh/gear-emu/releases/tag/v22.05.02) and Commit  Emulator speedup and code cleanup 5
+## Release Version [22.05.03](https://github.com/davispuh/gear-emu/releases/tag/v22.05.03) and Commit  Refactored EmulationCore.Cog, Code cleanup 6
+
+- Code cleanup in files: specially [`Cog.cs`](Gear/EmulationCore/Cog.cs) and [`Disassembler/Assembly.cs`](Gear/Disassembler/Assembly.cs), [`Propeller/Assembly.cs`](Gear/Propeller/Assembly.cs), [`AssemblyInstructions.cs`](Gear/Propeller/AssemblyInstructions.cs), [`DataUnpacker.cs`](Gear/Disassembler/DataUnpacker.cs), [`InstructionDisassembler.cs`](Gear/EmulationCore/InstructionDisassembler.cs), [`NativeCogInstructions.cs`](Gear/EmulationCore/NativeCogInstructions.cs), [`Disassembler/Spin.cs`](Gear/Disassembler/Spin.cs).
+  - Refactored naming and visibility of members, parameters and local variables in classes, methods and enums. 
+  - Added XML & Doxygen comments in files.
+  - Unification of references to a PropellerCPU, using the same name convention: CpuHost. Files [`Cog.cs`](Gear/EmulationCore/Cog.cs), [`InterpretedCog.cs`](Gear/EmulationCore/InterpretedCog.cs), [`NativeCog.cs`](Gear/EmulationCore/NativeCog.cs), [`VideoGenerator.cs`](Gear/EmulationCore/VideoGenerator.cs).
+
+
+## Release Version [22.05.02](https://github.com/davispuh/gear-emu/releases/tag/v22.05.02) and Commit [ac5755d](ac5755de6e4eed28541ad82f84397231c6bafe20) Emulator speedup and code cleanup 5
 
 - Temporal emulator speedup: Corrected latency on rerun emulator. The definitive solution is use a new background thread to run the emulation cicle and incorporate paralellism to `Emulator.Step()`.
 - Code cleanup in files: [`Propeller/Spin.cs`](Gear/Propeller/Spin.cs), [`SpinAssignments.cs`](Gear/Propeller/SpinAssignments.cs), [`SpinInstructions.cs`](Gear/Propeller/SpinInstructions.cs), [`SpinMathInstruction.cs`](Gear/Propeller/SpinMathInstructions.cs), [`SpinRegisters.cs`](Gear/Propeller/SpinRegisters.cs), [`PluginBase.cs`](Gear/PluginSupport/PluginBase.cs), [`BinarySizeException.cs`](Gear/Utils/BinarySizeException.cs), [`SingleInstanceException.cs`](Gear/Utils/SingleInstanceException.cs).

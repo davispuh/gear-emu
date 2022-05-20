@@ -2,7 +2,7 @@
  * Gear: Parallax Inc. Propeller P1 Emulator
  * Copyright 2007-2022 - Gear Developers
  * --------------------------------------------------------------------------------
- * VideoGenerator.CS
+ * VideoGenerator.cs
  * Video Generator Circuit Base
  * --------------------------------------------------------------------------------
  *  This program is free software; you can redistribute it and/or modify
@@ -46,13 +46,10 @@ namespace Gear.EmulationCore
     {
         private uint Scale;
         private uint Config;
-        private uint frameCount;
 
         // Scale Registers
 
         private uint PixelClockStart;
-        private uint PixelClocks;
-        private uint FrameClocks;
         private bool ScaleDirty;
 
         // Configuration Registers
@@ -88,23 +85,26 @@ namespace Gear.EmulationCore
 
         // Misc Variables
 
-        private readonly PropellerCPU Chip;
+        /// <summary>Reference to the PropellerCPU instance where this
+        /// object belongs.</summary>
+        /// @version v22.05.03 - Name changed to use the same convention for
+        /// a PropellerCPU instance reference.
+        private readonly PropellerCPU _cpuHost;
         private readonly Cog cog;
 
-        public uint Frames
-        {
-            get
-            {
-                return frameCount;
-            }
-        }
+        /// <summary></summary>
+        /// @version v22.05.03 - Merge between property and private member.
+        public uint FrameCount { get; private set; }
 
-        public void FrameCounters (out uint frameNo, out uint frameClk, out uint pixelClk)
-        {
-            frameNo = frameCount;
-            frameClk = FrameClocks;
-            pixelClk = PixelClocks;
-        }
+        /// <summary></summary>
+        /// @version v22.05.03 - Added, replacing odd method %FrameCounters()
+        /// and private member %FrameClocks.
+        public uint FrameClock { get; private set; }
+
+        /// <summary></summary>
+        /// @version v22.05.03 - Added, replacing odd method %FrameCounters()
+        /// and private member %PixelClocks.
+        public uint PixelClock { get; private set; }
 
         public uint CFG
         {
@@ -117,8 +117,8 @@ namespace Gear.EmulationCore
                 Config = value;
 
                 // Detach from our old aural hook
-                if (Chip.GetPLL(AuralSub) != null)
-                    Chip.GetPLL(AuralSub).RemoveHook(this);
+                if (_cpuHost.GetPLL(AuralSub) != null)
+                    _cpuHost.GetPLL(AuralSub).RemoveHook(this);
 
                 VideoMode = (VMode)(Config & 0x60000000);
                 ColorMode = (CMode)(Config & 0x10000000);
@@ -131,13 +131,13 @@ namespace Gear.EmulationCore
                 VPins = (Config & 0xFF) << VGroup;                  // Pins becomes a 64bit pin mask
 
                 // Attach to the new aural sub PLL
-                if (Chip.GetPLL(AuralSub) != null)
-                    Chip.GetPLL(AuralSub).AttachHook(this);
+                if (_cpuHost.GetPLL(AuralSub) != null)
+                    _cpuHost.GetPLL(AuralSub).AttachHook(this);
 
                 // Reset counters
                 PixelClockStart = (Scale >> 12) & 0xFF;
-                FrameClocks = Scale & 0xFFF;    // Copy our frameclocks out of the scale register
-                frameCount = 0;
+                FrameClock = Scale & 0xFFF;    // Copy our frameclocks out of the scale register
+                FrameCount = 0;
             }
         }
 
@@ -161,7 +161,7 @@ namespace Gear.EmulationCore
         {
             get
             {
-                return (FrameClocks <= 0);
+                return (FrameClock <= 0);
             }
         }
 
@@ -173,12 +173,19 @@ namespace Gear.EmulationCore
             }
         }
 
-        public VideoGenerator(PropellerCPU chip, Cog owner)
+        /// <summary>Default constructor.</summary>
+        /// <param name="cpuHost">PropellerCPU instance where this object
+        /// belongs.</param>
+        /// <param name="cogOwner">Cog instance where this object belongs.</param>
+        /// @version v22.05.03 - Parameter names changed to use the same
+        /// convention for a PropellerCPU instance reference and to clarify
+        /// meaning of them.
+        public VideoGenerator(PropellerCPU cpuHost, Cog cogOwner)
         {
+            _cpuHost = cpuHost;
+            cog = cogOwner;
             // Clear our phase accumulator
             PhaseAccumulator = 0;
-            Chip = chip;
-            cog = owner;
 
             // Scale is dirty
             ScaleDirty = true;
@@ -186,8 +193,8 @@ namespace Gear.EmulationCore
 
         public void DetachAural()
         {
-            if (Chip.GetPLL(AuralSub) != null)
-                Chip.GetPLL(AuralSub).RemoveHook(this);
+            if (_cpuHost.GetPLL(AuralSub) != null)
+                _cpuHost.GetPLL(AuralSub).RemoveHook(this);
         }
 
         public void Feed(uint colors, uint pixels)
@@ -201,8 +208,8 @@ namespace Gear.EmulationCore
                 ScaleDirty = false;
             }
 
-            FrameClocks = Scale & 0xFFF;    // Copy our frameclocks out of the scale register
-            PixelClocks = PixelClockStart;  // update PixelClock, similar to verilog
+            FrameClock = Scale & 0xFFF;    // Copy our frameclocks out of the scale register
+            PixelClock = PixelClockStart;  // update PixelClock, similar to verilog
         }
 
         private void FillComposite(uint color)
@@ -336,21 +343,21 @@ namespace Gear.EmulationCore
             }
 
             // Decrement clocks
-            --FrameClocks;
-            FrameClocks &= 0xFFF;
-            --PixelClocks;
-            PixelClocks &= 0xFF;
+            --FrameClock;
+            FrameClock &= 0xFFF;
+            --PixelClock;
+            PixelClock &= 0xFF;
 
             // Check to see if we are at the end of our frame clocks
-            if (FrameClocks == 0)
+            if (FrameClock == 0)
             {
                 cog.GetVideoData(out uint colours, out uint pixels);
                 Feed(colours, pixels);
-                ++frameCount;
+                ++FrameCount;
 
             }
             // Clock up to our pixel accumulator (wait for pixel)
-            else if (PixelClocks == 0)
+            else if (PixelClock == 0)
             {
                 // Find the pixel color we need to shift out
                 switch (ColorMode)
@@ -367,7 +374,7 @@ namespace Gear.EmulationCore
                 }
 
                 // Fill our pixel clock countdown using the scale register
-                PixelClocks = PixelClockStart;
+                PixelClock = PixelClockStart;
             }
             // Accumulate phase (/16 divider)
             PhaseAccumulator += 0x10;

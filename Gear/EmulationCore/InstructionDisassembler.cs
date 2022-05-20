@@ -22,178 +22,152 @@
  */
 
 using Gear.Disassembler;
-using System;
+using System.ComponentModel;
 
 namespace Gear.EmulationCore
 {
     /// @brief Provides a method for creating the string equivalent of a propeller operation.
     public static class InstructionDisassembler
     {
-        /// @brief Default static constructor
-        static InstructionDisassembler() { }
-
-        /// @brief Translate to text the bytecode opcodes.
-        /// @param Operation Bytecode opcodes.
+        /// @brief Translate to text the bytecode OpCodes.
+        /// @param operation Bytecode OpCodes.
         /// @return Explicative text from decoded bytecode.
-        /// @version v22.05.01 - Adapted to use the new class
-        /// Gear.Propeller.Assembly.Condition for condition names.
-        public static string AssemblyText(uint Operation)
+        /// @version v22.05.03 - Strings transformed to interpolation and
+        /// Parameter name changed to follow naming conventions.
+        public static string AssemblyText(uint operation)
         {
-            Assembly.ParsedInstruction instr = new Assembly.ParsedInstruction(Operation);
+            Assembly.ParsedInstruction instr = new Assembly.ParsedInstruction(operation);
             string text;
             if (instr.CON > 0x00)
             {
-                Propeller.Assembly.SubInstruction ActualInstruction = instr.GetSubInstruction();
-
-                string SrcString = string.Empty;
-                string DestString = string.Empty;
-
-                if (ActualInstruction.Source)
-                {
-                    if (instr.SRC >= Propeller.Assembly.RegisterBaseAddress)
-                    {
-                        SrcString = string.Format("{0}{1}",
-                                instr.ImmediateValue() ? "#" : string.Empty,
-                                Propeller.Assembly.Registers[instr.SRC - Propeller.Assembly.RegisterBaseAddress].Name);
-                    }
-                    else
-                    {
-                        SrcString = string.Format("{0}${1:X3}",
-                                instr.ImmediateValue() ? "#" : string.Empty,
-                                instr.SRC);
-                    }
-                }
-
-                if (ActualInstruction.Destination)
-                {
-                    if (instr.DEST >= Propeller.Assembly.RegisterBaseAddress)
-                    {
-                        DestString = string.Format("{0}", Propeller.Assembly.Registers[instr.DEST - Propeller.Assembly.RegisterBaseAddress].Name);
-                    }
-                    else
-                        DestString = string.Format("${0:X3}", instr.DEST);
-                }
-
-                text = string.Format("{0} {1} {2}{3}{4}", new object[] {
-                    Propeller.Assembly.Conditions[instr.CON].Inst1,
-                    ActualInstruction.Name,
-                    DestString,
-                    (ActualInstruction.Source && ActualInstruction.Destination) ? ", " : string.Empty,
-                    SrcString }
-                );
-
-                if (instr.WriteResult())
-                    text += " WR";
-
-                if (instr.NoResult())
-                    text += " NR";
-
-                if (instr.WriteZero())
-                    text += " WZ";
-
-                if (instr.WriteCarry())
-                    text += " WC";
+                Propeller.Assembly.SubInstruction actualInstruction = instr.GetSubInstruction();
+                string srcString = string.Empty;
+                string destString = string.Empty;
+                if (actualInstruction.UseSource)
+                    srcString = instr.SRC >= Propeller.Assembly.RegisterBaseAddress ?
+                        $"{(instr.ImmediateValue() ? "#" : string.Empty)}{Propeller.Assembly.Registers[instr.SRC - Propeller.Assembly.RegisterBaseAddress].Name}" :
+                        $"{(instr.ImmediateValue() ? "#" : string.Empty)}${instr.SRC:X3}";
+                if (actualInstruction.UseDestination)
+                    destString = instr.DEST >= Propeller.Assembly.RegisterBaseAddress ?
+                        $"{Propeller.Assembly.Registers[instr.DEST - Propeller.Assembly.RegisterBaseAddress].Name}" :
+                        $"${instr.DEST:X3}";
+                text =
+                    $"{Propeller.Assembly.Conditions[instr.CON].Inst1} {actualInstruction.Name} {destString}{(actualInstruction.UseSource && actualInstruction.UseDestination ? ", " : string.Empty)}{srcString}";
+                text += $"{(instr.WriteResult() ? " WR" : string.Empty)}{(instr.NoResult() ? " NR" : string.Empty)}{(instr.WriteZero() ? " WZ" : string.Empty)}{(instr.WriteCarry() ? " WC" : string.Empty)}";
             }
             else
-                text = string.Format("{0} {1}", new object[] { Propeller.Assembly.Conditions[0].Inst2, Propeller.Assembly.Conditions[0].Inst3 });
+                text = $"{Propeller.Assembly.Conditions[0].Inst2} {Propeller.Assembly.Conditions[0].Inst3}";
             return text;
         }
 
-        private static string GetUsingCode(Propeller.MemoryManager memory, bool useShortOpcodes)
+        /// <summary></summary>
+        /// <param name="memory"></param>
+        /// <param name="useShortOpCodes"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidEnumArgumentException"></exception>
+        /// @version v22.04.02 - Strings transformed to interpolation.
+        private static string GetUsingCode(Propeller.MemoryManager memory,
+            bool useShortOpCodes)
         {
-            Spin.ParsedAssignment ParsedAssignment = new Spin.ParsedAssignment(memory.ReadByte());
-
-            string effect = ParsedAssignment.Push ? string.Empty : "POP ";
-
-            if (useShortOpcodes)
-                effect += "(" + ParsedAssignment.GetBasicInstruction().NameBrief + (ParsedAssignment.Swap ? ",reverse" : "") + ")";
+            Spin.ParsedAssignment parsedAssignment = new Spin.ParsedAssignment(memory.ReadByte());
+            string effect = parsedAssignment.Push ?
+                string.Empty :
+                "POP ";
+            if (useShortOpCodes)
+                effect += $"({parsedAssignment.GetBasicInstruction().NameBrief}{(parsedAssignment.Swap ? ",reverse" : string.Empty)})";
             else
-                effect += ParsedAssignment.GetBasicInstruction().Name + (ParsedAssignment.Swap ? " REVERSE" : "");
-
-            if (!ParsedAssignment.Math)
+                effect += $"{parsedAssignment.GetBasicInstruction().Name}{(parsedAssignment.Swap ? " REVERSE" : string.Empty)}";
+            if (parsedAssignment.Math)
+                return effect;
+            Propeller.Spin.SubAssignment subAssignment = parsedAssignment.GetSubAssignment();
+            switch (subAssignment.ArgumentMode)
             {
-                Propeller.Spin.SubAssignment SubAssignment = ParsedAssignment.GetSubAssignment();
-                switch (SubAssignment.ArgumentMode)
-                {
-                    case Propeller.Spin.ArgumentMode.None:
-                        break;
-                    case Propeller.Spin.ArgumentMode.SignedPackedOffset:
-                        effect += " " + DataUnpacker.GetSignedPackedOffset(memory);
-                        break;
-                    default:
-                        throw new Exception("Unexpected Spin Argument Mode: " + SubAssignment.ArgumentMode.ToString());
-                }
+                case Propeller.Spin.ArgumentMode.None:
+                    break;
+                case Propeller.Spin.ArgumentMode.SignedPackedOffset:
+                    effect += $" {DataUnpacker.GetSignedPackedOffset(memory)}";
+                    break;
+                default:
+                    throw new InvalidEnumArgumentException(
+                        $"Unexpected Spin Argument Mode: {subAssignment.ArgumentMode}");
             }
             return effect;
         }
 
-        public static string GetMemoryOp(Propeller.MemoryManager memory, bool useShortOpcodes)
+        /// <summary></summary>
+        /// <param name="memory"></param>
+        /// <param name="useShortOpCodes"></param>
+        /// <returns></returns>
+        /// @version v22.05.03 - Modify to use Refactored Property
+        /// Spin.ParsedMemoryOperation.RegisterName, changed local variable
+        /// name to clarify meaning of it and Strings transformed
+        /// to interpolation.
+        public static string GetMemoryOp(Propeller.MemoryManager memory,
+            bool useShortOpCodes)
         {
-            Spin.ParsedMemoryOperation OP = new Spin.ParsedMemoryOperation(memory.ReadByte());
-
-            string Name = OP.GetRegister().Name;
-
-            switch (OP.Action)
+            Spin.ParsedMemoryOperation operation =
+                new Spin.ParsedMemoryOperation(memory.ReadByte());
+            string name = operation.RegisterName;
+            switch (operation.Action)
             {
                 case Propeller.Spin.MemoryAction.PUSH:
-                    return string.Format("PUSH {0}", Name);
+                    return $"PUSH {name}";
                 case Propeller.Spin.MemoryAction.POP:
-                    return string.Format("POP {0}", Name);
+                    return $"POP {name}";
                 case Propeller.Spin.MemoryAction.EFFECT:
-                    return string.Format("USING {0} {1}", Name, GetUsingCode(memory, useShortOpcodes));
+                    return $"USING {name} {GetUsingCode(memory, useShortOpCodes)}";
                 default:
-                    return string.Format("UNKNOWN_{0} {1}", OP.Action, Name);
+                    return $"UNKNOWN_{operation.Action} {name}";
             }
         }
 
-        public static string InterpreterText(Propeller.MemoryManager memory, bool displayAsHexadecimal, bool useShortOpcodes)
+        /// <summary></summary>
+        /// <param name="memory"></param>
+        /// <param name="displayAsHexadecimal"></param>
+        /// <param name="useShortOpCodes"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidEnumArgumentException"></exception>
+        /// @version v22.04.02 - Strings transformed to interpolation.
+        public static string InterpreterText(Propeller.MemoryManager memory,
+            bool displayAsHexadecimal, bool useShortOpCodes)
         {
-            string format;
-            if (displayAsHexadecimal)
-                format = "{0} ${1:X}";
-            else
-                format = "{0} {1}";
-
-            Propeller.Spin.Instruction Instr = Propeller.Spin.Instructions[memory.ReadByte()];
-
-            string Name;
-            if (useShortOpcodes)
-                Name = Instr.NameBrief;
-            else
-                Name = Instr.Name;
-
-            switch (Instr.ArgumentMode)
+            string format = displayAsHexadecimal ?
+                "{0} ${1:X}" :
+                "{0} {1}";
+            Propeller.Spin.Instruction instruction =
+                Propeller.Spin.Instructions[memory.ReadByte()];
+            string name = useShortOpCodes ?
+                instruction.NameBrief :
+                instruction.Name;
+            switch (instruction.ArgumentMode)
             {
                 case Propeller.Spin.ArgumentMode.None:
-                    return Name;
+                    return name;
                 case Propeller.Spin.ArgumentMode.UnsignedOffset:
-                    return string.Format(format, Name, DataUnpacker.GetPackedOffset(memory));
+                    return string.Format(format, name, DataUnpacker.GetPackedOffset(memory));
                 case Propeller.Spin.ArgumentMode.UnsignedEffectedOffset:
-                    return string.Format("{0} {1} {2}", Name, DataUnpacker.GetPackedOffset(memory), GetUsingCode(memory, useShortOpcodes));
+                    return $"{name} {DataUnpacker.GetPackedOffset(memory)} {GetUsingCode(memory, useShortOpCodes)}";
                 case Propeller.Spin.ArgumentMode.Effect:
-                    return string.Format(format, Name, GetUsingCode(memory, useShortOpcodes));
+                    return string.Format(format, name, GetUsingCode(memory, useShortOpCodes));
                 case Propeller.Spin.ArgumentMode.SignedOffset:
-                    return string.Format(format, Name, DataUnpacker.GetSignedOffset(memory));
+                    return string.Format(format, name, DataUnpacker.GetSignedOffset(memory));
                 case Propeller.Spin.ArgumentMode.PackedLiteral:
-                    return string.Format(format, Name, DataUnpacker.GetPackedLiteral(memory));
+                    return string.Format(format, name, DataUnpacker.GetPackedLiteral(memory));
                 case Propeller.Spin.ArgumentMode.ByteLiteral:
-                    return string.Format(format, Name, memory.ReadByte());
+                    return string.Format(format, name, memory.ReadByte());
                 case Propeller.Spin.ArgumentMode.WordLiteral:
-                    return string.Format(format, Name, DataUnpacker.GetWordLiteral(memory));
+                    return string.Format(format, name, DataUnpacker.GetWordLiteral(memory));
                 case Propeller.Spin.ArgumentMode.NearLongLiteral:
-                    return string.Format(format, Name, DataUnpacker.GetNearLongLiteral(memory));
+                    return string.Format(format, name, DataUnpacker.GetNearLongLiteral(memory));
                 case Propeller.Spin.ArgumentMode.LongLiteral:
-                    return string.Format(format, Name, DataUnpacker.GetLongLiteral(memory));
+                    return string.Format(format, name, DataUnpacker.GetLongLiteral(memory));
                 case Propeller.Spin.ArgumentMode.ObjCallPair:
-                    {
-                        byte obj = memory.ReadByte();
-                        byte funct = memory.ReadByte();
-                        return string.Format("{0} {1}.{2}", Name, obj, funct);
-                    }
+                    return $"{name} {memory.ReadByte()}.{memory.ReadByte()}";
                 case Propeller.Spin.ArgumentMode.MemoryOpCode:
-                    return string.Format("{0} {1}", Name, GetMemoryOp(memory, useShortOpcodes));
+                    return $"{name} {GetMemoryOp(memory, useShortOpCodes)}";
                 default:
-                    throw new Exception("Unknown Spin Argument Mode: " + Instr.ArgumentMode.ToString());
+                    throw new InvalidEnumArgumentException(
+                        $"Unknown Spin Argument Mode: {instruction.ArgumentMode}");
             }
         }
     }

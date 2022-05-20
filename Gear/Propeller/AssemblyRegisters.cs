@@ -85,7 +85,7 @@ namespace Gear.Propeller
         /// @brief Declaration of P1 PASM %Cog RAM Special Purpose Registers.
         /// @details Specify the write and read status of special registers
         /// of cog RAM.
-        /// 
+        ///
         /// Source: Table 15 - %Cog RAM Special Purpose Registers,
         /// <c>%Propeller P8X32A Datasheet V1.4.0</c>.
         /// |Name|Code|Description|

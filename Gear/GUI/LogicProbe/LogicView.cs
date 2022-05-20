@@ -178,7 +178,7 @@ namespace Gear.GUI.LogicProbe
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="time"></param>
         /// <param name="states"></param>
@@ -191,7 +191,7 @@ namespace Gear.GUI.LogicProbe
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="tick"></param>
         public override void Repaint(bool tick)
@@ -272,7 +272,7 @@ namespace Gear.GUI.LogicProbe
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -289,7 +289,7 @@ namespace Gear.GUI.LogicProbe
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -299,7 +299,7 @@ namespace Gear.GUI.LogicProbe
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -352,7 +352,7 @@ namespace Gear.GUI.LogicProbe
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -362,7 +362,7 @@ namespace Gear.GUI.LogicProbe
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -390,7 +390,7 @@ namespace Gear.GUI.LogicProbe
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -419,7 +419,7 @@ namespace Gear.GUI.LogicProbe
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -480,7 +480,7 @@ namespace Gear.GUI.LogicProbe
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>

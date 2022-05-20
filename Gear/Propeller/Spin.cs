@@ -20,6 +20,7 @@
  * --------------------------------------------------------------------------------
  */
 
+// ReSharper disable InconsistentNaming
 namespace Gear.Propeller
 {
     /// <summary></summary>
@@ -172,8 +173,10 @@ namespace Gear.Propeller
             /// <summary>Default Constructor.</summary>
             /// <param name="assignmentType"></param>
             /// <param name="subAssignmentsArray"></param>
-            /// @version v22.05.02 - Changed parameters names to clarify meaning of each one.
-            public Assignment(AssignmentTypeEnum assignmentType, SubAssignment[] subAssignmentsArray)
+            /// @version v22.05.02 - Changed parameters names to clarify
+            /// meaning of each one.
+            public Assignment(AssignmentTypeEnum assignmentType,
+                SubAssignment[] subAssignmentsArray)
             {
                 AssignmentType = assignmentType;
                 SubAssignmentsArray = subAssignmentsArray;
@@ -203,7 +206,8 @@ namespace Gear.Propeller
             /// <param name="name">Full name of %Spin instruction.</param>
             /// <param name="nameBrief">Brief name of %Spin instruction.</param>
             /// <param name="argumentMode"></param>
-            public Instruction(string name, string nameBrief, ArgumentMode argumentMode)
+            public Instruction(string name, string nameBrief,
+                ArgumentMode argumentMode)
             {
                 Name = name;
                 NameBrief = nameBrief;

@@ -20,19 +20,21 @@
  * --------------------------------------------------------------------------------
  */
 
+// ReSharper disable InconsistentNaming
 namespace Gear.Propeller
 {
     /// <summary></summary>
     public static partial class Assembly
     {
         /// <summary>Instructions types.</summary>
-        /// @version v22.05.01 - Name changed to clarify meaning of it.
+        /// @version v22.05.03 - Name of one value changed to clarify
+        /// meaning of it.
         public enum InstructionTypeEnum : byte
         {
             /// <summary></summary>
             Normal,
             /// <summary></summary>
-            WR,
+            ReadWrite,
             /// <summary></summary>
             Hub,
             /// <summary></summary>
@@ -70,45 +72,55 @@ namespace Gear.Propeller
             /// <summary></summary>
             public string Name { get; }
             /// <summary></summary>
-            public bool Destination { get; }
+            /// @version v22.05.03 - Name changed to clarify meaning of it.
+            public bool UseDestination { get; }
             /// <summary></summary>
-            public bool Source { get; }
+            /// @version v22.05.03 - Name changed to clarify meaning of it.
+            public bool UseSource { get; }
             /// <summary></summary>
-            /// @version v22.05.01 - Name changed to clarify meaning of it.
-            public bool WZEffect { get; }
+            /// @version v22.05.03 - Name changed to clarify meaning of it.
+            public bool UseWZ_Effect { get; }
             /// <summary></summary>
-            /// @version v22.05.01 - Name changed to clarify meaning of it.
-            public bool WCEffect { get; }
+            /// @version v22.05.03 - Name changed to clarify meaning of it.
+            public bool UseWC_Effect { get; }
             /// <summary></summary>
-            /// @version v22.05.01 - Name changed to clarify meaning of it.
-            public bool WREffect { get; }
+            /// @version v22.05.03 - Name changed to clarify meaning of it.
+            public bool UseWR_Effect { get; }
             /// <summary></summary>
-            public bool ImmediateValue { get; }
+            /// @version v22.05.03 - Name changed to clarify meaning of it.
+            public bool UseImmediateValue { get; }
+            /// <summary></summary>
+            /// @version v22.05.03 - Added.
+            public string Representation { get; }
 
             /// <summary>Default constructor.</summary>
-            /// <param name="name"></param>
-            /// <param name="destination"></param>
-            /// <param name="source"></param>
-            /// <param name="wzEffect"></param>
-            /// <param name="wcEffect"></param>
-            /// <param name="wrEffect"></param>
-            /// <param name="immediateValue"></param>
-            /// @version v22.05.01 - 
-            public SubInstruction(string name, bool destination, bool source, bool wzEffect, bool wcEffect, bool wrEffect, bool immediateValue)
+            /// <param name="name">PASM code name of sub instruction.</param>
+            /// <param name="useDestination"></param>
+            /// <param name="useSource"></param>
+            /// <param name="useWZ_Effect"></param>
+            /// <param name="useWC_Effect"></param>
+            /// <param name="useWR_Effect"></param>
+            /// <param name="useImmediateValue"></param>
+            /// <param name="representation"></param>
+            /// @version v22.05.03 - Parameter names changed to follow naming
+            /// conventions and clarify meaning of them.
+            public SubInstruction(string name, bool useDestination, bool useSource,
+                bool useWZ_Effect, bool useWC_Effect, bool useWR_Effect,
+                bool useImmediateValue, string representation)
             {
-                Name           = name;
-                Destination    = destination;
-                Source         = source;
-                WZEffect       = wzEffect;
-                WCEffect       = wcEffect;
-                WREffect       = wrEffect;
-                ImmediateValue = immediateValue;
+                Name = name;
+                UseDestination = useDestination;
+                UseSource = useSource;
+                UseWZ_Effect = useWZ_Effect;
+                UseWC_Effect = useWC_Effect;
+                UseWR_Effect = useWR_Effect;
+                UseImmediateValue = useImmediateValue;
+                Representation = representation;
             }
         }
 
-        /// <summary>
-        /// Container for PASM instructions and associated sub instructions.
-        /// </summary>
+        /// <summary>Container for PASM instructions and associated
+        /// sub instructions.</summary>
         public class Instruction
         {
             /// <summary></summary>
@@ -116,10 +128,14 @@ namespace Gear.Propeller
             /// <summary></summary>
             public SubInstruction[] SubInstructions { get; }
 
-            /// <summary></summary>
-            /// <param name="instructionType"></param>
-            /// <param name="subInstructions"></param>
-            public Instruction(InstructionTypeEnum instructionType, SubInstruction[] subInstructions)
+            /// <summary>Default constructor.</summary>
+            /// <param name="instructionType">Type of instruction.</param>
+            /// <param name="subInstructions">Array of sub instruction of this
+            /// instruction.</param>
+            /// @version v22.05.01 - Parameter names changed to follow
+            /// naming conventions.
+            public Instruction(InstructionTypeEnum instructionType,
+                SubInstruction[] subInstructions)
             {
                 InstructionType = instructionType;
                 SubInstructions = subInstructions;

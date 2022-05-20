@@ -427,17 +427,17 @@ namespace Gear.EmulationCore
 
         /// @brief Execute instruction JMPRET: Jump to address with intention to "return"
         /// to another address.
-        /// @details Effects: Insert PC+1 into D[8..0] and set PC to S[8..0].
-        /// @version V15.03.26 - corrected Carry flag according to Propeller Manual v1.2.
+        /// @details Effects: Insert ProgramCursor+1 into D[8..0] and set ProgramCursor to S[8..0].
+        /// @version v22.05.03 - Using constant Cog.MaskCogMemory.
         private void InstructionJMPRET()
         {
-            DataResult = (DestinationValue & 0xFFFFFE00) | (PC & 0x000001FF);
-            PC = SourceValue & 0x1FF;
+            DataResult = (DestinationValue & 0xFFFFFE00) | (ProgramCursor & 0x000001FF);
+            ProgramCursor = SourceValue & MaskCogMemory;
             ZeroResult = (DataResult == 0);
-            //Note from Propeller Manual v1.2: "The C flag is set (1) unless PC+1 equals 0; very
+            //Note from Propeller Manual v1.2: "The C flag is set (1) unless ProgramCursor+1 equals 0; very
             // unlikely since it would require the JMPRET to be executed from the top of
             // cog RAM ($1FF; special purpose register VSCL)."
-            CarryResult = (PC != 0);
+            CarryResult = (ProgramCursor != 0);
         }
 
         /// <summary>
@@ -777,15 +777,14 @@ namespace Gear.EmulationCore
         ///
         /// </summary>
         /// <returns></returns>
+        /// @version v22.05.03 - Using constant Cog.MaskCogMemory.
         private bool InstructionDJNZ()
         {
             DataResult = DestinationValue - 1;
             CarryResult = DestinationValue == 0;
             ZeroResult = DataResult == 0;
-
             if (!ZeroResult)
-                PC = SourceValue & 0x1FF;
-
+                ProgramCursor = SourceValue & MaskCogMemory;
             return !ZeroResult;
         }
 
@@ -793,15 +792,14 @@ namespace Gear.EmulationCore
         ///
         /// </summary>
         /// <returns></returns>
+        /// @version v22.05.03 - Using constant Cog.MaskCogMemory.
         private bool InstructionTJNZ()
         {
             DataResult = DestinationValue;
             CarryResult = false;
             ZeroResult = DataResult == 0;
-
             if (!ZeroResult)
-                PC = SourceValue & 0x1FF;
-
+                ProgramCursor = SourceValue & MaskCogMemory;
             return !ZeroResult;
         }
 
@@ -809,15 +807,14 @@ namespace Gear.EmulationCore
         ///
         /// </summary>
         /// <returns></returns>
+        /// @version v22.05.03 - Using constant Cog.MaskCogMemory.
         private bool InstructionTJZ()
         {
             DataResult = DestinationValue;
             CarryResult = false;
             ZeroResult = DataResult == 0;
-
             if (ZeroResult)
-                PC = SourceValue & 0x1FF;
-
+                ProgramCursor = SourceValue & MaskCogMemory;
             return ZeroResult;
         }
 

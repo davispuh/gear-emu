@@ -21,23 +21,23 @@
  */
 
 using Gear.Propeller;
+using System;
 
 namespace Gear.Disassembler
 {
-    /// <summary>
-    ///
-    /// </summary>
-    class DataUnpacker
+    /// <summary></summary>
+    public static class DataUnpacker
     {
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary></summary>
         /// <param name="memory"></param>
         /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// @version v22.05.03 - Added exception.
         public static int GetSignedOffset(MemoryManager memory)
         {
+            if (memory == null)
+                throw new ArgumentNullException(nameof(memory));
             uint result = memory.ReadByte();
-
             if ((result & 0x80) == 0)
             {
                 if ((result & 0x40) != 0)
@@ -46,79 +46,80 @@ namespace Gear.Disassembler
             else
             {
                 result = (result << 8) | memory.ReadByte();
-
                 if ((result & 0x4000) != 0)
                     result |= 0xFFFF8000;
             }
             return (int)result;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary></summary>
         /// <param name="memory"></param>
         /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// @version v22.05.03 - Added exception and changed local variable
+        /// name to clarify meaning of it.
         public static short GetSignedPackedOffset(MemoryManager memory)
         {
-            short op = memory.ReadByte();
-            bool extended = (op & 0x80) != 0;
-
-            op = (short)((op & 0x7F) | ((op << 1) & 0x80));
-
+            if (memory == null)
+                throw new ArgumentNullException(nameof(memory));
+            short operation = memory.ReadByte();
+            bool extended = (operation & 0x80) != 0;
+            operation = (short)((operation & 0x7F) | ((operation << 1) & 0x80));
             if (!extended)
-                return (short)(sbyte)op;
-
-            return (short)((op << 8) | memory.ReadByte());
+                return (sbyte)operation;
+            return (short)((operation << 8) | memory.ReadByte());
         }
 
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary></summary>
         /// <param name="memory"></param>
         /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// @version v22.05.03 - Added exception and changed local variable
+        /// name to clarify meaning of it.
+        /// @todo [Legacy] COMPLAIN if (op >= 0x80)
         public static uint GetPackedLiteral(MemoryManager memory)
         {
-            byte op = memory.ReadByte();
-
-            if (op >= 0x80)
+            if (memory == null)
+                throw new ArgumentNullException(nameof(memory));
+            byte operation = memory.ReadByte();
+            if (operation >= 0x80)
                 // TODO: COMPLAIN!
                 return 0x55555555;
-
-            uint data = (uint)2 << (op & 0x1F);
-
-            if ((op & 0x20) != 0)
+            uint data = (uint)2 << (operation & 0x1F);
+            if ((operation & 0x20) != 0)
                 data--;
-            if ((op & 0x40) != 0)
+            if ((operation & 0x40) != 0)
                 data = ~data;
-
             return data;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary></summary>
         /// <param name="memory"></param>
         /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// @version v22.05.03 - Added exception and changed local variable
+        /// name to clarify meaning of it.
         public static int GetPackedOffset(MemoryManager memory)
         {
-            ushort op = memory.ReadByte();
-
-            if ((op & 0x80) == 0)
-                return (op & 0x7F);
-
-            op &= 0x7F;
-
-            return (op << 8) | (memory.ReadByte());
+            if (memory == null)
+                throw new ArgumentNullException(nameof(memory));
+            ushort operation = memory.ReadByte();
+            if ((operation & 0x80) == 0)
+                return operation & 0x7F;
+            operation &= 0x7F;
+            return (operation << 8) | memory.ReadByte();
         }
 
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary></summary>
         /// <param name="memory"></param>
         /// <param name="count"></param>
         /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// @version v22.05.03 - Added exception.
         public static int GetLiteral(MemoryManager memory, int count)
         {
+            if (memory == null)
+                throw new ArgumentNullException(nameof(memory));
             int result = 0;
             for (int i = 0; i < count; i++)
             {
@@ -128,35 +129,22 @@ namespace Gear.Disassembler
             return result;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary></summary>
         /// <param name="memory"></param>
         /// <returns></returns>
-        public static int GetWordLiteral(MemoryManager memory)
-        {
-            return GetLiteral(memory, 2);
-        }
+        public static int GetWordLiteral(MemoryManager memory) =>
+            GetLiteral(memory, 2);
 
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary></summary>
         /// <param name="memory"></param>
         /// <returns></returns>
-        public static int GetNearLongLiteral(MemoryManager memory)
-        {
-            return GetLiteral(memory, 3);
-        }
+        public static int GetNearLongLiteral(MemoryManager memory) =>
+            GetLiteral(memory, 3);
 
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary></summary>
         /// <param name="memory"></param>
         /// <returns></returns>
-        public static int GetLongLiteral(MemoryManager memory)
-        {
-            return GetLiteral(memory, 4);
-        }
-
+        public static int GetLongLiteral(MemoryManager memory) =>
+            GetLiteral(memory, 4);
     }
 }

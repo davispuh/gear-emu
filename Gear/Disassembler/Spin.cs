@@ -20,151 +20,160 @@
  * --------------------------------------------------------------------------------
  */
 
+using Gear.Propeller;
 using System;
+using System.ComponentModel;
 
+// ReSharper disable InconsistentNaming
 namespace Gear.Disassembler
 {
-    /// <summary>
-    ///
-    /// </summary>
+    /// <summary></summary>
     public static class Spin
     {
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary></summary>
         public class ParsedMemoryOperation
         {
-            public byte                        Opcode           { get; private set; }
-            public uint                        Address          { get; private set; }
-            public byte                        Register         { get; private set; }
-            public bool                        AssemblyRegister { get; private set; }
-            public Propeller.Spin.MemoryAction Action           { get; private set; }
+            /// <summary></summary>
+            /// @version v22.05.03 - Changed name to follow naming conventions and Removed setter not used.
+            public byte OpCode { get; }
+            /// <summary></summary>
+            /// @version v22.05.03 - Removed setter not used.
+            public uint Address { get; }
+            /// <summary></summary>
+            /// @version v22.05.03 - Removed setter not used.
+            public byte Register { get; }
+            /// <summary></summary>
+            /// @version v22.05.03 - Removed setter not used.
+            public bool AssemblyRegister { get; }
+            /// <summary></summary>
+            /// @version v22.05.03 - Removed setter not used.
+            public Propeller.Spin.MemoryAction Action { get; }
 
-            /// <summary>
-            ///
-            /// </summary>
-            /// <param name="Opcode"></param>
-            public ParsedMemoryOperation(byte Opcode)
-            {
-                this.Opcode           =                                Opcode;
-                this.Address          = (uint                       )( Opcode       | 0x1E0);
-                this.Register         = (byte                       )( Opcode       & 0x00F);
-                this.AssemblyRegister =                              ((Opcode >> 4) & 0x001) == 0x01;
-                this.Action           = (Propeller.Spin.MemoryAction)((Opcode >> 5) & 0x00F);
-            }
+            /// <summary></summary>
+            /// @version v22.05.03 - Refactored to a Property from old Method %GetRegister().
+            public string RegisterName =>
+                AssemblyRegister ?
+                    Propeller.Assembly.Registers[Register].Name :
+                    Propeller.Spin.Registers[Register].Name;
 
-            /// <summary>
-            ///
-            /// </summary>
-            /// <returns></returns>
-            public Propeller.Register GetRegister()
+            /// <summary>Default Constructor.</summary>
+            /// <param name="opCode"></param>
+            /// @version v22.05.03 - Parameter name changed to follow naming conventions.
+            public ParsedMemoryOperation(byte opCode)
             {
-                if (this.AssemblyRegister)
-                {
-                    return Propeller.Assembly.Registers[this.Register];
-                }
-                else
-                {
-                    return Propeller.Spin.Registers[this.Register];
-                };
+                OpCode = opCode;
+                Address = (uint)(opCode | 0x1E0);
+                Register = (byte)(opCode & 0x00F);
+                AssemblyRegister = ((opCode >> 4) & 0x001) == 0x01;
+                Action = (Propeller.Spin.MemoryAction)((opCode >> 5) & 0x00F);
             }
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="SourceAssignment"></param>
-        /// <param name="ParsedAssignment"></param>
+        /// <summary></summary>
+        /// <param name="sourceAssignment"></param>
+        /// <param name="parsedAssignment"></param>
         /// <returns></returns>
-        public static Propeller.Spin.SubAssignment GetSubAssignment(Propeller.Spin.Assignment SourceAssignment, ParsedAssignment ParsedAssignment)
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="InvalidEnumArgumentException"></exception>
+        /// @version v22.05.03 - Parameter names changed to follow naming conventions and throws more specifics exception.
+        public static Propeller.Spin.SubAssignment GetSubAssignment(
+            Propeller.Spin.Assignment sourceAssignment, ParsedAssignment parsedAssignment)
         {
-            switch (SourceAssignment.AssignmentType)
+            if (sourceAssignment is null)
+                throw new ArgumentNullException(nameof(sourceAssignment));
+            if (parsedAssignment is null)
+                throw new ArgumentNullException(nameof(parsedAssignment));
+            switch (sourceAssignment.AssignmentType)
             {
                 case Propeller.Spin.AssignmentTypeEnum.WriteRepeat:
-                    return SourceAssignment.SubAssignmentsArray[ParsedAssignment.Bit1 ? 1 : 0];
+                    return sourceAssignment.SubAssignmentsArray[parsedAssignment.Bit1 ? 1 : 0];
                 case Propeller.Spin.AssignmentTypeEnum.Normal:
-                    return SourceAssignment.SubAssignmentsArray[ParsedAssignment.Bit2 ? 1 : 0];
+                    return sourceAssignment.SubAssignmentsArray[parsedAssignment.Bit2 ? 1 : 0];
                 case Propeller.Spin.AssignmentTypeEnum.Size:
-                    return SourceAssignment.SubAssignmentsArray[(int)ParsedAssignment.Size];
+                    return sourceAssignment.SubAssignmentsArray[(int)parsedAssignment.Size];
+                default:
+                    throw new InvalidEnumArgumentException(sourceAssignment.AssignmentType.ToString(),
+                        (int)sourceAssignment.AssignmentType, typeof(Propeller.Spin.AssignmentTypeEnum));
             }
-            throw new Exception("Unknown Assignment Type: " + SourceAssignment.AssignmentType.ToString());
         }
 
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary></summary>
         public class ParsedAssignment
         {
-            public  byte                          Opcode            { get; private set; }
-            public  bool                           Push             { get; private set; }
-            public  bool                           Math             { get; private set; }
-            public  byte                           ASG              { get; private set; }
-            public  byte                           MTH              { get; private set; }
-            public  bool                           Bit1             { get; private set; }
-            public  bool                           Bit2             { get; private set; }
-            public  Propeller.Spin.AssignmentSize  Size             { get; private set; }
-            public  bool                           Swap             { get; private set; }
-            public  Propeller.Spin.Assignment      SourceAssignment { get; private set; }
-            public  Propeller.Spin.MathInstruction MathAssignment   { get; private set; }
+            /// <summary></summary>
+            /// @version v22.05.03 - Changed name to follow naming conventions and Removed setter not used.
+            public byte OpCode { get; }
+            /// <summary></summary>
+            /// @version v22.05.03 - Removed setter not used.
+            public bool Push { get; }
+            /// <summary></summary>
+            /// @version v22.05.03 - Removed setter not used.
+            public bool Math { get; }
+            /// <summary></summary>
+            /// @version v22.05.03 - Removed setter not used.
+            public byte ASG { get; }
+            /// <summary></summary>
+            /// @version v22.05.03 - Removed setter not used.
+            public byte MTH { get; }
+            /// <summary></summary>
+            /// @version v22.05.03 - Removed setter not used.
+            public bool Bit1 { get; }
+            /// <summary></summary>
+            /// @version v22.05.03 - Removed setter not used.
+            public bool Bit2 { get; }
+            /// <summary></summary>
+            /// @version v22.05.03 - Removed setter not used.
+            public Propeller.Spin.AssignmentSize Size { get; }
+            /// <summary></summary>
+            /// @version v22.05.03 - Removed setter not used.
+            public bool Swap { get; }
+            /// <summary></summary>
+            /// @version v22.05.03 - Removed setter not used.
+            public Propeller.Spin.Assignment SourceAssignment { get; }
+            /// <summary></summary>
+            /// @version v22.05.03 - Removed setter not used.
+            public Propeller.Spin.MathInstruction MathAssignment { get; }
 
-            private Propeller.Spin.SubAssignment   SourceSubAssignment;
+            /// <summary></summary>
+            /// @version v22.05.03 - Changed name to follow naming conventions.
+            private Propeller.Spin.SubAssignment _sourceSubAssignment;
 
-            /// <summary>
-            ///
-            /// </summary>
-            /// <param name="Opcode"></param>
-            public ParsedAssignment(byte Opcode)
+            /// <summary>Default Constructor.</summary>
+            /// <param name="opCode"></param>
+            /// @version v22.05.03 - Parameter name changed to follow naming conventions.
+            public ParsedAssignment(byte opCode)
             {
-                this.Opcode =                   Opcode;
-                this.Push   =                 ((Opcode >> 7) & 0x01) == 0x01;
-                this.Math   =                 ((Opcode >> 6) & 0x01) == 0x01;
-                this.ASG    =           (byte)((Opcode >> 3) & 0x07);
-                this.MTH    =           (byte) (Opcode       & 0x1F);
-                this.Bit1   =                 ((Opcode >> 1) & 0x01) == 0x01;
-                this.Bit2   =                 ((Opcode >> 2) & 0x01) == 0x01;
-                this.Size = (Propeller.Spin.AssignmentSize)((Opcode >> 1) & 0x03);
-                this.Swap   =                 ((Opcode >> 5) & 0x01) == 0x01;
+                OpCode = opCode;
+                Push = ((opCode >> 7) & 0x01) == 0x01;
+                Math = ((opCode >> 6) & 0x01) == 0x01;
+                ASG = (byte)((opCode >> 3) & 0x07);
+                MTH = (byte)(opCode & 0x1F);
+                Bit1 = ((opCode >> 1) & 0x01) == 0x01;
+                Bit2 = ((opCode >> 2) & 0x01) == 0x01;
+                Size = (Propeller.Spin.AssignmentSize)((opCode >> 1) & 0x03);
+                Swap = ((opCode >> 5) & 0x01) == 0x01;
 
-                if (this.Math)
-                {
-                    this.MathAssignment = Propeller.Spin.MathInstructions[this.MTH];
-                }
+                if (Math)
+                    MathAssignment = Propeller.Spin.MathInstructions[MTH];
                 else
-                {
-                    this.SourceAssignment = Propeller.Spin.Assignments[this.ASG];
-                }
-                this.SourceSubAssignment = null;
+                    SourceAssignment = Propeller.Spin.Assignments[ASG];
+                _sourceSubAssignment = null;
             }
 
-            /// <summary>
-            ///
-            /// </summary>
+            /// <summary></summary>
             /// <returns></returns>
-            public Propeller.Spin.SubAssignment GetSubAssignment()
-            {
-                if (this.Math)
-                {
-                    return null;
-                }
-                else if (this.SourceSubAssignment == null)
-                {
-                    this.SourceSubAssignment = Spin.GetSubAssignment(this.SourceAssignment, this);
-                }
-                return this.SourceSubAssignment;
-            }
+            public Propeller.Spin.SubAssignment GetSubAssignment() =>
+                Math ?
+                    null :
+                    _sourceSubAssignment ??
+                    (_sourceSubAssignment = Spin.GetSubAssignment(SourceAssignment, this));
 
-            /// <summary>
-            ///
-            /// </summary>
+            /// <summary></summary>
             /// <returns></returns>
-            public Propeller.BasicInstruction GetBasicInstruction()
-            {
-                if (this.Math)
-                {
-                    return this.MathAssignment;
-                };
-                return GetSubAssignment();
-            }
+            public BasicInstruction GetBasicInstruction() =>
+                Math ?
+                    (BasicInstruction)MathAssignment :
+                    GetSubAssignment();
         }
     }
 }

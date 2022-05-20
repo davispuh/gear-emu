@@ -71,10 +71,18 @@ namespace Gear.EmulationCore
             get { return VariableFrame; }
         }
 
-        /// @brief Default constructor for the derived class.
-        public InterpretedCog(PropellerCPU host, uint paramAddress,
-            uint frequency, PLLGroup pll)
-            : base(host, 0xF004, paramAddress, frequency, pll)
+        /// <summary>Default constructor for the derived class.</summary>
+        /// <param name="cpuHost"></param>
+        /// <param name="cogNum"></param>
+        /// <param name="paramAddress"></param>
+        /// <param name="frequency"></param>
+        /// <param name="pllGroup"></param>
+        /// @version v22.05.03 - Parameter names changed to use the same
+        /// convention for a PropellerCPU instance reference, or changed to
+        /// follow naming conventions.
+        public InterpretedCog(PropellerCPU cpuHost, int cogNum, uint paramAddress,
+            uint frequency, PLLGroup pllGroup)
+            : base(cpuHost, cogNum, 0xF004, paramAddress, frequency, pllGroup)
         {
             CallStack = new Stack<uint>();
         }
@@ -83,7 +91,7 @@ namespace Gear.EmulationCore
         /// @param value LONG value
         public void PushStack(uint value)
         {
-            Hub.DirectWriteLong(StackFrame, value);
+            CpuHost.DirectWriteLong(StackFrame, value);
             StackFrame += 4;
         }
 
@@ -92,14 +100,14 @@ namespace Gear.EmulationCore
         public uint PopStack()
         {
             StackFrame -= 4;
-            return Hub.DirectReadLong(StackFrame);
+            return CpuHost.DirectReadLong(StackFrame);
         }
 
         /// @brief Insert a WORD into stack
         /// @param value WORD value
         private void PushStackWord(ushort value)
         {
-            Hub.DirectWriteWord(StackFrame, value);
+            CpuHost.DirectWriteWord(StackFrame, value);
             StackFrame += 2;
         }
 
@@ -108,7 +116,7 @@ namespace Gear.EmulationCore
         private ushort PopStackWord()
         {
             StackFrame -= 2;
-            return Hub.DirectReadWord(StackFrame);
+            return CpuHost.DirectReadWord(StackFrame);
         }
 
         /// <summary>
@@ -116,25 +124,25 @@ namespace Gear.EmulationCore
         /// </summary>
         public override void Boot()
         {
-            State = CogRunState.BOOT_INTERPRETER;
+            State = CogRunState.BootInterpreter;
             StateCount = INTERPRETER_BOOT_TIME;
 
             uint InitFrame = this[(int)Assembly.RegisterAddress.PAR];
 
-            this[(int)Assembly.RegisterAddress.COGID] = Hub.CogID(this);
+            this[(int)Assembly.RegisterAddress.COGID] = CpuHost.CogID(this);
 
             InitFrame &= PropellerCPU.MAX_RAM_ADDR;
 
-            ObjectFrame = Hub.DirectReadWord(InitFrame - 8);
-            VariableFrame = Hub.DirectReadWord(InitFrame - 6);
-            PC = Hub.DirectReadWord(InitFrame - 4);
-            StackFrame = Hub.DirectReadWord(InitFrame - 2) - (uint)4;
+            ObjectFrame = CpuHost.DirectReadWord(InitFrame - 8);
+            VariableFrame = CpuHost.DirectReadWord(InitFrame - 6);
+            ProgramCursor = CpuHost.DirectReadWord(InitFrame - 4);
+            StackFrame = CpuHost.DirectReadWord(InitFrame - 2) - (uint)4;
             LocalFrame = InitFrame - (uint)4;
 
             // Clear CogID
             this[(int)Assembly.RegisterAddress.INITCOGID] = InitFrame - 4;
-            Hub.DirectWriteLong(InitFrame - 8, 0xFFFFFFFF);
-            Hub.DirectWriteLong(InitFrame - 4, 0);
+            CpuHost.DirectWriteLong(InitFrame - 8, 0xFFFFFFFF);
+            CpuHost.DirectWriteLong(InitFrame - 4, 0);
         }
 
         private uint CogInit()
@@ -157,25 +165,25 @@ namespace Gear.EmulationCore
 
                 // SETUP INTERPRETER HERE
 
-                uint FunctionOffset = Hub.DirectReadWord(ObjectFrame + FunctionCode * 4) + ObjectFrame;
+                uint FunctionOffset = CpuHost.DirectReadWord(ObjectFrame + FunctionCode * 4) + ObjectFrame;
                 uint ArguementStack = FunctionArgs * 4 + StackPointer - 4;
-                uint FunctStack = (uint)Hub.DirectReadWord(ObjectFrame + FunctionCode * 4 + 2) + ArguementStack + 4;
+                uint FunctStack = (uint)CpuHost.DirectReadWord(ObjectFrame + FunctionCode * 4 + 2) + ArguementStack + 4;
 
-                Hub.DirectWriteWord(StackPointer - 8, (ushort)ObjectFrame);               // Object Memory (Same object)
-                Hub.DirectWriteWord(StackPointer - 6, (ushort)VariableFrame);             // Variable Memory (Same variables)
-                Hub.DirectWriteWord(StackPointer - 4, (ushort)FunctionOffset);            // PC
-                Hub.DirectWriteWord(StackPointer - 2, (ushort)(FunctStack + 4));          // Stack Pointer
+                CpuHost.DirectWriteWord(StackPointer - 8, (ushort)ObjectFrame);      // Object Memory (Same object)
+                CpuHost.DirectWriteWord(StackPointer - 6, (ushort)VariableFrame);    // Variable Memory (Same variables)
+                CpuHost.DirectWriteWord(StackPointer - 4, (ushort)FunctionOffset);   // ProgramCursor
+                CpuHost.DirectWriteWord(StackPointer - 2, (ushort)(FunctStack + 4)); // Stack Pointer
 
                 // Preinitialize boot function
                 for (uint i = 0; i < FunctionArgs * 4; i += 4, ArguementStack -= 4)
-                    Hub.DirectWriteLong(ArguementStack, PopStack());
+                    CpuHost.DirectWriteLong(ArguementStack, PopStack());
 
                 // Setup cog boot op-codes
                 code = ((0xF004 & 0xFFFC) << 2) | (StackPointer << 16);
 
                 // Find which cog we will be booting
-                CogID = Hub.DirectReadLong(this[(int)Assembly.RegisterAddress.INITCOGID] - 4);
-                Hub.DirectWriteLong(this[(int)Assembly.RegisterAddress.INITCOGID] - 4, 0xFFFFFFFF);   // Clear CogID
+                CogID = CpuHost.DirectReadLong(this[(int)Assembly.RegisterAddress.INITCOGID] - 4);
+                CpuHost.DirectWriteLong(this[(int)Assembly.RegisterAddress.INITCOGID] - 4, 0xFFFFFFFF);   // Clear CogID
             }
             else
             {
@@ -196,7 +204,7 @@ namespace Gear.EmulationCore
             code |= ((CogID < 8) ? CogID : 0x8);
 
             bool temp = false, temp2 = false;  // Provided for hub op carry
-            return Hub.HubOp(this, (uint)HubOperationCodes.HUBOP_COGINIT, code, ref temp, ref temp2);
+            return CpuHost.HubOp(this, (uint)HubOperationCodes.HUBOP_COGINIT, code, ref temp, ref temp2);
         }
 
         /// @brief Execute a SPIN bytecode instruction in this cog.
@@ -320,43 +328,43 @@ namespace Gear.EmulationCore
         {
             switch (State)
             {
-                case CogRunState.BOOT_INTERPRETER:
-                case CogRunState.WAIT_INTERPRETER:
+                case CogRunState.BootInterpreter:
+                case CogRunState.WaitInterpreter:
                     if (--StateCount == 0)
-                        State = CogRunState.EXEC_INTERPRETER;
+                        State = CogRunState.ExecInterpreter;
                     return true;
-                case CogRunState.EXEC_INTERPRETER:
-                    State = CogRunState.WAIT_INTERPRETER;
+                case CogRunState.ExecInterpreter:
+                    State = CogRunState.WaitInterpreter;
                     StateCount = 32;  // 32 cycles per instruction (faked)
                     break;
 
-                case CogRunState.WAIT_PNE:
+                case CogRunState.WaitPinsNotEqual:
                     {
 
-                        uint maskedIn = (Port ? Hub.INB : Hub.INA) & MaskValue;
+                        uint maskedIn = (Port ? CpuHost.INB : CpuHost.INA) & MaskValue;
                         if (maskedIn != TargetValue)
-                            State = CogRunState.EXEC_INTERPRETER;
+                            State = CogRunState.ExecInterpreter;
 
                         return true;
                     }
-                case CogRunState.WAIT_PEQ:
+                case CogRunState.WaitPinsEqual:
                     {
-                        uint maskedIn = (Port ? Hub.INB : Hub.INA) & MaskValue;
+                        uint maskedIn = (Port ? CpuHost.INB : CpuHost.INA) & MaskValue;
                         if (maskedIn == TargetValue)
-                            State = CogRunState.EXEC_INTERPRETER;
+                            State = CogRunState.ExecInterpreter;
 
                         return true;
                     }
-                case CogRunState.WAIT_CNT:
+                case CogRunState.WaitCount:
                     {
-                        long target = Hub.Counter;
+                        long target = CpuHost.Counter;
 
                         if (TargetValue == target)
-                            State = CogRunState.EXEC_INTERPRETER;
+                            State = CogRunState.ExecInterpreter;
 
                         return true;
                     }
-                case CogRunState.WAIT_VID:
+                case CogRunState.WaitVideo:
                     // Logic Changed: GetVideoData now clears VAIT_VID state
                     // if (Video.Ready)
                     // {
@@ -370,8 +378,8 @@ namespace Gear.EmulationCore
                     return true;
             }
 
-            byte op = Hub.DirectReadByte(PC++);
-            frameFlag = FrameState.frameNone;
+            byte op = CpuHost.DirectReadByte(ProgramCursor++);
+            FrameFlag = FrameState.FrameNone;
 
             // Math Operations (0xE0..0xFF)
             if (op >= 0xE0)
@@ -401,8 +409,8 @@ namespace Gear.EmulationCore
                             PushStackWord((ushort)ObjectFrame);
                             PushStackWord((ushort)VariableFrame);
                             PushStackWord((ushort)LocalFrame);
-                            CallStack.Push(StackFrame);     // Enqueue pointer to return PC
-                            PushStackWord(0);               // PC is not valid yet
+                            CallStack.Push(StackFrame);     // Enqueue pointer to return ProgramCursor
+                            PushStackWord(0);               // ProgramCursor is not valid yet
 
                             // Defaults to a zero value
                             PushStack(0);
@@ -411,7 +419,7 @@ namespace Gear.EmulationCore
                     case 0x04:  // UNCONDITIONAL RELATIVE BRANCH
                         {
                             uint offset = (uint)ReadPackedSignedWord();
-                            PC += offset;
+                            ProgramCursor += offset;
                         }
                         break;
                     case 0x05:  // Call function
@@ -421,25 +429,25 @@ namespace Gear.EmulationCore
                             // Pop our index from the stack
                             if (op == 0x06 || op == 0x07)
                             {
-                                uint objectCode = (uint)(Hub.DirectReadByte(PC++) * 4) + ObjectFrame;
+                                uint objectCode = (uint)(CpuHost.DirectReadByte(ProgramCursor++) * 4) + ObjectFrame;
 
                                 if (op == 0x07)
                                     objectCode += PopStack() * 4;
 
-                                ObjectFrame += Hub.DirectReadWord(objectCode);
-                                VariableFrame += Hub.DirectReadWord(objectCode + 2);
+                                ObjectFrame += CpuHost.DirectReadWord(objectCode);
+                                VariableFrame += CpuHost.DirectReadWord(objectCode + 2);
                             }
 
-                            uint functionCode = (uint)(Hub.DirectReadByte(PC++) * 4) + ObjectFrame;
+                            uint functionCode = (uint)(CpuHost.DirectReadByte(ProgramCursor++) * 4) + ObjectFrame;
 
                             // De-CallStack the local frame
                             uint ReturnPointer = CallStack.Pop();
                             LocalFrame = ReturnPointer + 2;
-                            Hub.DirectWriteWord(ReturnPointer, (ushort)PC); // Preserve PC
+                            CpuHost.DirectWriteWord(ReturnPointer, (ushort)ProgramCursor); // Preserve ProgramCursor
 
                             // Branch, and change local and stack pointers to match what they need to be
-                            PC = ObjectFrame + Hub.DirectReadWord(functionCode);
-                            StackFrame += Hub.DirectReadWord(functionCode + 2);
+                            ProgramCursor = ObjectFrame + CpuHost.DirectReadWord(functionCode);
+                            StackFrame += CpuHost.DirectReadWord(functionCode + 2);
                         }
                         break;
                     case 0x08:  // LOOP START
@@ -448,7 +456,7 @@ namespace Gear.EmulationCore
                             uint branch = ReadPackedSignedWord();
 
                             if (val <= 0)
-                                PC = (uint)((int)PC + branch);
+                                ProgramCursor = (uint)((int)ProgramCursor + branch);
                             else
                                 PushStack((uint)val);
                         }
@@ -460,7 +468,7 @@ namespace Gear.EmulationCore
 
                             if (val > 0)
                             {
-                                PC = (uint)((int)PC + branch);
+                                ProgramCursor = (uint)((int)ProgramCursor + branch);
                                 PushStack((uint)val);
                             }
                         }
@@ -471,7 +479,7 @@ namespace Gear.EmulationCore
                             uint branch = ReadPackedSignedWord();
 
                             if (val == 0)
-                                PC = (uint)((int)PC + branch);
+                                ProgramCursor = (uint)((int)ProgramCursor + branch);
                         }
                         break;
                     case 0x0B:  // JUMP ON NOT ZERO
@@ -480,12 +488,12 @@ namespace Gear.EmulationCore
                             uint branch = ReadPackedSignedWord();
 
                             if (val != 0)
-                                PC = (uint)((int)PC + branch);
+                                ProgramCursor = (uint)((int)ProgramCursor + branch);
                         }
                         break;
                     case 0x0C:  // JUMP FROM STACK
                         PopStack(); // Clears out the comparison case
-                        PC = PopStack() + ObjectFrame;
+                        ProgramCursor = PopStack() + ObjectFrame;
                         break;
                     case 0x0D:  // COMPARE CASE
                         {
@@ -494,7 +502,7 @@ namespace Gear.EmulationCore
                             uint branch = ReadPackedSignedWord();
 
                             if (equal == value)
-                                PC = (uint)((int)PC + branch);
+                                ProgramCursor = (uint)((int)ProgramCursor + branch);
 
                             PushStack(value);
                         }
@@ -514,7 +522,7 @@ namespace Gear.EmulationCore
                             }
 
                             if (min <= value && value <= max)
-                                PC = (uint)((int)PC + branch);
+                                ProgramCursor = (uint)((int)ProgramCursor + branch);
 
                             PushStack(value);
                         }
@@ -534,7 +542,7 @@ namespace Gear.EmulationCore
 
                             if (Key == Base)
                             {
-                                PC = Jump + ObjectFrame;
+                                ProgramCursor = Jump + ObjectFrame;
                                 PushStack((uint)Value);
                             }
                             else
@@ -554,7 +562,7 @@ namespace Gear.EmulationCore
 
                             if (Key == Value)
                             {
-                                PC = Jump + ObjectFrame;
+                                ProgramCursor = Jump + ObjectFrame;
                                 PushStack((uint)Base);
                             }
                             else
@@ -581,7 +589,7 @@ namespace Gear.EmulationCore
                                 // Are we in range?
                                 if (Key < Range)
                                 {
-                                    PC = Jump + ObjectFrame;
+                                    ProgramCursor = Jump + ObjectFrame;
                                     PushStack((uint)(Bottom + Key - Base));
                                     break;
                                 }
@@ -593,7 +601,7 @@ namespace Gear.EmulationCore
                                 // Are we in range?
                                 if (Key < Range)
                                 {
-                                    PC = Jump + ObjectFrame;
+                                    ProgramCursor = Jump + ObjectFrame;
                                     PushStack((uint)(Bottom - Key - Base));
                                     break;
                                 }
@@ -620,7 +628,7 @@ namespace Gear.EmulationCore
                                 // Value Found?
                                 if (Key >= Bottom && Key <= Top)
                                 {
-                                    PC = Jump + ObjectFrame;
+                                    ProgramCursor = Jump + ObjectFrame;
                                     PushStack((uint)(Key - Bottom + Base));
                                     break;
                                 }
@@ -631,7 +639,7 @@ namespace Gear.EmulationCore
 
                                 if (Key <= Bottom && Key >= Top)
                                 {
-                                    PC = Jump + ObjectFrame;
+                                    ProgramCursor = Jump + ObjectFrame;
                                     PushStack((uint)(Key - Top + Base));
                                     break;
                                 }
@@ -653,7 +661,7 @@ namespace Gear.EmulationCore
                         {
                             uint i = 0;
 
-                            for (uint b = PopStack(); Hub.DirectReadByte(b) != 0 && b < 0x10000; b++)
+                            for (uint b = PopStack(); CpuHost.DirectReadByte(b) != 0 && b < 0x10000; b++)
                                 i++;
 
                             PushStack(i);
@@ -666,8 +674,8 @@ namespace Gear.EmulationCore
 
                             while (true)
                             {
-                                byte _a = Hub.DirectReadByte(a++);
-                                byte _b = Hub.DirectReadByte(b++);
+                                byte _a = CpuHost.DirectReadByte(a++);
+                                byte _b = CpuHost.DirectReadByte(b++);
 
                                 if (_a != _b)
                                 {
@@ -689,7 +697,7 @@ namespace Gear.EmulationCore
                             uint dest = PopStack();
 
                             while (count-- > 0)
-                                Hub.DirectWriteByte(dest++, (byte)src);
+                                CpuHost.DirectWriteByte(dest++, (byte)src);
                         }
                         break;
                     case 0x19:  // Word fill
@@ -700,7 +708,7 @@ namespace Gear.EmulationCore
 
                             while (count-- > 0)
                             {
-                                Hub.DirectWriteWord(dest, (ushort)src);
+                                CpuHost.DirectWriteWord(dest, (ushort)src);
                                 dest += 2;
                             }
                         }
@@ -713,7 +721,7 @@ namespace Gear.EmulationCore
 
                             while (count-- > 0)
                             {
-                                Hub.DirectWriteLong(dest, src);
+                                CpuHost.DirectWriteLong(dest, src);
                                 dest += 4;
                             }
                         }
@@ -722,7 +730,7 @@ namespace Gear.EmulationCore
                         Port = PopStack() != 0;
                         MaskValue = PopStack();
                         TargetValue = PopStack();
-                        State = CogRunState.WAIT_PEQ;
+                        State = CogRunState.WaitPinsEqual;
                         break;
                     case 0x1C:  // Byte move
                         {
@@ -731,7 +739,7 @@ namespace Gear.EmulationCore
                             uint dest = PopStack();
 
                             while (count-- > 0)
-                                Hub.DirectWriteByte(dest++, Hub.DirectReadByte(src++));
+                                CpuHost.DirectWriteByte(dest++, CpuHost.DirectReadByte(src++));
                         }
                         break;
                     case 0x1D:  // Word move
@@ -742,7 +750,7 @@ namespace Gear.EmulationCore
 
                             while (count-- > 0)
                             {
-                                Hub.DirectWriteWord(dest, Hub.DirectReadWord(src));
+                                CpuHost.DirectWriteWord(dest, CpuHost.DirectReadWord(src));
                                 dest += 2;
                                 src += 2;
                             }
@@ -756,7 +764,7 @@ namespace Gear.EmulationCore
 
                             while (count-- > 0)
                             {
-                                Hub.DirectWriteLong(dest, Hub.DirectReadLong(src));
+                                CpuHost.DirectWriteLong(dest, CpuHost.DirectReadLong(src));
                                 dest += 4;
                                 src += 4;
                             }
@@ -766,15 +774,15 @@ namespace Gear.EmulationCore
                         Port = PopStack() != 0;
                         MaskValue = PopStack();
                         TargetValue = PopStack();
-                        State = CogRunState.WAIT_PNE;
+                        State = CogRunState.WaitPinsNotEqual;
                         break;
                     case 0x20:  // Clock Set
                         {
-                            Hub.DirectWriteLong(0, PopStack());
+                            CpuHost.DirectWriteLong(0, PopStack());
 
                             byte mode = (byte)PopStack();
-                            Hub.DirectWriteByte(4, mode);
-                            Hub.SetClockMode(mode);
+                            CpuHost.DirectWriteByte(4, mode);
+                            CpuHost.SetClockMode(mode);
                         }
                         break;
 
@@ -782,15 +790,15 @@ namespace Gear.EmulationCore
                         {
                             int cog = (int)PopStack();
 
-                            Hub.Stop(cog);
+                            CpuHost.Stop(cog);
                         }
                         break;
                     case 0x22:  // Lock Return
-                        Hub.LockReturn(PopStack());
+                        CpuHost.LockReturn(PopStack());
                         break;
                     case 0x23:  // Wait Cnt
                         TargetValue = PopStack();
-                        State = CogRunState.WAIT_CNT;
+                        State = CogRunState.WaitCount;
                         break;
                     case 0x24:  // Read Spr
                         {
@@ -829,40 +837,40 @@ namespace Gear.EmulationCore
                     case 0x27:  // Wait Vid
                         PixelsValue = PopStack(); // pixels
                         ColorsValue = PopStack(); // Colors
-                        State = CogRunState.WAIT_VID;
+                        State = CogRunState.WaitVideo;
                         break;
                     case 0x28:  // Cog Init w/Return
                         PushStack(CogInit());
                         break;
                     case 0x29:  // Lock New w/Return
-                        PushStack(Hub.NewLock());
+                        PushStack(CpuHost.NewLock());
                         break;
                     case 0x2A:  // Lock Set w/Return
-                        PushStack(Hub.LockSet(PopStack(), true));
+                        PushStack(CpuHost.LockSet(PopStack(), true));
                         break;
                     case 0x2B:  // Lock Clear w/Return
-                        PushStack(Hub.LockSet(PopStack(), false));
+                        PushStack(CpuHost.LockSet(PopStack(), false));
                         break;
                     case 0x2C:  // Cog Init
                         CogInit();
                         break;
                     case 0x2D:  // Lock New
-                        Hub.NewLock();
+                        CpuHost.NewLock();
                         break;
                     case 0x2E:  // Lock Set
-                        Hub.LockSet(PopStack(), true);
+                        CpuHost.LockSet(PopStack(), true);
                         break;
                     case 0x2F:  // Lock Clear
-                        Hub.LockSet(PopStack(), false);
+                        CpuHost.LockSet(PopStack(), false);
                         break;
                     case 0x30:  // Abort w/o return
-                        ReturnFromSub(Hub.DirectReadLong(LocalFrame), true);
+                        ReturnFromSub(CpuHost.DirectReadLong(LocalFrame), true);
                         break;
                     case 0x31:  // Abort w/return
                         ReturnFromSub(PopStack(), true);
                         break;
                     case 0x32:  // Return
-                        ReturnFromSub(Hub.DirectReadLong(LocalFrame), false);
+                        ReturnFromSub(CpuHost.DirectReadLong(LocalFrame), false);
                         break;
                     case 0x33:  // Pop return value (same as 0x61)
                         // Hub.WriteLong(LocalFrame, PopStack());
@@ -875,7 +883,7 @@ namespace Gear.EmulationCore
                         break;
                     case 0x37:  // Push Packed Literal
                         {
-                            uint value = Hub.DirectReadByte(PC++);
+                            uint value = CpuHost.DirectReadByte(ProgramCursor++);
                             //Bugfix issue #23: implement like ROL pasm instruction, not SHL.
                             uint result = ((uint)2 << (int)(value & 0x1F)) | (uint)2 >> (int)(0x20 - (value & 0x1F));
 
@@ -898,7 +906,7 @@ namespace Gear.EmulationCore
                             for (int i = 0; i < op - 0x37; i++)
                             {
                                 result <<= 8;
-                                result |= Hub.DirectReadByte(PC++);
+                                result |= CpuHost.DirectReadByte(ProgramCursor++);
                             }
                             PushStack(result);
                         }
@@ -937,25 +945,25 @@ namespace Gear.EmulationCore
                         break;
                 }
             }
-            return PC != BreakPointCogCursor;
+            return ProgramCursor != BreakPointCogCursor;
         }
 
-        override public void GetVideoData(out uint colours, out uint pixels)
+        override public void GetVideoData(out uint colors, out uint pixels)
         {
-            if (State == CogRunState.WAIT_VID)
+            if (State == CogRunState.WaitVideo)
             {
-                colours = ColorsValue;
+                colors = ColorsValue;
                 pixels = PixelsValue;
-                State = CogRunState.EXEC_INTERPRETER;
-                frameFlag = FrameState.frameHit;
+                State = CogRunState.ExecInterpreter;
+                FrameFlag = FrameState.FrameHit;
             }
             else
             {
                 // Frame counter ran out while not in WAIT_VID
                 // True results would depend upon Spin Interpreter operation
-                colours = 0;
+                colors = 0;
                 pixels = 0;
-                frameFlag = FrameState.frameMiss;
+                FrameFlag = FrameState.FrameMiss;
             }
         }
 
@@ -971,7 +979,7 @@ namespace Gear.EmulationCore
                 // Stop on call underflow
                 if (CallStack.Count <= 0)
                 {
-                    Hub.Stop((int)Hub.CogID(this));
+                    CpuHost.Stop((int)CpuHost.CogID(this));
                     return;
                 }
 
@@ -980,7 +988,7 @@ namespace Gear.EmulationCore
                 trapAbort = (returnTypeMask & 0x02) != 0;
                 wantReturn = (returnTypeMask & 0x01) == 0;
 
-                PC = PopStackWord();
+                ProgramCursor = PopStackWord();
                 LocalFrame = PopStackWord();
                 VariableFrame = PopStackWord();
                 ObjectFrame = PopStackWord();
@@ -1008,7 +1016,7 @@ namespace Gear.EmulationCore
         ///
         private void CogMemoryOp(uint mask, int lowestbit)
         {
-            byte op = Hub.DirectReadByte(PC++);
+            byte op = CpuHost.DirectReadByte(ProgramCursor++);
             uint reg = (uint)((op & 0x1F) + 0x1E0);
 
             switch (op & 0xE0)
@@ -1775,13 +1783,13 @@ namespace Gear.EmulationCore
                     switch (Size)
                     {
                         case 0x00:  // byte
-                            PushStack(Hub.DirectReadByte(address));
+                            PushStack(CpuHost.DirectReadByte(address));
                             break;
                         case 0x20:
-                            PushStack(Hub.DirectReadWord(address));
+                            PushStack(CpuHost.DirectReadWord(address));
                             break;
                         case 0x40:
-                            PushStack(Hub.DirectReadLong(address));
+                            PushStack(CpuHost.DirectReadLong(address));
                             break;
                     }
                     break;
@@ -1789,13 +1797,13 @@ namespace Gear.EmulationCore
                     switch (Size)
                     {
                         case 0x00:  // byte
-                            Hub.DirectWriteByte(address, (byte)PopStack());
+                            CpuHost.DirectWriteByte(address, (byte)PopStack());
                             break;
                         case 0x20:  // word
-                            Hub.DirectWriteWord(address, (ushort)PopStack());
+                            CpuHost.DirectWriteWord(address, (ushort)PopStack());
                             break;
                         case 0x40:  // long
-                            Hub.DirectWriteLong(address, PopStack());
+                            CpuHost.DirectWriteLong(address, PopStack());
                             break;
                     }
                     break;
@@ -1803,13 +1811,13 @@ namespace Gear.EmulationCore
                     switch (Size)
                     {
                         case 0x00:  // byte
-                            Hub.DirectWriteByte(address, (byte)InplaceUsingOp(Hub.DirectReadByte(address)));
+                            CpuHost.DirectWriteByte(address, (byte)InplaceUsingOp(CpuHost.DirectReadByte(address)));
                             break;
                         case 0x20:  // word
-                            Hub.DirectWriteWord(address, (ushort)InplaceUsingOp(Hub.DirectReadWord(address)));
+                            CpuHost.DirectWriteWord(address, (ushort)InplaceUsingOp(CpuHost.DirectReadWord(address)));
                             break;
                         case 0x40:  // long
-                            Hub.DirectWriteLong(address, InplaceUsingOp(Hub.DirectReadLong(address)));
+                            CpuHost.DirectWriteLong(address, InplaceUsingOp(CpuHost.DirectReadLong(address)));
                             break;
                     }
                     break;
@@ -1929,13 +1937,13 @@ namespace Gear.EmulationCore
             switch (Type)
             {
                 case 0: // PUSH
-                    PushStack(Hub.DirectReadLong(Index));
+                    PushStack(CpuHost.DirectReadLong(Index));
                     break;
                 case 1: // POP
-                    Hub.DirectWriteLong(Index, PopStack());
+                    CpuHost.DirectWriteLong(Index, PopStack());
                     break;
                 case 2: // USING
-                    Hub.DirectWriteLong(Index, InplaceUsingOp(Hub.DirectReadLong(Index)));
+                    CpuHost.DirectWriteLong(Index, InplaceUsingOp(CpuHost.DirectReadLong(Index)));
                     break;
                 case 3: // REFERENCE
                     PushStack(Index);
@@ -1945,16 +1953,16 @@ namespace Gear.EmulationCore
 
         private uint ReadPackedUnsignedWord()
         {
-            uint op = Hub.DirectReadByte(PC++);
+            uint op = CpuHost.DirectReadByte(ProgramCursor++);
 
             if ((op & 0x80) != 0)
-                return ((op << 8) | Hub.DirectReadByte(PC++)) & 0x7FFF;
+                return ((op << 8) | CpuHost.DirectReadByte(ProgramCursor++)) & 0x7FFF;
             return op;
         }
 
         private uint ReadPackedSignedWord()
         {
-            uint op = Hub.DirectReadByte(PC++);
+            uint op = CpuHost.DirectReadByte(ProgramCursor++);
 
             if ((op & 0x80) == 0)
             {
@@ -1965,7 +1973,7 @@ namespace Gear.EmulationCore
             }
             else
             {
-                op = ((op << 8) | Hub.DirectReadByte(PC++)) & 0x7FFF;
+                op = ((op << 8) | CpuHost.DirectReadByte(ProgramCursor++)) & 0x7FFF;
 
                 if ((op & 0x4000) != 0)
                     op |= 0xFFFF8000;
@@ -2014,7 +2022,7 @@ namespace Gear.EmulationCore
         ///
         private uint InplaceUsingOp(uint originalValue)
         {
-            byte op = Hub.DirectReadByte(PC++);
+            byte op = CpuHost.DirectReadByte(ProgramCursor++);
             bool push = (op & 0x80) != 0;
             uint result;
             uint stored;
@@ -2056,12 +2064,12 @@ namespace Gear.EmulationCore
                             if (end < start)
                             {
                                 if (--value >= end)
-                                    PC += (uint)branch;
+                                    ProgramCursor += (uint)branch;
                             }
                             else
                             {
                                 if (++value <= end)
-                                    PC += (uint)branch;
+                                    ProgramCursor += (uint)branch;
                             }
 
                             stored = result = (uint)value;
@@ -2085,7 +2093,7 @@ namespace Gear.EmulationCore
                             value += step;
 
                             if (value >= start && value <= end)
-                                PC += (uint)branch;
+                                ProgramCursor += (uint)branch;
 
                             stored = result = (uint)value;
                         }

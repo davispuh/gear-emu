@@ -2,7 +2,7 @@
  * Gear: Parallax Inc. Propeller P1 Emulator
  * Copyright 2007-2022 - Gear Developers
  * --------------------------------------------------------------------------------
- * Cog.CS
+ * Cog.cs
  * Base class for a cog processor.  Abstract and must be extended.
  * --------------------------------------------------------------------------------
  *  This program is free software; you can redistribute it and/or modify
@@ -21,308 +21,246 @@
  * --------------------------------------------------------------------------------
  */
 
+using System;
 using Gear.Propeller;
 
+// ReSharper disable InconsistentNaming
 namespace Gear.EmulationCore
 {
-    /// <summary>
-    /// States of a %Cog
-    /// </summary>
-    public enum CogRunState
+    /// <summary>States of a %Cog.</summary>
+    /// @version v22.05.03 - Changed enum codes to follow naming conventions.
+    public enum CogRunState : byte
     {
         /// @brief Waiting for instruction to finish executing.
-        STATE_EXECUTE,
+        StateExecute,
         /// @brief %Cog is loading program memory.
-        WAIT_LOAD_PROGRAM,
-        /// @brief %Cog is executing an instruction, and waiting an alloted amount of cycles
-        WAIT_CYCLES,
-        /// @brief Waits for an allotted number of cycles before changing to a new state
-        WAIT_PREWAIT,
+        WaitLoadProgram,
+        /// @brief %Cog is executing an instruction, and waiting an allotted amount of cycles.
+        WaitCycles,
+        /// @brief Waits for an allotted number of cycles before changing to a new state.
+        WaitPreWait,
 
-        /// @brief Interpreter is booting up
-        BOOT_INTERPRETER,
-        /// @brief Interpreter is executing an instruction
-        WAIT_INTERPRETER,
-        /// @brief Interpreter is fetching instruction
-        EXEC_INTERPRETER,
+        /// @brief Interpreter is booting up.
+        BootInterpreter,
+        /// @brief Interpreter is executing an instruction.
+        WaitInterpreter,
+        /// @brief Interpreter is fetching instruction.
+        ExecInterpreter,
 
-        /// @brief Waits for pins to match
-        WAIT_PEQ,
-        /// @brief Waits for pins to NOT match
-        WAIT_PNE,
-        /// @brief Waits for count
-        WAIT_CNT,
-        /// @brief Waits for video
-        WAIT_VID,
+        /// @brief Waits for pins to match.
+        WaitPinsEqual,
+        /// @brief Waits for pins to NOT match.
+        WaitPinsNotEqual,
+        /// @brief Waits for count.
+        WaitCount,
+        /// @brief Waits for video.
+        WaitVideo,
 
-        /// @brief Waiting to read byte
-        HUB_RDBYTE,
-        /// @brief Waiting to read word
-        HUB_RDWORD,
-        /// @brief Waiting to read uint
-        HUB_RDLONG,
-        /// @brief Waiting to perform hub operation
-        HUB_HUBOP
+        /// @brief Waiting to read byte.
+        HubReadByte,
+        /// @brief Waiting to read word.
+        HubReadWord,
+        /// @brief Waiting to read uint.
+        HubReadLong,
+        /// @brief Waiting to perform hub operation.
+        HubHubOperation
     }
 
-    /// <summary>
-    ///
-    /// </summary>
-    public enum FrameState
+    /// <summary>Video frame states.</summary>
+    /// @pullreq{18} Enum added.
+    /// @version v22.05.03 - Changed enum codes to follow naming conventions.
+    public enum FrameState : byte
     {
-        frameNone,
-        frameHit,
-        frameMiss
+        /// <summary></summary>
+        FrameNone,
+        /// <summary></summary>
+        FrameHit,
+        /// <summary></summary>
+        FrameMiss
     }
 
-    /// <summary>
-    /// Base class for a %Cog emulator.
-    /// </summary>
+    /// <summary>Base class for a %Cog emulator.</summary>
     public abstract class Cog
     {
-        // Runtime variables
-        protected uint[] Memory;            //!< %Cog Memory.
+        /// <summary>Total %Cog memory implemented on P1 Chip.</summary>
+        public const int TotalCogMemory = 0x200;  // 512 longs of memory
+        /// <summary>Mask to assure fit on cog memory.</summary>
+        /// @version v22.05.03 - Added.
+        public const int MaskCogMemory = 0x1FF;
 
-        protected PropellerCPU Hub;         //!< Host processor
-        protected volatile uint PC;         //!< Program Cursor
-        protected volatile int BreakPointCogCursor; //!< Breakpoint Address
+        /// <summary>%Cog Memory.</summary>
+        /// @version v22.05.03 - Name changed to follow naming conventions.
+        private readonly uint[] _cogMemory;
+        /// <summary></summary>
+        /// @version v22.05.03 - Added.
+        private readonly int _cogNum;
 
-        protected int StateCount;           //!< Argument for the current state
-        protected CogRunState State;        //!< Current %Cog state
-        protected CogRunState NextState;    //!< Next state %Cog state
+        /// <summary>First frequency generator of this %cog.</summary>
+        /// @version v22.05.03 - Name changed to follow naming conventions.
+        private readonly FreqGenerator _freqAGenerator;
+        /// <summary>Second frequency generator of this %cog.</summary>
+        /// @version v22.05.03 - Name changed to follow naming conventions.
+        private readonly FreqGenerator _freqBGenerator;
+        /// <summary>Video generator of this %cog.</summary>
+        /// @version v22.05.03 - Name changed to follow naming conventions.
+        private readonly VideoGenerator _videoGenerator;
+        /// <summary>Frequency PLL Group generator.</summary>
+        /// @version v22.05.03 - Name changed to follow naming conventions.
+        private readonly PLLGroup _pllGroup;
 
-        protected uint ProgramAddress;      //!< @brief
-        protected uint ParamAddress;        //!< @brief
-        protected FrameState frameFlag;     //!< @brief Indicates video frame end and whether in WAIT_VID
-        protected FrameState frameBreak;    //!< @brief Break if frameFlag higher
+        /// <summary>Current %Cog state.</summary>
+        private protected CogRunState State;
+        /// <summary>Next %Cog state.</summary>
+        private protected CogRunState NextState;
+        /// <summary></summary>
+        private protected uint ProgramAddress;
+        /// <summary></summary>
+        private protected uint ParamAddress;
 
-        protected FreqGenerator FreqA;      //!< @brief
-        protected FreqGenerator FreqB;      //!< @brief
-        protected VideoGenerator Video;     //!< @brief
-        protected PLLGroup PhaseLockedLoop; //!< @brief
-
-        /// @brief Total %Cog memory implemented on P1 Chip.
-        public const int TOTAL_COG_MEMORY = 0x200;  // 512 longs of memory
-
-        /// @brief Default constructor.
-        public Cog(PropellerCPU host, uint programAddress, uint param, uint frequency, PLLGroup pll)
-        {
-            Hub = host;
-
-            Memory = new uint[TOTAL_COG_MEMORY];
-            ProgramAddress = programAddress;
-            ParamAddress = param;
-
-            FreqA = new FreqGenerator(host, pll, true);
-            FreqB = new FreqGenerator(host, pll, false);
-            Video = new VideoGenerator(host, this);
-            PhaseLockedLoop = pll;
-
-            // Attach the video generator to PLLs
-            PhaseLockedLoop.SetupPLL(Video);
-
-            PC = 0;
-            BreakPointCogCursor = -1;    // Breakpoint disabled initially
-            frameFlag = FrameState.frameNone;
-            frameBreak = FrameState.frameMiss;
-
-            // We are in boot time load
-            Memory[(int)Assembly.RegisterAddress.PAR] = param;
-            State = CogRunState.WAIT_LOAD_PROGRAM;
-            StateCount = 0;
-
-            // Clear the special purpose registers
-            for (int i = (int)Assembly.RegisterAddress.CNT; i <= 0x1FF; i++)
-            {
-                this[i] = 0;
-            }
-
-            SetClock(frequency);
-        }
-
-        /// @brief Break Point position in the program running in this cog.
-        public int BreakPoint
-        {
-            get { return BreakPointCogCursor; }
-            set { BreakPointCogCursor = value; }
-        }
-
-        /// @brief Get video frames count
-        public uint VideoFrames
-        {
-            get { return Video.Frames; }
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        public string VideoFramesString
-        {
-            get
-            {
-                string hitState;
-                Video.FrameCounters(out _, out uint framesCtr, out uint pixelsCtr);
-                switch (frameFlag)
-                {
-                    case FrameState.frameHit:
-                        hitState = "H";
-                        break;
-                    case FrameState.frameMiss:
-                        hitState = "M";
-                        break;
-                    default:
-                        hitState = " ";
-                        break;
-                }
-                return string.Format("{0} {1:D4} {2:D3}", hitState, framesCtr, pixelsCtr);
-            }
-        }
-
-        /// @brief Property to return complete OUT pins (P0..P63)
-        /// @details Analyze all sources of pin changes in the cog: <c>OUTA</c>,
-        /// <c>OUTB</c>, the two counters and the video generator.
-        /// @version v22.03.02 - Bugfix corrected LONG registers not assigned
-        /// correctly in %Cog - <c>DIR</c>, <c>OUT</c>.
-        public ulong OUT
-        {
-            get
-            {
-                return Memory[(int)Assembly.RegisterAddress.OUTA] |
-                    //Bugfix OUTB must be shifted on 64 bits long
-                    ((ulong)Memory[(int)Assembly.RegisterAddress.OUTB] << 32) |
-                    FreqA.Output |
-                    FreqB.Output |
-                    Video.Output;
-            }
-        }
-
-        /// @brief Set video frame condition on which to break
-        public FrameState VideoBreak
-        {
-            set
-            {
-                frameBreak = value;
-            }
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        public string VideoStateString
-        {
-            get
-            {
-                switch (frameFlag)
-                {
-                    case FrameState.frameMiss: return " - Frame Miss";
-                    case FrameState.frameHit: return " - Frame End";
-                }
-                return "";
-            }
-        }
-
-        /// @brief Property to return only OUTA pins.
-        /// Analyze all sources of pin changes in the cog for OUTA pins (P31..P0): the two
-        /// counters and the video generator.
-        public uint OUTA
-        {
-            get
-            {
-                return Memory[(int)Assembly.RegisterAddress.OUTA] |
-                    ((uint)FreqA.Output |
-                    (uint)FreqB.Output |
-                    (uint)Video.Output);
-            }
-        }
-
-        /// @brief Property to return only OUTB pins.
-        /// Analyze all sources of pin changes in the cog for OUTB pins (P63..P32): the
-        /// two counters and the video generator.
-        public uint OUTB
-        {
-            get
-            {
-                return
-                    (uint)((FreqA.Output |
-                    FreqB.Output |
-                    Video.Output) >> 32) |
-                    Memory[(int)Assembly.RegisterAddress.OUTB];
-            }
-        }
-
-        /// @brief Property to return complete register of <c>DIR</c> pins
-        /// @version v22.03.02 - Bugfix corrected LONG registers not assigned
-        /// correctly in %Cog - <c>DIR</c>, <c>OUT</c>.
-        public ulong DIR
-        {
-            get
-            {
-                //Bugfix DIRB must be shifted on 64 bits long
-                return ((ulong)Memory[(int)Assembly.RegisterAddress.DIRB] << 32) |
-                       Memory[(int)Assembly.RegisterAddress.DIRA];
-            }
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        public uint DIRA
-        {
-            get
-            {
-                return Memory[(int)Assembly.RegisterAddress.DIRA];
-            }
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        public uint DIRB
-        {
-            get
-            {
-                return Memory[(int)Assembly.RegisterAddress.DIRB];
-            }
-        }
+        /// <summary>Reference to the PropellerCPU instance where this
+        /// object belongs.</summary>
+        /// @version v22.05.03 - Property generated from private member (Hub)
+        /// and changed name to use the same convention for a PropellerCPU
+        /// instance reference.
+        private protected PropellerCPU CpuHost { get; }
 
         /// @brief The actual position where the program is executing in this cog.
-        public uint ProgramCursor
+        /// @version v22.05.03 - Changed to a property with auto value and
+        /// protected visibility, from private member (PC).
+        public uint ProgramCursor { get; private protected set; }
+
+        /// @brief Break Point position in the program running in this cog.
+        /// @version v22.05.03 - Changed to a property with auto value.
+        public int BreakPointCogCursor { get; set; }
+
+        /// @brief Number of cycles to wait for the current state.
+        /// @version v22.05.03 - Property generated from protected member.
+        public int StateCount { get; private protected set; }
+
+        /// <summary>Indicates video frame end and whether in <c>WAIT_VID</c></summary>
+        /// @pullreq{18} Property added.
+        /// @version v22.05.03 - Property generated from protected member.
+        private protected FrameState FrameFlag { get; set; }
+        /// <summary>Break if frame flag is set.</summary>
+        /// @pullreq{18} Property added.
+        /// @version v22.05.03 - Property generated from protected member.
+        private protected FrameState FrameBreak { get; set; }
+
+        /// @brief Property to return complete register of <c>OUT</c> pins
+        /// (<c>P63..P0</c>).
+        /// @details Analyze all sources of pin changes in the cog: <c>OUTA</c>,
+        /// <c>OUTB</c>, the two counters and the video generator of this cog.
+        /// @version v22.05.03 - Property name changed to clarify meaning of it.
+        public ulong RegisterOUT =>
+            _cogMemory[(int)Assembly.RegisterAddress.OUTA] |
+            //Bugfix OUTB must be shifted on 64 bits long
+            ((ulong)_cogMemory[(int)Assembly.RegisterAddress.OUTB] << 32) |
+            _freqAGenerator.Output |
+            _freqBGenerator.Output |
+            _videoGenerator.Output;
+
+        /// @brief Property to return only register of <c>OUTA</c> pins
+        /// (<c>P31..P0</c>).
+        /// @details Analyze all sources of pin changes in the cog for <c>OUTA</c>,
+        /// pins (<c>P31..P0</c>): the two counters and the video generator
+        /// of this cog.
+        /// @version v22.05.03 - Property name changed to clarify meaning of it.
+        public uint RegisterOUTA =>
+            _cogMemory[(int)Assembly.RegisterAddress.OUTA] |
+            (uint)_freqAGenerator.Output |
+            (uint)_freqBGenerator.Output |
+            (uint)_videoGenerator.Output;
+
+        /// @brief Property to return only register of <c>OUTB</c> pins
+        /// (<c>P63..P32</c>).
+        /// @details Analyze all sources of pin changes in the cog for <c>OUTB</c>
+        /// pins (<c>P63..P32</c>): the two counters and the video generator
+        /// of this cog.
+        /// @version v22.05.03 - Property name changed to clarify meaning of it.
+        public uint RegisterOUTB =>
+            (uint)((_freqAGenerator.Output |
+                    _freqBGenerator.Output |
+                    _videoGenerator.Output) >> 32) |
+            _cogMemory[(int)Assembly.RegisterAddress.OUTB];
+
+        /// @brief Property to return complete register of <c>DIR</c> pin
+        /// (<c>P63..P0</c>).
+        /// @version v22.05.03 - Property name changed to clarify meaning of it.
+        public ulong RegisterDIR =>
+            //Bugfix DIRB must be shifted on 64 bits long
+            ((ulong)_cogMemory[(int)Assembly.RegisterAddress.DIRB] << 32) |
+            _cogMemory[(int)Assembly.RegisterAddress.DIRA];
+
+        /// <summary>Property to return only register of <c>DIRA</c> pins
+        /// (<c>P31..P0</c>).</summary>
+        /// @version v22.05.03 - Property name changed to clarify meaning of it.
+        public uint RegisterDIRA =>
+            _cogMemory[(int)Assembly.RegisterAddress.DIRA];
+
+        /// <summary>Property to return only register of <c>DIRB</c> pins
+        /// (<c>P63..P32</c>).</summary>
+        /// @version v22.05.03 - Property name changed to clarify meaning of it.
+        public uint RegisterDIRB =>
+            _cogMemory[(int)Assembly.RegisterAddress.DIRB];
+
+        /// <summary>Property to get or set %Cog memory value.</summary>
+        /// <param name="idx">Cog memory address.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        /// @todo Check apparent error on set method, not writing to hub for special register.
+        /// @version v22.05.03 - Parameter name changed to clarify meaning of it.
+        public uint this[int idx]
         {
-            get { return PC; }
-            set { PC = value; }
+            get
+            {
+                if (idx < 0 || idx >= TotalCogMemory)
+                    throw new ArgumentOutOfRangeException(nameof(idx));
+                // show special registers, because their values are in
+                // variables in Cog object and not in memory array.
+                return idx >= (int)Assembly.RegisterAddress.PAR ?
+                    ReadLong((uint)idx) :
+                    _cogMemory[idx];
+            }
+
+            set
+            {
+                if (idx < 0 || idx >= TotalCogMemory)
+                    throw new ArgumentOutOfRangeException(nameof(idx));
+                _cogMemory[idx] = value;
+            }
         }
 
         /// @brief Show a string with human readable state of a cog.
-        public string CogState
+        public string CogStateString
         {
             get
             {
                 switch (State)
                 {
-                    case CogRunState.HUB_HUBOP:
-                    case CogRunState.HUB_RDBYTE:
-                    case CogRunState.HUB_RDWORD:
-                    case CogRunState.HUB_RDLONG:
+                    case CogRunState.HubHubOperation:
+                    case CogRunState.HubReadByte:
+                    case CogRunState.HubReadWord:
+                    case CogRunState.HubReadLong:
                         return "Waiting for hub";
-                    case CogRunState.BOOT_INTERPRETER:
+                    case CogRunState.BootInterpreter:
                         return "Interpreter Boot";
-                    case CogRunState.EXEC_INTERPRETER:
+                    case CogRunState.ExecInterpreter:
                         return "Interpreter Fetch";
-                    case CogRunState.WAIT_INTERPRETER:
+                    case CogRunState.WaitInterpreter:
                         return "Interpreter Processing";
-                    case CogRunState.STATE_EXECUTE:
-                    case CogRunState.WAIT_PREWAIT:
-                    case CogRunState.WAIT_CYCLES:
+                    case CogRunState.StateExecute:
+                    case CogRunState.WaitPreWait:
+                    case CogRunState.WaitCycles:
                         return "Running instruction";
-                    case CogRunState.WAIT_LOAD_PROGRAM:
+                    case CogRunState.WaitLoadProgram:
                         return "Loading Program";
-                    case CogRunState.WAIT_CNT:
+                    case CogRunState.WaitCount:
                         return "Waiting (CNT)";
-                    case CogRunState.WAIT_PEQ:
+                    case CogRunState.WaitPinsEqual:
                         return "Waiting (PEQ)";
-                    case CogRunState.WAIT_PNE:
+                    case CogRunState.WaitPinsNotEqual:
                         return "Waiting (PNE)";
-                    case CogRunState.WAIT_VID:
+                    case CogRunState.WaitVideo:
                         return "Waiting (video)";
                     default:
                         return "ERROR";
@@ -330,225 +268,241 @@ namespace Gear.EmulationCore
             }
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="i"></param>
-        /// <returns></returns>
-        public uint this[int i]
+        /// <summary></summary>
+        /// @pullreq{18} Property added.
+        public string VideoFrameString
         {
             get
             {
-                if (i >= TOTAL_COG_MEMORY)
+                string hitState;
+                switch (FrameFlag)
                 {
-                    return 0x55;
+                    case FrameState.FrameHit:
+                        hitState = "Hit ";
+                        break;
+                    case FrameState.FrameMiss:
+                        hitState = "Miss";
+                        break;
+                    case FrameState.FrameNone:
+                    default:
+                        hitState = "    ";
+                        break;
                 }
-                else
-                {
-                    // show special registers, because their values are in
-                    // variables in Cog object and not in memory array.
-                    if (i >= (int)Assembly.RegisterAddress.PAR)
-                    {
-                        return ReadLong((uint)i);
-                    }
-                    else
-                    {
-                        return Memory[i];
-                    }
-                }
-            }
-
-            set
-            {
-                if (i < TOTAL_COG_MEMORY)
-                {
-                    Memory[i] = value;
-                }
+                return $"{hitState} {_videoGenerator.FrameClock:D4} {_videoGenerator.PixelClock:D3}";
             }
         }
 
-        /// <summary>
-        /// Evaluate a precondition for an PASM instruction
-        /// </summary>
-        /// <param name="condition"></param>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
-        public static bool ConditionCompare(Assembly.ConditionCodes condition, bool a, bool b)
+        /// <summary>Default constructor.</summary>
+        /// <param name="cpuHost">PropellerCPU instance where this object belongs.</param>
+        /// <param name="cogNum"></param>
+        /// <param name="programAddress">Start of program to load from main memory.</param>
+        /// <param name="param">PARAM value given to the Cog.</param>
+        /// <param name="frequency">Frequency running the cog (the same as the propeller cpu).</param>
+        /// <param name="pllGroup"></param>
+        /// @pullreq{18} Initialization of added properties.
+        /// @version v22.05.03 - Parameter names changed to follow naming conventions.
+        protected Cog(PropellerCPU cpuHost, int cogNum, uint programAddress, uint param, uint frequency, PLLGroup pllGroup)
         {
-            switch (condition)
+            CpuHost = cpuHost;
+            _cogNum = cogNum;
+            _cogMemory = new uint[TotalCogMemory];
+            ProgramAddress = programAddress;
+            ParamAddress = param;
+
+            _freqAGenerator = new FreqGenerator(cpuHost, pllGroup, true);
+            _freqBGenerator = new FreqGenerator(cpuHost, pllGroup, false);
+            _videoGenerator = new VideoGenerator(cpuHost, this);
+            _pllGroup = pllGroup;
+            // Attach the video generator to PLLs
+            _pllGroup.SetupPLL(_videoGenerator);
+            ProgramCursor = 0;
+            BreakPointCogCursor = -1;    // Breakpoint disabled initially
+            FrameFlag = FrameState.FrameNone;   //Added on pull request #18
+            FrameBreak = FrameState.FrameMiss;  //Added on pull request #18
+            // We are in boot time load
+            _cogMemory[(int)Assembly.RegisterAddress.PAR] = param;
+            State = CogRunState.WaitLoadProgram;
+            StateCount = 0;
+            // Clear the special purpose registers
+            for (int i = (int)Assembly.RegisterAddress.CNT; i < TotalCogMemory; i++)
+                this[i] = 0x0;
+            SetClock(frequency);
+        }
+
+        /// @brief Set video frame condition on which to break
+        /// @version v22.05.03 - Converted to Set method from Property.
+        public void SetVideoBreak(FrameState newState) =>
+            FrameBreak = newState;
+
+        /// <summary>Evaluate a precondition for an PASM instruction.</summary>
+        /// <param name="conditionCode">Code of condition to test.</param>
+        /// <param name="leftOp">First operand.</param>
+        /// <param name="rightOp">Second operand.</param>
+        /// <returns></returns>
+        /// @version v22.05.03 - Parameter names changed to clarify meaning of them.
+        public static bool ConditionCompare(Assembly.ConditionCodes conditionCode, bool leftOp, bool rightOp)
+        {
+            switch (conditionCode)
             {
                 case Assembly.ConditionCodes.IF_NEVER:
+                default:
                     break;
                 case Assembly.ConditionCodes.IF_NZ_AND_NC:
-                    if (!a && !b) return false;
+                    if (!leftOp && !rightOp) return false;
                     break;
                 case Assembly.ConditionCodes.IF_NC_AND_Z:
-                    if (a && !b) return false;
+                    if (leftOp && !rightOp) return false;
                     break;
                 case Assembly.ConditionCodes.IF_NC:
-                    if (!b) return false;
+                    if (!rightOp) return false;
                     break;
                 case Assembly.ConditionCodes.IF_C_AND_NZ:
-                    if (!a && b) return false;
+                    if (!leftOp && rightOp) return false;
                     break;
                 case Assembly.ConditionCodes.IF_NZ:
-                    if (!a) return false;
+                    if (!leftOp) return false;
                     break;
                 case Assembly.ConditionCodes.IF_C_NE_Z:
-                    if (a != b) return false;
+                    if (leftOp != rightOp) return false;
                     break;
                 case Assembly.ConditionCodes.IF_NC_OR_NZ:
-                    if (!a || !b) return false;
+                    if (!leftOp || !rightOp) return false;
                     break;
                 case Assembly.ConditionCodes.IF_C_AND_Z:
-                    if (a && b) return false;
+                    if (leftOp && rightOp) return false;
                     break;
                 case Assembly.ConditionCodes.IF_C_EQ_Z:
-                    if (a == b) return false;
+                    if (leftOp == rightOp) return false;
                     break;
                 case Assembly.ConditionCodes.IF_Z:
-                    if (a) return false;
+                    if (leftOp) return false;
                     break;
                 case Assembly.ConditionCodes.IF_NC_OR_Z:
-                    if (a || !b) return false;
+                    if (leftOp || !rightOp) return false;
                     break;
                 case Assembly.ConditionCodes.IF_C:
-                    if (b) return false;
+                    if (rightOp) return false;
                     break;
                 case Assembly.ConditionCodes.IF_C_OR_NZ:
-                    if (!a || b) return false;
+                    if (!leftOp || rightOp) return false;
                     break;
                 case Assembly.ConditionCodes.IF_Z_OR_C:
-                    if (a || b) return false;
+                    if (leftOp || rightOp) return false;
                     break;
                 case Assembly.ConditionCodes.IF_ALWAYS:
                     return false;
             }
-
             return true;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        public virtual void HubAccessable()
+        /// <summary>Execute pending Hub operation for this %Cog.</summary>
+        /// @version v22.05.03 - Method name changed to clarify meaning of it.
+        public virtual void ExecuteHubOperation()
         {
-            switch (State)
-            {
-                case CogRunState.WAIT_LOAD_PROGRAM:
-                    Memory[StateCount++] = Hub.DirectReadLong(ProgramAddress);
-                    ProgramAddress += 4;
-
-                    if (StateCount == 0x1F0)
-                    {
-                        StateCount = 0;
-                        Boot();
-                    }
-                    break;
-            }
+            if (State != CogRunState.WaitLoadProgram)
+                return;
+            _cogMemory[StateCount++] = CpuHost.DirectReadLong(ProgramAddress);
+            ProgramAddress += 4;
+            if (StateCount != 0x1F0)
+                return;
+            StateCount = 0;
+            Boot();
         }
 
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary>Detach video hooks of this %Cog.</summary>
         public void DetachVideoHooks()
         {
             // Detach the video hook
-            PhaseLockedLoop.Destroy();
+            _pllGroup.Destroy();
             // Detach the aural hook
-            Video.DetachAural();
+            _videoGenerator.DetachAural();
         }
 
-        /// @brief Execute a Step in the cog.
+        /// <summary>Set Clock of both frequency generators.</summary>
+        /// <param name="freq">Frequency to set.</param>
+        public void SetClock(uint freq)
+        {
+            _freqAGenerator.SetClock(freq);
+            _freqBGenerator.SetClock(freq);
+        }
+
+        /// <summary>Execute a clock step in this cog.</summary>
+        /// <returns></returns>
         public bool Step()
         {
             bool result = DoInstruction();
             // Run our frequency counters
-            FreqA.Tick(Hub.IN);
-            FreqB.Tick(Hub.IN);
-            result = result && (frameFlag <= frameBreak);    // false - we hit a breakpoint
+            _freqAGenerator.Tick(CpuHost.IN);
+            _freqBGenerator.Tick(CpuHost.IN);
+            result = result && FrameFlag <= FrameBreak;    // false - we hit a breakpoint
             return result;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="freq"></param>
-        public void SetClock(uint freq)
-        {
-            FreqA.SetClock(freq);
-            FreqB.SetClock(freq);
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary>Execute a step to process an instruction in this cog.</summary>
         public void StepInstruction()
         {
             int i = 0x2000;    // Maximum of 8k clocks (covers load instruction)
             do
             {
-                Hub.Step();
+                CpuHost.Step();
             }
-            while ( (State != CogRunState.EXEC_INTERPRETER) &&
-                (State != CogRunState.STATE_EXECUTE && --i > 0) &&
-                (frameFlag <= frameBreak));
+            while ( State != CogRunState.ExecInterpreter &&
+                    State != CogRunState.StateExecute &&
+                    --i > 0 &&
+                    FrameFlag <= FrameBreak);
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="address"></param>
+        /// <summary>Read cog RAM at specified value.</summary>
+        /// <param name="address">Address to Read.</param>
         /// <returns></returns>
         public uint ReadLong(uint address)
         {
             // values using Assembly.RegisterAddress enum, instead of direct hex values
-            switch ((Assembly.RegisterAddress)(address & 0x1FF))
+            switch ((Assembly.RegisterAddress)(address & MaskCogMemory))
             {
                 case Assembly.RegisterAddress.CNT:
-                    return Hub.Counter;
+                    return CpuHost.Counter;
                 case Assembly.RegisterAddress.INA:
-                    return Hub.INA;
+                    return CpuHost.INA;
                 case Assembly.RegisterAddress.INB:
-                    return Hub.INB;
+                    return CpuHost.INB;
                 case Assembly.RegisterAddress.CNTA:
-                    return FreqA.CTR;
+                    return _freqAGenerator.CTR;
                 case Assembly.RegisterAddress.CNTB:
-                    return FreqB.CTR;
+                    return _freqBGenerator.CTR;
                 case Assembly.RegisterAddress.FRQA:
-                    return FreqA.FRQ;
+                    return _freqAGenerator.FRQ;
                 case Assembly.RegisterAddress.FRQB:
-                    return FreqB.FRQ;
+                    return _freqBGenerator.FRQ;
                 case Assembly.RegisterAddress.PHSA:
-                    return FreqA.PHS;
+                    return _freqAGenerator.PHS;
                 case Assembly.RegisterAddress.PHSB:
-                    return FreqB.PHS;
+                    return _freqBGenerator.PHS;
                 case Assembly.RegisterAddress.VCFG:
-                    return Video.CFG;
+                    return _videoGenerator.CFG;
                 case Assembly.RegisterAddress.VSCL:
-                    return Video.SCL;
+                    return _videoGenerator.SCL;
                 default:
-                    return Memory[address & 0x1FF];
+                    return _cogMemory[address & MaskCogMemory];
             }
         }
 
-        /// @brief Write cog RAM with a specified value.
-        /// @details This method take care of special cog address that in this class aren't
-        /// write in memory array Cog.Memory.
-        /// @param address Address to write.
-        /// @param data Data to write in address.
-        /// @note PAR address is a special case, because unless Propeller Manual V1.2
-        /// specifications says it is a read-only register, there are claims that in reality it
+        /// <summary>Write cog RAM at specified value.</summary>
+        /// <remarks>This method take care of special cog address that in
+        /// this class aren't write in memory array _cogMemory.</remarks>
+        /// <param name="address">Address to write.</param>
+        /// <param name="data">Data to write.</param>
+        /// @note PAR address is a special case, because unless %Propeller Manual V1.2
+        /// specifications says it is a read-only register, there are evidence that in reality it
         /// is writable as explains
         /// <a href="https://forums.parallax.com/discussion/comment/839684/#Comment_839684">
         /// Forum thread "PASM simulator / debugger?</a>.
-        /// They claims that some parallax video drivers in PASM changes the PAR register,
+        /// They show that some parallax video drivers in PASM changes the PAR register,
         /// and GEAR didn't emulate that.
-        protected void WriteLong(uint address, uint data)
+        private protected void WriteLong(uint address, uint data)
         {
             // values using Assembly.RegisterAddress enum, instead of direct hex values
-            switch ((Assembly.RegisterAddress)(address & 0x1FF))
+            switch ((Assembly.RegisterAddress)(address & MaskCogMemory))
             {
                 // Read only registers
                 // case Assembly.RegisterAddress.PAR: // PAR register changed to writable
@@ -557,31 +511,31 @@ namespace Gear.EmulationCore
                 case Assembly.RegisterAddress.INB:
                     return;
                 case Assembly.RegisterAddress.CNTA:
-                    FreqA.CTR = data;
+                    _freqAGenerator.CTR = data;
                     break;
                 case Assembly.RegisterAddress.CNTB:
-                    FreqB.CTR = data;
+                    _freqBGenerator.CTR = data;
                     break;
                 case Assembly.RegisterAddress.FRQA:
-                    FreqA.FRQ = data;
+                    _freqAGenerator.FRQ = data;
                     break;
                 case Assembly.RegisterAddress.FRQB:
-                    FreqB.FRQ = data;
+                    _freqBGenerator.FRQ = data;
                     break;
                 case Assembly.RegisterAddress.PHSA:
-                    FreqA.PHS = data;
+                    _freqAGenerator.PHS = data;
                     break;
                 case Assembly.RegisterAddress.PHSB:
-                    FreqB.PHS = data;
+                    _freqBGenerator.PHS = data;
                     break;
                 case Assembly.RegisterAddress.VCFG:
-                    Video.CFG = data;
+                    _videoGenerator.CFG = data;
                     break;
                 case Assembly.RegisterAddress.VSCL:
-                    Video.SCL = data;
+                    _videoGenerator.SCL = data;
                     break;
                 default:
-                    Memory[address & 0x1FF] = data;
+                    _cogMemory[address & MaskCogMemory] = data;
                     return;
             }
         }
@@ -590,16 +544,13 @@ namespace Gear.EmulationCore
         /// @returns TRUE if it is time to trigger a breakpoint, or FALSE if not.
         public abstract bool DoInstruction();
 
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary>Setup the cog to a initial state after boot it.</summary>
         public abstract void Boot();
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="colours"></param>
+        /// <summary></summary>
+        /// <param name="colors"></param>
         /// <param name="pixels"></param>
-        public abstract void GetVideoData(out uint colours, out uint pixels);
+        /// @pullreq{18} Method added.
+        public abstract void GetVideoData(out uint colors, out uint pixels);
     }
 }

@@ -21,150 +21,145 @@
  */
 
 using System;
+using System.ComponentModel;
 
-/// <summary>
-///
-/// </summary>
+// ReSharper disable InconsistentNaming
+// ReSharper disable IdentifierTypo
+/// <summary></summary>
 namespace Gear.Disassembler
 {
-    /// <summary>
-    ///
-    /// </summary>
+    /// <summary></summary>
     public static class Assembly
     {
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="SourceInstruction"></param>
-        /// <param name="ParsedInstruction"></param>
+        /// <summary></summary>
+        /// <param name="sourceInstruction"></param>
+        /// <param name="parsedInstruction"></param>
         /// <returns></returns>
-        public static Propeller.Assembly.SubInstruction GetSubInstruction(Propeller.Assembly.Instruction SourceInstruction, ParsedInstruction ParsedInstruction)
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="InvalidEnumArgumentException"></exception>
+        /// @version v22.05.03 - Parameter names changed to follow naming
+        /// conventions and throws more specifics exception.
+        public static Propeller.Assembly.SubInstruction GetSubInstruction(
+            Propeller.Assembly.Instruction sourceInstruction,
+            ParsedInstruction parsedInstruction)
         {
-            switch (SourceInstruction.InstructionType)
+            if (sourceInstruction == null)
+                throw new ArgumentNullException(nameof(sourceInstruction));
+            if (parsedInstruction == null)
+                throw new ArgumentNullException(nameof(parsedInstruction));
+            switch (sourceInstruction.InstructionType)
             {
                 case Propeller.Assembly.InstructionTypeEnum.Normal:
-                    return SourceInstruction.SubInstructions[0];
-                case Propeller.Assembly.InstructionTypeEnum.WR:
-                    return SourceInstruction.SubInstructions[(ParsedInstruction.ZCRI & ParsedInstruction.WriteResultFlag) == ParsedInstruction.WriteResultFlag ? 0 : 1];
+                    return sourceInstruction.SubInstructions[0];
+                case Propeller.Assembly.InstructionTypeEnum.ReadWrite:
+                    return sourceInstruction.SubInstructions[
+                        (parsedInstruction.ZCRI & ParsedInstruction.WriteResultFlag) ==
+                        ParsedInstruction.WriteResultFlag ? 0 : 1];
                 case Propeller.Assembly.InstructionTypeEnum.Hub:
-                    return SourceInstruction.SubInstructions[ParsedInstruction.SRC & 0x7];
+                    return sourceInstruction.SubInstructions[parsedInstruction.SRC & 0x7];
                 case Propeller.Assembly.InstructionTypeEnum.Jump:
-                    int num = ParsedInstruction.ZCRI & 0x3;
+                    int num = parsedInstruction.ZCRI & 0x3;
                     if (num <= 1)
                     {
                         num = 0;
-                        if (ParsedInstruction.SRC == 0)
-                        {
+                        if (parsedInstruction.SRC == 0)
                             num = 1;
-                        }
                     }
-                    return SourceInstruction.SubInstructions[num];
+                    return sourceInstruction.SubInstructions[num];
+                default:
+                    throw new InvalidEnumArgumentException(
+                        sourceInstruction.InstructionType.ToString(),
+                        (int)sourceInstruction.InstructionType,
+                        typeof(Propeller.Assembly.InstructionTypeEnum));
             }
-            throw new Exception("Unknown Instruction Type: " + SourceInstruction.InstructionType.ToString());
         }
 
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary></summary>
         public class ParsedInstruction
         {
+            /// <summary></summary>
             public const byte WriteZeroFlag      = 0x8;
+            /// <summary></summary>
             public const byte WriteCarryFlag     = 0x4;
+            /// <summary></summary>
             public const byte WriteResultFlag    = 0x2;
+            /// <summary></summary>
             public const byte ImmediateValueFlag = 0x1;
 
-            public uint   Opcode { get; private set; }  //!< Instruction's 32-bit opcode
-            public byte   INSTR  { get; private set; }  //!< Indicates the instruction being executed
-            public byte   ZCRI   { get; private set; }  //!< Indicates instruction’s effect status and SRC field meaning
-            public byte   CON    { get; private set; }  //!< Indicates the condition in which to execute the instruction
-            public ushort DEST   { get; private set; }  //!< Contains the destination register address
-            public ushort SRC    { get; private set; }  //!< Contains the source register address or 9-bit literal value
+            /// Instruction's 32-bit OpCode.
+            /// @version v22.05.03 - Changed name to follow naming conventions
+            /// and Removed setter not used.
+            public uint OpCode { get; }
+            /// Indicates the instruction being executed.
+            /// @version v22.05.03 - Removed setter not used.
+            public byte INSTR { get; }
+            /// Indicates instruction’s effect status and SRC field meaning.
+            /// @version v22.05.03 - Removed setter not used.
+            public byte ZCRI { get; }
+            /// Indicates the condition in which to execute the instruction.
+            /// @version v22.05.03 - Removed setter not used.
+            public byte CON { get; }
+            /// Contains the destination register address.
+            /// @version v22.05.03 - Removed setter not used.
+            public ushort DEST { get; }
+            /// Contains the source register address or 9-bit literal value.
+            /// @version v22.05.03 - Removed setter not used.
+            public ushort SRC { get; }
 
-            /// <summary>
-            ///
-            /// </summary>
-            public Propeller.Assembly.Instruction SourceInstruction { get; private set; }
+            /// <summary></summary>
+            /// @version v22.05.03 - Removed setter not used.
+            public Propeller.Assembly.Instruction SourceInstruction { get; }
 
-            /// <summary>
-            ///
-            /// </summary>
-            private Propeller.Assembly.SubInstruction SourceSubInstruction;
+            /// <summary></summary>
+            /// @version v22.05.03 - Changed name to follow naming conventions.
+            private Propeller.Assembly.SubInstruction _sourceSubInstruction;
 
-            /// <summary>
-            ///
-            /// </summary>
-            /// <param name="Opcode"></param>
-            public ParsedInstruction(uint Opcode)
+            /// <summary>Default constructor.</summary>
+            /// <param name="unEncodedOp"></param>
+            /// @version v22.05.03 - Parameter name changed to follow naming
+            /// conventions.
+            public ParsedInstruction(uint unEncodedOp)
             {
-                this.Opcode = Opcode;
-                this.INSTR  = (byte  )((Opcode >> 26) & 0x03F);  // (bits 31:26)
-                this.ZCRI   = (byte  )((Opcode >> 22) & 0x00F);  // (bits 25:22)
-                this.CON    = (byte  )((Opcode >> 18) & 0x00F);  // (bits 21:18)
-                this.DEST   = (ushort)((Opcode >>  9) & 0x1FF);  // (bits 17:09)
-                this.SRC    = (ushort)( Opcode        & 0x1FF);  // (bits 08:00)
-
-                this.SourceInstruction = Propeller.Assembly.Instructions[this.INSTR];
-                this.SourceSubInstruction = null;
+                OpCode = unEncodedOp;
+                INSTR  = (byte  )((unEncodedOp >> 26) & 0x03F);  // (bits 31:26)
+                ZCRI   = (byte  )((unEncodedOp >> 22) & 0x00F);  // (bits 25:22)
+                CON    = (byte  )((unEncodedOp >> 18) & 0x00F);  // (bits 21:18)
+                DEST   = (ushort)((unEncodedOp >>  9) & 0x1FF);  // (bits 17:09)
+                SRC    = (ushort)( unEncodedOp        & 0x1FF);  // (bits 08:00)
+                SourceInstruction = Propeller.Assembly.Instructions[INSTR];
+                _sourceSubInstruction = null;
             }
 
-            /// <summary>
-            ///
-            /// </summary>
+            /// <summary></summary>
             /// <returns></returns>
-            public Propeller.Assembly.SubInstruction GetSubInstruction()
-            {
-                if (this.SourceSubInstruction == null)
-                {
-                    this.SourceSubInstruction = Assembly.GetSubInstruction(this.SourceInstruction, this);
-                }
-                return this.SourceSubInstruction;
-            }
+            public Propeller.Assembly.SubInstruction GetSubInstruction() =>
+                _sourceSubInstruction ??
+                (_sourceSubInstruction = Assembly.GetSubInstruction(SourceInstruction, this));
 
-            /// <summary>
-            ///
-            /// </summary>
+            /// <summary></summary>
             /// <returns></returns>
-            public bool WriteZero()
-            {
-                return (this.ZCRI & WriteZeroFlag) == WriteZeroFlag && this.GetSubInstruction().WZEffect;
-            }
+            public bool WriteZero() =>
+                (ZCRI & WriteZeroFlag) == WriteZeroFlag && GetSubInstruction().UseWZ_Effect;
 
-            /// <summary>
-            ///
-            /// </summary>
+            /// <summary></summary>
             /// <returns></returns>
-            public bool WriteCarry()
-            {
-                return (this.ZCRI & WriteCarryFlag) == WriteCarryFlag && this.GetSubInstruction().WCEffect;
-            }
-            /// <summary>
-            ///
-            /// </summary>
-            /// <returns></returns>
-            public bool WriteResult()
-            {
-                return (this.ZCRI & WriteResultFlag) == WriteResultFlag && this.GetSubInstruction().WREffect;
-            }
+            public bool WriteCarry() =>
+                (ZCRI & WriteCarryFlag) == WriteCarryFlag && GetSubInstruction().UseWC_Effect;
 
-            /// <summary>
-            ///
-            /// </summary>
+            /// <summary></summary>
             /// <returns></returns>
-            public bool NoResult()
-            {
-                return (this.ZCRI & WriteResultFlag) == 0 && this.GetSubInstruction().WREffect;
-            }
+            public bool WriteResult() =>
+                (ZCRI & WriteResultFlag) == WriteResultFlag && GetSubInstruction().UseWR_Effect;
 
-            /// <summary>
-            ///
-            /// </summary>
+            /// <summary></summary>
             /// <returns></returns>
-            public bool ImmediateValue()
-            {
-                return (this.ZCRI & ImmediateValueFlag) == ImmediateValueFlag;
-            }
+            public bool NoResult() =>
+                (ZCRI & WriteResultFlag) == 0 && GetSubInstruction().UseWR_Effect;
 
+            /// <summary></summary>
+            /// <returns></returns>
+            public bool ImmediateValue() =>
+                (ZCRI & ImmediateValueFlag) == ImmediateValueFlag;
         }
-
     }
 }

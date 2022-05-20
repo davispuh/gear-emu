@@ -92,8 +92,8 @@ namespace Gear.PluginSupport
 
         /// @brief Register the events to be notified to this plugin.
         /// @details Set the reference to the emulated chip. Occurs once the plugin is loaded.
-        /// Also, if you need the plugin be notified on pin or clock changes, you 
-        /// need to add inside this method calls to NotifyOnPins or NotifyOnClock. 
+        /// Also, if you need the plugin be notified on pin or clock changes, you
+        /// need to add inside this method calls to NotifyOnPins or NotifyOnClock.
         /// To keep good performance, use only the essentials ones.
         /// @note Original documentation: <a href="https://forums.parallax.com/discussion/comment/625629/#Comment_625629">
         /// API GEAR described on GEAR original Post</a>
@@ -160,7 +160,7 @@ namespace Gear.PluginSupport
         /// @param pin Pin number to drive.
         /// @param isFloating Boolean to left the pin floating (=true) or to set on input/output mode (=false).
         /// @param isHigh Boolean to set on High state (=true) or to set on Low (=false).
-        /// @version V22.04.02 - Parameter names changed, to clarify purpose of each one.
+        /// @version V22.05.02 - Parameter names changed, to clarify purpose of each one.
         public void DrivePin(int pin, bool isFloating, bool isHigh)
         {
             Chip.DrivePin(pin, isFloating, isHigh);
