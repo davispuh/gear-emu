@@ -193,6 +193,9 @@ namespace Gear.EmulationCore
             PhaseLockLoop.SetBaseFrequency(clock);
         }
 
+        /// <summary></summary>
+        /// @version v22.05.04 - Invert sense of return value
+        /// on ConditionCompare(), to be intuitive.
         public void Tick(ulong pins)
         {
             switch (CtrMode)
@@ -264,9 +267,25 @@ namespace Gear.EmulationCore
                         PHS += FRQ;
                     OutB = !PinA;
                     break;
+                case CounterMode.LOGIC_NEVER:
+                case CounterMode.LOGIC_NOTA_AND_NOTB:
+                case CounterMode.LOGIC_A_AND_NOTB:
+                case CounterMode.LOGIC_NOTB:
+                case CounterMode.LOGIC_NOTA_AND_B:
+                case CounterMode.LOGIC_NOTA:
+                case CounterMode.LOGIC_A_DIFF_B:
+                case CounterMode.LOGIC_NOTA_OR_NOTB:
+                case CounterMode.LOGIC_A_AND_B:
+                case CounterMode.LOGIC_A_EQ_B:
+                case CounterMode.LOGIC_A:
+                case CounterMode.LOGIC_A_OR_NOTB:
+                case CounterMode.LOGIC_B:
+                case CounterMode.LOGIC_NOTA_OR_B:
+                case CounterMode.LOGIC_A_OR_B:
+                case CounterMode.LOGIC_ALWAYS:
                 default:
-                    // changed to NOT ConditionCompare(.) to repair Logic Modes Counter
-                    if (!Cog.ConditionCompare((Assembly.ConditionCodes)((int)CtrMode - 16), PinA, PinB))
+                    // changed to intuitive return value on ConditionCompare(.)
+                    if (Cog.ConditionCompare((Assembly.ConditionCodes)((int)CtrMode - 16), PinA, PinB))
                         PHS += FRQ;
                     break;
             }

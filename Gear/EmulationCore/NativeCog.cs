@@ -152,7 +152,10 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Execute a PASM instruction in this cog.
-        /// @returns TRUE if it is the opportunity to trigger a breakpoint, or FALSE if not.
+        /// @returns TRUE if it is the opportunity to trigger a breakpoint,
+        /// or FALSE if not.
+        /// @version v22.05.04 - Invert sense of return value
+        /// on ConditionCompare(), to be intuitive.
         override public bool DoInstruction()
         {
             switch (State)
@@ -246,8 +249,8 @@ namespace Gear.EmulationCore
 
             Destination = (Operation >> 9) & MaskCogMemory;
             DestinationValue = ReadLong(Destination);
-
-            if (ConditionCompare(ConditionCode, Zero, Carry))
+            // changed to NOT ConditionCompare() to recover intuitive return value on that function
+            if (!ConditionCompare(ConditionCode, Zero, Carry))
             {
                 Operation = ReadLong(ProgramCursor);
                 State = CogRunState.WaitPreWait;

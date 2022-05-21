@@ -338,9 +338,11 @@ namespace Gear.EmulationCore
         /// <param name="conditionCode">Code of condition to test.</param>
         /// <param name="leftOp">First operand.</param>
         /// <param name="rightOp">Second operand.</param>
-        /// <returns></returns>
-        /// @version v22.05.03 - Parameter names changed to clarify meaning of them.
-        public static bool ConditionCompare(Assembly.ConditionCodes conditionCode, bool leftOp, bool rightOp)
+        /// <returns>Returns TRUE if logic condition is valid, else FALSE.</returns>
+        /// @version v22.05.04 - Invert sense of return value on
+        /// ConditionCompare(), to a intuitive one.
+        public static bool ConditionCompare(Assembly.ConditionCodes conditionCode,
+            bool leftOp, bool rightOp)
         {
             switch (conditionCode)
             {
@@ -348,51 +350,51 @@ namespace Gear.EmulationCore
                 default:
                     break;
                 case Assembly.ConditionCodes.IF_NZ_AND_NC:
-                    if (!leftOp && !rightOp) return false;
+                    if (!leftOp && !rightOp) return true;
                     break;
                 case Assembly.ConditionCodes.IF_NC_AND_Z:
-                    if (leftOp && !rightOp) return false;
+                    if (leftOp && !rightOp) return true;
                     break;
                 case Assembly.ConditionCodes.IF_NC:
-                    if (!rightOp) return false;
+                    if (!rightOp) return true;
                     break;
                 case Assembly.ConditionCodes.IF_C_AND_NZ:
-                    if (!leftOp && rightOp) return false;
+                    if (!leftOp && rightOp) return true;
                     break;
                 case Assembly.ConditionCodes.IF_NZ:
-                    if (!leftOp) return false;
+                    if (!leftOp) return true;
                     break;
                 case Assembly.ConditionCodes.IF_C_NE_Z:
-                    if (leftOp != rightOp) return false;
+                    if (leftOp != rightOp) return true;
                     break;
                 case Assembly.ConditionCodes.IF_NC_OR_NZ:
-                    if (!leftOp || !rightOp) return false;
+                    if (!leftOp || !rightOp) return true;
                     break;
                 case Assembly.ConditionCodes.IF_C_AND_Z:
-                    if (leftOp && rightOp) return false;
+                    if (leftOp && rightOp) return true;
                     break;
                 case Assembly.ConditionCodes.IF_C_EQ_Z:
-                    if (leftOp == rightOp) return false;
+                    if (leftOp == rightOp) return true;
                     break;
                 case Assembly.ConditionCodes.IF_Z:
-                    if (leftOp) return false;
+                    if (leftOp) return true;
                     break;
                 case Assembly.ConditionCodes.IF_NC_OR_Z:
-                    if (leftOp || !rightOp) return false;
+                    if (leftOp || !rightOp) return true;
                     break;
                 case Assembly.ConditionCodes.IF_C:
-                    if (rightOp) return false;
+                    if (rightOp) return true;
                     break;
                 case Assembly.ConditionCodes.IF_C_OR_NZ:
-                    if (!leftOp || rightOp) return false;
+                    if (!leftOp || rightOp) return true;
                     break;
                 case Assembly.ConditionCodes.IF_Z_OR_C:
-                    if (leftOp || rightOp) return false;
+                    if (leftOp || rightOp) return true;
                     break;
                 case Assembly.ConditionCodes.IF_ALWAYS:
-                    return false;
+                    return true;
             }
-            return true;
+            return false;
         }
 
         /// <summary>Execute pending Hub operation for this %Cog.</summary>
