@@ -1,8 +1,16 @@
 # Change Log
 
-## Commit  PASM Condition codes to be intuitive evaluated
+## Commit  Code cleanup on InterpretedCog
 
-- Invert sense of return value on `Cog.ConditionCompare()`, to a intuitive one: Returns `TRUE` if logic condition is valid, else `FALSE`. Files: [`Cog.cs`](Gear/EmulationCore/Cog.cs), [`FreqGenerator.cs`](Gear\EmulationCore\FreqGenerator.cs), [`NativeCog.cs`](Gear/EmulationCore/NativeCog.cs).
+- Corrected visibility of abstract method `Cog.Boot()` to `private protected`, affecting descendents classes `InterpretedCog` and `NativeCog`.
+- Code cleanup in files: specially [`InterpretedCog.cs`](Gear/EmulationCore/InterpretedCog.cs).
+  - Refactored naming and visibility of members, parameters and local variables in classes, methods and enums. 
+  - Added XML & Doxygen comments in files.
+
+
+## Commit [2db28c5](https://github.com/davispuh/gear-emu/commit/2db28c5ed57bab95e1f69b91b1a2a4b6d2b6b502) PASM Condition codes to be intuitive evaluated
+
+- Invert sense of return value on `Cog.ConditionCompare()`, to a intuitive one: Returns `TRUE` if logic condition is valid, else `FALSE`. Files: [`Cog.cs`](Gear/EmulationCore/Cog.cs), [`FreqGenerator.cs`](Gear/EmulationCore/FreqGenerator.cs), [`NativeCog.cs`](Gear/EmulationCore/NativeCog.cs).
 
 
 ## Release Version [22.05.03](https://github.com/davispuh/gear-emu/releases/tag/v22.05.03) and Commit [3dc6dad](https://github.com/davispuh/gear-emu/commit/3dc6dadf57879b979c5d78a0b773871b7d1b33a2) Refactored EmulationCore.Cog, Code cleanup 6

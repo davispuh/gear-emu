@@ -547,7 +547,8 @@ namespace Gear.EmulationCore
         public abstract bool DoInstruction();
 
         /// <summary>Setup the cog to a initial state after boot it.</summary>
-        public abstract void Boot();
+        /// @version v22.05.04 - Changed visibility of method.
+        private protected abstract void Boot();
 
         /// <summary></summary>
         /// <param name="colors"></param>

@@ -258,18 +258,18 @@ namespace Gear.GUI
                 StringY = 0;
                 StringX = (uint)(assemblyPanel.Width - StackMargin);
 
-                DrawString(g, string.Format("@Stk[0] = ${0:X4} {0}", host.Stack));
-                DrawString(g, string.Format("@Obj[0] = ${0:X4} {0}", host.Object));
-                DrawString(g, string.Format("@Loc[0] = ${0:X4} {0}", host.Local));
-                DrawString(g, string.Format("@Var[0] = ${0:X4} {0}", host.Variable));
+                DrawString(g, string.Format("@Stk[0] = ${0:X4} {0}", host.StackFrame));
+                DrawString(g, string.Format("@Obj[0] = ${0:X4} {0}", host.ObjectFrame));
+                DrawString(g, string.Format("@Loc[0] = ${0:X4} {0}", host.LocalFrame));
+                DrawString(g, string.Format("@Var[0] = ${0:X4} {0}", host.VariableFrame));
                 g.DrawLine(Pens.Black, assemblyPanel.Width - StackMargin, StringY, assemblyPanel.Width, StringY);
-                DrawString(g, string.Format("Caller& = ${0:X4} {0}", Chip.DirectReadWord(host.Local - 8)));
-                DrawString(g, string.Format("          ${0:X4} {0}", Chip.DirectReadWord(host.Local - 6)));
-                DrawString(g, string.Format("          ${0:X4} {0}", Chip.DirectReadWord(host.Local - 4)));
-                DrawString(g, string.Format("Return& = ${0:X4}", Chip.DirectReadWord(host.Local - 2)));
+                DrawString(g, string.Format("Caller& = ${0:X4} {0}", Chip.DirectReadWord(host.LocalFrame - 8)));
+                DrawString(g, string.Format("          ${0:X4} {0}", Chip.DirectReadWord(host.LocalFrame - 6)));
+                DrawString(g, string.Format("          ${0:X4} {0}", Chip.DirectReadWord(host.LocalFrame - 4)));
+                DrawString(g, string.Format("Return& = ${0:X4}", Chip.DirectReadWord(host.LocalFrame - 2)));
                 g.DrawLine(Pens.Black, assemblyPanel.Width - StackMargin, StringY, assemblyPanel.Width, StringY);
 
-                for (uint i = host.Local; i < host.Stack && StringY < ClientRectangle.Height; i += 4)
+                for (uint i = host.LocalFrame; i < host.StackFrame && StringY < ClientRectangle.Height; i += 4)
                 {
                     DrawString(g, string.Format("${0:X8}  {0}", (int)Chip.DirectReadLong(i)));
                 }

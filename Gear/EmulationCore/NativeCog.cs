@@ -97,12 +97,12 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Setup the cog to a initial state after boot it.
-        public override void Boot()
+        /// @version v22.05.04 - Changed visibility of method.
+        private protected override void Boot()
         {
             State = CogRunState.StateExecute;
             Carry = false;
             Zero = false;
-
             ProgramCursor = 0;
             // Prefetch first instruction
             Operation = ReadLong(0);
