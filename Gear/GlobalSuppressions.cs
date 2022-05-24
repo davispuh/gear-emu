@@ -19,6 +19,6 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "<pendiente>")]
 [assembly: SuppressMessage("Design", "CA1027:Mark enums with FlagsAttribute", Justification = "<pendiente>", Scope = "type", Target = "~T:Gear.Propeller.Assembly.InstructionCodes")]
 [assembly: SuppressMessage("Design", "CA1027:Mark enums with FlagsAttribute", Justification = "<pendiente>", Scope = "type", Target = "~T:Gear.Propeller.Assembly.ConditionCodes")]
-[assembly: SuppressMessage("Design", "CA1027:Mark enums with FlagsAttribute", Justification = "<pendiente>", Scope = "type", Target = "~T:Gear.EmulationCore.VMode")]
-[assembly: SuppressMessage("Design", "CA1027:Mark enums with FlagsAttribute", Justification = "<pendiente>", Scope = "type", Target = "~T:Gear.EmulationCore.CMode")]
+[assembly: SuppressMessage("Design", "CA1027:Mark enums with FlagsAttribute", Justification = "<pendiente>", Scope = "type", Target = "~T:Gear.EmulationCore.VideoMode")]
+[assembly: SuppressMessage("Design", "CA1027:Mark enums with FlagsAttribute", Justification = "<pendiente>", Scope = "type", Target = "~T:Gear.EmulationCore.ColorMode")]
 [assembly: SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<pendiente>", Scope = "member", Target = "~M:Gear.GUI.GearDesktop.OptionsButton_Click(System.Object,System.EventArgs)")]

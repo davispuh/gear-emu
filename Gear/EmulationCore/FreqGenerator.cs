@@ -23,182 +23,249 @@
 
 using Gear.Propeller;
 
+// ReSharper disable CommentTypo
+// ReSharper disable IdentifierTypo
+// ReSharper disable InconsistentNaming
 namespace Gear.EmulationCore
 {
     /// @brief Counter modes of operation.
     /// @remark Source: Table 6 - Counter Modes (CTRMODE Field Values), %Propeller
     /// P8X32A Datasheet V1.4.0.
     /// @version v14.7.3 - Missing logic modes implemented (LOGIC_NEVER ... LOGIC_ALWAYS)
-    public enum CounterMode : uint
+    public enum CounterMode : byte
     {
-        DISABLED,                   //!< %00000 | Counter disabled (off)
+        /// <summary>Counter disabled (off)</summary>
+        DISABLED = 0b00000,
 
-        PLL_INTERNAL,               //!< %00001 | %PLL internal (video mode)
-        PLL_SINGLE_ENDED,           //!< %00010 | %PLL single-ended
-        PLL_DIFFERENTIAL,           //!< %00011 | %PLL differential
+        /// <summary>%PLL internal (video mode)</summary>
+        PLL_INTERNAL = 0b00001,
+        /// <summary>%PLL single-ended</summary>
+        PLL_SINGLE_ENDED = 0b00010,
+        /// <summary>%PLL differential</summary>
+        PLL_DIFFERENTIAL = 0b00011,
 
-        NCO_SINGLE_ENDED,           //!< %00100 | NCO single-ended
-        NCO_DIFFERENTIAL,           //!< %00101 | NCO differential
+        /// <summary>NCO single-ended</summary>
+        NCO_SINGLE_ENDED = 0b00100,
+        /// <summary>NCO differential</summary>
+        NCO_DIFFERENTIAL = 0b00101,
 
-        DUTY_SINGLE_ENDED,          //!< %00110 | DUTY single-ended
-        DUTY_DIFFERENTIAL,          //!< %00111 | DUTY differential
+        /// <summary>DUTY single-ended</summary>
+        DUTY_SINGLE_ENDED = 0b00110,
+        /// <summary>DUTY differential</summary>
+        DUTY_DIFFERENTIAL = 0b00111,
 
-        POS_DETECTOR,               //!< %01000 | POS detector
-        POS_DETECTOR_FEEDBACK,      //!< %01001 | POS detector with feedback
-        POSEDGE_DETECTOR,           //!< %01010 | POSEDGE detector
-        POSEDGE_DETECTOR_FEEDBACK,  //!< %01011 | POSEDGE detector w/ feedback
+        /// <summary>POS detector</summary>
+        POS_DETECTOR = 0b01000,
+        /// <summary>POS detector with feedback</summary>
+        POS_DETECTOR_FEEDBACK = 0b01001,
+        /// <summary>POSEDGE detector</summary>
+        POSEDGE_DETECTOR = 0b01010,
+        /// <summary>POSEDGE detector w/ feedback</summary>
+        POSEDGE_DETECTOR_FEEDBACK = 0b01011,
 
-        NEG_DETECTOR,               //!< %01100 | NEG detector
-        NEG_DETECTOR_FEEDBACK,      //!< %01101 | NEG detector with feedback
-        NEGEDGE_DETECTOR,           //!< %01110 | NEGEDGE detector
-        NEGEDGE_DETECTOR_FEEDBACK,  //!< %01111 | NEGEDGE detector w/ feedback
+        /// <summary>NEG detector</summary>
+        NEG_DETECTOR = 0b01100,
+        /// <summary>NEG detector with feedback</summary>
+        NEG_DETECTOR_FEEDBACK = 0b01101,
+        /// <summary>NEGEDGE detector</summary>
+        NEGEDGE_DETECTOR = 0b01110,
+        /// <summary>NEGEDGE detector w/ feedback</summary>
+        NEGEDGE_DETECTOR_FEEDBACK = 0b01111,
 
         // Logic modes implemented on gear v14.7.3
-        LOGIC_NEVER,                //!< %10000 | LOGIC never
-        LOGIC_NOTA_AND_NOTB,        //!< %10001 | LOGIC !A & !B
-        LOGIC_A_AND_NOTB,           //!< %10010 | LOGIC A & !B
-        LOGIC_NOTB,                 //!< %10011 | LOGIC !B
-        LOGIC_NOTA_AND_B,           //!< %10100 | LOGIC !A & B
-        LOGIC_NOTA,                 //!< %10101 | LOGIC !A
-        LOGIC_A_DIFF_B,             //!< %10110 | LOGIC A <> B
-        LOGIC_NOTA_OR_NOTB,         //!< %10111 | LOGIC !A | !B
-        LOGIC_A_AND_B,              //!< %11000 | LOGIC A & B
-        LOGIC_A_EQ_B,               //!< %11001 | LOGIC A == B
-        LOGIC_A,                    //!< %11010 | LOGIC A
-        LOGIC_A_OR_NOTB,            //!< %11011 | LOGIC A | !B
-        LOGIC_B,                    //!< %11100 | LOGIC B
-        LOGIC_NOTA_OR_B,            //!< %11101 | LOGIC !A | B
-        LOGIC_A_OR_B,               //!< %11110 | LOGIC A | B
-        LOGIC_ALWAYS                //!< %11111 | LOGIC always
+        /// <summary>LOGIC never</summary>
+        LOGIC_NEVER = 0b10000,
+        /// <summary>LOGIC !A & !B</summary>
+        LOGIC_NOTA_AND_NOTB = 0b10001,
+        /// <summary>LOGIC A & !B</summary>
+        LOGIC_A_AND_NOTB = 0b10010,
+        /// <summary>LOGIC !B</summary>
+        LOGIC_NOTB = 0b10011,
+        /// <summary>LOGIC !A & B</summary>
+        LOGIC_NOTA_AND_B = 0b10100,
+        /// <summary>LOGIC !A</summary>
+        LOGIC_NOTA = 0b10101,
+        /// <summary>LOGIC A != B</summary>
+        LOGIC_A_DIFF_B = 0b10110,
+        /// <summary>LOGIC !A, !B</summary>
+        LOGIC_NOTA_OR_NOTB = 0b10111,
+        /// <summary>LOGIC A & B</summary>
+        LOGIC_A_AND_B = 0b11000,
+        /// <summary>LOGIC A == B</summary>
+        LOGIC_A_EQ_B = 0b11001,
+        /// <summary>LOGIC A</summary>
+        LOGIC_A = 0b11010,
+        /// <summary>LOGIC A, !B</summary>
+        LOGIC_A_OR_NOTB = 0b11011,
+        /// <summary>LOGIC B</summary>
+        LOGIC_B = 0b11100,
+        /// <summary>LOGIC !A, B</summary>
+        LOGIC_NOTA_OR_B = 0b11101,
+        /// <summary>LOGIC A, B</summary>
+        LOGIC_A_OR_B = 0b11110,
+        /// <summary>LOGIC always</summary>s
+        LOGIC_ALWAYS = 0b11111
     }
 
     /// @brief Frequency Generator Circuit emulation
     public class FreqGenerator
     {
-        private uint Control;
-        private uint Frequency;
-        private uint PhaseAccumulator;
+        /// <summary>Reference to the PropellerCPU instance where this
+        /// object belongs.</summary>
+        /// @version v22.05.04 - Changed name to follow naming conventions.
+        private readonly PropellerCPU _cpuHost;
 
-        private CounterMode CtrMode;
-        private ulong PinAMask;
-        private ulong PinBMask;
+        /// <summary></summary>
+        /// @version v22.05.04 - Changed name to follow naming conventions.
+        private uint _control;
+        /// <summary></summary>
+        /// @version v22.05.04 - Changed name to follow naming conventions.
+        private uint _frequency;
 
-        private readonly PropellerCPU Host;
+        /// <summary></summary>
+        /// @version v22.05.04 - Changed name to follow naming conventions.
+        private CounterMode _ctrMode;
+        /// <summary></summary>
+        /// @version v22.05.04 - Changed name to follow naming conventions.
+        private ulong _pinAMask;
+        /// <summary></summary>
+        /// @version v22.05.04 - Changed name to follow naming conventions.
+        private ulong _pinBMask;
 
-        private bool PinA;
-        private bool PinA_;
-        private bool PinB;
+        /// <summary></summary>
+        /// @version v22.05.04 - Changed name to follow naming conventions.
+        private bool _pinA;
+        /// <summary></summary>
+        /// @version v22.05.04 - Changed name to follow naming conventions.
+        private bool _pinADelayed;
+        /// <summary></summary>
+        /// @version v22.05.04 - Changed name to follow naming conventions.
+        private bool _pinB;
 
-        private bool OutA;
-        private bool OutB;
+        /// <summary></summary>
+        /// @version v22.05.04 - Changed name to follow naming conventions.
+        private bool _outA;
+        /// <summary></summary>
+        /// @version v22.05.04 - Changed name to follow naming conventions.
+        private bool _outB;
 
-        private readonly bool FreqA; // THIS IS UGLY AND I HATE IT.
-        private uint Divider;
+        /// <summary>Identity of this frequency generator: A or B.</summary>
+        /// @version v22.05.04 - Changed name to follow naming conventions.
+        private readonly bool _isFreqGeneratorA;
+        /// <summary></summary>
+        /// @version v22.05.04 - Changed name to follow naming conventions.
+        private uint _divider;
 
-        private readonly PLLGroup PhaseLockLoop;
+        /// <summary></summary>
+        /// @version v22.05.04 - Changed name to follow naming conventions.
+        private readonly PLLGroup _pllGroup;
 
-        public uint CTR
+        /// <summary></summary>
+        /// @version v22.05.04 - Changed property name to clarify meaning of it.
+        public uint RegisterCTR
         {
-            get { return Control; }
+            get => _control;
             set
             {
-                Control = value;
-
-                Divider = (uint)128 >> (int)((value >> 23) & 0x7);
-
+                if (_control == value)
+                    return;
+                _control = value;
+                _divider = (uint)128 >> (int)((value >> 23) & 0x7);
                 // The generators and outputs are
-                OutA = OutB = false;
-
-                PinAMask = (uint)1 << (int)(value & 0x3F);
-                PinBMask = (uint)1 << (int)((value >> 9) & 0x3F);
-                CtrMode = (CounterMode)((value & 0x7c000000) >> 26);
-
+                _outA = _outB = false;
+                _pinAMask = (uint)1 << (int)(value & 0x3F);
+                _pinBMask = (uint)1 << (int)((value >> 9) & 0x3F);
+                _ctrMode = (CounterMode)((value & 0x7c000000) >> 26);
                 // Setup PLL
-                switch (CtrMode)
+                switch (_ctrMode)
                 {
                     case CounterMode.PLL_INTERNAL:
-                        PhaseLockLoop.DrivePins(FreqA, 0, 0);
-                        PhaseLockLoop.Feed(FreqA, FRQ / (double)0x100000000 * 16.0 / Divider);
+                        _pllGroup.DrivePins(_isFreqGeneratorA, 0, 0);
+                        _pllGroup.Feed(_isFreqGeneratorA, RegisterFRQ / (double)0x100000000 * 16.0 / _divider);
                         break;
                     case CounterMode.PLL_SINGLE_ENDED:
-                        PhaseLockLoop.DrivePins(FreqA, PinAMask, 0);
-                        PhaseLockLoop.Feed(FreqA, FRQ / (double)0x100000000 * 16.0 / Divider);
+                        _pllGroup.DrivePins(_isFreqGeneratorA, _pinAMask, 0);
+                        _pllGroup.Feed(_isFreqGeneratorA, RegisterFRQ / (double)0x100000000 * 16.0 / _divider);
                         break;
                     case CounterMode.PLL_DIFFERENTIAL:
-                        PhaseLockLoop.DrivePins(FreqA, PinAMask, PinBMask);
-                        PhaseLockLoop.Feed(FreqA, FRQ / (double)0x100000000 * 16.0 / Divider);
+                        _pllGroup.DrivePins(_isFreqGeneratorA, _pinAMask, _pinBMask);
+                        _pllGroup.Feed(_isFreqGeneratorA, RegisterFRQ / (double)0x100000000 * 16.0 / _divider);
                         break;
                     default:
-                        PhaseLockLoop.Disable(FreqA);
+                        _pllGroup.Disable(_isFreqGeneratorA);
                         break;
                 }
             }
         }
 
-        public uint FRQ
+        /// <summary></summary>
+        /// @version v22.05.04 - Changed property name to clarify meaning of it.
+        public uint RegisterFRQ
         {
-            get { return Frequency; }
+            get => _frequency;
             set
             {
-                Frequency = value;
-
-                switch (CtrMode)
+                if (_frequency == value)
+                    return;
+                _frequency = value;
+                switch (_ctrMode)
                 {
                     case CounterMode.PLL_INTERNAL:
                     case CounterMode.PLL_SINGLE_ENDED:
                     case CounterMode.PLL_DIFFERENTIAL:
                     case CounterMode.LOGIC_NEVER:       // do nothing for LOGIC_NEVER
-
                         // This is a special de-jitter function
                         // The edge-sensitive system resulted in unstable
                         // output frequencies
-
-                        PhaseLockLoop.Feed(FreqA, FRQ / (double)0x100000000 * 16.0 / Divider);
+                        _pllGroup.Feed(_isFreqGeneratorA, RegisterFRQ / (double)0x100000000 * 16.0 / _divider);
                         break;
                     default:
-                        PhaseLockLoop.Disable(FreqA);
+                        _pllGroup.Disable(_isFreqGeneratorA);
                         break;
                 }
             }
         }
 
-        public uint PHS
+        /// <summary></summary>
+        /// @version v22.05.04 - Changed property name to clarify meaning of it.
+        public uint RegisterPHS { get; set; }
+
+        /// <summary></summary>
+        public ulong Output =>
+            (_outA ? _pinAMask : 0) |
+            (_outB ? _pinBMask : 0) |
+            _pllGroup.Pins;
+
+        /// <summary>Default Constructor.</summary>
+        /// <param name="cpuHost">PropellerCPU instance where this object belongs.</param>
+        /// <param name="pllGroup"></param>
+        /// <param name="isFreqGeneratorA">Identity of this frequency generator: A or B.</param>
+        /// @version v22.05.04 - Parameter names changed to use the same
+        /// convention for a PropellerCPU instance reference and to clarify
+        /// meaning of them.
+        public FreqGenerator(PropellerCPU cpuHost, PLLGroup pllGroup, bool isFreqGeneratorA)
         {
-            get { return PhaseAccumulator; }
-            set { PhaseAccumulator = value; }
+            _cpuHost = cpuHost;
+            _outA = false;
+            _outB = false;
+            _isFreqGeneratorA = isFreqGeneratorA;
+            _pllGroup = pllGroup;
         }
 
-        public ulong Output
-        {
-            get
-            {
-                return (OutA ? PinAMask : 0) |
-                    (OutB ? PinBMask : 0) |
-                    PhaseLockLoop.Pins;
-            }
-        }
-
-        public FreqGenerator(PropellerCPU host, PLLGroup phaseLockLoop, bool freqA)
-        {
-            Host = host;
-            OutA = false;
-            OutB = false;
-            FreqA = freqA;
-
-            PhaseLockLoop = phaseLockLoop;
-        }
-
+        /// <summary></summary>
+        /// <param name="clock"></param>
         public void SetClock(uint clock)
         {
-            PhaseLockLoop.SetBaseFrequency(clock);
+            _pllGroup.SetBaseFrequency(clock);
         }
 
         /// <summary></summary>
         /// @version v22.05.04 - Invert sense of return value
-        /// on ConditionCompare(), to be intuitive.
-        public void Tick(ulong pins)
+        /// on ConditionCompare(), to be intuitive and changed method signature
+        /// to use the value from register IN from Emulator.
+        public void Tick()
         {
-            switch (CtrMode)
+            switch (_ctrMode)
             {
                 case CounterMode.DISABLED:
                 case CounterMode.PLL_INTERNAL:
@@ -206,66 +273,64 @@ namespace Gear.EmulationCore
                 case CounterMode.PLL_DIFFERENTIAL:
                     break;
                 case CounterMode.NCO_SINGLE_ENDED:
-                    PHS += FRQ;
-                    OutA = (PHS & 0x80000000) != 0;
+                    RegisterPHS += RegisterFRQ;
+                    _outA = (RegisterPHS & 0x80000000) != 0;
                     break;
                 case CounterMode.NCO_DIFFERENTIAL:
-                    PHS += FRQ;
-                    OutA = (PHS & 0x80000000) != 0;
-                    OutB = !OutA;
+                    RegisterPHS += RegisterFRQ;
+                    _outA = (RegisterPHS & 0x80000000) != 0;
+                    _outB = !_outA;
                     break;
                 case CounterMode.DUTY_SINGLE_ENDED:
-                    {
-                        long o = (long)PHS + (long)FRQ;
-
-                        PHS = (uint)o;
-                        OutA = o > 0xFFFFFFFF;
-                    }
+                {
+                    long newVal = (long)RegisterPHS + RegisterFRQ;
+                    RegisterPHS = (uint)newVal;
+                    _outA = newVal > 0xFFFFFFFF;
+                }
                     break;
                 case CounterMode.DUTY_DIFFERENTIAL:
-                    {
-                        long o = (long)PHS + (long)FRQ;
-
-                        PHS = (uint)o;
-                        OutA = o > 0xFFFFFFFF;
-                        OutB = !OutA;
-                    }
+                {
+                    long newVal = (long)RegisterPHS + RegisterFRQ;
+                    RegisterPHS = (uint)newVal;
+                    _outA = newVal > 0xFFFFFFFF;
+                    _outB = !_outA;
+                }
                     break;
                 case CounterMode.POS_DETECTOR:
-                    if (PinA)
-                        PHS += FRQ;
+                    if (_pinA)
+                        RegisterPHS += RegisterFRQ;
                     break;
                 case CounterMode.POS_DETECTOR_FEEDBACK:
-                    if (PinA)
-                        PHS += FRQ;
-                    OutB = !PinA;
+                    if (_pinA)
+                        RegisterPHS += RegisterFRQ;
+                    _outB = !_pinA;
                     break;
                 case CounterMode.POSEDGE_DETECTOR:
-                    if (PinA && !PinA_)
-                        PHS += FRQ;
+                    if (_pinA && !_pinADelayed)
+                        RegisterPHS += RegisterFRQ;
                     break;
                 case CounterMode.POSEDGE_DETECTOR_FEEDBACK:
-                    if (PinA && !PinA_)
-                        PHS += FRQ;
-                    OutB = !PinA;
+                    if (_pinA && !_pinADelayed)
+                        RegisterPHS += RegisterFRQ;
+                    _outB = !_pinA;
                     break;
                 case CounterMode.NEG_DETECTOR:
-                    if (!PinA)
-                        PHS += FRQ;
+                    if (!_pinA)
+                        RegisterPHS += RegisterFRQ;
                     break;
                 case CounterMode.NEG_DETECTOR_FEEDBACK:
-                    if (!PinA)
-                        PHS += FRQ;
-                    OutB = !PinA;
+                    if (!_pinA)
+                        RegisterPHS += RegisterFRQ;
+                    _outB = !_pinA;
                     break;
                 case CounterMode.NEGEDGE_DETECTOR:
-                    if (!PinA && PinA_)
-                        PHS += FRQ;
+                    if (!_pinA && _pinADelayed)
+                        RegisterPHS += RegisterFRQ;
                     break;
                 case CounterMode.NEGEDGE_DETECTOR_FEEDBACK:
-                    if (!PinA && PinA_)
-                        PHS += FRQ;
-                    OutB = !PinA;
+                    if (!_pinA && _pinADelayed)
+                        RegisterPHS += RegisterFRQ;
+                    _outB = !_pinA;
                     break;
                 case CounterMode.LOGIC_NEVER:
                 case CounterMode.LOGIC_NOTA_AND_NOTB:
@@ -285,18 +350,14 @@ namespace Gear.EmulationCore
                 case CounterMode.LOGIC_ALWAYS:
                 default:
                     // changed to intuitive return value on ConditionCompare(.)
-                    if (Cog.ConditionCompare((Assembly.ConditionCodes)((int)CtrMode - 16), PinA, PinB))
-                        PHS += FRQ;
+                    if (Cog.ConditionCompare((Assembly.ConditionCodes)((int)_ctrMode - 16), _pinA, _pinB))
+                        RegisterPHS += RegisterFRQ;
                     break;
             }
-
             // Cycle in our previous pin states
-
-            ulong Input = Host.IN;
-
-            PinA_ = PinA;   // Delay by 2
-            PinA = (Input & PinAMask) != 0;
-            PinB = (Input & PinBMask) != 0;
+            _pinADelayed = _pinA;   // Delay by 2
+            _pinA = (_cpuHost.IN & _pinAMask) != 0;
+            _pinB = (_cpuHost.IN & _pinBMask) != 0;
         }
     }
 }

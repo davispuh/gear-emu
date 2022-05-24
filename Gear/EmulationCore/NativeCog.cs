@@ -3,7 +3,7 @@
  * Copyright 2007-2022 - Gear Developers
  * --------------------------------------------------------------------------------
  * NativeCog.cs
- * Object class for a native assembly (machine code) cog
+ * Class for a native assembly (machine code) cog
  * --------------------------------------------------------------------------------
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,41 +29,59 @@ namespace Gear.EmulationCore
     /// @brief Derived class from Cog, to emulate running PASM code.
     public partial class NativeCog : Cog
     {
-        // Decode fields
+        // Decode properties
 
-        protected uint Operation;
-        protected Assembly.InstructionCodes InstructionCode;
-        protected Assembly.ConditionCodes ConditionCode;
+        /// <summary></summary>
+        /// @version v22.05.04 - Property generated from protected member.
+        private protected uint Operation { get; set; }
+        /// <summary></summary>
+        /// @version v22.05.04 - Property generated from protected member.
+        private protected Assembly.InstructionCodes InstructionCode { get; set; }
+        /// <summary></summary>
+        /// @version v22.05.04 - Property generated from protected member.
+        private protected Assembly.ConditionCodes ConditionCode { get; set; }
 
-        protected bool WriteZero;
-        protected bool WriteCarry;
-        protected bool WriteResult;
-        protected bool ImmediateValue;
+        /// <summary></summary>
+        /// @version v22.05.04 - Property generated from protected member.
+        private protected bool WriteZero { get; set; }
+        /// <summary></summary>
+        /// @version v22.05.04 - Property generated from protected member.
+        private protected bool WriteCarry { get; set; }
+        /// <summary></summary>
+        /// @version v22.05.04 - Property generated from protected member.
+        private protected bool WriteResult { get; set; }
+        /// <summary></summary>
+        /// @version v22.05.04 - Property generated from protected member.
+        private protected bool ImmediateValue { get; set; }
 
-        protected uint SourceValue;
-        protected uint Destination;
-        protected uint DestinationValue;
+        /// <summary></summary>
+        /// @version v22.05.04 - Property generated from protected member.
+        private protected uint SourceValue { get; set; }
+        /// <summary></summary>
+        /// @version v22.05.04 - Property generated from protected member.
+        private protected uint Destination { get; set; }
+        /// <summary></summary>
+        /// @version v22.05.04 - Property generated from protected member.
+        private protected uint DestinationValue { get; set; }
 
-        // Encode fields
+        // Encode properties
 
-        protected uint DataResult;
-        protected bool CarryResult;
-        protected bool ZeroResult;
+        /// <summary></summary>
+        /// @version v22.05.04 - Property generated from protected member.
+        private protected uint DataResult{ get; set; }
+        /// <summary></summary>
+        /// @version v22.05.04 - Property generated from protected member.
+        private protected bool CarryResult{ get; set; }
+        /// <summary></summary>
+        /// @version v22.05.04 - Property generated from protected member.
+        private protected bool ZeroResult{ get; set; }
 
-        protected bool Carry;               //!< Carry Flag
-        protected bool Zero;                //!< Zero Flag
-
-        public bool CarryFlag
-        {
-            get { return Carry; }
-            set { Carry = value; }
-        }
-
-        public bool ZeroFlag
-        {
-            get { return Zero; }
-            set { Zero = value; }
-        }
+        /// <summary>Carry Flag</summary>
+        /// @version v22.05.04 - Property generated from private member.
+        public bool CarryFlag { get; private set; }
+        /// @brief Zero Flag
+        /// @version v22.05.04 - Property generated from private member.
+        public bool ZeroFlag { get; private set; }
 
         /// @brief Default constructor for a %Cog running in PASM mode.
         /// @param cpuHost PropellerCPU where this cog resides.
@@ -78,21 +96,21 @@ namespace Gear.EmulationCore
             uint paramAddress, uint frequency, PLLGroup pllGroup)
             : base(cpuHost, cogNum, programAddress, paramAddress, frequency, pllGroup)
         {
-            Carry = false;
-            Zero = false;
+            CarryFlag = false;
+            ZeroFlag = false;
         }
 
         /// @brief Determine what effect will be executed after this operation.
-        /// @details The possibles are Write Result, Zero flag or Carry flag, or mix between them.
+        /// @details The possibles are Write Result, Zero flag or Carry flag,
+        /// or mix between them.
         private void WriteBackResult()
         {
             if (WriteResult)
                 WriteLong(Destination, DataResult);
             if (WriteZero)
-                Zero = ZeroResult;
+                ZeroFlag = ZeroResult;
             if (WriteCarry)
-                Carry = CarryResult;
-
+                CarryFlag = CarryResult;
             State = CogRunState.StateExecute;
         }
 
@@ -101,8 +119,8 @@ namespace Gear.EmulationCore
         private protected override void Boot()
         {
             State = CogRunState.StateExecute;
-            Carry = false;
-            Zero = false;
+            CarryFlag = false;
+            ZeroFlag = false;
             ProgramCursor = 0;
             // Prefetch first instruction
             Operation = ReadLong(0);
@@ -115,11 +133,6 @@ namespace Gear.EmulationCore
         {
             switch (State)
             {
-                case CogRunState.HubHubOperation:
-                    DataResult = CpuHost.HubOp(this, SourceValue, DestinationValue, ref CarryResult,
-                        ref ZeroResult);
-                    WriteBackResult();
-                    return;
                 case CogRunState.HubReadByte:
                     if (WriteResult)
                         DataResult = CpuHost.DirectReadByte(SourceValue);
@@ -128,7 +141,7 @@ namespace Gear.EmulationCore
                     ZeroResult = (DataResult == 0); //set as state Manual v1.2
                     // Don't affect Carry as state Manual v1.2
                     WriteBackResult();
-                    return;
+                    break;
                 case CogRunState.HubReadWord:
                     if (WriteResult)
                         DataResult = CpuHost.DirectReadWord(SourceValue);
@@ -137,16 +150,29 @@ namespace Gear.EmulationCore
                     ZeroResult = (DataResult == 0); //set as state Manual v1.2
                     // Don't affect Carry as state Manual v1.2
                     WriteBackResult();
-                    return;
+                    break;
                 case CogRunState.HubReadLong:
                     if (WriteResult)
                         DataResult = CpuHost.DirectReadLong(SourceValue);
                     else
                         CpuHost.DirectWriteLong(SourceValue, DestinationValue);
-                    ZeroResult = (DataResult == 0);  //set as state Manual v1.2
+                    ZeroResult = (DataResult == 0); //set as state Manual v1.2
                     // Don't affect Carry as state Manual v1.2
                     WriteBackResult();
-                    return;
+                    break;
+                case CogRunState.HubOperation:
+                {
+                    bool carryResult = CarryResult;
+                    bool zeroResult = ZeroResult;
+                    DataResult = CpuHost.HubOp(this, SourceValue, DestinationValue,
+                        ref carryResult, ref zeroResult);
+                    CarryResult = carryResult;
+                    ZeroResult = zeroResult;
+                    WriteBackResult();
+                }
+                    break;
+                default:
+                    break;
             }
             base.ExecuteHubOperation();
         }
@@ -154,9 +180,11 @@ namespace Gear.EmulationCore
         /// @brief Execute a PASM instruction in this cog.
         /// @returns TRUE if it is the opportunity to trigger a breakpoint,
         /// or FALSE if not.
+        /// @pullreq{18} Correct video frame load timing, added video break, fix tab refresh.
         /// @version v22.05.04 - Invert sense of return value
         /// on ConditionCompare(), to be intuitive.
-        override public bool DoInstruction()
+        /// @todo [Legacy] DETERMINE CARRY on CogRunState.WAIT_PEQ and CogRunState.WAIT_PNE
+        public override bool DoInstruction()
         {
             switch (State)
             {
@@ -170,87 +198,66 @@ namespace Gear.EmulationCore
                     if (--StateCount == 1)
                         State = NextState;
                     return true;
-
                 // Execute State
                 case CogRunState.StateExecute:
                     break;
-
-                case CogRunState.WaitPinsNotEqual:
-                    {
-                        uint maskedIn = (Carry ? CpuHost.INB : CpuHost.INA) & SourceValue;
-                        if (maskedIn != DestinationValue)
-                        {
-                            DataResult = maskedIn;
-                            Zero = (maskedIn == 0);
-                            // TODO: DETERMINE CARRY
-                            WriteBackResult();
-                        }
-                        return true;
-                    }
                 case CogRunState.WaitPinsEqual:
-                    {
-                        uint maskedIn = (Carry ? CpuHost.INB : CpuHost.INA) & SourceValue;
-                        if (maskedIn == DestinationValue)
-                        {
-                            DataResult = maskedIn;
-                            Zero = (maskedIn == 0);
-                            // TODO: DETERMINE CARRY
-                            WriteBackResult();
-                            return true;
-                        }
+                {
+                    uint maskedIn = (CarryFlag ? CpuHost.INB : CpuHost.INA) & SourceValue;
+                    if (maskedIn != DestinationValue)
                         return true;
-                    }
-                case CogRunState.WaitCount:
-                    {
-                        long target = CpuHost.Counter;
-
-                        if (DestinationValue == target)
-                        {
-                            target += SourceValue;
-                            DataResult = (uint)target;
-                            CarryResult = target > 0xFFFFFFFF;
-                            ZeroResult = (DataResult == 0);
-                            WriteBackResult();
-                            return true;
-                        }
-                        return true;
-                    }
-                case CogRunState.WaitVideo:
-                    // Logic Changed: GetVideoData now clears VAIT_VID state
-                    // if (Video.Ready)
-                    // {
-                    //     Video.Feed(DestinationValue, SourceValue);
-                    //     // TODO: Determine carry, zero, and result
-                    //     WriteBackResult();
-                    // }
+                    DataResult = maskedIn;
+                    ZeroFlag = maskedIn == 0;
+                    // TODO: DETERMINE CARRY
+                    WriteBackResult();
                     return true;
-
+                }
+                case CogRunState.WaitPinsNotEqual:
+                {
+                    uint maskedIn = (CarryFlag ? CpuHost.INB : CpuHost.INA) & SourceValue;
+                    if (maskedIn == DestinationValue)
+                        return true;
+                    DataResult = maskedIn;
+                    ZeroFlag = maskedIn == 0;
+                    // TODO: DETERMINE CARRY
+                    WriteBackResult();
+                    return true;
+                }
+                case CogRunState.WaitCount:
+                {
+                    long target = CpuHost.Counter;
+                    if (DestinationValue != target)
+                        return true;
+                    target += SourceValue;
+                    DataResult = (uint)target;
+                    CarryResult = target > 0xFFFFFFFF;
+                    ZeroResult = DataResult == 0;
+                    WriteBackResult();
+                    return true;
+                }
+                case CogRunState.WaitVideo:
+                    // Logic Changed by pull request #18: GetVideoData() now clears VAIT_VID state
+                    return true;
                 // Non-execute states are ignored
                 default:
                     return true;
             }
 
             ProgramCursor = (ProgramCursor + 1) & MaskCogMemory;
-
             FrameFlag = FrameState.FrameNone;
-
             InstructionCode = (Assembly.InstructionCodes)(Operation & 0xFC000000);
             ConditionCode = (Assembly.ConditionCodes)((Operation & 0x003C0000) >> 18);
-
             WriteZero = (Operation & 0x02000000) != 0;
             WriteCarry = (Operation & 0x01000000) != 0;
             WriteResult = (Operation & 0x00800000) != 0;
             ImmediateValue = (Operation & 0x00400000) != 0;
-
             SourceValue = Operation & MaskCogMemory;
-
             if (!ImmediateValue)
                 SourceValue = ReadLong(SourceValue);
-
             Destination = (Operation >> 9) & MaskCogMemory;
             DestinationValue = ReadLong(Destination);
             // changed to NOT ConditionCompare() to recover intuitive return value on that function
-            if (!ConditionCompare(ConditionCode, Zero, Carry))
+            if (!ConditionCompare(ConditionCode, ZeroFlag, CarryFlag))
             {
                 Operation = ReadLong(ProgramCursor);
                 State = CogRunState.WaitPreWait;
@@ -267,11 +274,9 @@ namespace Gear.EmulationCore
                 case Assembly.InstructionCodes.ENC:
                 case Assembly.InstructionCodes.ONES:
                     // TODO: RAISE INVALID OP CODE HERE
-
                     DataResult = 0;
-                    Carry = true;
-                    Zero = true;
-
+                    CarryFlag = true;
+                    ZeroFlag = true;
                     State = CogRunState.WaitCycles;
                     StateCount = 4;
                     break;
@@ -294,7 +299,7 @@ namespace Gear.EmulationCore
                     break;
                 case Assembly.InstructionCodes.HUBOP:
                     State = CogRunState.WaitPreWait;
-                    NextState = CogRunState.HubHubOperation;
+                    NextState = CogRunState.HubOperation;
                     StateCount = 6;
                     break;
 
@@ -599,7 +604,11 @@ namespace Gear.EmulationCore
             return ProgramCursor != BreakPointCogCursor;
         }
 
-        override public void GetVideoData (out uint colors, out uint pixels)
+        /// <summary></summary>
+        /// <param name="colors"></param>
+        /// <param name="pixels"></param>
+        /// @pullreq{18} Correct video frame load timing, added video break, fix tab refresh.
+        public override void GetVideoData(out uint colors, out uint pixels)
         {
             colors = DestinationValue;
             pixels = SourceValue;

@@ -28,7 +28,7 @@ using Gear.Propeller;
 namespace Gear.EmulationCore
 {
     /// <summary>States of a %Cog.</summary>
-    /// @version v22.05.03 - Changed enum codes to follow naming conventions.
+    /// @version v22.05.04 - Changed to HubOperation enum code.
     public enum CogRunState : byte
     {
         /// @brief Waiting for instruction to finish executing.
@@ -63,7 +63,7 @@ namespace Gear.EmulationCore
         /// @brief Waiting to read uint.
         HubReadLong,
         /// @brief Waiting to perform hub operation.
-        HubHubOperation
+        HubOperation
     }
 
     /// <summary>Video frame states.</summary>
@@ -237,7 +237,7 @@ namespace Gear.EmulationCore
             {
                 switch (State)
                 {
-                    case CogRunState.HubHubOperation:
+                    case CogRunState.HubOperation:
                     case CogRunState.HubReadByte:
                     case CogRunState.HubReadWord:
                     case CogRunState.HubReadLong:
@@ -430,12 +430,14 @@ namespace Gear.EmulationCore
 
         /// <summary>Execute a clock step in this cog.</summary>
         /// <returns></returns>
+        /// @version v22.05.04 - Adapted to follow the new signature of
+        /// FreqGenerator.Tick().
         public bool Step()
         {
             bool result = DoInstruction();
             // Run our frequency counters
-            _freqAGenerator.Tick(CpuHost.IN);
-            _freqBGenerator.Tick(CpuHost.IN);
+            _freqAGenerator.Tick();
+            _freqBGenerator.Tick();
             result = result && FrameFlag <= FrameBreak;    // false - we hit a breakpoint
             return result;
         }
@@ -469,21 +471,21 @@ namespace Gear.EmulationCore
                 case Assembly.RegisterAddress.INB:
                     return CpuHost.INB;
                 case Assembly.RegisterAddress.CNTA:
-                    return _freqAGenerator.CTR;
+                    return _freqAGenerator.RegisterCTR;
                 case Assembly.RegisterAddress.CNTB:
-                    return _freqBGenerator.CTR;
+                    return _freqBGenerator.RegisterCTR;
                 case Assembly.RegisterAddress.FRQA:
-                    return _freqAGenerator.FRQ;
+                    return _freqAGenerator.RegisterFRQ;
                 case Assembly.RegisterAddress.FRQB:
-                    return _freqBGenerator.FRQ;
+                    return _freqBGenerator.RegisterFRQ;
                 case Assembly.RegisterAddress.PHSA:
-                    return _freqAGenerator.PHS;
+                    return _freqAGenerator.RegisterPHS;
                 case Assembly.RegisterAddress.PHSB:
-                    return _freqBGenerator.PHS;
+                    return _freqBGenerator.RegisterPHS;
                 case Assembly.RegisterAddress.VCFG:
-                    return _videoGenerator.CFG;
+                    return _videoGenerator.RegisterCFG;
                 case Assembly.RegisterAddress.VSCL:
-                    return _videoGenerator.SCL;
+                    return _videoGenerator.RegisterSCL;
                 default:
                     return _cogMemory[address & MaskCogMemory];
             }
@@ -513,28 +515,28 @@ namespace Gear.EmulationCore
                 case Assembly.RegisterAddress.INB:
                     return;
                 case Assembly.RegisterAddress.CNTA:
-                    _freqAGenerator.CTR = data;
+                    _freqAGenerator.RegisterCTR = data;
                     break;
                 case Assembly.RegisterAddress.CNTB:
-                    _freqBGenerator.CTR = data;
+                    _freqBGenerator.RegisterCTR = data;
                     break;
                 case Assembly.RegisterAddress.FRQA:
-                    _freqAGenerator.FRQ = data;
+                    _freqAGenerator.RegisterFRQ = data;
                     break;
                 case Assembly.RegisterAddress.FRQB:
-                    _freqBGenerator.FRQ = data;
+                    _freqBGenerator.RegisterFRQ = data;
                     break;
                 case Assembly.RegisterAddress.PHSA:
-                    _freqAGenerator.PHS = data;
+                    _freqAGenerator.RegisterPHS = data;
                     break;
                 case Assembly.RegisterAddress.PHSB:
-                    _freqBGenerator.PHS = data;
+                    _freqBGenerator.RegisterPHS = data;
                     break;
                 case Assembly.RegisterAddress.VCFG:
-                    _videoGenerator.CFG = data;
+                    _videoGenerator.RegisterCFG = data;
                     break;
                 case Assembly.RegisterAddress.VSCL:
-                    _videoGenerator.SCL = data;
+                    _videoGenerator.RegisterSCL = data;
                     break;
                 default:
                     _cogMemory[address & MaskCogMemory] = data;

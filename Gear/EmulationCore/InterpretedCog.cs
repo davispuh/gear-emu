@@ -25,6 +25,7 @@ using Gear.Propeller;
 using System;
 using System.Collections.Generic;
 
+// ReSharper disable InvalidXmlDocComment
 namespace Gear.EmulationCore
 {
     /// @brief Derived class from Cog, to emulate running SPIN code.
@@ -215,121 +216,6 @@ namespace Gear.EmulationCore
         /// @todo [Legacy] RAISE AN EXCEPTION on Executed undefined, OpCode 0x14
         /// @todo [Legacy] Should complain on invalid op if MSB is set, OpCode 0x37
         /// @todo [Legacy] ALERT ON BAD OP on Executed undefined, OpCode 0x3C
-        ///
-        /// Spin ByteCodes Summary
-        /// ======================
-        /// |OpCode set|Byte      |Description                                               |Extra bytes              ||
-        /// |:--------:|---------:|:---------------------------------------------------------|:------------|-----------:|
-        /// |0x00..0x3F|`00xxxxxx`|[Special purpose ops](@ref SpecialOps)                    |                         ||
-        /// |0x40..0x7F|`01bxxxqq`|[Variable ops, Fast access VAR and LOC](@ref VariableOps) |             |+1 if assign|
-        /// |0x80..0xDF|`1ssibbqq`|[Memory ops, access MEM, OBJ, VAR and LOC](@ref MemoryOps)|+1..2 if base|+1 if assign|
-        /// |0xE0..0xFF|`111xxxxx`|[Math ops, Unary and Binary operators](@ref MathOpCodes)  |                         ||
-        /// Source: [Cluso99's SPIN bytecode document revision RR20080721,
-        /// on %Propeller 1 Forum](https://forums.parallax.com/discussion/comment/796018/#Comment_796018)
-        ///
-        /// 0x00..0x3F Special purpose OpCodes {#SpecialOps}
-        /// ==================================
-        /// Bytecode Table: 48 operations
-        /// -----------------------------
-        /// |POP method used|Set| Op |Byte      |Description                  |Pops|Push|Extra bytes       ||
-        /// |:--------------|:-:|:--:|:--------:|:----------------------------|:--:|:--:|:-------|:--------:|
-        /// |               | 0 |`00`|`000000tp`|`drop anchor                `|    |    |(`t=try, !p=push`)||
-        /// |               | ^ |`01`|`000000tp`|`drop anchor                `|    |    |(`t=try, !p=push`)||
-        /// |               | ^ |`02`|`000000tp`|`drop anchor                `|    |    |(`t=try, !p=push`)||
-        /// |               | ^ |`03`|`000000tp`|`drop anchor                `|    |    |(`t=try, !p=push`)||
-        /// |               | 1 |`04`|`00000100`|`jmp                        `|    |    |+1..2 address (see [Note 1](#N1SpecialOpcodes))||
-        /// |               | ^ |`05`|`00000101`|`call sub                   `|    |    |+1 sub            ||
-        /// |               | ^ |`06`|`00000110`|`call obj.sub               `|    |    |+2 obj+sub        ||
-        /// |popx           | ^ |`07`|`00000111`|`call obj[].sub             `|1   |    |+2 obj+sub        ||
-        /// |popx           | 2 |`08`|`00001000`|`tjz                        `|1   | 0/1|+1..2 address (see [Note 1](#N1SpecialOpcodes))||
-        /// |popx           | ^ |`09`|`00001001`|`djnz                       `|1   | 0/1|     ^            ||
-        /// |popx           | ^ |`0A`|`00001010`|`jz                         `|1   |    |     ^            ||
-        /// |popx           | ^ |`0B`|`00001011`|`jnz                        `|1   |    |     ^            ||
-        /// |popyx          | 3 |`0C`|`00001100`|`casedone                   `|2   |    |     ^            ||
-        /// |popx           | ^ |`0D`|`00001101`|`value case                 `|1   |    |     ^            ||
-        /// |popyx          | ^ |`0E`|`00001110`|`range case                 `|2   |    |     ^            ||
-        /// |popayx         | ^ |`0F`|`00001111`|`lookdone                   `|3   |   1|                  ||
-        /// |popx           | 4 |`10`|`00010000`|`value lookup               `|1   |    |                  ||
-        /// |popx           | ^ |`11`|`00010001`|`value lookdown             `|1   |    |                  ||
-        /// |popyx          | ^ |`12`|`00010010`|`range lookup               `|2   |    |                  ||
-        /// |popyx          | ^ |`13`|`00010011`|`range lookdown             `|2   |    |                  ||
-        /// |popx           | 5 |`14`|`00010100`|`pop                        `|1+  |    |    ???1+         ||
-        /// |               | ^ |`15`|`00010101`|`run                        `|    |    |                  ||
-        /// |popx           | ^ |`16`|`00010110`|`STRSIZE(string)            `|1   |   1|                  ||
-        /// |popyx          | ^ |`17`|`00010111`|`STRCOMP(stringa,stringb)   `|2   |   1|                  ||
-        /// |popayx         | 6 |`18`|`00011000`|`BYTEFILL(start,value,count)`|3   |    |                  ||
-        /// |popayx         | ^ |`19`|`00011001`|`WORDFILL(start,value,count)`|3   |    |                  ||
-        /// |popayx         | ^ |`1A`|`00011010`|`LONGFILL(start,value,count)`|3   |    |                  ||
-        /// |popayx         | ^ |`1B`|`00011011`|`WAITPEQ(data,mask,port)    `|3   |    |                  ||
-        /// |popayx         | 7 |`1C`|`00011100`|`BYTEMOVE(to,from,count)    `|3   |    |                  ||
-        /// |popayx         | ^ |`1D`|`00011101`|`WORDMOVE(to,from,count)    `|3   |    |                  ||
-        /// |popayx         | ^ |`1E`|`00011110`|`LONGMOVE(to,from,count)    `|3   |    |                  ||
-        /// |popayx         | ^ |`1F`|`00011111`|`WAITPNE(data,mask,port)    `|3   |    |                  ||
-        /// |popyx          | 8 |`20`|`00100000`|`CLKSET(mode,freq)          `|2   |    |                  ||
-        /// |popx           | ^ |`21`|`00100001`|`COGSTOP(id)                `|1   |    |                  ||
-        /// |popx           | ^ |`22`|`00100010`|`LOCKRET(id)                `|1   |    |                  ||
-        /// |popx           | ^ |`23`|`00100011`|`WAITCNT(count)             `|1   |    |                  ||
-        /// |popx           | 9 |`24`|`001001qq`|`SPR[nibble] op   push      `|1   |    |      |+1 if assign|
-        /// |popx           | ^ |`25`|`001001qq`|`SPR[nibble] op   pop       `|1   |    |      |+1 if assign|
-        /// |popx           | ^ |`26`|`001001qq`|`SPR[nibble] op   using     `|1   |    |      |+1 if assign|
-        /// |popyx          | ^ |`27`|`00100111`|`WAITVID(colors,pixels)     `|2   |    |                  ||
-        /// |popayx         | A |`28`|`00101p00`|`COGINIT(id,adr,ptr)        `|3   |   1|(`!p=push`)       ||
-        /// |               | ^ |`29`|`00101p01`|`LOCKNEW                    `|    |   1|(`!p=push`)       ||
-        /// |popx           | ^ |`2A`|`00101p10`|`LOCKSET(id)                `|1   |   1|(`!p=push`)       ||
-        /// |popx           | ^ |`2B`|`00101p11`|`LOCKCLR(id)                `|1   |   1|(`!p=push`)       ||
-        /// |popayx         | B |`2C`|`00101p00`|`COGINIT(id,adr,ptr)        `|3   |   0|(`no push`)       ||
-        /// |               | ^ |`2D`|`00101p01`|`LOCKNEW                    `|    |   0|(`no push`)       ||
-        /// |popx           | ^ |`2E`|`00101p10`|`LOCKSET(id)                `|1   |   0|(`no push`)       ||
-        /// |popx           | ^ |`2F`|`00101p11`|`LOCKCLR(id)                `|1   |   0|(`no push`)       ||
-        /// |               | C |`30`|`00110000`|`ABORT                      `|    |    |                  ||
-        /// |popx           | ^ |`31`|`00110001`|`ABORT value                `|1   |    |                  ||
-        /// |               | ^ |`32`|`00110010`|`RETURN                     `|    |    |                  ||
-        /// |popx           | ^ |`33`|`00110011`|`RETURN value               `|1   |    |                  ||
-        /// |               | D |`34`|`001101cc`|`PUSH #-1                   `|    |   1|                  ||
-        /// |               | ^ |`35`|`001101cc`|`PUSH #0                    `|    |   1|                  ||
-        /// |               | ^ |`36`|`001101cc`|`PUSH #1                    `|    |   1|                  ||
-        /// |               | ^ |`37`|`00110111`|`PUSH #kp                   `|    |   1|+1 maskdata (see [Note 2](#N2SpecialOpcodes))||
-        /// |               | E |`38`|`001110bb`|`PUSH #k1 (1 byte)          `|    |   1|+1 constant                                  ||
-        /// |               | ^ |`39`|`001110bb`|`PUSH #k2 (2 bytes)         `|    |   1|+2 constant  (@#k1<<8 + @#k2)                ||
-        /// |               | ^ |`3A`|`001110bb`|`PUSH #k3 (3 bytes)         `|    |   1|+3 constant  (@#k1<<16 + @#k2<<8 + @#k3)     ||
-        /// |               | ^ |`3B`|`001110bb`|`PUSH #k4 (4 bytes)         `|    |   1|+4 constant  (@#k1<<24 + @#k2<<16 + @#k3<<8 + @#k4)||
-        /// |               | F |`3C`|`00111100`|`<unused>                   `|    |    |                                                   ||
-        /// |popx           | ^ |`3D`|`00111101`|`register[bit]      op      `|1   |    |+1 reg+op                                      |+1 if assign|
-        /// |popyx          | ^ |`3E`|`00111110`|`register[bit..bit] op      `|2   |    |+1 reg+op                                      |+1 if assign|
-        /// |               | ^ |`3F`|`00111111`|`register           op      `|    |    |+1 reg+op (see [Note 3](@ref N3SpecialOpcodes))|+1 if assign|
-        /// Note 1: Address bytecodes (sign or zero extended to a long address) {#N1SpecialOpcodes}
-        /// -------------------------------------------------------------------
-        /// These (1 or 2) bytecodes are used to form a long address for the CASE, CASER and memory operations.
-        /// |Structure                                 |||||
-        /// |:--:|:--:|:------------:|--|:----------------:|
-        /// |` x`|` s`|` a a a a a a`|  |` a a a a a a a a`|
-        /// |`bF`|`bE`|`bDbCbBbAb9b8`|  |`b7b6b5b4b3b2b1b0`|
-        /// where
-        /// |Bit(s)     |Description     |
-        /// |:---------:|:---------------|
-        /// |`    x    `|`0`= 1 byte only|
-        /// |     ^     |`1`= 2 bytes    |
-        /// |Note: if the optional second byte is used then the first byte will be shifted left by 8 bits.||
-        /// |`    s    `|`0`= higher order bits will be zero.|
-        /// |     ^     |`1`= if sign-extend then 1's will be propagated to the left, otherwise 0's will be propagated to the left.|
-        ///
-        /// Note 2: Details of 0x37 operation {#N2SpecialOpcodes}
-        /// ---------------------------------
-        /// |Structure: Additional byte used as a constant||||
-        /// |:--:|:--:|:--:|:---------:|
-        /// |`-` |`n` |`d` |` r r r r r`|
-        /// |`b7`|`b6`|`b5`|`b4b3b2b1b0`|
-        /// where
-        /// |Bit(s)     |Description                                    |
-        /// |:---------:|:----------------------------------------------|
-        /// |`    n    `|`0: nothing                                   `|
-        /// |     ^     |`1: X := !X (invert/not)                      `|
-        /// |`    d    `|`0: nothing                                   `|
-        /// |     ^     |`1: X := X - 1 (decrement)                    `|
-        /// |     ^     |`   then...                                   `|
-        /// |`r r r r r`|`X := 2 << rrrrr (#2 rotate left "rrrrr" bits)`|
-        /// |     ^     |`   then...                                   `|
-        ///
         public override bool DoInstruction()
         {
             switch (State)
@@ -879,6 +765,121 @@ namespace Gear.EmulationCore
             }
             return ProgramCursor != BreakPointCogCursor;
         }
+        /// @fn public override bool DoInstruction()
+        /// ___
+        /// ## Spin ByteCodes Summary
+        /// |OpCode set|Byte      |Description                                               |Extra bytes              ||
+        /// |:--------:|---------:|:---------------------------------------------------------|:------------|-----------:|
+        /// |0x00..0x3F|`00xxxxxx`|[Special purpose ops](@ref SpecialOps)                    |                         ||
+        /// |0x40..0x7F|`01bxxxqq`|[Variable ops, Fast access VAR and LOC](@ref VariableOps) |             |+1 if assign|
+        /// |0x80..0xDF|`1ssibbqq`|[Memory ops, access MEM, OBJ, VAR and LOC](@ref MemoryOps)|+1..2 if base|+1 if assign|
+        /// |0xE0..0xFF|`111xxxxx`|[Math ops, Unary and Binary operators](@ref MathOpCodes)  |                         ||
+        /// Source: [Cluso99's SPIN bytecode document revision RR20080721,
+        /// on %Propeller 1 Forum](https://forums.parallax.com/discussion/comment/796018/#Comment_796018)
+        ///
+        /// ## 0x00..0x3F Special purpose OpCodes {#SpecialOps}
+        ///
+        /// ### Bytecode Table: 48 operations
+        ///  |POP method used|Set| Op |Byte      |Description                  |Pops|Push|Extra bytes       ||
+        /// |:--------------|:-:|:--:|:--------:|:----------------------------|:--:|:--:|:-------|:--------:|
+        /// |               | 0 |`00`|`000000tp`|`drop anchor                `|    |    |(`t=try, !p=push`)||
+        /// |               | ^ |`01`|`000000tp`|`drop anchor                `|    |    |(`t=try, !p=push`)||
+        /// |               | ^ |`02`|`000000tp`|`drop anchor                `|    |    |(`t=try, !p=push`)||
+        /// |               | ^ |`03`|`000000tp`|`drop anchor                `|    |    |(`t=try, !p=push`)||
+        /// |               | 1 |`04`|`00000100`|`jmp                        `|    |    |+1..2 address (see [Note 1](#N1SpecialOpcodes))||
+        /// |               | ^ |`05`|`00000101`|`call sub                   `|    |    |+1 sub            ||
+        /// |               | ^ |`06`|`00000110`|`call obj.sub               `|    |    |+2 obj+sub        ||
+        /// |popx           | ^ |`07`|`00000111`|`call obj[].sub             `|1   |    |+2 obj+sub        ||
+        /// |popx           | 2 |`08`|`00001000`|`tjz                        `|1   | 0/1|+1..2 address (see [Note 1](#N1SpecialOpcodes))||
+        /// |popx           | ^ |`09`|`00001001`|`djnz                       `|1   | 0/1|     ^            ||
+        /// |popx           | ^ |`0A`|`00001010`|`jz                         `|1   |    |     ^            ||
+        /// |popx           | ^ |`0B`|`00001011`|`jnz                        `|1   |    |     ^            ||
+        /// |popyx          | 3 |`0C`|`00001100`|`casedone                   `|2   |    |     ^            ||
+        /// |popx           | ^ |`0D`|`00001101`|`value case                 `|1   |    |     ^            ||
+        /// |popyx          | ^ |`0E`|`00001110`|`range case                 `|2   |    |     ^            ||
+        /// |popayx         | ^ |`0F`|`00001111`|`lookdone                   `|3   |   1|                  ||
+        /// |popx           | 4 |`10`|`00010000`|`value lookup               `|1   |    |                  ||
+        /// |popx           | ^ |`11`|`00010001`|`value lookdown             `|1   |    |                  ||
+        /// |popyx          | ^ |`12`|`00010010`|`range lookup               `|2   |    |                  ||
+        /// |popyx          | ^ |`13`|`00010011`|`range lookdown             `|2   |    |                  ||
+        /// |popx           | 5 |`14`|`00010100`|`pop                        `|1+  |    |    ???1+         ||
+        /// |               | ^ |`15`|`00010101`|`run                        `|    |    |                  ||
+        /// |popx           | ^ |`16`|`00010110`|`STRSIZE(string)            `|1   |   1|                  ||
+        /// |popyx          | ^ |`17`|`00010111`|`STRCOMP(stringa,stringb)   `|2   |   1|                  ||
+        /// |popayx         | 6 |`18`|`00011000`|`BYTEFILL(start,value,count)`|3   |    |                  ||
+        /// |popayx         | ^ |`19`|`00011001`|`WORDFILL(start,value,count)`|3   |    |                  ||
+        /// |popayx         | ^ |`1A`|`00011010`|`LONGFILL(start,value,count)`|3   |    |                  ||
+        /// |popayx         | ^ |`1B`|`00011011`|`WAITPEQ(data,mask,port)    `|3   |    |                  ||
+        /// |popayx         | 7 |`1C`|`00011100`|`BYTEMOVE(to,from,count)    `|3   |    |                  ||
+        /// |popayx         | ^ |`1D`|`00011101`|`WORDMOVE(to,from,count)    `|3   |    |                  ||
+        /// |popayx         | ^ |`1E`|`00011110`|`LONGMOVE(to,from,count)    `|3   |    |                  ||
+        /// |popayx         | ^ |`1F`|`00011111`|`WAITPNE(data,mask,port)    `|3   |    |                  ||
+        /// |popyx          | 8 |`20`|`00100000`|`CLKSET(mode,freq)          `|2   |    |                  ||
+        /// |popx           | ^ |`21`|`00100001`|`COGSTOP(id)                `|1   |    |                  ||
+        /// |popx           | ^ |`22`|`00100010`|`LOCKRET(id)                `|1   |    |                  ||
+        /// |popx           | ^ |`23`|`00100011`|`WAITCNT(count)             `|1   |    |                  ||
+        /// |popx           | 9 |`24`|`001001qq`|`SPR[nibble] op   push      `|1   |    |      |+1 if assign|
+        /// |popx           | ^ |`25`|`001001qq`|`SPR[nibble] op   pop       `|1   |    |      |+1 if assign|
+        /// |popx           | ^ |`26`|`001001qq`|`SPR[nibble] op   using     `|1   |    |      |+1 if assign|
+        /// |popyx          | ^ |`27`|`00100111`|`WAITVID(colors,pixels)     `|2   |    |                  ||
+        /// |popayx         | A |`28`|`00101p00`|`COGINIT(id,adr,ptr)        `|3   |   1|(`!p=push`)       ||
+        /// |               | ^ |`29`|`00101p01`|`LOCKNEW                    `|    |   1|(`!p=push`)       ||
+        /// |popx           | ^ |`2A`|`00101p10`|`LOCKSET(id)                `|1   |   1|(`!p=push`)       ||
+        /// |popx           | ^ |`2B`|`00101p11`|`LOCKCLR(id)                `|1   |   1|(`!p=push`)       ||
+        /// |popayx         | B |`2C`|`00101p00`|`COGINIT(id,adr,ptr)        `|3   |   0|(`no push`)       ||
+        /// |               | ^ |`2D`|`00101p01`|`LOCKNEW                    `|    |   0|(`no push`)       ||
+        /// |popx           | ^ |`2E`|`00101p10`|`LOCKSET(id)                `|1   |   0|(`no push`)       ||
+        /// |popx           | ^ |`2F`|`00101p11`|`LOCKCLR(id)                `|1   |   0|(`no push`)       ||
+        /// |               | C |`30`|`00110000`|`ABORT                      `|    |    |                  ||
+        /// |popx           | ^ |`31`|`00110001`|`ABORT value                `|1   |    |                  ||
+        /// |               | ^ |`32`|`00110010`|`RETURN                     `|    |    |                  ||
+        /// |popx           | ^ |`33`|`00110011`|`RETURN value               `|1   |    |                  ||
+        /// |               | D |`34`|`001101cc`|`PUSH #-1                   `|    |   1|                  ||
+        /// |               | ^ |`35`|`001101cc`|`PUSH #0                    `|    |   1|                  ||
+        /// |               | ^ |`36`|`001101cc`|`PUSH #1                    `|    |   1|                  ||
+        /// |               | ^ |`37`|`00110111`|`PUSH #kp                   `|    |   1|+1 maskdata (see [Note 2](#N2SpecialOpcodes))||
+        /// |               | E |`38`|`001110bb`|`PUSH #k1 (1 byte)          `|    |   1|+1 constant                                  ||
+        /// |               | ^ |`39`|`001110bb`|`PUSH #k2 (2 bytes)         `|    |   1|+2 constant  (@#k1<<8 + @#k2)                ||
+        /// |               | ^ |`3A`|`001110bb`|`PUSH #k3 (3 bytes)         `|    |   1|+3 constant  (@#k1<<16 + @#k2<<8 + @#k3)     ||
+        /// |               | ^ |`3B`|`001110bb`|`PUSH #k4 (4 bytes)         `|    |   1|+4 constant  (@#k1<<24 + @#k2<<16 + @#k3<<8 + @#k4)||
+        /// |               | F |`3C`|`00111100`|`<unused>                   `|    |    |                                                   ||
+        /// |popx           | ^ |`3D`|`00111101`|`register[bit]      op      `|1   |    |+1 reg+op                                      |+1 if assign|
+        /// |popyx          | ^ |`3E`|`00111110`|`register[bit..bit] op      `|2   |    |+1 reg+op                                      |+1 if assign|
+        /// |               | ^ |`3F`|`00111111`|`register           op      `|    |    |+1 reg+op (see [Note 3](@ref N3SpecialOpcodes))|+1 if assign|
+        ///
+        /// #### Note 1: Address bytecodes (sign or zero extended to a long address) {#N1SpecialOpcodes}
+        /// These (1 or 2) bytecodes are used to form a long address for the CASE, CASER and memory operations.
+        /// |Structure                                 |||||
+        /// |:--:|:--:|:------------:|--|:----------------:|
+        /// |` x`|` s`|` a a a a a a`|  |` a a a a a a a a`|
+        /// |`bF`|`bE`|`bDbCbBbAb9b8`|  |`b7b6b5b4b3b2b1b0`|
+        /// where
+        /// |Bit(s)     |Description     |
+        /// |:---------:|:---------------|
+        /// |`    x    `|`0`= 1 byte only|
+        /// |     ^     |`1`= 2 bytes    |
+        /// |Note: if the optional second byte is used then the first byte will be shifted left by 8 bits.||
+        /// |`    s    `|`0`= higher order bits will be zero.|
+        /// |     ^     |`1`= if sign-extend then 1's will be propagated to the left, otherwise 0's will be propagated to the left.|
+        ///
+        /// #### Note 2: Details of 0x37 operation {#N2SpecialOpcodes}
+        /// |Structure: Additional byte used as a constant||||
+        /// |:--:|:--:|:--:|:---------:|
+        /// |`-` |`n` |`d` |` r r r r r`|
+        /// |`b7`|`b6`|`b5`|`b4b3b2b1b0`|
+        /// where
+        /// |Bit(s)     |Description                                    |
+        /// |:---------:|:----------------------------------------------|
+        /// |`    n    `|`0: nothing                                   `|
+        /// |     ^     |`1: X := !X (invert/not)                      `|
+        /// |`    d    `|`0: nothing                                   `|
+        /// |     ^     |`1: X := X - 1 (decrement)                    `|
+        /// |     ^     |`   then...                                   `|
+        /// |`r r r r r`|`X := 2 << rrrrr (#2 rotate left "rrrrr" bits)`|
+        /// |     ^     |`   then...                                   `|
+        ///
+        // End extra documentation for Method public override bool DoInstruction()
+        // --------------------------------------------------------------------
 
         /// <summary></summary>
         /// <param name="colors"></param>
@@ -938,18 +939,6 @@ namespace Gear.EmulationCore
         /// @version v22.05.04 - Parameter name changed to follow naming
         /// conventions.
         /// @todo [Legacy] COMPLAIN ABOUT INVALID OP for 0x3F operations of SPIN bytecode
-        ///
-        /// Note 3: Details of 0x3F operations {#N3SpecialOpcodes}
-        /// ==================================
-        /// Read additional byte that follow a cog memory op (<c>0x3F</c>).
-        /// |Op  |2nd op| Description |
-        /// |:--:|:----:|-------------|
-        /// |`3F`|`80+n`|`PUSH    spr`|
-        /// |  ^ |`A0+n`|`POP     spr`|
-        /// |  ^ |`C0+n`|`USING   spr`|
-        /// Source: [Cluso99's SPIN bytecode document revision RR20080721,
-        /// on %Propeller 1 Forum](https://forums.parallax.com/discussion/comment/796018/#Comment_796018)
-        ///
         private void CogMemoryOp(uint mask, int lowestBit)
         {
             byte op = CpuHost.DirectReadByte(ProgramCursor++);
@@ -976,6 +965,21 @@ namespace Gear.EmulationCore
                     break;
             }
         }
+        /// @fn private void CogMemoryOp(uint mask, int lowestBit)
+        /// ___
+        /// ## Note 3: Details of 0x3F operations {#N3SpecialOpcodes}
+        /// Read additional byte that follow a cog memory op (<c>0x3F</c>).
+        /// |Op  |2nd op| Description |
+        /// |:--:|:----:|-------------|
+        /// |`3F`|`80+n`|`PUSH    spr`|
+        /// |  ^ |`A0+n`|`POP     spr`|
+        /// |  ^ |`C0+n`|`USING   spr`|
+        /// Source: [Cluso99's SPIN bytecode document revision RR20080721,
+        /// on %Propeller 1 Forum](https://forums.parallax.com/discussion/comment/796018/#Comment_796018)
+        ///
+        // End extra documentation for Method private void CogMemoryOp(uint mask, int lowestBit)
+        // --------------------------------------------------------------------
+
 
         /// @brief Execute a bytecode operation from math group.
         /// @param operation Operation code to execute, from range: <c>0xE0..0xFF</c>.
@@ -984,11 +988,161 @@ namespace Gear.EmulationCore
         /// @return Result from math operation.
         /// @version v22.05.04 - Parameter name changed to follow naming
         /// conventions.
+        private uint BaseMathOp(byte operation, bool swapValues, uint initial)
+        {
+            // --- Unary Operators ---
+            switch (operation)
+            {
+                case 0x06:  // Negate
+                    return (uint)-(int)initial;
+                case 0x07:  // Complement
+                    return ~initial;
+                case 0x09:  // Absolute Value
+                {
+                    int mask = (int)initial;
+                    return mask < 0 ?
+                        (uint)-mask :
+                        (uint)mask;
+                }
+                case 0x11:  // Encode (MSB set)
+                    for (int i = 31; i >= 0; i--)
+                        if (((initial >> i) & 1) != 0)
+                            return (uint)(i + 1);
+                    return 0;
+                case 0x13:  // Decode
+                    return (uint)1 << (int)(initial & 0x1F);
+                case 0x18:  // Square Root
+                    return (uint)Math.Sqrt(initial);
+                case 0x1F:    // Logical Not
+                    return initial == 0 ?
+                        0xFFFFFFFF :
+                        0x0;
+            }
+
+            // --- Binary Operators ---
+            uint left;
+            uint right;
+            if (swapValues)
+            {
+                left = PopStack();
+                right = initial;
+            }
+            else
+            {
+                left = initial;
+                right = PopStack();
+            }
+
+            switch (operation)
+            {
+                case 0x00:  // Rotate right
+                {
+                    int shift = (int)right;
+                    ulong mask = left;
+                    mask |= mask << 32;
+                    mask >>= shift;
+                    return (uint)mask;
+                }
+                case 0x01:  // Rotate left
+                {
+                    int shift = (int)right;
+                    ulong mask = left;
+                    mask |= mask << 32;
+                    mask <<= shift;
+                    return (uint)(mask >> 32);
+                }
+                case 0x02:  // Shift right
+                    return left >> (int)right;
+                case 0x03:  // Shift left
+                    return left << (int)right;
+                case 0x04:  // Limit Min
+                    return (int)left < (int)right ?
+                        right :
+                        left;
+                case 0x05:  // Limit Max
+                    return (int)left > (int)right ?
+                        right :
+                        left;
+                case 0x08:  // Bitwise AND
+                    return right & left;
+                case 0x0A:  // Bitwise OR
+                    return right | left;
+                case 0x0B:  // Bitwise Exclusive-Or
+                    return right ^ left;
+                case 0x0C:  // Add
+                    return (uint)((int)left + (int)right);
+                case 0x0D:  // Subtract
+                    return (uint)((int)left - (int)right);
+                case 0x0E:  // Arithmetic shift right
+                {
+                    int shift = (int)right;
+                    ulong mask = left;
+                    if ((mask & 0x80000000) != 0)
+                        mask |= 0xFFFFFFFF00000000;
+                    mask >>= shift;
+                    return (uint)mask;
+                }
+                case 0x0F:  // Bit reverse
+                {
+                    uint mask = 0;
+                    int bits = (int)right;
+                    for (int i = 0; bits > 0; bits--, i++)
+                        mask |= ((left >> i) & 1) << (bits - 1);
+                    return mask;
+                }
+                case 0x10:  // Logical AND
+                    return right != 0 && left != 0 ?
+                        0xFFFFFFFF :
+                        0x0;
+                case 0x12:  // Logical OR
+                    return right != 0 || left != 0 ?
+                        0xFFFFFFFF :
+                        0x0;
+                case 0x14:  // Multiply
+                    return (uint)((int)left * (int)right);
+                case 0x15:  // Multiply HI
+                    return (uint)(((long)(int)left * (long)(int)right) >> 32);
+                case 0x16:  // Divide
+                    if (right == 0)
+                        return 0xFFFFFFFF;
+                    return (uint)((int)left / (int)right);
+                case 0x17:  // Modulo
+                    if (right == 0)
+                        return 0xFFFFFFFF;
+                    return (uint)((int)left % (int)right);
+                case 0x19:  // Less
+                    return (int)left < (int)right ?
+                        0xFFFFFFFF :
+                        0x0;
+                case 0x1A:  // Greater
+                    return (int)left > (int)right ?
+                        0xFFFFFFFF :
+                        0x0;
+                case 0x1B:  // Not Equal
+                    return (int)left != (int)right ?
+                        0xFFFFFFFF :
+                        0x0;
+                case 0x1C:  // Equal
+                    return (int)left == (int)right ?
+                        0xFFFFFFFF :
+                        0x0;
+                case 0x1D:  // Less than or Equal
+                    return (int)left <= (int)right ?
+                        0xFFFFFFFF :
+                        0x0;
+                case 0x1E:  // Greater than or equal
+                    return (int)left >= (int)right ?
+                        0xFFFFFFFF :
+                        0x0;
+            }
+            // Emergency condition: Should never occur
+            return 0;
+        }
+        /// @fn private uint BaseMathOp(byte operation, bool swapValues, uint initial)
+        /// ___
+        /// ## 0xE0..0xFF Math operations OpCodes {#MathOpCodes}
         ///
-        /// 0xE0..0xFF Math operations OpCodes {#MathOpCodes}
-        /// ==================================
-        /// 1. Regular math operation
-        /// -------------------------
+        /// ### 1. Regular math operation
         /// |Structure: Math OpCodes||
         /// |:-----:|:-----------:|
         /// |` 1 1 1`|` q q q q q`|
@@ -999,8 +1153,7 @@ namespace Gear.EmulationCore
         /// |`1 1 1`    |Fixed bits equivalent to `0xE0`|
         /// |`q q q q q`|Bits on table                  |
         ///
-        /// 2. Math Assigment operation (USING)
-        /// -----------------------------------
+        /// ### 2. Math Assigment operation (USING)
         /// When an operation in Memory or Variables ops groups define USING 2nd OpCode,
         /// the math asignment use a different format.
         /// |Structure: Maths OpCodes, "op2"||
@@ -1016,8 +1169,9 @@ namespace Gear.EmulationCore
         /// |`s`        |`(!s)`|`0`= swap binary args    |
         /// | ^         |  ^   |`1`= no swap             |
         /// |`q q q q q`|Bits on table                 ||
-        /// Bytecode Table: 32 operations
-        /// -----------------------------
+        ///
+        /// ### Bytecode Table: 32 operations
+        ///
         /// <table>
         ///     <tr>
         ///         <th align="center" colspan="2">Equiv instr</th>
@@ -1401,165 +1555,99 @@ namespace Gear.EmulationCore
         /// Source: [Cluso99's SPIN bytecode document revision RR20080721,
         /// on %Propeller 1 Forum](https://forums.parallax.com/discussion/comment/796018/#Comment_796018)
         ///
-        private uint BaseMathOp(byte operation, bool swapValues, uint initial)
-        {
-            // --- Unary Operators ---
-            switch (operation)
-            {
-                case 0x06:  // Negate
-                    return (uint)-(int)initial;
-                case 0x07:  // Complement
-                    return ~initial;
-                case 0x09:  // Absolute Value
-                {
-                    int mask = (int)initial;
-                    return mask < 0 ?
-                        (uint)-mask :
-                        (uint)mask;
-                }
-                case 0x11:  // Encode (MSB set)
-                    for (int i = 31; i >= 0; i--)
-                        if (((initial >> i) & 1) != 0)
-                            return (uint)(i + 1);
-                    return 0;
-                case 0x13:  // Decode
-                    return (uint)1 << (int)(initial & 0x1F);
-                case 0x18:  // Square Root
-                    return (uint)Math.Sqrt(initial);
-                case 0x1F:    // Logical Not
-                    return initial == 0 ?
-                        0xFFFFFFFF :
-                        0x0;
-            }
+        // End extra documentation for Method private uint BaseMathOp(byte operation, bool swapValues, uint initial)
+        // --------------------------------------------------------------------
 
-            // --- Binary Operators ---
-            uint left;
-            uint right;
-            if (swapValues)
-            {
-                left = PopStack();
-                right = initial;
-            }
-            else
-            {
-                left = initial;
-                right = PopStack();
-            }
-
-            switch (operation)
-            {
-                case 0x00:  // Rotate right
-                {
-                    int shift = (int)right;
-                    ulong mask = left;
-                    mask |= mask << 32;
-                    mask >>= shift;
-                    return (uint)mask;
-                }
-                case 0x01:  // Rotate left
-                {
-                    int shift = (int)right;
-                    ulong mask = left;
-                    mask |= mask << 32;
-                    mask <<= shift;
-                    return (uint)(mask >> 32);
-                }
-                case 0x02:  // Shift right
-                    return left >> (int)right;
-                case 0x03:  // Shift left
-                    return left << (int)right;
-                case 0x04:  // Limit Min
-                    return (int)left < (int)right ?
-                        right :
-                        left;
-                case 0x05:  // Limit Max
-                    return (int)left > (int)right ?
-                        right :
-                        left;
-                case 0x08:  // Bitwise AND
-                    return right & left;
-                case 0x0A:  // Bitwise OR
-                    return right | left;
-                case 0x0B:  // Bitwise Exclusive-Or
-                    return right ^ left;
-                case 0x0C:  // Add
-                    return (uint)((int)left + (int)right);
-                case 0x0D:  // Subtract
-                    return (uint)((int)left - (int)right);
-                case 0x0E:  // Arithmetic shift right
-                {
-                    int shift = (int)right;
-                    ulong mask = left;
-                    if ((mask & 0x80000000) != 0)
-                        mask |= 0xFFFFFFFF00000000;
-                    mask >>= shift;
-                    return (uint)mask;
-                }
-                case 0x0F:  // Bit reverse
-                {
-                    uint mask = 0;
-                    int bits = (int)right;
-                    for (int i = 0; bits > 0; bits--, i++)
-                        mask |= ((left >> i) & 1) << (bits - 1);
-                    return mask;
-                }
-                case 0x10:  // Logical AND
-                    return right != 0 && left != 0 ?
-                        0xFFFFFFFF :
-                        0x0;
-                case 0x12:  // Logical OR
-                    return right != 0 || left != 0 ?
-                        0xFFFFFFFF :
-                        0x0;
-                case 0x14:  // Multiply
-                    return (uint)((int)left * (int)right);
-                case 0x15:  // Multiply HI
-                    return (uint)(((long)(int)left * (long)(int)right) >> 32);
-                case 0x16:  // Divide
-                    if (right == 0)
-                        return 0xFFFFFFFF;
-                    return (uint)((int)left / (int)right);
-                case 0x17:  // Modulo
-                    if (right == 0)
-                        return 0xFFFFFFFF;
-                    return (uint)((int)left % (int)right);
-                case 0x19:  // Less
-                    return (int)left < (int)right ?
-                        0xFFFFFFFF :
-                        0x0;
-                case 0x1A:  // Greater
-                    return (int)left > (int)right ?
-                        0xFFFFFFFF :
-                        0x0;
-                case 0x1B:  // Not Equal
-                    return (int)left != (int)right ?
-                        0xFFFFFFFF :
-                        0x0;
-                case 0x1C:  // Equal
-                    return (int)left == (int)right ?
-                        0xFFFFFFFF :
-                        0x0;
-                case 0x1D:  // Less than or Equal
-                    return (int)left <= (int)right ?
-                        0xFFFFFFFF :
-                        0x0;
-                case 0x1E:  // Greater than or equal
-                    return (int)left >= (int)right ?
-                        0xFFFFFFFF :
-                        0x0;
-            }
-            // Emergency condition: Should never occur
-            return 0;
-        }
 
         /// @brief Execute a bytecode operation from memory group.
         /// @param operation Operation code to execute, from range: <c>0x80..0xDF</c>.
         /// @version v22.05.04 - Changed parameter name to clarify meaning
         /// of it also changed local variable names to follow naming
         /// conventions or to clarify meaning of it.
+        private void StepMaskedMemoryOp(byte operation)
+        {
+            byte type = (byte)(operation & 0x03);     // Bit[0..1] = POP, PUSH, USING, REFERENCE
+            byte @base = (byte)(operation & 0x0C);    // Bit[2..3] = MAIN, OBJ, VAR, LOCAL
+            byte indexed = (byte)(operation & 0x10);  // Bit[4] = Indexed ?
+            byte size = (byte)(operation & 0x60);     // Bit[5..6] = BYTE, WORD, LONG
+            uint address;
+            switch (@base)
+            {
+                case 0x00:  // Main Memory
+                    address = PopStack();
+                    break;
+                case 0x04:  // Object Memory
+                    address = ObjectFrame + ReadPackedUnsignedWord();
+                    break;
+                case 0x08:  // Variable Memory
+                    address = VariableFrame + ReadPackedUnsignedWord();
+                    break;
+                default:    // Local Memory
+                    address = LocalFrame + ReadPackedUnsignedWord();
+                    break;
+            }
+
+            if (indexed != 0)
+            {
+                if (@base == 0x00)
+                    address = PopStack() + (address << (size >> 5));
+                else
+                    address += PopStack() << (size >> 5);
+            }
+
+            switch (type)
+            {
+                case 0: // PUSH is already done
+                    switch (size)
+                    {
+                        case 0x00:  // byte
+                            PushStack(CpuHost.DirectReadByte(address));
+                            break;
+                        case 0x20:  // word
+                            PushStack(CpuHost.DirectReadWord(address));
+                            break;
+                        case 0x40:  // long
+                            PushStack(CpuHost.DirectReadLong(address));
+                            break;
+                    }
+                    break;
+                case 1: // POP
+                    switch (size)
+                    {
+                        case 0x00:  // byte
+                            CpuHost.DirectWriteByte(address, (byte)PopStack());
+                            break;
+                        case 0x20:  // word
+                            CpuHost.DirectWriteWord(address, (ushort)PopStack());
+                            break;
+                        case 0x40:  // long
+                            CpuHost.DirectWriteLong(address, PopStack());
+                            break;
+                    }
+                    break;
+                case 2: // USING
+                    switch (size)
+                    {
+                        case 0x00:  // byte
+                            CpuHost.DirectWriteByte(address, (byte)InplaceUsingOp(CpuHost.DirectReadByte(address)));
+                            break;
+                        case 0x20:  // word
+                            CpuHost.DirectWriteWord(address, (ushort)InplaceUsingOp(CpuHost.DirectReadWord(address)));
+                            break;
+                        case 0x40:  // long
+                            CpuHost.DirectWriteLong(address, InplaceUsingOp(CpuHost.DirectReadLong(address)));
+                            break;
+                    }
+                    break;
+                case 3: // REFERENCE
+                    PushStack(address);
+                    break;
+            }
+        }
+        /// @fn private void StepMaskedMemoryOp(byte operation)
+        /// ___
+        /// ## 0x80..0xDF Memory ops (Access MEM, OBJ, VAR and LOC) {#MemoryOps}
         ///
-        /// 0x80..0xDF Memory ops (Access MEM, OBJ, VAR and LOC) {#MemoryOps}
-        /// ====================================================
         /// |Structure: Stack load/save OpCodes|||||
         /// |:--:|:----:|:--:|:----:|:----:|
         /// |` 1`|` s s`|` i`|` b b`|` q q`|
@@ -1582,8 +1670,9 @@ namespace Gear.EmulationCore
         /// |  ^   |`01`= POP    Write - pop value from stack                      ||
         /// |  ^   |`10`= USING  2nd OpCode (assignment) executed, result in target||
         /// |  ^   |`11`= PUSH#  Push address of destination onto stack            ||
-        /// Bytecode Table: 96 operations
-        /// -----------------------------
+        ///
+        /// ### Bytecode Table: 96 operations
+        ///
         /// |Op  |Byte      |Size|Indexed|Description  ||
         /// |:--:|:--------:|:--:|:-----:|-------------||
         /// |`80`|`10000000`|Byte|       |`MEM  PUSH`  ||
@@ -1685,95 +1774,43 @@ namespace Gear.EmulationCore
         /// Source: [Cluso99's SPIN bytecode document revision RR20080721,
         /// on %Propeller 1 Forum](https://forums.parallax.com/discussion/comment/796018/#Comment_796018)
         ///
-        private void StepMaskedMemoryOp(byte operation)
-        {
-            byte type = (byte)(operation & 0x03);     // Bit[0..1] = POP, PUSH, USING, REFERENCE
-            byte @base = (byte)(operation & 0x0C);    // Bit[2..3] = MAIN, OBJ, VAR, LOCAL
-            byte indexed = (byte)(operation & 0x10);  // Bit[4] = Indexed ?
-            byte size = (byte)(operation & 0x60);     // Bit[5..6] = BYTE, WORD, LONG
-            uint address;
-            switch (@base)
-            {
-                case 0x00:  // Main Memory
-                    address = PopStack();
-                    break;
-                case 0x04:  // Object Memory
-                    address = ObjectFrame + ReadPackedUnsignedWord();
-                    break;
-                case 0x08:  // Variable Memory
-                    address = VariableFrame + ReadPackedUnsignedWord();
-                    break;
-                default:    // Local Memory
-                    address = LocalFrame + ReadPackedUnsignedWord();
-                    break;
-            }
+        // End extra documentation for Method private void StepMaskedMemoryOp(byte operation)
+        // --------------------------------------------------------------------
 
-            if (indexed != 0)
-            {
-                if (@base == 0x00)
-                    address = PopStack() + (address << (size >> 5));
-                else
-                    address += PopStack() << (size >> 5);
-            }
-
-            switch (type)
-            {
-                case 0: // PUSH is already done
-                    switch (size)
-                    {
-                        case 0x00:  // byte
-                            PushStack(CpuHost.DirectReadByte(address));
-                            break;
-                        case 0x20:  // word
-                            PushStack(CpuHost.DirectReadWord(address));
-                            break;
-                        case 0x40:  // long
-                            PushStack(CpuHost.DirectReadLong(address));
-                            break;
-                    }
-                    break;
-                case 1: // POP
-                    switch (size)
-                    {
-                        case 0x00:  // byte
-                            CpuHost.DirectWriteByte(address, (byte)PopStack());
-                            break;
-                        case 0x20:  // word
-                            CpuHost.DirectWriteWord(address, (ushort)PopStack());
-                            break;
-                        case 0x40:  // long
-                            CpuHost.DirectWriteLong(address, PopStack());
-                            break;
-                    }
-                    break;
-                case 2: // USING
-                    switch (size)
-                    {
-                        case 0x00:  // byte
-                            CpuHost.DirectWriteByte(address, (byte)InplaceUsingOp(CpuHost.DirectReadByte(address)));
-                            break;
-                        case 0x20:  // word
-                            CpuHost.DirectWriteWord(address, (ushort)InplaceUsingOp(CpuHost.DirectReadWord(address)));
-                            break;
-                        case 0x40:  // long
-                            CpuHost.DirectWriteLong(address, InplaceUsingOp(CpuHost.DirectReadLong(address)));
-                            break;
-                    }
-                    break;
-                case 3: // REFERENCE
-                    PushStack(address);
-                    break;
-            }
-        }
 
         /// @brief Execute a bytecode operation from variable group.
         /// @param operation Operation code to execute, from range: <c>0x40..0x7F</c>.
         /// @version v22.05.04 - Changed parameter name to clarify meaning
         /// of it also changed local variable names to follow naming
         /// conventions or to clarify meaning of it.
+        private void StepImplicitMemoryOp(byte operation)
+        {
+            byte type = (byte)(operation & 0x03);  // Bit[0..1] = POP, PUSH, USING, REFERENCE
+            uint index = (uint)(operation & 0x1C); // Bit[2..4] = Index (*4)
+            byte @base = (byte)(operation & 0x20); // Bit[5]    = VAR, LOCAL
+            index += @base == 0 ?
+                VariableFrame :
+                LocalFrame;
+            switch (type)
+            {
+                case 0: // PUSH
+                    PushStack(CpuHost.DirectReadLong(index));
+                    break;
+                case 1: // POP
+                    CpuHost.DirectWriteLong(index, PopStack());
+                    break;
+                case 2: // USING
+                    CpuHost.DirectWriteLong(index, InplaceUsingOp(CpuHost.DirectReadLong(index)));
+                    break;
+                case 3: // REFERENCE
+                    PushStack(index);
+                    break;
+            }
+        }
+        /// @fn private void StepImplicitMemoryOp(byte operation)
+        /// ___
+        /// ## 0x40..0x7F Variables ops (Fast access VAR, LOC) {#VariableOps}
         ///
-        /// 0x40..0x7F Variables ops (Fast access VAR, LOC) {#VariableOps}
-        /// ===============================================
         /// These OpCodes allow fast access by making long access to the first
         /// few long entries in the variable space or stack a single byte OpCode.
         /// The single byte OpCodes are effectively expanded within the interpreter.
@@ -1797,8 +1834,9 @@ namespace Gear.EmulationCore
         /// |   ^    |`01`= POP  |Write - pop value from stack                      |
         /// |   ^    |`10`= USING|2nd OpCode (assignment) executed, result in target|
         /// |   ^    |`11`= PUSH#|Push address of destination onto stack            |
-        /// Bytecode Table: 64 operations
-        /// -----------------------------
+        ///
+        /// ### Bytecode Table: 64 operations
+        /// 
         /// | Op |Byte      |Description                |
         /// |:--:|:--------:|:--------------------------|
         /// |`40`|`01000000`|`VAR  PUSH    addr=0*4= 00`|
@@ -1868,30 +1906,9 @@ namespace Gear.EmulationCore
         /// Source: [Cluso99's SPIN bytecode document revision RR20080721,
         /// on %Propeller 1 Forum](https://forums.parallax.com/discussion/comment/796018/#Comment_796018)
         ///
-        private void StepImplicitMemoryOp(byte operation)
-        {
-            byte type = (byte)(operation & 0x03);  // Bit[0..1] = POP, PUSH, USING, REFERENCE
-            uint index = (uint)(operation & 0x1C); // Bit[2..4] = Index (*4)
-            byte @base = (byte)(operation & 0x20); // Bit[5]    = VAR, LOCAL
-            index += @base == 0 ?
-                VariableFrame :
-                LocalFrame;
-            switch (type)
-            {
-                case 0: // PUSH
-                    PushStack(CpuHost.DirectReadLong(index));
-                    break;
-                case 1: // POP
-                    CpuHost.DirectWriteLong(index, PopStack());
-                    break;
-                case 2: // USING
-                    CpuHost.DirectWriteLong(index, InplaceUsingOp(CpuHost.DirectReadLong(index)));
-                    break;
-                case 3: // REFERENCE
-                    PushStack(index);
-                    break;
-            }
-        }
+        // End extra documentation for Method private void StepImplicitMemoryOp(byte operation)
+        // --------------------------------------------------------------------
+
 
         /// <summary></summary>
         /// <returns></returns>
@@ -1933,41 +1950,6 @@ namespace Gear.EmulationCore
         /// meaning of it.
         /// @todo [Legacy] RAISE AN EXCEPTION on (op > 0x7F)
         /// @todo [Legacy] SEND MESSAGE ON UNDEFINED OP on switch(op) Assignments operators
-        ///
-        /// Assignment Operators OpCodes
-        /// ============================
-        /// This is an additional bytecode and follows a USING bytecode.
-        /// |Byte      |Description                   |||
-        /// |:--------:|:-----:|:-----------|:----------|
-        /// |With (p=push)                           ||||
-        /// |`p000000-`|       |`write`                ||
-        /// |`-000001-`|       |`repeat-var loop`         |+1..2 address (see [Note 1](#N1SpecialOpcodes))|
-        /// |`-000011-`|       |`repeat-var loop pop step`|      ^                                        |
-        /// |`p00010--`|`?var` |`random forward (long)`||
-        /// |`p00011--`|`var?` |`random reverse (long)`||
-        /// |`p00100--`|`~var` |`sign-extend byte`     ||
-        /// |`p00101--`|`~~var`|`sign-extend word`     ||
-        /// |`p00110--`|`var~` |`post-clear`           ||
-        /// |`p00111--`|`var~~`|`post-set`             ||
-        /// |`p010000-`|`++var`|`pre-inc bits`         ||
-        /// |`p010001-`|`++var`|`pre-inc byte`         ||
-        /// |`p010010-`|`++var`|`pre-inc word`         ||
-        /// |`p010011-`|`++var`|`pre-inc long`         ||
-        /// |`p010100-`|`var++`|`post-inc bits`        ||
-        /// |`p010101-`|`var++`|`post-inc byte`        ||
-        /// |`p010110-`|`var++`|`post-inc word`        ||
-        /// |`p010111-`|`var++`|`post-inc long`        ||
-        /// |`p011000-`|`--var`|`pre-dec bits`         ||
-        /// |`p011001-`|`--var`|`pre-dec byte`         ||
-        /// |`p011010-`|`--var`|`pre-dec word`         ||
-        /// |`p011011-`|`--var`|`pre-dec long`         ||
-        /// |`p011100-`|`var--`|`post-dec bits`        ||
-        /// |`p011101-`|`var--`|`post-dec byte`        ||
-        /// |`p011110-`|`var--`|`post-dec word`        ||
-        /// |`p011111-`|`var--`|`post-dec long`        ||
-        /// Source: [Cluso99's SPIN bytecode document revision RR20080721,
-        /// on %Propeller 1 Forum](https://forums.parallax.com/discussion/comment/796018/#Comment_796018)
-        ///
         private uint InplaceUsingOp(uint originalValue)
         {
             byte operation = CpuHost.DirectReadByte(ProgramCursor++);
@@ -2155,5 +2137,42 @@ namespace Gear.EmulationCore
                 PushStack(result);
             return stored;
         }
+        /// @fn private uint InplaceUsingOp(uint originalValue)
+        /// ___
+        /// ## Assignment Operators OpCodes
+        /// This is an additional bytecode and follows a USING bytecode.
+        /// |Byte      |OpCode |Description                   ||
+        /// |:--------:|:-----:|:-----------|:----------|
+        /// |With (p=push)|                           |||
+        /// |`p000000-`|       |`write`                ||
+        /// |`-000001-`|       |`repeat-var loop`         |+1..2 address (see [Note 1](#N1SpecialOpcodes))|
+        /// |`-000011-`|       |`repeat-var loop pop step`|      ^                                        |
+        /// |`p00010--`|`?var` |`random forward (long)`||
+        /// |`p00011--`|`var?` |`random reverse (long)`||
+        /// |`p00100--`|`~var` |`sign-extend byte`     ||
+        /// |`p00101--`|`~~var`|`sign-extend word`     ||
+        /// |`p00110--`|`var~` |`post-clear`           ||
+        /// |`p00111--`|`var~~`|`post-set`             ||
+        /// |`p010000-`|`++var`|`pre-inc bits`         ||
+        /// |`p010001-`|`++var`|`pre-inc byte`         ||
+        /// |`p010010-`|`++var`|`pre-inc word`         ||
+        /// |`p010011-`|`++var`|`pre-inc long`         ||
+        /// |`p010100-`|`var++`|`post-inc bits`        ||
+        /// |`p010101-`|`var++`|`post-inc byte`        ||
+        /// |`p010110-`|`var++`|`post-inc word`        ||
+        /// |`p010111-`|`var++`|`post-inc long`        ||
+        /// |`p011000-`|`--var`|`pre-dec bits`         ||
+        /// |`p011001-`|`--var`|`pre-dec byte`         ||
+        /// |`p011010-`|`--var`|`pre-dec word`         ||
+        /// |`p011011-`|`--var`|`pre-dec long`         ||
+        /// |`p011100-`|`var--`|`post-dec bits`        ||
+        /// |`p011101-`|`var--`|`post-dec byte`        ||
+        /// |`p011110-`|`var--`|`post-dec word`        ||
+        /// |`p011111-`|`var--`|`post-dec long`        ||
+        /// Source: [Cluso99's SPIN bytecode document revision RR20080721,
+        /// on %Propeller 1 Forum](https://forums.parallax.com/discussion/comment/796018/#Comment_796018)
+        ///
+        // End extra documentation for Method private uint InplaceUsingOp(uint originalValue)
+        // --------------------------------------------------------------------
     }
 }

@@ -24,128 +24,157 @@
 
 using System.Collections.Generic;
 
+// ReSharper disable InconsistentNaming
 namespace Gear.EmulationCore
 {
     /// @brief Provides PLLA and PLLB to a Cog, as well as forwards internal
     /// signals to a video generator object.
     public class PLLGroup : ClockSource
     {
-        private readonly List<VideoGenerator> AuralHooks;
-        private VideoGenerator Partner;
+        /// <summary></summary>
+        /// @version v22.05.04 - Changed name to follow naming conventions.
+        private readonly List<VideoGenerator> _auralHooks;
+        /// <summary></summary>
+        /// @version v22.05.04 - Changed name to follow naming conventions.
+        private VideoGenerator _partner;
 
-        private readonly PLL PllA;
-        private readonly PLL PllB;
+        /// <summary>First clock generator: A.</summary>
+        /// @version v22.05.04 - Changed name to follow naming conventions.
+        private readonly PLL _pllA;
+        /// <summary>Second clock generator: B.</summary>
+        /// @version v22.05.04 - Changed name to follow naming conventions.
+        private readonly PLL _pllB;
 
-        public ulong Pins
-        {
-            get
-            {
-                return PllA.Pins | PllB.Pins;
-            }
-        }
+        /// <summary></summary>
+        public ulong Pins => _pllA.Pins | _pllB.Pins;
 
+        /// <summary>How much time (in seconds) left until to tick.</summary>
         public override double TimeUntilClock
         {
             get
             {
-                double a = PllA.TimeUntilClock;
-                double b = PllB.TimeUntilClock;
-
-                return a < b ? a : b;
+                double a = _pllA.TimeUntilClock;
+                double b = _pllB.TimeUntilClock;
+                return a < b ?
+                    a :
+                    b;
             }
         }
 
+        /// <summary>Default constructor.</summary>
         public PLLGroup()
         {
-            PllA = new PLL();
-            PllB = new PLL();
-
-            AuralHooks = new List<VideoGenerator>();
-            Disable(true);
-            Disable(false);
+            _pllA = new PLL();
+            _pllB = new PLL();
+            _auralHooks = new List<VideoGenerator>();
+            Disable(true);  //PLL A
+            Disable(false); //PLL B
         }
 
+        /// <summary></summary>
+        /// <param name="partner"></param>
         public void SetupPLL(VideoGenerator partner)
         {
-            Partner = partner;
-
-            AuralHooks.Clear();
+            _partner = partner;
+            _auralHooks.Clear();
         }
 
+        /// <summary></summary>
         public void Destroy()
         {
-            Partner = null;
-            AuralHooks.Clear();
+            _partner = null;
+            _auralHooks.Clear();
         }
 
-        public void AttachHook(VideoGenerator vgn)
+        /// <summary></summary>
+        /// <param name="videoGenerator"></param>
+        /// @version v22.05.04 - Parameter name changed to clarify meaning of it.
+        public void AttachHook(VideoGenerator videoGenerator)
         {
-            if (!AuralHooks.Contains(vgn))
-                AuralHooks.Add(vgn);
-            return;
+            if (!_auralHooks.Contains(videoGenerator))
+                _auralHooks.Add(videoGenerator);
         }
 
-        public void RemoveHook(VideoGenerator vgn)
+        /// <summary></summary>
+        /// <param name="videoGenerator"></param>
+        /// @version v22.05.04 - Parameter name changed to clarify meaning of it.
+        public void RemoveHook(VideoGenerator videoGenerator)
         {
-            if (AuralHooks.Contains(vgn))
-                AuralHooks.Remove(vgn);
-            return;
+            if (_auralHooks.Contains(videoGenerator))
+                _auralHooks.Remove(videoGenerator);
         }
 
-        public void SetBaseFrequency(uint cps)
+        /// <summary></summary>
+        /// <param name="cyclesPerSecond"></param>
+        /// @version v22.05.04 - Parameter name changed to clarify meaning of it.
+        public void SetBaseFrequency(uint cyclesPerSecond)
         {
-            PllA.SetBaseFrequency(cps);
-            PllB.SetBaseFrequency(cps);
+            _pllA.SetBaseFrequency(cyclesPerSecond);
+            _pllB.SetBaseFrequency(cyclesPerSecond);
         }
 
-        public void Feed(bool pllA, double multiplier)
+        /// <summary></summary>
+        /// <param name="isFreqGeneratorA"></param>
+        /// <param name="multiplier"></param>
+        /// @version v22.05.04 - Parameter name changed to clarify meaning of it.
+        public void Feed(bool isFreqGeneratorA, double multiplier)
         {
-            if (pllA)
-                PllA.Feed(multiplier);
+            if (isFreqGeneratorA)
+                _pllA.Feed(multiplier);
             else
-                PllB.Feed(multiplier);
+                _pllB.Feed(multiplier);
         }
 
-        public void DrivePins(bool pllA, ulong pinA, ulong pinB)
+        /// <summary></summary>
+        /// <param name="isFreqGeneratorA"></param>
+        /// <param name="pinA"></param>
+        /// <param name="pinB"></param>
+        /// @version v22.05.04 - Parameter name changed to clarify meaning of it.
+        public void DrivePins(bool isFreqGeneratorA, ulong pinA, ulong pinB)
         {
-            if (pllA)
-                PllA.DrivePins(pinA, pinB);
+            if (isFreqGeneratorA)
+                _pllA.DrivePins(pinA, pinB);
             else
-                PllB.DrivePins(pinA, pinB);
+                _pllB.DrivePins(pinA, pinB);
         }
 
-        public void Disable(bool pllA)
+        /// <summary></summary>
+        /// <param name="isFreqGeneratorA"></param>
+        /// @version v22.05.04 - Parameter name changed to clarify meaning of it.
+        public void Disable(bool isFreqGeneratorA)
         {
-            if (pllA)
-                PllA.Disable();
+            if (isFreqGeneratorA)
+                _pllA.Disable();
             else
-                PllB.Disable();
+                _pllB.Disable();
         }
 
-        public void SetFrequency(bool pllA, double frequency)
+        /// <summary></summary>
+        /// <param name="isFreqGeneratorA"></param>
+        /// <param name="frequency"></param>
+        /// @version v22.05.04 - Parameter name changed to clarify meaning of it.
+        public void SetFrequency(bool isFreqGeneratorA, double frequency)
         {
-            if (pllA)
-                PllA.SetFrequency(frequency);
+            if (isFreqGeneratorA)
+                _pllA.SetFrequency(frequency);
             else
-                PllB.SetFrequency(frequency);
+                _pllB.SetFrequency(frequency);
         }
 
+        /// <summary></summary>
+        /// <param name="time"></param>
+        /// @version v22.05.04 - Local variable name changed to clarify meaning of it.
         public override void AdvanceClock(double time)
         {
-            if (PllA.AdvanceClock(time))
+            if (_pllA.AdvanceClock(time))
             {
-                bool output = PllA.Output;
-
-                foreach (VideoGenerator vgn in AuralHooks)
-                    vgn.AuralTick(output);
-
-                Partner.ColorTick(output);
+                bool output = _pllA.Output;
+                foreach (VideoGenerator videoGenerator in _auralHooks)
+                    videoGenerator.AuralTick(output);
+                _partner.ColorTick(output);
             }
-
-            if (PllB.AdvanceClock(time))
-            {
-                Partner.CarrierTick(PllB.Output);
-            }
+            if (_pllB.AdvanceClock(time))
+                _partner.CarrierTick(_pllB.Output);
         }
     }
 }

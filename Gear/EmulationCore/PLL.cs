@@ -3,7 +3,7 @@
  * Copyright 2007-2022 - Gear Developers
  * --------------------------------------------------------------------------------
  * PLL.cs
- * Object class providing the logic to drive a PLL clock signal
+ * Provides the logic to drive a PLL clock signal.
  * --------------------------------------------------------------------------------
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,71 +21,77 @@
  * --------------------------------------------------------------------------------
  */
 
+// ReSharper disable InconsistentNaming
 namespace Gear.EmulationCore
 {
-    // @brief provides the logic to drive a PLL clock signal.
+    /// @brief provides the logic to drive a %PLL clock signal.
     public class PLL
     {
         // --- PLL Output settings ---
 
-        private double FixedMultiplier;
-        private uint CyclesPerSecond;
+        /// <summary></summary>
+        /// @version v22.05.04 - Changed name to follow naming conventions.
+        private double _fixedMultiplier;
+        /// <summary></summary>
+        /// @version v22.05.04 - Changed name to follow naming conventions.
+        private uint _cyclesPerSecond;
 
-        private bool OutputData;
-
-        private ulong PinA;
-        private ulong PinB;
+        /// <summary></summary>
+        /// @version v22.05.04 - Changed name to follow naming conventions.
+        private ulong _pinA;
+        /// <summary></summary>
+        /// @version v22.05.04 - Changed name to follow naming conventions.
+        private ulong _pinB;
 
         // --- PLL Signal generation variables ---
 
-        private double Frequency;
-        private double ClockLeft;
-        private double SecondsPerCycle;
+        /// <summary></summary>
+        /// @version v22.05.04 - Changed name to follow naming conventions.
+        private double _frequency;
+        /// <summary></summary>
+        /// @version v22.05.04 - Changed name to follow naming conventions.
+        private double _secondsPerCycle;
 
-        public ulong Pins
+        /// <summary></summary>
+        public ulong Pins =>
+            Output ? _pinA : _pinB;
+
+        /// <summary>How much time (in seconds) left until to tick.</summary>
+        public double TimeUntilClock { get; private set; }
+
+        /// <summary></summary>
+        public bool Output { get; private set; }
+
+        /// <summary>Default Constructor.</summary>
+        public PLL()
         {
-            get
-            {
-                return (OutputData ? PinA : PinB);
-            }
+            _fixedMultiplier = 0.0;
+            _cyclesPerSecond = 0;
+            _pinA = 0x0;
+            _pinB = 0x0;
+            _frequency = 0.0;
+            _secondsPerCycle = 0.0;
+            TimeUntilClock = 0.0;
+            Output = false;
         }
 
-
-        public double TimeUntilClock
+        /// <summary></summary>
+        /// <param name="cyclesPerSecond"></param>
+        /// @version v22.05.04 - Parameter name changed to clarify meaning of it.
+        public void SetBaseFrequency(uint cyclesPerSecond)
         {
-            get
-            {
-                return ClockLeft;
-            }
+            _cyclesPerSecond = cyclesPerSecond;
+            Feed(_fixedMultiplier);
         }
 
-        public bool Output
-        {
-            get
-            {
-                return OutputData;
-            }
-        }
-
-        public void SetBaseFrequency(uint cps)
-        {
-            CyclesPerSecond = cps;
-
-            Feed(FixedMultiplier);
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary></summary>
         /// <param name="multiplier"></param>
         /// @version v22.03.02 - Bugfix the max frequency to 128Mhz according to
         /// <c>%Propeller Datasheet v1.4</c>, section "4.9. Cog Counters".
         public void Feed(double multiplier)
         {
-            FixedMultiplier = multiplier;
-
-            double targetFrequency = (double)CyclesPerSecond * multiplier;
-
+            _fixedMultiplier = multiplier;
+            double targetFrequency = _cyclesPerSecond * multiplier;
             // The target frequency must fall between 500KHz and 120MHz
             if (targetFrequency > 128000000 || targetFrequency < 500000)
                 Disable();
@@ -93,48 +99,47 @@ namespace Gear.EmulationCore
                 SetFrequency(targetFrequency * 2);
         }
 
+        /// <summary></summary>
+        /// <param name="pinA"></param>
+        /// <param name="pinB"></param>
         public void DrivePins(ulong pinA, ulong pinB)
         {
-            PinA = pinA;
-            PinB = pinB;
+            _pinA = pinA;
+            _pinB = pinB;
         }
 
+        /// <summary></summary>
         public void Disable()
         {
-            DrivePins(0, 0);
-
-            SecondsPerCycle = 0;
-            ClockLeft = 1;
+            DrivePins(0x0, 0x0);  //clear pins in both banks
+            _secondsPerCycle = 0;
+            TimeUntilClock = 1.0;
         }
 
+        /// <summary></summary>
+        /// <param name="frequency"></param>
         public void SetFrequency(double frequency)
         {
-            Frequency = frequency;
-
-            SecondsPerCycle = 1.0 / frequency;
-
-            if (ClockLeft > SecondsPerCycle)
-                ClockLeft = SecondsPerCycle;
+            _frequency = frequency;
+            _secondsPerCycle = 1.0 / frequency;
+            if (TimeUntilClock > _secondsPerCycle)
+                TimeUntilClock = _secondsPerCycle;
         }
 
+        /// <summary></summary>
+        /// <param name="time"></param>
+        /// <returns></returns>
         public bool AdvanceClock(double time)
         {
-            if (Frequency <= 0)
+            if (_frequency <= 0.0)
                 return false;
-
-            ClockLeft -= time;
-
-            if (ClockLeft <= 0)
-            {
-                ClockLeft += SecondsPerCycle;
-
-                // Toggle output
-                OutputData = !OutputData;
-                return true;
-            }
-
-            return false;
+            TimeUntilClock -= time;
+            if (TimeUntilClock > 0.0)
+                return false;
+            TimeUntilClock += _secondsPerCycle;
+            // Toggle output
+            Output = !Output;
+            return true;
         }
-
     }
 }

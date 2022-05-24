@@ -26,55 +26,57 @@ namespace Gear.EmulationCore
     /// @brief Provides a clock source for the propeller CPU.
     public class SystemXtal : ClockSource
     {
-        private double Frequency;
-        private double ClockLeft;
-        private double SecondsPerCycle;
+        /// <summary></summary>
+        /// @version v22.05.04 - Changed name to follow naming conventions.
+        private double _frequency;
+        /// <summary></summary>
+        /// @version v22.05.04 - Changed name to follow naming conventions.
+        private double _clockLeft;
+        /// <summary></summary>
+        /// @version v22.05.04 - Changed name to follow naming conventions.
+        private double _secondsPerCycle;
 
-        public override double TimeUntilClock
-        {
-            get
-            {
-                return ClockLeft;
-            }
-        }
+        /// <summary>How much time (in seconds) left until to tick.</summary>
+        public override double TimeUntilClock => _clockLeft;
 
+        /// <summary>Default constructor.</summary>
         public SystemXtal()
         {
-            Frequency = -1;
-            ClockLeft = 1;
+            _frequency = -1;
+            _clockLeft = 1;
+            _secondsPerCycle = 0.0;
         }
 
+        /// <summary></summary>
         public void Disable()
         {
             SetFrequency(-1);
         }
 
+        /// <summary></summary>
+        /// <param name="frequency"></param>
         public void SetFrequency(double frequency)
         {
-            Frequency = frequency;
-
-            if (Frequency > 0)
+            _frequency = frequency;
+            if (_frequency > 0)
             {
-                SecondsPerCycle = 1.0 / frequency;
-
-                if (ClockLeft > SecondsPerCycle)
-                    ClockLeft = SecondsPerCycle;
+                _secondsPerCycle = 1.0 / frequency;
+                if (_clockLeft > _secondsPerCycle)
+                    _clockLeft = _secondsPerCycle;
             }
             else
-            {
-                ClockLeft = 1;
-            }
+                _clockLeft = 1;
         }
 
+        /// <summary></summary>
+        /// <param name="time"></param>
         public override void AdvanceClock(double time)
         {
-            if (Frequency <= 0)
+            if (_frequency <= 0)
                 return;
-
-            ClockLeft -= time;
-
-            if (ClockLeft <= 0)
-                ClockLeft += SecondsPerCycle;
+            _clockLeft -= time;
+            if (_clockLeft <= 0)
+                _clockLeft += _secondsPerCycle;
         }
     }
 }

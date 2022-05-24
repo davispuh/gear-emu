@@ -1,6 +1,13 @@
 # Change Log
 
-## Commit  Code cleanup on InterpretedCog
+## Commit  Code cleanup on NativeCog
+
+- Code cleanup in files: specially on [`NativeCog.cs`](Gear/EmulationCore/NativeCog.cs), [`NativeCogInstructions.cs`](Gear/EmulationCore/NativeCogInstructions.cs), and also  [`ClockSource`](Gear/EmulationCore/ClockSource.cs), [`FreqGenerator.cs`](Gear/EmulationCore/FreqGenerator.cs), [`PLL.cs`](Gear/EmulationCore/PLL.cs), [`PLLGroup.cs`](Gear/EmulationCore/PLLGroup.cs), [`SystemXtal.cs`](Gear/EmulationCore/SystemXtal.cs), [`VideoGenerator.cs`](Gear/EmulationCore/VideoGenerator.cs).
+  - Refactored naming and visibility of members, parameters and local variables in classes, methods and enums. 
+  - Added XML & Doxygen comments in files.
+
+
+## Commit [484a19e](https://github.com/davispuh/gear-emu/commit/484a19ea60c6ef43f7640244004aee020982f8b3) Code cleanup on InterpretedCog
 
 - Corrected visibility of abstract method `Cog.Boot()` to `private protected`, affecting descendents classes `InterpretedCog` and `NativeCog`.
 - Code cleanup in files: specially [`InterpretedCog.cs`](Gear/EmulationCore/InterpretedCog.cs).
