@@ -182,7 +182,7 @@ namespace Gear.GUI
                     y < ClientRectangle.Height;
                     y += (uint)MonoFont.Height, i++)
                 {
-                    if (i > PropellerCPU.MAX_RAM_ADDR)
+                    if (i > PropellerCPU.MaxRAMAddress)
                         continue;
 
                     uint mem = host[(int)i];
@@ -215,7 +215,7 @@ namespace Gear.GUI
                     y < ClientRectangle.Height;
                     y += (uint)MonoFont.Height, line++)
                 {
-                    if (i > PropellerCPU.MAX_RAM_ADDR)
+                    if (i > PropellerCPU.MaxRAMAddress)
                         continue;
 
                     uint start = i;
@@ -297,7 +297,7 @@ namespace Gear.GUI
             positionScroll.Minimum = 0;
 
             if (Host is InterpretedCog)
-                positionScroll.Maximum = PropellerCPU.MAX_RAM_ADDR;
+                positionScroll.Maximum = PropellerCPU.MaxRAMAddress;
             else if (Host is NativeCog)
                 positionScroll.Maximum = Cog.TotalCogMemory;
 

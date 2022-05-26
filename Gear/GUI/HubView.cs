@@ -25,6 +25,7 @@ using Gear.EmulationCore;
 using Gear.Utils;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -32,7 +33,7 @@ using System.Windows.Forms;
 
 namespace Gear.GUI
 {
-    /// @brief GUI Control to show Hub status
+    /// @brief %GUI Control to show Hub status
     /// @version v20.09.01 - Modified to use custom format.
     public partial class HubView : UserControl
     {
@@ -100,7 +101,65 @@ namespace Gear.GUI
         public void SetHost(PropellerCPU host)
         {
             _cpuHost = host ?? throw new ArgumentNullException(nameof(host));
+            //subscribe some properties of PropellerCPU to be notified to this Control
+            _cpuHost.PropertyChanged += CoreFreq_PropertyChanged; 
+            _cpuHost.PropertyChanged += XtalFreq_PropertyChanged;
+            _cpuHost.PropertyChanged += ClockModeLabel_PropertyChanged;
             DataChanged();
+        }
+
+        /// <summary>Event handler when PropellerCPU.ClockMode had changed.</summary>
+        /// The name of property (e.PropertyName) could be null, meaning all
+        /// the properties of the object are changed, so it must be accepted too.
+        /// References: <list type="bullet">
+        /// <item>https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.propertychangedeventhandler?view=netframework-4.7.2</item>
+        /// <item>https://docs.microsoft.com/en-us/dotnet/standard/events/#event-handlers</item>
+        /// </list>
+        /// <param name="sender">PropellerCPU instance. Should be only one per Emulator.</param>
+        /// <param name="e">Arguments of the event like the name of the property.</param>
+        /// @version v22.05.04 - Added.
+        private void ClockModeLabel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == null |
+                (e.PropertyName != null && e.PropertyName == nameof(PropellerCPU.ClockMode)))
+                if (sender is PropellerCPU cpu)
+                    clockModeLabel.Text = cpu.GetClockString();
+        }
+
+        /// <summary>Event handler when PropellerCPU.XtalFrequency had changed.</summary>
+        /// The name of property (e.PropertyName) could be null, meaning all
+        /// the properties of the object are changed, so it must be accepted too.
+        /// References: <list type="bullet">
+        /// <item>https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.propertychangedeventhandler?view=netframework-4.7.2</item>
+        /// <item>https://docs.microsoft.com/en-us/dotnet/standard/events/#event-handlers</item>
+        /// </list>
+        /// <param name="sender">PropellerCPU instance. Should be only one per Emulator.</param>
+        /// <param name="e">Arguments of the event like the name of the property.</param>
+        /// @version v22.05.04 - Added.
+        private void XtalFreq_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == null |
+                (e.PropertyName != null && e.PropertyName == nameof(PropellerCPU.XtalFrequency)))
+                if (sender is PropellerCPU cpu)
+                    xtalFrequencyLabel.Text = FreqFormatText(cpu.XtalFrequency);
+        }
+
+        /// <summary>Event handler when PropellerCPU.CoreFrequency had changed.</summary>
+        /// The name of property (e.PropertyName) could be null, meaning all
+        /// the properties of the object are changed, so it must be accepted too.
+        /// References: <list type="bullet">
+        /// <item>https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.propertychangedeventhandler?view=netframework-4.7.2</item>
+        /// <item>https://docs.microsoft.com/en-us/dotnet/standard/events/#event-handlers</item>
+        /// </list>
+        /// <param name="sender">PropellerCPU instance. Should be only one per Emulator.</param>
+        /// <param name="e">Arguments of the event like the name of the property.</param>
+        /// @version v22.05.04 - Added.
+        private void CoreFreq_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == null |
+                (e.PropertyName != null && e.PropertyName == nameof(PropellerCPU.CoreFrequency)))
+                if (sender is PropellerCPU cpu)
+                    coreFrequencyLabel.Text = FreqFormatText(cpu.CoreFrequency);
         }
 
         /// @brief Update the value of FreqFormat from default setting.
@@ -110,9 +169,7 @@ namespace Gear.GUI
             FreqFormatValue = Properties.Settings.Default.FreqFormat;
         }
 
-        /// <summary>
-        /// Update the value of TimeUnit from default setting.
-        /// </summary>
+        /// <summary> Update the value of TimeUnit from default setting.</summary>
         /// @version v20.09.01 - Added.
         public void UpdateHubTimeUnit()
         {
@@ -121,48 +178,55 @@ namespace Gear.GUI
             timeUnitSelector.TimeUnitSelected = TimeUnit;
         }
 
-        /// @brief Update Counter and Frequency labels with Monospace fonf.
+        /// @brief Update Counter and Frequency labels with Monospace font.
         /// @version v20.09.01 - Added.
         public void SetFontSpecialLabels()
         {
             Font monoFont = new Font(FontFamily.GenericMonospace, 8.25F,
                 FontStyle.Regular, GraphicsUnit.Point);
-            coreFrequency.Font = monoFont;
-            xtalFrequency.Font = monoFont;
-            clockMode.Font = monoFont;
-            systemCounter.Font = monoFont;
-            elapsedTime.Font = monoFont;
+            coreFrequencyLabel.Font = monoFont;
+            xtalFrequencyLabel.Font = monoFont;
+            clockModeLabel.Font = monoFont;
+            systemCounterLabel.Font = monoFont;
+            elapsedTimeLabel.Font = monoFont;
         }
 
         /// @brief Update screen data on event.
         /// @version v20.09.01 - Modified to use custom format.
+        /// @todo Analyze bottleneck on DataChanged()
         public void DataChanged()
         {
             if (_cpuHost == null)
                 return;
-
-            pinDIR.Value = _cpuHost.DIR;
-            pinIN.Value = _cpuHost.IN;
+            pinDIR.Value = _cpuHost.RegisterDIR;
+            pinIN.Value = _cpuHost.RegisterIN;
             pinFloating.Value = _cpuHost.Floating;
             pinLocksFree.Value = _cpuHost.LocksFree;
             pinLocks.Value = _cpuHost.Locks;
-
-            UpdateCounterFreqTexts();
+            UpdateCounterText();
             UpdateTimeText();
-            clockMode.Text = _cpuHost.Clock;
-
-            ringMeter.Value = _cpuHost.Ring;
+            //clockModeLabel.Text = _cpuHost.GetClockString();
+            ringMeter.Value = _cpuHost.RingPosition;
         }
 
-        /// @brief Update Counter and Frequency labels with current format.
-        /// @version v22.04.02 - Check for non null.
-        public void UpdateCounterFreqTexts()
+        /// <summary>Update Counter label with current format and value.</summary>
+        /// @version v22.05.04 - Added by the splitting of old %UpdateCounterFreqTexts() method.
+        public void UpdateCounterText()
         {
             if (_cpuHost == null)
                 return;
-            systemCounter.Text = FreqFormatText(_cpuHost.Counter);
-            coreFrequency.Text = FreqFormatText(_cpuHost.CoreFrequency);
-            xtalFrequency.Text = FreqFormatText(_cpuHost.XtalFrequency);
+            systemCounterLabel.Text = FreqFormatText(_cpuHost.Counter);
+        }
+
+        /// @brief Update Frequency labels with current format and values.
+        /// @version v22.05.04 - Added by the splitting of old %UpdateCounterFreqTexts() method.
+        /// @todo Analyze bottleneck here
+        public void UpdateFrequenciesTexts()
+        {
+            if (_cpuHost == null)
+                return;
+            coreFrequencyLabel.Text = FreqFormatText(_cpuHost.CoreFrequency);
+            xtalFrequencyLabel.Text = FreqFormatText(_cpuHost.XtalFrequency);
         }
 
         /// @brief Update Time labels with current format and unit.
@@ -170,7 +234,7 @@ namespace Gear.GUI
         public void UpdateTimeText()
         {
             if (_cpuHost != null)
-                elapsedTime.Text =
+                elapsedTimeLabel.Text =
                     timeUnitSelector.GetFormatedText(_cpuHost.EmulatorTime);
         }
 
@@ -229,34 +293,36 @@ namespace Gear.GUI
         private void UpdateFreqToolTips()
         {
             string txt = $"\r\n(Click to change Format from [{FreqFormatValue}])";
-            toolTip1.SetToolTip(systemCounter, "System Counter Value" + txt);
-            toolTip1.SetToolTip(xtalFrequency, "Crystal Frequency" + txt);
-            toolTip1.SetToolTip(coreFrequency, "Core Frequency" + txt);
+            toolTip1.SetToolTip(systemCounterLabel, "System Counter Value" + txt);
+            toolTip1.SetToolTip(xtalFrequencyLabel, "Crystal Frequency" + txt);
+            toolTip1.SetToolTip(coreFrequencyLabel, "Core Frequency" + txt);
         }
 
         /// @brief Change the frequencies labels format, remembering the user setting.
-        /// @param sender
-        /// @param e
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
         /// @version v20.09.01 - Added.
         private void FrequencyLabels_Click(object sender, EventArgs e)
         {
             if (FreqFormatValue < Enum.GetValues(typeof(NumberFormatEnum)).Cast<NumberFormatEnum>().Max())
-                ++FreqFormatValue;            else
+                ++FreqFormatValue;
+            else
                 FreqFormatValue = Enum.GetValues(typeof(NumberFormatEnum)).Cast<NumberFormatEnum>().Min();
             UpdateFreqToolTips();
             DataChanged();
+            UpdateFrequenciesTexts();
             //remember the setting
             Properties.Settings.Default.FreqFormat = FreqFormatValue;
             Properties.Settings.Default.Save();
         }
 
         /// @brief Change the time unit, remembering the user setting.
-        /// @param sender
-        /// @param e
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
         /// @version v20.09.01 - Added.
         private void TimeUnitSelector_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (!this.DesignMode)
+            if (!DesignMode)
             {
                 TimeUnit = timeUnitSelector.TimeUnitSelected;
                 UpdateTimeText();
@@ -267,8 +333,8 @@ namespace Gear.GUI
         }
 
         /// @brief Change the time unit, remembering the user setting.
-        /// @param sender
-        /// @param e
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
         /// @version v20.09.01 - Added.
         private void ElapsedTime_MouseClick(object sender, MouseEventArgs e)
         {
@@ -280,12 +346,9 @@ namespace Gear.GUI
                 case MouseButtons.Right:
                     timeUnitSelector.SelectPrev();
                     break;
-                default:
-                    break;
             }
         }
 
-    } //end class HubView
+    }
 
-} //end namespace Gear.GUI
-
+}

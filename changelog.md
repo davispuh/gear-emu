@@ -1,6 +1,19 @@
 # Change Log
 
-## Commit  Code cleanup on NativeCog
+## Commit  Code cleanup on PropellerCPU
+
+- Ordered update of `ClockMode`, `XtalFrequency` & `CoreFrequency` in HubView, using event detection when that properties changes in `PropellerCPU`. Files: [`HubView.cs`](Gear/GUI/HubView.cs), [`HubView.Designer.cs`](Gear/GUI/HubView.Designer.cs), [`Emulator.cs`](Gear/GUI/Emulator.cs) and [`PropellerCPU.cs`](Gear/EmulationCore/PropellerCPU.cs). 
+- Code cleanup in files: specially on [`PropellerCPU.cs`](Gear/EmulationCore/PropellerCPU.cs), but also in [`NativeCog.cs`](Gear/EmulationCore/NativeCog.cs), [`InterpretedCog.cs`](Gear/EmulationCore/InterpretedCog.cs), [`Cog.cs`](Gear/EmulationCore/Cog.cs).
+  - Added `Cog.CogNum` property that replace `PropellerCPU.CogID()`.
+  - Changed method names to `Cog.RequestHubOperation()` and `PropellerCPU.ExecuteHubOperation()` to clarify the colaboration between classes.
+  - Refactored naming and visibility of members, parameters and local variables in classes, methods and enums.
+  - Added legacy TODO tags in Doxygen documentation, and also identify paralellism points.
+  - Put extra UserControl documentation of SPIN interpreted code at the end of methods, lefting more cleaner the headers of methods.
+  - Added XML & Doxygen comments in files.
+- Added first version of documentation of target .Net Framework and C# versions [`Gear_Emulator_C#_Versions.md`](Gear/Gear_Emulator_Csharp_Versions.md).
+
+
+## Commit [bf3509d](https://github.com/davispuh/gear-emu/commit/bf3509dfa0dfcdbc128b07dd8d2843b3f1560236) Code cleanup on NativeCog
 
 - Code cleanup in files: specially on [`NativeCog.cs`](Gear/EmulationCore/NativeCog.cs), [`NativeCogInstructions.cs`](Gear/EmulationCore/NativeCogInstructions.cs), and also  [`ClockSource`](Gear/EmulationCore/ClockSource.cs), [`FreqGenerator.cs`](Gear/EmulationCore/FreqGenerator.cs), [`PLL.cs`](Gear/EmulationCore/PLL.cs), [`PLLGroup.cs`](Gear/EmulationCore/PLLGroup.cs), [`SystemXtal.cs`](Gear/EmulationCore/SystemXtal.cs), [`VideoGenerator.cs`](Gear/EmulationCore/VideoGenerator.cs).
   - Refactored naming and visibility of members, parameters and local variables in classes, methods and enums. 
@@ -317,7 +330,7 @@
 * Updated `PluginBase` class structure, so all the old plugins have to be updated:
     - Constructor invocation must call Base constructor.
     - Extra parameter on `OnClock()` method for current clock number in tick clocks.
-    - Method `PresentChip()` with no param, beacuse Chip reference now is included in plugin base class definition.
+    - Method `PresentChip()` with no param, because Chip reference now is included in plugin base class definition.
     - New method `OnClose()` is called for every plugin before closing the emulator (to perform cleanup).
 
 * Added program settings to remember them between sessions (stored in "Gear.exe.config" file in this version):

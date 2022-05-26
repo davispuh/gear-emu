@@ -25,7 +25,7 @@ A => B [label="Invoking the compiled\nplugin method."];
 #titles Phase
 C box C [label="plugin.NotifyOnPins()", url="\ref Gear.EmulationCore.PropellerCPU.NotifyOnPins", textbgcolor="#DCE2EF"],
 D box D [label="Chip.NotifyOnPins(plugin)", url="\ref Gear.EmulationCore.PropellerCPU.NotifyOnPins", textbgcolor="#DCE2EF"],
-E box E [label="Chip.PinHandlers.Add(plugin)", url="\ref Gear.EmulationCore.PropellerCPU.PinHandlers", textbgcolor="#DCE2EF"];
+E box E [label="Chip._pinHandlers.Add(plugin)", url="\ref Gear.EmulationCore.PropellerCPU._pinHandlers", textbgcolor="#DCE2EF"];
 
 #Transicions phase
 B rbox B [label="Method contains calling to NotifyOnPins()."];
@@ -43,7 +43,7 @@ B <= C;
 #titles Phase
 C box C [label="plugin.NotifyOnClock()", url="\ref Gear.EmulationCore.PropellerCPU.NotifyOnClock", textbgcolor="#DCE2EF"],
 D box D [label="Chip.NotifyOnClock(plugin)", url="\ref Gear.EmulationCore.PropellerCPU.NotifyOnClock", textbgcolor="#DCE2EF"],
-E box E [label="Chip.TickHandlers.Add(plugin)", url="\ref Gear.EmulationCore.PropellerCPU.TickHandlers", textbgcolor="#DCE2EF"];
+E box E [label="Chip._tickHandlers.Add(plugin)", url="\ref Gear.EmulationCore.PropellerCPU._tickHandlers", textbgcolor="#DCE2EF"];
 
 #Transicions phase
 B rbox B [label="Method contains calling to NotifyOnClock()."];

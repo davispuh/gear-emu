@@ -460,19 +460,19 @@ namespace Gear.GUI.LogicProbe
             catch (FormatException)
             {
                 MessageBox.Show(string.Format("Value needs to be a valid number between 0 and {0}.",
-                        PropellerCPU.TOTAL_PINS - 1),
+                        PropellerCPU.TotalPins - 1),
                         "Pin value Problem", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
             catch (IndexOutOfRangeException)
             {
                 MessageBox.Show(string.Format("You must specify a pin between 0 and {0}",
-                    PropellerCPU.TOTAL_PINS - 1),
+                    PropellerCPU.TotalPins - 1),
                     "Pin value Problem", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
             catch (OverflowException)
             {
                 MessageBox.Show(string.Format("You must specify a pin between 0 and {0}",
-                    PropellerCPU.TOTAL_PINS - 1),
+                    PropellerCPU.TotalPins - 1),
                     "Pin value Problem", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
 
@@ -522,21 +522,21 @@ namespace Gear.GUI.LogicProbe
                 catch (FormatException)
                 {
                     MessageBox.Show(string.Format("Pin Value needs to be a valid number between 0 and {0}.",
-                        PropellerCPU.TOTAL_PINS - 1),
+                        PropellerCPU.TotalPins - 1),
                         "Pin value Problem", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     return;
                 }
                 catch (IndexOutOfRangeException)
                 {
                     MessageBox.Show(string.Format("You must specify a pin between 0 and {0}",
-                        PropellerCPU.TOTAL_PINS - 1),
+                        PropellerCPU.TotalPins - 1),
                         "Pin value Problem", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     return;
                 }
                 catch (OverflowException)
                 {
                     MessageBox.Show(string.Format("You must specify a pin between 0 and {0}",
-                        PropellerCPU.TOTAL_PINS - 1),
+                        PropellerCPU.TotalPins - 1),
                         "Pin value Problem", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     return;
                 }

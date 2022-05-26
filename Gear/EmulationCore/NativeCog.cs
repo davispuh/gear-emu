@@ -85,7 +85,7 @@ namespace Gear.EmulationCore
 
         /// @brief Default constructor for a %Cog running in PASM mode.
         /// @param cpuHost PropellerCPU where this cog resides.
-        /// @param cogNum
+        /// @param cogNum Cog number from PropellerCPU.
         /// @param programAddress Start of program to load from main memory.
         /// @param paramAddress PARAM value given to the Cog.
         /// @param frequency Frequency running the cog (the same as the propeller cpu).
@@ -126,10 +126,9 @@ namespace Gear.EmulationCore
             Operation = ReadLong(0);
         }
 
-        /// @brief Determine if the Hub is accessible in that moment of time, setting the state
-        /// accordant.
-        /// @version v22.05.03 - Method name changed to clarify meaning of it.
-        public override void ExecuteHubOperation()
+        /// @brief Request to hub the solicited operation.
+        /// @version v22.05.04 - Method name changed to clarify meaning of it.
+        public override void RequestHubOperation()
         {
             switch (State)
             {
@@ -164,17 +163,15 @@ namespace Gear.EmulationCore
                 {
                     bool carryResult = CarryResult;
                     bool zeroResult = ZeroResult;
-                    DataResult = CpuHost.HubOp(this, SourceValue, DestinationValue,
+                    DataResult = CpuHost.ExecuteHubOperation(this, SourceValue, DestinationValue,
                         ref carryResult, ref zeroResult);
                     CarryResult = carryResult;
                     ZeroResult = zeroResult;
                     WriteBackResult();
                 }
                     break;
-                default:
-                    break;
             }
-            base.ExecuteHubOperation();
+            base.RequestHubOperation();
         }
 
         /// @brief Execute a PASM instruction in this cog.
@@ -203,7 +200,7 @@ namespace Gear.EmulationCore
                     break;
                 case CogRunState.WaitPinsEqual:
                 {
-                    uint maskedIn = (CarryFlag ? CpuHost.INB : CpuHost.INA) & SourceValue;
+                    uint maskedIn = (CarryFlag ? CpuHost.RegisterINB : CpuHost.RegisterINA) & SourceValue;
                     if (maskedIn != DestinationValue)
                         return true;
                     DataResult = maskedIn;
@@ -214,7 +211,7 @@ namespace Gear.EmulationCore
                 }
                 case CogRunState.WaitPinsNotEqual:
                 {
-                    uint maskedIn = (CarryFlag ? CpuHost.INB : CpuHost.INA) & SourceValue;
+                    uint maskedIn = (CarryFlag ? CpuHost.RegisterINB : CpuHost.RegisterINA) & SourceValue;
                     if (maskedIn == DestinationValue)
                         return true;
                     DataResult = maskedIn;

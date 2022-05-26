@@ -77,7 +77,7 @@ namespace Gear.EmulationCore
 
         /// <summary>Default constructor for a SPIN interpreted cog.</summary>
         /// <param name="cpuHost">PropellerCPU instance where this object belongs.</param>
-        /// <param name="cogNum"></param>
+        /// <param name="cogNum">Cog number from PropellerCPU.</param>
         /// <param name="paramAddress">PARAM value given to the Cog.</param>
         /// <param name="frequency">Frequency running the cog (the same as the propeller cpu).</param>
         /// <param name="pllGroup"></param>
@@ -126,14 +126,15 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>Setup the cog to a initial state after boot it.</summary>
-        /// @version v22.05.04 - Changed visibility of method.
+        /// @version v22.05.04 - Changed visibility of method and adapted to
+        /// use new property Cog.CogNum.
         private protected override void Boot()
         {
             State = CogRunState.BootInterpreter;
             StateCount = InterpreterBootTime; // how many cycles takes to boot
             uint initFrame = this[(int)Assembly.RegisterAddress.PAR];
-            this[(int)Assembly.RegisterAddress.COGID] = CpuHost.CogID(this);
-            initFrame &= PropellerCPU.MAX_RAM_ADDR;
+            this[(int)Assembly.RegisterAddress.COGID] = (uint)CogNum;
+            initFrame &= PropellerCPU.MaxRAMAddress;
             ObjectFrame = CpuHost.DirectReadWord(initFrame - 8);
             VariableFrame = CpuHost.DirectReadWord(initFrame - 6);
             ProgramCursor = CpuHost.DirectReadWord(initFrame - 4);
@@ -201,8 +202,8 @@ namespace Gear.EmulationCore
             code |= cogId < 8 ?
                 cogId :
                 0x8;
-            bool carry = false, zero = false;  // Temporal provided to hub operation method
-            return CpuHost.HubOp(this, (uint)HubOperationCodes.HUBOP_COGINIT, code, ref carry, ref zero);
+            bool carryFlag = false, zeroFlag = false;  // Temporal provided to hub operation method
+            return CpuHost.ExecuteHubOperation(this, (uint)HubOperationCodes.CogInit, code, ref carryFlag, ref zeroFlag);
         }
 
         /// @brief Execute a SPIN bytecode instruction in this cog.
@@ -231,14 +232,14 @@ namespace Gear.EmulationCore
                     break;
                 case CogRunState.WaitPinsNotEqual:
                 {
-                    uint maskedIn = (_isPortB ? CpuHost.INB : CpuHost.INA) & _maskValue;
+                    uint maskedIn = (_isPortB ? CpuHost.RegisterINB : CpuHost.RegisterINA) & _maskValue;
                     if (maskedIn != _targetValue)
                         State = CogRunState.ExecInterpreter;
                     return true;
                 }
                 case CogRunState.WaitPinsEqual:
                 {
-                    uint maskedIn = (_isPortB ? CpuHost.INB : CpuHost.INA) & _maskValue;
+                    uint maskedIn = (_isPortB ? CpuHost.RegisterINB : CpuHost.RegisterINA) & _maskValue;
                     if (maskedIn == _targetValue)
                         State = CogRunState.ExecInterpreter;
                     return true;
@@ -620,7 +621,7 @@ namespace Gear.EmulationCore
                         CpuHost.DirectWriteLong(0, PopStack());
                         byte mode = (byte)PopStack();
                         CpuHost.DirectWriteByte(4, mode);
-                        CpuHost.SetClockMode(mode);
+                        CpuHost.ClockMode = mode;
                     }
                         break;
                     case 0x21:  // Cog Stop
@@ -768,19 +769,19 @@ namespace Gear.EmulationCore
         /// @fn public override bool DoInstruction()
         /// ___
         /// ## Spin ByteCodes Summary
-        /// |OpCode set|Byte      |Description                                               |Extra bytes              ||
-        /// |:--------:|---------:|:---------------------------------------------------------|:------------|-----------:|
-        /// |0x00..0x3F|`00xxxxxx`|[Special purpose ops](@ref SpecialOps)                    |                         ||
-        /// |0x40..0x7F|`01bxxxqq`|[Variable ops, Fast access VAR and LOC](@ref VariableOps) |             |+1 if assign|
-        /// |0x80..0xDF|`1ssibbqq`|[Memory ops, access MEM, OBJ, VAR and LOC](@ref MemoryOps)|+1..2 if base|+1 if assign|
-        /// |0xE0..0xFF|`111xxxxx`|[Math ops, Unary and Binary operators](@ref MathOpCodes)  |                         ||
+        /// |OpCode set  |Byte      |Description                                               |Extra bytes              ||
+        /// |:----------:|---------:|:---------------------------------------------------------|:------------|-----------:|
+        /// |`0x00..0x3F`|`00xxxxxx`|[Special purpose ops](@ref SpecialOps)                    |                         ||
+        /// |`0x40..0x7F`|`01bxxxqq`|[Variable ops, Fast access VAR and LOC](@ref VariableOps) |             |+1 if assign|
+        /// |`0x80..0xDF`|`1ssibbqq`|[Memory ops, access MEM, OBJ, VAR and LOC](@ref MemoryOps)|+1..2 if base|+1 if assign|
+        /// |`0xE0..0xFF`|`111xxxxx`|[Math ops, Unary and Binary operators](@ref MathOpCodes)  |                         ||
         /// Source: [Cluso99's SPIN bytecode document revision RR20080721,
         /// on %Propeller 1 Forum](https://forums.parallax.com/discussion/comment/796018/#Comment_796018)
         ///
         /// ## 0x00..0x3F Special purpose OpCodes {#SpecialOps}
         ///
         /// ### Bytecode Table: 48 operations
-        ///  |POP method used|Set| Op |Byte      |Description                  |Pops|Push|Extra bytes       ||
+        /// |POP method used|Set| Op |Byte      |Description                  |Pops|Push|Extra bytes|Details|
         /// |:--------------|:-:|:--:|:--------:|:----------------------------|:--:|:--:|:-------|:--------:|
         /// |               | 0 |`00`|`000000tp`|`drop anchor                `|    |    |(`t=try, !p=push`)||
         /// |               | ^ |`01`|`000000tp`|`drop anchor                `|    |    |(`t=try, !p=push`)||
@@ -789,51 +790,51 @@ namespace Gear.EmulationCore
         /// |               | 1 |`04`|`00000100`|`jmp                        `|    |    |+1..2 address (see [Note 1](#N1SpecialOpcodes))||
         /// |               | ^ |`05`|`00000101`|`call sub                   `|    |    |+1 sub            ||
         /// |               | ^ |`06`|`00000110`|`call obj.sub               `|    |    |+2 obj+sub        ||
-        /// |popx           | ^ |`07`|`00000111`|`call obj[].sub             `|1   |    |+2 obj+sub        ||
-        /// |popx           | 2 |`08`|`00001000`|`tjz                        `|1   | 0/1|+1..2 address (see [Note 1](#N1SpecialOpcodes))||
-        /// |popx           | ^ |`09`|`00001001`|`djnz                       `|1   | 0/1|     ^            ||
-        /// |popx           | ^ |`0A`|`00001010`|`jz                         `|1   |    |     ^            ||
-        /// |popx           | ^ |`0B`|`00001011`|`jnz                        `|1   |    |     ^            ||
-        /// |popyx          | 3 |`0C`|`00001100`|`casedone                   `|2   |    |     ^            ||
-        /// |popx           | ^ |`0D`|`00001101`|`value case                 `|1   |    |     ^            ||
-        /// |popyx          | ^ |`0E`|`00001110`|`range case                 `|2   |    |     ^            ||
-        /// |popayx         | ^ |`0F`|`00001111`|`lookdone                   `|3   |   1|                  ||
-        /// |popx           | 4 |`10`|`00010000`|`value lookup               `|1   |    |                  ||
-        /// |popx           | ^ |`11`|`00010001`|`value lookdown             `|1   |    |                  ||
-        /// |popyx          | ^ |`12`|`00010010`|`range lookup               `|2   |    |                  ||
-        /// |popyx          | ^ |`13`|`00010011`|`range lookdown             `|2   |    |                  ||
-        /// |popx           | 5 |`14`|`00010100`|`pop                        `|1+  |    |    ???1+         ||
+        /// |`popx`         | ^ |`07`|`00000111`|`call obj[].sub             `|1   |    |+2 obj+sub        ||
+        /// |`popx`         | 2 |`08`|`00001000`|`tjz                        `|1   | 0/1|+1..2 address (see [Note 1](#N1SpecialOpcodes))||
+        /// |`popx`         | ^ |`09`|`00001001`|`djnz                       `|1   | 0/1|     ^            ||
+        /// |`popx`         | ^ |`0A`|`00001010`|`jz                         `|1   |    |     ^            ||
+        /// |`popx`         | ^ |`0B`|`00001011`|`jnz                        `|1   |    |     ^            ||
+        /// |`popyx`        | 3 |`0C`|`00001100`|`casedone                   `|2   |    |     ^            ||
+        /// |`popx`         | ^ |`0D`|`00001101`|`value case                 `|1   |    |     ^            ||
+        /// |`popyx`        | ^ |`0E`|`00001110`|`range case                 `|2   |    |     ^            ||
+        /// |`popayx`       | ^ |`0F`|`00001111`|`lookdone                   `|3   |   1|                  ||
+        /// |`popx`         | 4 |`10`|`00010000`|`value lookup               `|1   |    |                  ||
+        /// |`popx`         | ^ |`11`|`00010001`|`value lookdown             `|1   |    |                  ||
+        /// |`popyx`        | ^ |`12`|`00010010`|`range lookup               `|2   |    |                  ||
+        /// |`popyx`        | ^ |`13`|`00010011`|`range lookdown             `|2   |    |                  ||
+        /// |`popx`         | 5 |`14`|`00010100`|`pop                        `|1+  |    |    ???1+         ||
         /// |               | ^ |`15`|`00010101`|`run                        `|    |    |                  ||
-        /// |popx           | ^ |`16`|`00010110`|`STRSIZE(string)            `|1   |   1|                  ||
-        /// |popyx          | ^ |`17`|`00010111`|`STRCOMP(stringa,stringb)   `|2   |   1|                  ||
-        /// |popayx         | 6 |`18`|`00011000`|`BYTEFILL(start,value,count)`|3   |    |                  ||
-        /// |popayx         | ^ |`19`|`00011001`|`WORDFILL(start,value,count)`|3   |    |                  ||
-        /// |popayx         | ^ |`1A`|`00011010`|`LONGFILL(start,value,count)`|3   |    |                  ||
-        /// |popayx         | ^ |`1B`|`00011011`|`WAITPEQ(data,mask,port)    `|3   |    |                  ||
-        /// |popayx         | 7 |`1C`|`00011100`|`BYTEMOVE(to,from,count)    `|3   |    |                  ||
-        /// |popayx         | ^ |`1D`|`00011101`|`WORDMOVE(to,from,count)    `|3   |    |                  ||
-        /// |popayx         | ^ |`1E`|`00011110`|`LONGMOVE(to,from,count)    `|3   |    |                  ||
-        /// |popayx         | ^ |`1F`|`00011111`|`WAITPNE(data,mask,port)    `|3   |    |                  ||
-        /// |popyx          | 8 |`20`|`00100000`|`CLKSET(mode,freq)          `|2   |    |                  ||
-        /// |popx           | ^ |`21`|`00100001`|`COGSTOP(id)                `|1   |    |                  ||
-        /// |popx           | ^ |`22`|`00100010`|`LOCKRET(id)                `|1   |    |                  ||
-        /// |popx           | ^ |`23`|`00100011`|`WAITCNT(count)             `|1   |    |                  ||
-        /// |popx           | 9 |`24`|`001001qq`|`SPR[nibble] op   push      `|1   |    |      |+1 if assign|
-        /// |popx           | ^ |`25`|`001001qq`|`SPR[nibble] op   pop       `|1   |    |      |+1 if assign|
-        /// |popx           | ^ |`26`|`001001qq`|`SPR[nibble] op   using     `|1   |    |      |+1 if assign|
-        /// |popyx          | ^ |`27`|`00100111`|`WAITVID(colors,pixels)     `|2   |    |                  ||
-        /// |popayx         | A |`28`|`00101p00`|`COGINIT(id,adr,ptr)        `|3   |   1|(`!p=push`)       ||
+        /// |`popx`         | ^ |`16`|`00010110`|`STRSIZE(string)            `|1   |   1|                  ||
+        /// |`popyx`        | ^ |`17`|`00010111`|`STRCOMP(stringa,stringb)   `|2   |   1|                  ||
+        /// |`popayx`       | 6 |`18`|`00011000`|`BYTEFILL(start,value,count)`|3   |    |                  ||
+        /// |`popayx`       | ^ |`19`|`00011001`|`WORDFILL(start,value,count)`|3   |    |                  ||
+        /// |`popayx`       | ^ |`1A`|`00011010`|`LONGFILL(start,value,count)`|3   |    |                  ||
+        /// |`popayx`       | ^ |`1B`|`00011011`|`WAITPEQ(data,mask,port)    `|3   |    |                  ||
+        /// |`popayx`       | 7 |`1C`|`00011100`|`BYTEMOVE(to,from,count)    `|3   |    |                  ||
+        /// |`popayx`       | ^ |`1D`|`00011101`|`WORDMOVE(to,from,count)    `|3   |    |                  ||
+        /// |`popayx`       | ^ |`1E`|`00011110`|`LONGMOVE(to,from,count)    `|3   |    |                  ||
+        /// |`popayx`       | ^ |`1F`|`00011111`|`WAITPNE(data,mask,port)    `|3   |    |                  ||
+        /// |`popyx`        | 8 |`20`|`00100000`|`CLKSET(mode,freq)          `|2   |    |                  ||
+        /// |`popx`         | ^ |`21`|`00100001`|`COGSTOP(id)                `|1   |    |                  ||
+        /// |`popx`         | ^ |`22`|`00100010`|`LOCKRET(id)                `|1   |    |                  ||
+        /// |`popx`         | ^ |`23`|`00100011`|`WAITCNT(count)             `|1   |    |                  ||
+        /// |`popx`         | 9 |`24`|`001001qq`|`SPR[nibble] op   push      `|1   |    |      |+1 if assign|
+        /// |`popx`         | ^ |`25`|`001001qq`|`SPR[nibble] op   pop       `|1   |    |      |+1 if assign|
+        /// |`popx`         | ^ |`26`|`001001qq`|`SPR[nibble] op   using     `|1   |    |      |+1 if assign|
+        /// |`popyx`        | ^ |`27`|`00100111`|`WAITVID(colors,pixels)     `|2   |    |                  ||
+        /// |`popayx`       | A |`28`|`00101p00`|`COGINIT(id,adr,ptr)        `|3   |   1|(`!p=push`)       ||
         /// |               | ^ |`29`|`00101p01`|`LOCKNEW                    `|    |   1|(`!p=push`)       ||
-        /// |popx           | ^ |`2A`|`00101p10`|`LOCKSET(id)                `|1   |   1|(`!p=push`)       ||
-        /// |popx           | ^ |`2B`|`00101p11`|`LOCKCLR(id)                `|1   |   1|(`!p=push`)       ||
-        /// |popayx         | B |`2C`|`00101p00`|`COGINIT(id,adr,ptr)        `|3   |   0|(`no push`)       ||
+        /// |`popx`         | ^ |`2A`|`00101p10`|`LOCKSET(id)                `|1   |   1|(`!p=push`)       ||
+        /// |`popx`         | ^ |`2B`|`00101p11`|`LOCKCLR(id)                `|1   |   1|(`!p=push`)       ||
+        /// |`popayx`       | B |`2C`|`00101p00`|`COGINIT(id,adr,ptr)        `|3   |   0|(`no push`)       ||
         /// |               | ^ |`2D`|`00101p01`|`LOCKNEW                    `|    |   0|(`no push`)       ||
-        /// |popx           | ^ |`2E`|`00101p10`|`LOCKSET(id)                `|1   |   0|(`no push`)       ||
-        /// |popx           | ^ |`2F`|`00101p11`|`LOCKCLR(id)                `|1   |   0|(`no push`)       ||
+        /// |`popx`         | ^ |`2E`|`00101p10`|`LOCKSET(id)                `|1   |   0|(`no push`)       ||
+        /// |`popx`         | ^ |`2F`|`00101p11`|`LOCKCLR(id)                `|1   |   0|(`no push`)       ||
         /// |               | C |`30`|`00110000`|`ABORT                      `|    |    |                  ||
-        /// |popx           | ^ |`31`|`00110001`|`ABORT value                `|1   |    |                  ||
+        /// |`popx`         | ^ |`31`|`00110001`|`ABORT value                `|1   |    |                  ||
         /// |               | ^ |`32`|`00110010`|`RETURN                     `|    |    |                  ||
-        /// |popx           | ^ |`33`|`00110011`|`RETURN value               `|1   |    |                  ||
+        /// |`popx`         | ^ |`33`|`00110011`|`RETURN value               `|1   |    |                  ||
         /// |               | D |`34`|`001101cc`|`PUSH #-1                   `|    |   1|                  ||
         /// |               | ^ |`35`|`001101cc`|`PUSH #0                    `|    |   1|                  ||
         /// |               | ^ |`36`|`001101cc`|`PUSH #1                    `|    |   1|                  ||
@@ -843,8 +844,8 @@ namespace Gear.EmulationCore
         /// |               | ^ |`3A`|`001110bb`|`PUSH #k3 (3 bytes)         `|    |   1|+3 constant  (@#k1<<16 + @#k2<<8 + @#k3)     ||
         /// |               | ^ |`3B`|`001110bb`|`PUSH #k4 (4 bytes)         `|    |   1|+4 constant  (@#k1<<24 + @#k2<<16 + @#k3<<8 + @#k4)||
         /// |               | F |`3C`|`00111100`|`<unused>                   `|    |    |                                                   ||
-        /// |popx           | ^ |`3D`|`00111101`|`register[bit]      op      `|1   |    |+1 reg+op                                      |+1 if assign|
-        /// |popyx          | ^ |`3E`|`00111110`|`register[bit..bit] op      `|2   |    |+1 reg+op                                      |+1 if assign|
+        /// |`popx`         | ^ |`3D`|`00111101`|`register[bit]      op      `|1   |    |+1 reg+op                                      |+1 if assign|
+        /// |`popyx`        | ^ |`3E`|`00111110`|`register[bit..bit] op      `|2   |    |+1 reg+op                                      |+1 if assign|
         /// |               | ^ |`3F`|`00111111`|`register           op      `|    |    |+1 reg+op (see [Note 3](@ref N3SpecialOpcodes))|+1 if assign|
         ///
         /// #### Note 1: Address bytecodes (sign or zero extended to a long address) {#N1SpecialOpcodes}
@@ -907,6 +908,7 @@ namespace Gear.EmulationCore
         /// <summary></summary>
         /// <param name="value"></param>
         /// <param name="abort"></param>
+        /// @version v22.05.04 - Adapted to use new property Cog.CogNum.
         private void ReturnFromSub(uint value, bool abort)
         {
             bool trapAbort;
@@ -917,7 +919,7 @@ namespace Gear.EmulationCore
                 // Stop on call underflow
                 if (_callStack.Count <= 0)
                 {
-                    CpuHost.Stop((int)CpuHost.CogID(this));
+                    CpuHost.Stop(CogNum);
                     return;
                 }
                 uint returnTypeMask = _callStack.Pop();
@@ -967,13 +969,13 @@ namespace Gear.EmulationCore
         }
         /// @fn private void CogMemoryOp(uint mask, int lowestBit)
         /// ___
-        /// ## Note 3: Details of 0x3F operations {#N3SpecialOpcodes}
+        /// ## Note 3: Details of `0x3F` operations {#N3SpecialOpcodes}
         /// Read additional byte that follow a cog memory op (<c>0x3F</c>).
-        /// |Op  |2nd op| Description |
-        /// |:--:|:----:|-------------|
-        /// |`3F`|`80+n`|`PUSH    spr`|
-        /// |  ^ |`A0+n`|`POP     spr`|
-        /// |  ^ |`C0+n`|`USING   spr`|
+        /// |Op  |2nd op|Description|
+        /// |:--:|:----:|:----------|
+        /// |`3F`|`80+n`|`PUSH  spr`|
+        /// |  ^ |`A0+n`|`POP   spr`|
+        /// |  ^ |`C0+n`|`USING spr`|
         /// Source: [Cluso99's SPIN bytecode document revision RR20080721,
         /// on %Propeller 1 Forum](https://forums.parallax.com/discussion/comment/796018/#Comment_796018)
         ///
@@ -1161,8 +1163,8 @@ namespace Gear.EmulationCore
         /// |` 1 p s`|` q q q q q`|
         /// |`b7b6b5`|`b4b3b2b1b0`|
         /// where
-        /// |Bit(s)     |Description                   ||
-        /// |:---------:|:----:|------------------------|
+        /// |Bit(s)     |Description|Details|
+        /// |:---------:|:----:|:------------------------|
         /// |`1`        |Fixed bit equivalent to `0x80`||
         /// |`p`        |`(!p)`|`0`= push                |
         /// | ^         |  ^   |`1`= no push             |
@@ -1653,7 +1655,7 @@ namespace Gear.EmulationCore
         /// |` 1`|` s s`|` i`|` b b`|` q q`|
         /// |`b7`|`b6b5`|`b4`|`b3b2`|`b1b0`|
         /// where
-        /// |bit(s)|Description                     ||
+        /// |bit(s)|Description           |Details   |
         /// |:----:|:---------------------|---------:|
         /// |`1`   |Fixed bit equivalent to `0x80`  ||
         /// |`s s` |` 00`= Byte                     ||
@@ -1673,8 +1675,8 @@ namespace Gear.EmulationCore
         ///
         /// ### Bytecode Table: 96 operations
         ///
-        /// |Op  |Byte      |Size|Indexed|Description  ||
-        /// |:--:|:--------:|:--:|:-----:|-------------||
+        /// |Op  |Byte      |Size|Indexed|Description  |Details|
+        /// |:--:|:--------:|:--:|:-----:|:------------|:-----:|
         /// |`80`|`10000000`|Byte|       |`MEM  PUSH`  ||
         /// |`81`|`10000001`|Byte|       |`MEM  POP`   ||
         /// |`82`|`10000010`|Byte|       |`MEM  USING` ||
@@ -1837,72 +1839,72 @@ namespace Gear.EmulationCore
         ///
         /// ### Bytecode Table: 64 operations
         /// 
-        /// | Op |Byte      |Description                |
-        /// |:--:|:--------:|:--------------------------|
-        /// |`40`|`01000000`|`VAR  PUSH    addr=0*4= 00`|
-        /// |`41`|`01000001`|`VAR  POP     addr=0*4= 00`|
-        /// |`42`|`01000010`|`VAR  USING   addr=0*4= 00`|
-        /// |`43`|`01000011`|`VAR  PUSH #  addr=0*4= 00`|
-        /// |`44`|`01000100`|`VAR  PUSH    addr=1*4= 04`|
-        /// |`45`|`01000101`|`VAR  POP     addr=1*4= 04`|
-        /// |`46`|`01000110`|`VAR  USING   addr=1*4= 04`|
-        /// |`47`|`01000111`|`VAR  PUSH #  addr=1*4= 04`|
-        /// |`48`|`01001000`|`VAR  PUSH    addr=2*4= 08`|
-        /// |`49`|`01001001`|`VAR  POP     addr=2*4= 08`|
-        /// |`4A`|`01001010`|`VAR  USING   addr=2*4= 08`|
-        /// |`4B`|`01001011`|`VAR  PUSH #  addr=2*4= 08`|
-        /// |`4C`|`01001100`|`VAR  PUSH    addr=3*4= 0C`|
-        /// |`4D`|`01001101`|`VAR  POP     addr=3*4= 0C`|
-        /// |`4E`|`01001110`|`VAR  USING   addr=3*4= 0C`|
-        /// |`4F`|`01001111`|`VAR  PUSH #  addr=3*4= 0C`|
-        /// |`50`|`01010000`|`VAR  PUSH    addr=4*4= 10`|
-        /// |`51`|`01010001`|`VAR  POP     addr=4*4= 10`|
-        /// |`52`|`01010010`|`VAR  USING   addr=4*4= 10`|
-        /// |`53`|`01010011`|`VAR  PUSH #  addr=4*4= 10`|
-        /// |`54`|`01010100`|`VAR  PUSH    addr=5*4= 14`|
-        /// |`55`|`01010101`|`VAR  POP     addr=5*4= 14`|
-        /// |`56`|`01010110`|`VAR  USING   addr=5*4= 14`|
-        /// |`57`|`01010111`|`VAR  PUSH #  addr=5*4= 14`|
-        /// |`58`|`01011000`|`VAR  PUSH    addr=6*4= 18`|
-        /// |`59`|`01011001`|`VAR  POP     addr=6*4= 18`|
-        /// |`5A`|`01011010`|`VAR  USING   addr=6*4= 18`|
-        /// |`5B`|`01011011`|`VAR  PUSH #  addr=6*4= 18`|
-        /// |`5C`|`01011100`|`VAR  PUSH    addr=7*4= 1C`|
-        /// |`5D`|`01011101`|`VAR  POP     addr=7*4= 1C`|
-        /// |`5E`|`01011110`|`VAR  USING   addr=7*4= 1C`|
-        /// |`5F`|`01011111`|`VAR  PUSH #  addr=7*4= 1C`|
-        /// |`60`|`01100000`|`LOC  PUSH    addr=0*4= 00`|
-        /// |`61`|`01100001`|`LOC  POP     addr=0*4= 00`|
-        /// |`62`|`01100010`|`LOC  USING   addr=0*4= 00`|
-        /// |`63`|`01100011`|`LOC  PUSH #  addr=0*4= 00`|
-        /// |`64`|`01100100`|`LOC  PUSH    addr=1*4= 04`|
-        /// |`65`|`01100101`|`LOC  POP     addr=1*4= 04`|
-        /// |`66`|`01100110`|`LOC  USING   addr=1*4= 04`|
-        /// |`67`|`01100111`|`LOC  PUSH #  addr=1*4= 04`|
-        /// |`68`|`01101000`|`LOC  PUSH    addr=2*4= 08`|
-        /// |`69`|`01101001`|`LOC  POP     addr=2*4= 08`|
-        /// |`6A`|`01101010`|`LOC  USING   addr=2*4= 08`|
-        /// |`6B`|`01101011`|`LOC  PUSH #  addr=2*4= 08`|
-        /// |`6C`|`01101100`|`LOC  PUSH    addr=3*4= 0C`|
-        /// |`6D`|`01101101`|`LOC  POP     addr=3*4= 0C`|
-        /// |`6E`|`01101110`|`LOC  USING   addr=3*4= 0C`|
-        /// |`6F`|`01101111`|`LOC  PUSH #  addr=3*4= 0C`|
-        /// |`70`|`01110000`|`LOC  PUSH    addr=4*4= 10`|
-        /// |`71`|`01110001`|`LOC  POP     addr=4*4= 10`|
-        /// |`72`|`01110010`|`LOC  USING   addr=4*4= 10`|
-        /// |`73`|`01110011`|`LOC  PUSH #  addr=4*4= 10`|
-        /// |`74`|`01110100`|`LOC  PUSH    addr=5*4= 14`|
-        /// |`75`|`01110101`|`LOC  POP     addr=5*4= 14`|
-        /// |`76`|`01110110`|`LOC  USING   addr=5*4= 14`|
-        /// |`77`|`01110111`|`LOC  PUSH #  addr=5*4= 14`|
-        /// |`78`|`01111000`|`LOC  PUSH    addr=6*4= 18`|
-        /// |`79`|`01111001`|`LOC  POP     addr=6*4= 18`|
-        /// |`7A`|`01111010`|`LOC  USING   addr=6*4= 18`|
-        /// |`7B`|`01111011`|`LOC  PUSH #  addr=6*4= 18`|
-        /// |`7C`|`01111100`|`LOC  PUSH    addr=7*4= 1C`|
-        /// |`7D`|`01111101`|`LOC  POP     addr=7*4= 1C`|
-        /// |`7E`|`01111110`|`LOC  USING   addr=7*4= 1C`|
-        /// |`7F`|`01111111`|`LOC  PUSH #  addr=7*4= 1C`|
+        /// | Op |Byte      |Destination |Description    |
+        /// |:--:|:--------:|:----------:|:--------------|
+        /// |`40`|`01000000`|`VAR`|`PUSH    addr=0*4= 00`|
+        /// |`41`|`01000001`|`VAR`|`POP     addr=0*4= 00`|
+        /// |`42`|`01000010`|`VAR`|`USING   addr=0*4= 00`|
+        /// |`43`|`01000011`|`VAR`|`PUSH #  addr=0*4= 00`|
+        /// |`44`|`01000100`|`VAR`|`PUSH    addr=1*4= 04`|
+        /// |`45`|`01000101`|`VAR`|`POP     addr=1*4= 04`|
+        /// |`46`|`01000110`|`VAR`|`USING   addr=1*4= 04`|
+        /// |`47`|`01000111`|`VAR`|`PUSH #  addr=1*4= 04`|
+        /// |`48`|`01001000`|`VAR`|`PUSH    addr=2*4= 08`|
+        /// |`49`|`01001001`|`VAR`|`POP     addr=2*4= 08`|
+        /// |`4A`|`01001010`|`VAR`|`USING   addr=2*4= 08`|
+        /// |`4B`|`01001011`|`VAR`|`PUSH #  addr=2*4= 08`|
+        /// |`4C`|`01001100`|`VAR`|`PUSH    addr=3*4= 0C`|
+        /// |`4D`|`01001101`|`VAR`|`POP     addr=3*4= 0C`|
+        /// |`4E`|`01001110`|`VAR`|`USING   addr=3*4= 0C`|
+        /// |`4F`|`01001111`|`VAR`|`PUSH #  addr=3*4= 0C`|
+        /// |`50`|`01010000`|`VAR`|`PUSH    addr=4*4= 10`|
+        /// |`51`|`01010001`|`VAR`|`POP     addr=4*4= 10`|
+        /// |`52`|`01010010`|`VAR`|`USING   addr=4*4= 10`|
+        /// |`53`|`01010011`|`VAR`|`PUSH #  addr=4*4= 10`|
+        /// |`54`|`01010100`|`VAR`|`PUSH    addr=5*4= 14`|
+        /// |`55`|`01010101`|`VAR`|`POP     addr=5*4= 14`|
+        /// |`56`|`01010110`|`VAR`|`USING   addr=5*4= 14`|
+        /// |`57`|`01010111`|`VAR`|`PUSH #  addr=5*4= 14`|
+        /// |`58`|`01011000`|`VAR`|`PUSH    addr=6*4= 18`|
+        /// |`59`|`01011001`|`VAR`|`POP     addr=6*4= 18`|
+        /// |`5A`|`01011010`|`VAR`|`USING   addr=6*4= 18`|
+        /// |`5B`|`01011011`|`VAR`|`PUSH #  addr=6*4= 18`|
+        /// |`5C`|`01011100`|`VAR`|`PUSH    addr=7*4= 1C`|
+        /// |`5D`|`01011101`|`VAR`|`POP     addr=7*4= 1C`|
+        /// |`5E`|`01011110`|`VAR`|`USING   addr=7*4= 1C`|
+        /// |`5F`|`01011111`|`VAR`|`PUSH #  addr=7*4= 1C`|
+        /// |`60`|`01100000`|`LOC`|`PUSH    addr=0*4= 00`|
+        /// |`61`|`01100001`|`LOC`|`POP     addr=0*4= 00`|
+        /// |`62`|`01100010`|`LOC`|`USING   addr=0*4= 00`|
+        /// |`63`|`01100011`|`LOC`|`PUSH #  addr=0*4= 00`|
+        /// |`64`|`01100100`|`LOC`|`PUSH    addr=1*4= 04`|
+        /// |`65`|`01100101`|`LOC`|`POP     addr=1*4= 04`|
+        /// |`66`|`01100110`|`LOC`|`USING   addr=1*4= 04`|
+        /// |`67`|`01100111`|`LOC`|`PUSH #  addr=1*4= 04`|
+        /// |`68`|`01101000`|`LOC`|`PUSH    addr=2*4= 08`|
+        /// |`69`|`01101001`|`LOC`|`POP     addr=2*4= 08`|
+        /// |`6A`|`01101010`|`LOC`|`USING   addr=2*4= 08`|
+        /// |`6B`|`01101011`|`LOC`|`PUSH #  addr=2*4= 08`|
+        /// |`6C`|`01101100`|`LOC`|`PUSH    addr=3*4= 0C`|
+        /// |`6D`|`01101101`|`LOC`|`POP     addr=3*4= 0C`|
+        /// |`6E`|`01101110`|`LOC`|`USING   addr=3*4= 0C`|
+        /// |`6F`|`01101111`|`LOC`|`PUSH #  addr=3*4= 0C`|
+        /// |`70`|`01110000`|`LOC`|`PUSH    addr=4*4= 10`|
+        /// |`71`|`01110001`|`LOC`|`POP     addr=4*4= 10`|
+        /// |`72`|`01110010`|`LOC`|`USING   addr=4*4= 10`|
+        /// |`73`|`01110011`|`LOC`|`PUSH #  addr=4*4= 10`|
+        /// |`74`|`01110100`|`LOC`|`PUSH    addr=5*4= 14`|
+        /// |`75`|`01110101`|`LOC`|`POP     addr=5*4= 14`|
+        /// |`76`|`01110110`|`LOC`|`USING   addr=5*4= 14`|
+        /// |`77`|`01110111`|`LOC`|`PUSH #  addr=5*4= 14`|
+        /// |`78`|`01111000`|`LOC`|`PUSH    addr=6*4= 18`|
+        /// |`79`|`01111001`|`LOC`|`POP     addr=6*4= 18`|
+        /// |`7A`|`01111010`|`LOC`|`USING   addr=6*4= 18`|
+        /// |`7B`|`01111011`|`LOC`|`PUSH #  addr=6*4= 18`|
+        /// |`7C`|`01111100`|`LOC`|`PUSH    addr=7*4= 1C`|
+        /// |`7D`|`01111101`|`LOC`|`POP     addr=7*4= 1C`|
+        /// |`7E`|`01111110`|`LOC`|`USING   addr=7*4= 1C`|
+        /// |`7F`|`01111111`|`LOC`|`PUSH #  addr=7*4= 1C`|
         /// Source: [Cluso99's SPIN bytecode document revision RR20080721,
         /// on %Propeller 1 Forum](https://forums.parallax.com/discussion/comment/796018/#Comment_796018)
         ///
@@ -2056,7 +2058,7 @@ namespace Gear.EmulationCore
                         break;
                     case 0x14:  // PRE-EXTEND 16
                         result = originalValue;
-                        if ((result & PropellerCPU.TOTAL_RAM) != 0)
+                        if ((result & PropellerCPU.TotalRAM) != 0)
                             result |= 0xFFFF0000;
                         else
                             result &= 0xFFFF0000;
@@ -2141,7 +2143,7 @@ namespace Gear.EmulationCore
         /// ___
         /// ## Assignment Operators OpCodes
         /// This is an additional bytecode and follows a USING bytecode.
-        /// |Byte      |OpCode |Description                   ||
+        /// |Byte      |OpCode |Description             |Details|
         /// |:--------:|:-----:|:-----------|:----------|
         /// |With (p=push)|                           |||
         /// |`p000000-`|       |`write`                ||

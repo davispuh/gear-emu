@@ -356,8 +356,8 @@ namespace Gear.EmulationCore
             }
             // Cycle in our previous pin states
             _pinADelayed = _pinA;   // Delay by 2
-            _pinA = (_cpuHost.IN & _pinAMask) != 0;
-            _pinB = (_cpuHost.IN & _pinBMask) != 0;
+            _pinA = (_cpuHost.RegisterIN & _pinAMask) != 0;
+            _pinB = (_cpuHost.RegisterIN & _pinBMask) != 0;
         }
     }
 }

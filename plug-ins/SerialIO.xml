@@ -306,7 +306,7 @@ class SerialIO : PluginBase
 
 	private void HandleRx(double time)
 	{
-		bool bit = ((Chip.OUT & ((ulong)1 << rxPin)) != 0);
+		bool bit = ((Chip.RegisterOUT & ((ulong)1 << rxPin)) != 0);
 
 		if (rxPhase == RxPhaseEnum.waitForHigh)
 		{

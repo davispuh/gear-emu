@@ -40,7 +40,7 @@ namespace Gear.Propeller
         /// <param name="address"></param>
         /// <returns></returns>
         public byte DirectReadByte(uint address) =>
-            Memory[address & PropellerCPU.MAX_RAM_ADDR];
+            Memory[address & PropellerCPU.MaxRAMAddress];
 
         /// <summary>
         ///
@@ -51,8 +51,8 @@ namespace Gear.Propeller
         public ushort DirectReadWord(uint address)
         {
             address &= 0xFFFFFFFE;
-            return (ushort)(Memory[address++ & PropellerCPU.MAX_RAM_ADDR] |
-                (Memory[address & PropellerCPU.MAX_RAM_ADDR] << 8));
+            return (ushort)(Memory[address++ & PropellerCPU.MaxRAMAddress] |
+                (Memory[address & PropellerCPU.MaxRAMAddress] << 8));
         }
 
         /// <summary>
@@ -64,10 +64,10 @@ namespace Gear.Propeller
         public uint DirectReadLong(uint address)
         {
             address &= 0xFFFFFFFC;
-            return (uint)Memory[address++ & PropellerCPU.MAX_RAM_ADDR]
-                | (uint)(Memory[address++ & PropellerCPU.MAX_RAM_ADDR] << 8)
-                | (uint)(Memory[address++ & PropellerCPU.MAX_RAM_ADDR] << 16)
-                | (uint)(Memory[address & PropellerCPU.MAX_RAM_ADDR] << 24);
+            return (uint)Memory[address++ & PropellerCPU.MaxRAMAddress]
+                | (uint)(Memory[address++ & PropellerCPU.MaxRAMAddress] << 8)
+                | (uint)(Memory[address++ & PropellerCPU.MaxRAMAddress] << 16)
+                | (uint)(Memory[address & PropellerCPU.MaxRAMAddress] << 24);
         }
 
         /// <summary>

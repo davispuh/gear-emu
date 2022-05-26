@@ -68,7 +68,7 @@ namespace Gear.GUI
             Text = "Propeller: " + source;
 
             // Create default layout
-            for (int i = 0; i < PropellerCPU.TOTAL_COGS; i++)  //using constant TOTAL_COGS
+            for (int i = 0; i < PropellerCPU.TotalCogs; i++)  //using constant TOTAL_COGS
                 AttachPlugin(new CogView(i, Chip));
 
             AttachPlugin(new MemoryView(Chip));
@@ -120,11 +120,12 @@ namespace Gear.GUI
                                 logic.UpdateTimeUnit();
                     break;
                 case "FreqFormat":
-                    //update hubview
+                    //update hubView
                     hubView.UpdateFreqFormat();
+                    hubView.UpdateCounterText();
                     hubView.UpdateTimeText();
-                    hubView.UpdateCounterFreqTexts();
-                    //update SpinView and logic view
+                    hubView.UpdateFrequenciesTexts();
+                    //update SpinView and logicView
                     foreach (TabPage tabCtl in documentsTab.TabPages)
                         foreach (Control ctl in tabCtl.Controls)
                             if (ctl is SpinView viewCtl)

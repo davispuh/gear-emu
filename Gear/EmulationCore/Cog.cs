@@ -91,9 +91,6 @@ namespace Gear.EmulationCore
         /// <summary>%Cog Memory.</summary>
         /// @version v22.05.03 - Name changed to follow naming conventions.
         private readonly uint[] _cogMemory;
-        /// <summary></summary>
-        /// @version v22.05.03 - Added.
-        private readonly int _cogNum;
 
         /// <summary>First frequency generator of this %cog.</summary>
         /// @version v22.05.03 - Name changed to follow naming conventions.
@@ -123,6 +120,10 @@ namespace Gear.EmulationCore
         /// and changed name to use the same convention for a PropellerCPU
         /// instance reference.
         private protected PropellerCPU CpuHost { get; }
+
+        /// <summary>Cog number, zero based.</summary>
+        /// @version v22.05.04 - Transformed to a property.
+        public int CogNum { get; }
 
         /// @brief The actual position where the program is executing in this cog.
         /// @version v22.05.03 - Changed to a property with auto value and
@@ -294,7 +295,7 @@ namespace Gear.EmulationCore
 
         /// <summary>Default constructor.</summary>
         /// <param name="cpuHost">PropellerCPU instance where this object belongs.</param>
-        /// <param name="cogNum"></param>
+        /// <param name="cogNum">Cog number from PropellerCPU.</param>
         /// <param name="programAddress">Start of program to load from main memory.</param>
         /// <param name="param">PARAM value given to the Cog.</param>
         /// <param name="frequency">Frequency running the cog (the same as the propeller cpu).</param>
@@ -304,7 +305,7 @@ namespace Gear.EmulationCore
         protected Cog(PropellerCPU cpuHost, int cogNum, uint programAddress, uint param, uint frequency, PLLGroup pllGroup)
         {
             CpuHost = cpuHost;
-            _cogNum = cogNum;
+            CogNum = cogNum;
             _cogMemory = new uint[TotalCogMemory];
             ProgramAddress = programAddress;
             ParamAddress = param;
@@ -397,9 +398,10 @@ namespace Gear.EmulationCore
             return false;
         }
 
-        /// <summary>Execute pending Hub operation for this %Cog.</summary>
-        /// @version v22.05.03 - Method name changed to clarify meaning of it.
-        public virtual void ExecuteHubOperation()
+        /// <summary>Adjust the timing to wait the finish of pending Hub
+        /// operation for this %Cog.</summary>
+        /// @version v22.05.04 - Method name changed to clarify meaning of it.
+        public virtual void RequestHubOperation()
         {
             if (State != CogRunState.WaitLoadProgram)
                 return;
@@ -467,9 +469,9 @@ namespace Gear.EmulationCore
                 case Assembly.RegisterAddress.CNT:
                     return CpuHost.Counter;
                 case Assembly.RegisterAddress.INA:
-                    return CpuHost.INA;
+                    return CpuHost.RegisterINA;
                 case Assembly.RegisterAddress.INB:
-                    return CpuHost.INB;
+                    return CpuHost.RegisterINB;
                 case Assembly.RegisterAddress.CNTA:
                     return _freqAGenerator.RegisterCTR;
                 case Assembly.RegisterAddress.CNTB:
