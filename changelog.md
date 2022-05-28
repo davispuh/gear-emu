@@ -1,6 +1,11 @@
 # Change Log
 
-## Commit  Code cleanup on PropellerCPU
+## Release Version [22.05.04](https://github.com/davispuh/gear-emu/releases/tag/v22.05.04) Emulator Core code Cleanup and Commit  Bugfix VGA & television not working
+
+- Fixes bug on clearing arrays that broke VGA and television plugins, on [`PropellerCPU.cs`](Gear/EmulationCore/PropellerCPU.cs).
+
+
+## Commit [0b06168](https://github.com/davispuh/gear-emu/commit/0b061683cb05006abc54a2af635b82659bac18e5) Code cleanup on PropellerCPU
 
 - Ordered update of `ClockMode`, `XtalFrequency` & `CoreFrequency` in HubView, using event detection when that properties changes in `PropellerCPU`. Files: [`HubView.cs`](Gear/GUI/HubView.cs), [`HubView.Designer.cs`](Gear/GUI/HubView.Designer.cs), [`Emulator.cs`](Gear/GUI/Emulator.cs) and [`PropellerCPU.cs`](Gear/EmulationCore/PropellerCPU.cs). 
 - Code cleanup in files: specially on [`PropellerCPU.cs`](Gear/EmulationCore/PropellerCPU.cs), but also in [`NativeCog.cs`](Gear/EmulationCore/NativeCog.cs), [`InterpretedCog.cs`](Gear/EmulationCore/InterpretedCog.cs), [`Cog.cs`](Gear/EmulationCore/Cog.cs).

@@ -42,9 +42,9 @@ namespace Gear.EmulationCore
     public enum HubOperationCodes : byte
     {
         /// @brief Setting the clock.
-        ClkSet  = 0,
+        ClkSet = 0,
         /// @brief Getting the %Cog ID.
-        CogId   = 1,
+        CogId = 1,
         /// @brief Start or restart a %Cog by ID or next available.
         CogInit = 2,
         /// @brief Stop %Cog by its ID.
@@ -64,15 +64,15 @@ namespace Gear.EmulationCore
     public enum PinState : byte
     {
         /// @brief Pin Floating.
-        FLOATING  = 4,
+        FLOATING = 4,
         /// @brief Output Low (0V)
         OUTPUT_LO = 2,
         /// @brief Output Hi (3.3V)
         OUTPUT_HI = 3,
         /// @brief Input Low (0V)
-        INPUT_LO  = 0,
+        INPUT_LO = 0,
         /// @brief Input Hi (3.3V)
-        INPUT_HI  = 1,
+        INPUT_HI = 1,
     }
 
     /// @brief Class to emulate the core of %Propeller P1 chip.
@@ -152,11 +152,11 @@ namespace Gear.EmulationCore
         private readonly SystemXtal _coreClockSource;
 
         /// <summary>Pins driven by a plugin, system or user types.</summary>
-        /// @version v22.05.04 - Name changed to follow naming conventions.
+        /// @version v22.05.04 - Name changed to clarify.
         private ulong _pinsDriven;
         /// <summary></summary>
         /// @version v22.05.04 - Name changed to follow naming conventions.
-        private ulong _pinsFloat;
+        private ulong _pinsFloating;
         /// <summary>Indicator of some pin has changed.</summary>
         /// @version v22.05.04 - Name changed to follow naming conventions.
         private bool _pinChanged;
@@ -331,7 +331,7 @@ namespace Gear.EmulationCore
         #endregion
 
         /// <summary></summary>
-        public ulong Floating => _pinsFloat & ~RegisterDIR;
+        public ulong Floating => _pinsFloating & ~RegisterDIR;
 
         /// <summary></summary>
         /// @todo Parallelism point in loop of _locksState[]
@@ -454,7 +454,6 @@ namespace Gear.EmulationCore
             }
         }
 
-
         /// <summary>Default Constructor.</summary>
         /// <param name="emulator">Reference to the Gear.GUI.Emulator instance
         /// controlling this PropellerCPU.</param>
@@ -463,15 +462,16 @@ namespace Gear.EmulationCore
         {
             _emulator = emulator;
             _cogs = new Cog[TotalCogs];  // 8 general purpose cogs
-            Array.Clear(_cogs,0,TotalCogs);
+            for (int i = 0; i < TotalCogs; i++)
+                _cogs[i] = null;
             _pinsDriven = 0x0;
-            _pinsFloat = PinFullMask;  //all pins floating initially
+            _pinsFloating = PinFullMask;  //all pins floating initially
             _cogsRunning = 0;
             _tickHandlers = new List<PluginBase>();
             _pinHandlers = new List<PluginBase>();
             _plugIns = new List<PluginBase>();
             EmulatorTime = 0.0;
-            RingPosition = 0;
+            RingPosition = 0x0;
             _locksAvailable = new bool[TotalLocks]; // 8 general purpose semaphores
             _locksState = new bool[TotalLocks];
             Memory = new byte[TotalMemory];        // 64k of memory (top 32k read-only BIOS)
@@ -512,7 +512,8 @@ namespace Gear.EmulationCore
                     "Binary to load is bigger than physical memory of P1 CPU :\r\n" +
                     $"Program size is {program.Length} > {TotalRAM} bytes of Total RAM!");
             //Clean up all the memory
-            Array.Clear(Memory, 0, TotalMemory);
+            for (int i = 0; i < TotalRAM; i++)
+                Memory[i] = 0;
             //copy program
             program.CopyTo(Memory, 0);
             _resetMemory = new byte[Memory.Length];
@@ -556,7 +557,7 @@ namespace Gear.EmulationCore
         /// @returns Return the reference to the cog.
         public Cog GetCog(int cogId)
         {
-            return cogId < 0 || cogId > _cogs.Length  ?
+            return cogId < 0 || cogId >= _cogs.Length ?
                 null :
                 _cogs[cogId];
         }
@@ -568,13 +569,13 @@ namespace Gear.EmulationCore
         public string GetClockString()
         {
             string mode = string.Empty;
-            if ((_clockMode & 0x80) != 0)
+            if ((ClockMode & 0x80) != 0)
                 mode += "RESET+";
-            if ((_clockMode & 0x40) != 0)
+            if ((ClockMode & 0x40) != 0)
                 mode += "PLL+";
-            if ((_clockMode & 0x20) != 0)
-                mode += OSCM[(_clockMode & 0x18) >> 3];
-            return mode + CLKSEL[_clockMode & 0x7];
+            if ((ClockMode & 0x20) != 0)
+                mode += OSCM[(ClockMode & 0x18) >> 3];
+            return mode + CLKSEL[ClockMode & 0x7];
         }
 
         /// <summary></summary>
@@ -596,7 +597,7 @@ namespace Gear.EmulationCore
         {
             if (plugin == null)
                 throw new ArgumentNullException(nameof(plugin));
-            if (! _plugIns.Contains(plugin))
+            if (!_plugIns.Contains(plugin))
                 _plugIns.Add(plugin);
         }
 
@@ -627,7 +628,7 @@ namespace Gear.EmulationCore
         {
             if (plugin == null)
                 throw new ArgumentNullException(nameof(plugin));
-            if (! _tickHandlers.Contains(plugin))
+            if (!_tickHandlers.Contains(plugin))
                 _tickHandlers.Add(plugin);
         }
 
@@ -653,7 +654,7 @@ namespace Gear.EmulationCore
         {
             if (plugin == null)
                 throw new ArgumentNullException(nameof(plugin));
-            if (! _pinHandlers.Contains(plugin))
+            if (!_pinHandlers.Contains(plugin))
                 _pinHandlers.Add(plugin);
         }
 
@@ -679,12 +680,14 @@ namespace Gear.EmulationCore
         {
             _resetMemory.CopyTo(Memory, 0x0);
             Counter = 0;
-            EmulatorTime = 0;
+            EmulatorTime = 0.0;
             RingPosition = 0;
             //clear clock source references
-            Array.Clear(_clockSources,0, _clockSources.Length);
+            for (int i = 0; i < TotalCogs; i++)
+                _clockSources[i] = null;
             //clear cog references
-            Array.Clear(_cogs, 0, _cogs.Length);
+            for (int i = 0; i < TotalCogs; i++)
+                _cogs[i] = null;
             _cogsRunning = 0;
             for (int i = 0; i < TotalLocks; i++)    //clear locks state
             {
@@ -742,7 +745,7 @@ namespace Gear.EmulationCore
                 // Preserve initial state of the pins
                 pinsPrev = RegisterIN;
                 dirPrev = RegisterDIR;
-                for (int i = 0; i < _clockSources.Length; i++)  //TODO Parallelism point in loop of _clockSources[]
+                for (int i = 0; i < TotalCogs; i++)  //TODO Parallelism point in loop of _clockSources[]
                 {
                     if (_clockSources[i] == null)
                         continue;
@@ -767,7 +770,7 @@ namespace Gear.EmulationCore
             // CPU advances on the main clock source
             RingPosition = (RingPosition + 1) & 0xF;    // 16 positions on the ring counter
             //execute a step on each cog
-            for (int i = 0; i < _cogs.Length; i++)
+            for (int i = 0; i < TotalCogs; i++)  //TODO Parallelism point in loop of cog.Step()
                 if (_cogs[i] != null)
                     result &= _cogs[i].Step();
 
@@ -810,7 +813,7 @@ namespace Gear.EmulationCore
                 //if Pin i has direction set to INPUT
                 if ((dirState & mask) == 0UL)
                 {
-                    if ((_pinsFloat & mask) != 0UL)
+                    if ((_pinsFloating & mask) != 0UL)
                         _pinStates[i] = PinState.FLOATING;
                     else
                         _pinStates[i] = (_pinsDriven & mask) != 0UL ?
@@ -843,9 +846,9 @@ namespace Gear.EmulationCore
                 return;
             ulong mask = (ulong)0x1 << pin;
             if (floating)
-                _pinsFloat |= mask;   //set bit to 1
+                _pinsFloating |= mask;   //set bit to 1
             else
-                _pinsFloat &= ~mask;  //set bit to 0
+                _pinsFloating &= ~mask;  //set bit to 0
             if (isHigh)
                 _pinsDriven |= mask;  //set bit to 1
             else
@@ -898,7 +901,8 @@ namespace Gear.EmulationCore
         /// of it, added new required parameter cog number to new cogs created,
         /// using new property Cog.CogNum and changed parameter names
         /// to clarify meaning of them.
-        public uint ExecuteHubOperation(Cog callerCog, uint operation, uint argument, ref bool carryFlag, ref bool zeroFlag)
+        public uint ExecuteHubOperation(Cog callerCog, uint operation, uint argument,
+            ref bool carryFlag, ref bool zeroFlag)
         {
             uint maskedArg = argument & 0x7;
             uint cogIdx = TotalCogs;
@@ -921,14 +925,14 @@ namespace Gear.EmulationCore
                     if ((argument & 0x8) != 0)   //if free cog should be started (bit 3 is set)
                     {
                         //assign the first free cog
-                        for (uint i = 0; i < _cogs.Length; i++)
+                        for (uint i = 0; i < TotalCogs; i++)
                            if (_cogs[i] == null)
                            {
                                 cogIdx = i;
                                 break;
                            }
                         //check for no free cog
-                        if (cogIdx >= _cogs.Length)
+                        if (cogIdx >= TotalCogs)
                         {
                             carryFlag = true;
                             return 0xFFFFFFFF;
@@ -941,8 +945,10 @@ namespace Gear.EmulationCore
                     zeroFlag = cogIdx == 0;
                     PLLGroup pllGroup = new PLLGroup();
                     _clockSources[cogIdx] = pllGroup;
-                    uint paramAddress = (argument >> 16) & 0xFFFC;   //decode param value
-                    uint programAddress = (argument >> 2) & 0xFFFC;    //decode program address to load to
+                    //decode param value
+                    uint paramAddress = (argument >> 16) & 0xFFFC;
+                    //decode program address to load to
+                    uint programAddress = (argument >> 2) & 0xFFFC;
                     if (programAddress == 0xF004)
                         _cogs[cogIdx] = new InterpretedCog(this, (int)cogIdx, paramAddress, CoreFrequency, pllGroup);
                     else
@@ -966,7 +972,7 @@ namespace Gear.EmulationCore
                 case HubOperationCodes.LockNew:
                     zeroFlag = false;   // initial value if no Locks available
                     carryFlag = true;   // initial value if no Locks available
-                    for (uint i = 0; i < _locksAvailable.Length; i++)
+                    for (uint i = 0; i < TotalLocks; i++)
                     {
                         if (!_locksAvailable[i])
                             continue;
@@ -981,7 +987,7 @@ namespace Gear.EmulationCore
                 case HubOperationCodes.LockReturn:
                     zeroFlag = maskedArg == 0;
                     carryFlag = true;   // initial value if no Locks available
-                    for (uint i = 0; i < _locksAvailable.Length; i++)
+                    for (uint i = 0; i < TotalLocks; i++)
                         if (_locksAvailable[i])
                             carryFlag = false;
                     _locksAvailable[maskedArg] = true;
