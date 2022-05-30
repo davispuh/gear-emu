@@ -37,8 +37,8 @@ namespace Gear.GUI.LogicProbe
             {
                 components.Dispose();
             }
-            this.MonoFont.Dispose();
-            this.BackBuffer.Dispose();
+            this._monoFont.Dispose();
+            this._backBuffer.Dispose();
             base.Dispose(disposing);
         }
 
@@ -50,12 +50,12 @@ namespace Gear.GUI.LogicProbe
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ToolStripLabel toolStripLabel1;
-            System.Windows.Forms.ToolStripLabel toolStripLabel2;
-            System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LogicView));
+            this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.toolStripComboBox1 = new Gear.GUI.TimeUnitToolStripComboBox();
+            this.toolStripCmbBoxUnit = new Gear.GUI.TimeUnitToolStripComboBox();
             this.timeFrameBox = new System.Windows.Forms.ToolStripTextBox();
             this.tickMarkBox = new System.Windows.Forms.ToolStripTextBox();
             this.updateGridButton = new System.Windows.Forms.ToolStripButton();
@@ -66,39 +66,36 @@ namespace Gear.GUI.LogicProbe
             this.viewOffset = new System.Windows.Forms.VScrollBar();
             this.waveView = new Gear.GUI.DoubleBufferedPanel();
             this.timeAdjustBar = new System.Windows.Forms.HScrollBar();
-            toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
-            toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
-            toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             //
             // toolStripLabel1
             //
-            toolStripLabel1.Name = "toolStripLabel1";
-            toolStripLabel1.Size = new System.Drawing.Size(72, 22);
-            toolStripLabel1.Text = "Time Frame:";
+            this.toolStripLabel1.Name = "toolStripLabel1";
+            this.toolStripLabel1.Size = new System.Drawing.Size(72, 22);
+            this.toolStripLabel1.Text = "Time Frame:";
             //
             // toolStripLabel2
             //
-            toolStripLabel2.Name = "toolStripLabel2";
-            toolStripLabel2.Size = new System.Drawing.Size(86, 22);
-            toolStripLabel2.Text = "Tick Mark Grid:";
+            this.toolStripLabel2.Name = "toolStripLabel2";
+            this.toolStripLabel2.Size = new System.Drawing.Size(86, 22);
+            this.toolStripLabel2.Text = "Tick Mark Grid:";
             //
             // toolStripSeparator2
             //
-            toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
             //
             // toolStrip1
             //
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            toolStripLabel1,
-            this.toolStripComboBox1,
+            this.toolStripLabel1,
+            this.toolStripCmbBoxUnit,
             this.timeFrameBox,
-            toolStripLabel2,
+            this.toolStripLabel2,
             this.tickMarkBox,
             this.updateGridButton,
-            toolStripSeparator2,
+            this.toolStripSeparator2,
             this.toolStripLabel3,
             this.pinsTextBox,
             this.analogButton,
@@ -109,19 +106,19 @@ namespace Gear.GUI.LogicProbe
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
             //
-            // toolStripComboBox1
+            // toolStripCmbBoxUnit
             //
-            this.toolStripComboBox1.AutoSize = false;
-            this.toolStripComboBox1.BaseUnit = Gear.Utils.TimeUnitsEnum.s;
-            this.toolStripComboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.toolStripComboBox1.ExcludedUnits.Add(Gear.Utils.TimeUnitsEnum.None);
-            this.toolStripComboBox1.ExcludedUnits.Add(Gear.Utils.TimeUnitsEnum.min_s);
-            this.toolStripComboBox1.MergeAction = System.Windows.Forms.MergeAction.MatchOnly;
-            this.toolStripComboBox1.Name = "toolStripComboBox1";
-            this.toolStripComboBox1.Size = new System.Drawing.Size(40, 23);
-            this.toolStripComboBox1.TimeUnitSelected = Gear.Utils.TimeUnitsEnum.None;
-            this.toolStripComboBox1.ToolTipText = "Time Unit for Time frame and Tick mark grid.";
-            this.toolStripComboBox1.SelectedIndexChanged += new System.EventHandler(this.ToolStripComboBox1_SelectedIndexChanged);
+            this.toolStripCmbBoxUnit.AutoSize = false;
+            this.toolStripCmbBoxUnit.BaseUnit = Gear.Utils.TimeUnitsEnum.s;
+            this.toolStripCmbBoxUnit.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.toolStripCmbBoxUnit.ExcludedUnits.Add(Gear.Utils.TimeUnitsEnum.None);
+            this.toolStripCmbBoxUnit.ExcludedUnits.Add(Gear.Utils.TimeUnitsEnum.min_s);
+            this.toolStripCmbBoxUnit.MergeAction = System.Windows.Forms.MergeAction.MatchOnly;
+            this.toolStripCmbBoxUnit.Name = "toolStripCmbBoxUnit";
+            this.toolStripCmbBoxUnit.Size = new System.Drawing.Size(40, 23);
+            this.toolStripCmbBoxUnit.TimeUnitSelected = Gear.Utils.TimeUnitsEnum.None;
+            this.toolStripCmbBoxUnit.ToolTipText = "Time Unit for Time frame and Tick mark grid.";
+            this.toolStripCmbBoxUnit.SelectedIndexChanged += new System.EventHandler(this.ToolStripCmbBoxUnit_SelectedIndexChanged);
             //
             // timeFrameBox
             //
@@ -176,7 +173,7 @@ namespace Gear.GUI.LogicProbe
             this.analogButton.Size = new System.Drawing.Size(57, 22);
             this.analogButton.Text = "+Analog";
             this.analogButton.ToolTipText = "Add a Analog view on pin selected.";
-            this.analogButton.Click += new System.EventHandler(this.AnalogButton_Click);
+            this.analogButton.Click += new System.EventHandler(this.AddAnalogButton_Click);
             //
             // digitalButton
             //
@@ -187,7 +184,7 @@ namespace Gear.GUI.LogicProbe
             this.digitalButton.Size = new System.Drawing.Size(53, 22);
             this.digitalButton.Text = "+Digital";
             this.digitalButton.ToolTipText = "Add a Digitalview on pin selected.";
-            this.digitalButton.Click += new System.EventHandler(this.DigitalButton_Click);
+            this.digitalButton.Click += new System.EventHandler(this.AddDigitalButton_Click);
             //
             // viewOffset
             //
@@ -253,6 +250,9 @@ namespace Gear.GUI.LogicProbe
         private System.Windows.Forms.ToolStripButton analogButton;
         private System.Windows.Forms.ToolStripTextBox pinsTextBox;
         private System.Windows.Forms.ToolStripLabel toolStripLabel3;
-        private Gear.GUI.TimeUnitToolStripComboBox toolStripComboBox1;
+        private Gear.GUI.TimeUnitToolStripComboBox toolStripCmbBoxUnit;
+        private System.Windows.Forms.ToolStripLabel toolStripLabel1;
+        private System.Windows.Forms.ToolStripLabel toolStripLabel2;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
     }
 }

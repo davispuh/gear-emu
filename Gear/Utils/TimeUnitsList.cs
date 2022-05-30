@@ -22,7 +22,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace Gear.Utils
 {
@@ -30,28 +29,31 @@ namespace Gear.Utils
     public class TimeUnitsList : SortedList<TimeUnitsEnum, TimeUnitsEnumExtension>
     {
         /// @brief Default constructor.
-        public TimeUnitsList() : base() { }
+        public TimeUnitsList() { }
 
-        /// @brief Constructor with excluded units.
-        /// @param excludedUnits Time units collection to exclude values
-        /// on creation.
-        public TimeUnitsList(TimeUnitCollection excludedUnits) : base()
+        /// <summary>Constructor with excluded units.</summary>
+        /// <param name="excludedUnits">Time units collection to
+        /// exclude values on creation.</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public TimeUnitsList(TimeUnitCollection excludedUnits)
         {
-            var values = (TimeUnitsEnum[])Enum.GetValues(typeof(TimeUnitsEnum));
-            if ((excludedUnits == null) | (excludedUnits?.Count == 0))
+            if (excludedUnits == null)
+                throw new ArgumentNullException(nameof(excludedUnits));
+            TimeUnitsEnum[] values = (TimeUnitsEnum[])Enum.GetValues(typeof(TimeUnitsEnum));
+            if (excludedUnits.Count == 0)
                 foreach (var val in values)
-                    this.Add(val, new TimeUnitsEnumExtension(val));
+                    Add(val, new TimeUnitsEnumExtension(val));
             else
                 foreach (var val in values)
                     if (!excludedUnits.Contains(val))
-                        this.Add(val, new TimeUnitsEnumExtension(val));
+                        Add(val, new TimeUnitsEnumExtension(val));
         }
 
         /// @brief Returns a array of names of each element on list.
         /// @return Array of names of each element on list.
         public string[] GetNames()
         {
-            int len = this.Count;
+            int len = Count;
             string[] retVal = new string[len];
             int idx = 0;
             foreach (var pair in this)
@@ -60,18 +62,20 @@ namespace Gear.Utils
         }
 
         /// @brief Assign the list of TextFormats methods to corresponding enum values.
-        /// @param assigments List of assigments.
-        public void AssignTextFormats(DelegatesPerTimeUnitsList assigments)
+        /// @param assignments List of assignments.
+        /// @throws ArgumentNullException
+        /// @throws KeyNotFoundException
+        public void AssignTextFormats(DelegatesPerTimeUnitsList assignments)
         {
+            if (assignments == null)
+                throw new ArgumentNullException(nameof(assignments));
             foreach (var item in this)
-                if (assigments.TryGetValue(item.Key, out FormatToTextDelegate _delegate))
-                    item.Value.FormatToTextDel = _delegate;
+                if (assignments.TryGetValue(item.Key, out FormatToTextDelegate @delegate))
+                    item.Value.FormatToTextDel = @delegate;
                 else
                 {
-                    string msg = $"TimeUnit TimeUnitsEnum.{item.Key} not " +
-                        $"found in parameter assigments List.";
-                    Debug.Assert(false, msg);
-                    item.Value.FormatToTextDel = null;
+                    string msg = $"TimeUnit TimeUnitsEnum.{item.Key} not found in parameter assignments List.";
+                    throw new KeyNotFoundException(msg);
                 }
         }
 
@@ -82,10 +86,9 @@ namespace Gear.Utils
         /// null reference or the key isn't in the list (=false).
         public bool HaveAssignedTextFormat(TimeUnitsEnum key)
         {
-            if (this.TryGetValue(key, out TimeUnitsEnumExtension enumExtension))
+            if (TryGetValue(key, out TimeUnitsEnumExtension enumExtension))
                 return enumExtension != null;
-            else
-                return false;
+            return false;
         }
 
     } //end class TimeUnitsList
@@ -94,60 +97,62 @@ namespace Gear.Utils
     public class DelegatesPerTimeUnitsList :
         SortedList<TimeUnitsEnum, FormatToTextDelegate>
     {
-        private readonly TimeUnitCollection excludedItems;
+        /// <summary></summary>
+        private readonly TimeUnitCollection _excludedItems;
 
-        /// @brief Default constructor
-        /// @param excluded Excluded items.
-        /// @param listaInicial List of assigments
+        /// <summary>Default constructor.</summary>
+        /// <param name="excluded">Excluded items.</param>
+        /// <param name="initialList">List of assignments.</param>
+        /// <exception cref="ArgumentNullException"></exception>
         public DelegatesPerTimeUnitsList(TimeUnitCollection excluded,
-            SortedList<TimeUnitsEnum, FormatToTextDelegate> listaInicial) :
-                base()
+            SortedList<TimeUnitsEnum, FormatToTextDelegate> initialList)
         {
-            excludedItems = excluded;
-            foreach (var pair in listaInicial)
+            _excludedItems = excluded;
+            if (initialList == null)
+                throw new ArgumentNullException(nameof(initialList));
+            foreach (var pair in initialList)
                 AddOrReplace(pair.Key, pair.Value);
         }
 
         /// @brief Add or replace the delegate member method associated with
         /// the time unit.
         /// @param value Time unit.
-        /// @param _delegate Method to format text for this time unit.
+        /// @param delegate Method to format text for this time unit.
+        /// @throws ArgumentOutOfRangeException
         private void AddOrReplace(TimeUnitsEnum value,
-            FormatToTextDelegate _delegate)
+            FormatToTextDelegate @delegate)
         {
-            if ((excludedItems != null) | (excludedItems.Count > 0))
+            if (_excludedItems != null && _excludedItems.Count > 0)
             {
-                bool valid = !excludedItems.Contains(value);
-                if (valid)
+                if (!_excludedItems.Contains(value))
                 {
-                    if (this.ContainsKey(value))
+                    if (ContainsKey(value))
                         Remove(value);
-                    base.Add(value, _delegate);
+                    base.Add(value, @delegate);
                 }
                 else
                 {
-                    string msg = $"Time unit \"{value}\" is in excluded " +
-                        $"Time units list!";
-                    Debug.Assert(valid, msg);
+                    string msg = $"Time unit \"{value}\" is in excluded Time units list!";
+                    throw new ArgumentOutOfRangeException(nameof(value), value, msg);
                 }
             }
             else
             {
-                if (this.ContainsKey(value))
+                if (ContainsKey(value))
                     Remove(value);
-                base.Add(value, _delegate);
+                base.Add(value, @delegate);
             }
         }
 
-        /// @brief Inheritated Add method, marked as obsolete, to force
+        /// @brief Inherited Add method, marked as obsolete, to force
         /// to use AddOrReplace(.) method.
         /// @param value Time unit.
-        /// @param _delegate Method to format text for this time unit.
-        [ObsoleteAttribute("Use AddOrReplace(.) method instead", error: true)]
+        /// @param delegate Method to format text for this time unit.
+        [Obsolete("Use AddOrReplace(.) method instead", error: true)]
         public new void Add(TimeUnitsEnum value,
-            FormatToTextDelegate _delegate)
+            FormatToTextDelegate @delegate)
         {
-            base.Add(value, _delegate);
+            base.Add(value, @delegate);
         }
 
     } //end class DelegatesPerTimeUnitsList

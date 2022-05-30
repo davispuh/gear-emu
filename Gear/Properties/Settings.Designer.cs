@@ -118,7 +118,7 @@ namespace Gear.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Parallax_SPIN")]
+        [global::System.Configuration.DefaultSettingValueAttribute("ParallaxSpin")]
         [CategoryAttribute("Hub View")]
         [DescriptionAttribute("Format of counter and frequency labels in Hub view.")]
         [DisplayNameAttribute("Freq & Time format")]

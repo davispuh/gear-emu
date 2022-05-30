@@ -35,7 +35,7 @@ namespace Gear.Utils
     public class TimeUnitCollection : Collection<TimeUnitsEnum>, IEquatable<TimeUnitCollection>
     {
         /// @brief Default constructor.
-        public TimeUnitCollection() : base() { }
+        public TimeUnitCollection() { }
 
         /// @brief Constructor with a list interface compliant class. Each
         /// value is unique and the list are sorted by enum value.
@@ -44,7 +44,7 @@ namespace Gear.Utils
         {
             //get distinct and sorted list of values
             SortedSet<TimeUnitsEnum> tmp = new SortedSet<TimeUnitsEnum>(this.Distinct());
-            this.Clear();
+            Clear();
             foreach (TimeUnitsEnum item in tmp)
                 base.Add(item);
         }
@@ -54,34 +54,33 @@ namespace Gear.Utils
         /// @param newItem Item to add to collection.
         public new void Add(TimeUnitsEnum newItem)
         {
-            if (this.IndexOf(newItem) == -1)
+            if (IndexOf(newItem) != -1)
+                return;
+            if (Count == 0)
+                base.Add(newItem);
+            else
             {
-                if (this.Count == 0)
-                    base.Add(newItem);
-                else
+                TimeUnitsEnum carry = TimeUnitsEnum.None;
+                bool inserted = false;
+                for (int i = 0; i < Count; i++)
                 {
-                    TimeUnitsEnum carry = TimeUnitsEnum.None;
-                    bool inserted = false;
-                    for (int i = 0; i < this.Count; i++)
+                    if (inserted)
                     {
-                        if (inserted)
-                        {
-                            TimeUnitsEnum tmp = this[i];
-                            base.InsertItem(i, carry);
-                            carry = tmp;
-                        }
-                        else if (this[i] > newItem)
-                        {
-                            carry = this[i];
-                            base.InsertItem(i, newItem);
-                            inserted = true;
-                        }
+                        TimeUnitsEnum tmp = this[i];
+                        base.InsertItem(i, carry);
+                        carry = tmp;
                     }
-                    if (!inserted)
-                        carry = newItem;
-                    if (carry != TimeUnitsEnum.None)
-                        base.Add(carry);
+                    else if (this[i] > newItem)
+                    {
+                        carry = this[i];
+                        base.InsertItem(i, newItem);
+                        inserted = true;
+                    }
                 }
+                if (!inserted)
+                    carry = newItem;
+                if (carry != TimeUnitsEnum.None)
+                    base.Add(carry);
             }
         }
 
@@ -95,17 +94,12 @@ namespace Gear.Utils
                 return false;
             if (ReferenceEquals(this, other))
                 return true;
-            if (this.Count != other.Count)
+            if (Count != other.Count)
                 return false;
-            else
-            {
-                for (int i = 0; i < Count; i++)
-                {
-                    if (this[i] != other[i])
-                        return false;
-                }
-                return true;
-            }
+            for (int i = 0; i < Count; i++)
+                if (this[i] != other[i])
+                    return false;
+            return true;
         }
 
     }
@@ -113,33 +107,45 @@ namespace Gear.Utils
     /// @brief Converter class for TimeUnitCollection.
     /// @details This is necessary to expose the TimeUnitCollection on design
     /// time in HubView.
-    class TimeUnitCollectionConverter : TypeConverter
+    public class TimeUnitCollectionConverter : TypeConverter
     {
+        /// <summary></summary>
+        /// <param name="context"></param>
+        /// <param name="value"></param>
+        /// <param name="attributes"></param>
+        /// <returns></returns>
         public override PropertyDescriptorCollection GetProperties(
             ITypeDescriptorContext context, object value, Attribute[] attributes)
         {
             return TypeDescriptor.GetProperties(typeof(TimeUnitCollection));
         }
 
+        /// <summary></summary>
+        /// <param name="context"></param>
+        /// <param name="destinationType"></param>
+        /// <returns></returns>
         public override bool CanConvertTo(ITypeDescriptorContext context,
             Type destinationType)
         {
-            if (destinationType == typeof(InstanceDescriptor))
-                return true;
-            return base.CanConvertTo(context, destinationType);
+            return destinationType == typeof(InstanceDescriptor) ||
+                   base.CanConvertTo(context, destinationType);
         }
 
+        /// <summary></summary>
+        /// <param name="context"></param>
+        /// <param name="culture"></param>
+        /// <param name="value"></param>
+        /// <param name="destinationType"></param>
+        /// <returns></returns>
         public override object ConvertTo(ITypeDescriptorContext context,
             CultureInfo culture, object value, Type destinationType)
         {
             if (destinationType == typeof(InstanceDescriptor))
             {
                 System.Reflection.ConstructorInfo ci =
-                    typeof(TimeUnitCollection).GetConstructor(System.Type.EmptyTypes);
+                    typeof(TimeUnitCollection).GetConstructor(Type.EmptyTypes);
             }
             return base.ConvertTo(context, culture, value, destinationType);
         }
     }
-
 }
-

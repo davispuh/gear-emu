@@ -3,7 +3,7 @@
  * Copyright 2007-2022 - Gear Developers
  * --------------------------------------------------------------------------------
  * LogicRow.cs
- * Abstract baseclass for a LogicView channel
+ * Abstract base class for a LogicView channel
  * --------------------------------------------------------------------------------
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,14 +25,32 @@ using System.Drawing;
 
 namespace Gear.GUI.LogicProbe
 {
-    /// @brief Abstract baseclass for a LogicView channel.
+    /// @brief Abstract base class for a LogicView channel.
     public abstract class LogicRow
     {
+        /// <summary>Name of channel.</summary>
         public abstract string Name { get; }
+
+        /// <summary></summary>
         public abstract double MinTime { get; }
+
+        /// <summary>Height this channel on screen.</summary>
         public abstract int Height { get; }
+
+        /// <summary></summary>
+        /// <param name="graph"></param>
+        /// <param name="top"></param>
+        /// <param name="left"></param>
+        /// <param name="width"></param>
+        /// <param name="minTime"></param>
+        /// <param name="scale"></param>
+        /// <returns></returns>
         public abstract int Draw(Graphics graph, int top, float left, float width, double minTime, double scale);
+
+        /// <summary></summary>
         public abstract void Click();
-        public abstract void Reset();   //!< @brief Clear previous samples
+
+        /// <summary>Clear previous samples.</summary>
+        public abstract void Reset();
     }
 }

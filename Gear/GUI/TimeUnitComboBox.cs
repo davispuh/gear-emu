@@ -29,88 +29,88 @@ namespace Gear.GUI
 {
     /// @brief Combobox specialization for time unit management.
     /// @version v20.09.01 - Added.
-    public partial class TimeUnitComboBox : ComboBox, Gear.Utils.ITimeUnitMgmt
+    public partial class TimeUnitComboBox : ComboBox, Utils.ITimeUnitMgmt
     {
-        /// @brief Time Units Management Instance
-        public TimeUnitMgmt Mgmt;
+        /// @brief Time Units Management Instance.
+        /// @version v22.06.01 - Changed name and visibility of member.
+        private readonly TimeUnitMgmt _manager;
 
         /// @brief Excluded time units.
         /// @details Implements ITimeUnitMgmt interface.
-        [CategoryAttribute("Misc")]
-        [DescriptionAttribute("Excluded Time Units for this control.")]
-        [DisplayNameAttribute("Excluded Time Units")]
-        [BrowsableAttribute(true)]
+        [Category("Misc")]
+        [Description("Excluded Time Units for this control.")]
+        [DisplayName("Excluded Time Units")]
+        [Browsable(true)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
         public TimeUnitCollection ExcludedUnits
         {
-            get => Mgmt.ExcludedUnits;
-            set => Mgmt.ExcludedUnits = value;
+            get => _manager.ExcludedUnits;
+            set => _manager.ExcludedUnits = value;
         }
 
         /// @brief Base unit used to transform multiply factors values.
         /// @details Implements ITimeUnitMgmt interface.
-        [CategoryAttribute("Misc")]
-        [DescriptionAttribute("Base Unit of Time for this control.")]
-        [DisplayNameAttribute("Base Time Unit")]
-        [BrowsableAttribute(true)]
+        [Category("Misc")]
+        [Description("Base Unit of Time for this control.")]
+        [DisplayName("Base Time Unit")]
+        [Browsable(true)]
         public TimeUnitsEnum BaseUnit
         {
-            get => Mgmt.BaseUnit;
-            set => Mgmt.BaseUnit = value;
+            get => _manager.BaseUnit;
+            set => _manager.BaseUnit = value;
         }
 
         /// @brief Time unit selected on this combobox.
         /// @details Implements ITimeUnitMgmt interface.
-        [CategoryAttribute("Misc")]
-        [DescriptionAttribute("Initial selected unit of time for this control.")]
-        [DisplayNameAttribute("Selected Time Unit")]
-        [BrowsableAttribute(true)]
+        [Category("Misc")]
+        [Description("Initial selected unit of time for this control.")]
+        [DisplayName("Selected Time Unit")]
+        [Browsable(true)]
         public TimeUnitsEnum TimeUnitSelected
         {
-            get => Mgmt.TimeUnitSelected;
-            set => Mgmt.TimeUnitSelected = value;
+            get => _manager.TimeUnitSelected;
+            set => _manager.TimeUnitSelected = value;
         }
 
         /// @brief Factor value of selected index of combo box.
         /// @details Implements ITimeUnitMgmt interface.
-        [BrowsableAttribute(false)]
-        public double FactorSelected => Mgmt.FactorSelected;
+        [Browsable(false)]
+        public double FactorSelected => _manager.FactorSelected;
 
         /// @brief
         /// @details Implements ITimeUnitMgmt interface.
-        [BrowsableAttribute(false)]
-        public bool IsMultiplyFactor => Mgmt.IsMultiplyFactor;
+        [Browsable(false)]
+        public bool IsMultiplyFactor => _manager.IsMultiplyFactor;
 
         /// @brief Default constructor.
-        public TimeUnitComboBox() : base()
+        public TimeUnitComboBox()
         {
-            Mgmt = new TimeUnitMgmt(this);
+            _manager = new TimeUnitMgmt(this);
             InitializeComponent();
         }
 
-        /// @brief Syncronize values dependent of excludedUnits
-        public void SyncValues() => Mgmt.SyncValues();
+        /// <summary>Synchronize values dependent of excludedUnits.</summary>
+        public void SyncValues() => _manager.SyncValues();
 
-        /// @brief Select the next valid value, rolling over if it is necesary.
+        /// @brief Select the next valid value, rolling over if it is necessary.
         /// @details Implements ITimeUnitMgmt interface.
-        public void SelectNext() => Mgmt.SelectNext();
+        public void SelectNext() => _manager.SelectNext();
 
-        /// @brief Select the previous valid value, rolling over if it is necesary.
+        /// @brief Select the previous valid value, rolling over if it is necessary.
         /// @details Implements ITimeUnitMgmt interface.
-        public void SelectPrev() => Mgmt.SelectPrev();
+        public void SelectPrev() => _manager.SelectPrev();
 
         /// @brief Assign the list of TextFormats methods to corresponding enum values.
         /// @details Implements ITimeUnitMgmt interface.
-        /// @param assigments List of assigments.
-        public void AssignTextFormats(DelegatesPerTimeUnitsList assigments) =>
-            Mgmt.AssignTextFormats(assigments);
+        /// @param assignments List of assignments.
+        public void AssignTextFormats(DelegatesPerTimeUnitsList assignments) =>
+            _manager.AssignTextFormats(assignments);
 
-        /// @brief Get formated text for the value.
+        /// @brief Get formatted text for the value.
         /// @details Implements ITimeUnitMgmt interface.
         /// @param val Value to convert to text.
-        /// @return Formated text of the value.
-        public string GetFormatedText(double val) =>
-            Mgmt.GetFormatedText(val);
-
+        /// @return Formatted text of the value.
+        public string GetFormattedText(double val) =>
+            _manager.GetFormattedText(val);
     }
 }

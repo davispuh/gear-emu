@@ -205,7 +205,6 @@ namespace Gear.GUI
             pinLocks.Value = _cpuHost.Locks;
             UpdateCounterText();
             UpdateTimeText();
-            //clockModeLabel.Text = _cpuHost.GetClockString();
             ringMeter.Value = _cpuHost.RingPosition;
         }
 
@@ -235,7 +234,7 @@ namespace Gear.GUI
         {
             if (_cpuHost != null)
                 elapsedTimeLabel.Text =
-                    timeUnitSelector.GetFormatedText(_cpuHost.EmulatorTime);
+                    timeUnitSelector.GetFormattedText(_cpuHost.EmulatorTime);
         }
 
         /// @brief Format the value to string, considering the value

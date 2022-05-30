@@ -22,6 +22,7 @@
  */
 
 using Gear.EmulationCore;
+using System;
 using System.Drawing;
 
 namespace Gear.GUI.LogicProbe
@@ -29,111 +30,117 @@ namespace Gear.GUI.LogicProbe
     /// @brief Provides a Digital logic channel for LogicView.
     public class LogicDigital : LogicRow
     {
-        const int MAXIMUM_SAMPLES = 1024;
+        /// <summary>Maximum samples to be saved in each channel.</summary>
+        private const int MaximumSamples = 1024;
+        /// <summary>Mask of maximum samples.</summary>
+        /// @version v22.06.01 - Added.
+        private const int SamplesMask = MaximumSamples - 1;
 
-        private readonly double[] Time;
-        private readonly PinState[] Pins;
-        private readonly int PinNumber;
+        /// <summary>Array for time value of a sample.</summary>
+        private readonly double[] _time;
+        /// <summary>Array for pin state of a sample.</summary>
+        private readonly PinState[] _pins;
+        /// <summary>Pin number witch this channel will be associated.</summary>
+        private readonly int _pinNumber;
 
-        private int WritePointer;
-        private bool Wrapped;
+        /// <summary>Index position of write pointer, one based.</summary>
+        private int _writePointer;
+        /// <summary>Indicator of wrapped state for samples.</summary>
+        private bool _wrapped;
 
-        public override double MinTime
+        /// <summary></summary>
+        public override double MinTime => 
+            _wrapped ?
+                _time[_writePointer] :
+                _time[0];
+
+        /// <summary>Height this channel on screen.</summary>
+        public override int Height => 16;
+
+        /// <summary>Name of channel, associated to a pin number.</summary>
+        /// @version v22.06.01 - Changed to use interpolated string text.
+        public override string Name =>
+            $"P{_pinNumber}";
+
+        /// @brief Default Constructor.
+        /// @param pin Pin number to represent.
+        public LogicDigital(int pin)
         {
-            get
-            {
-                if (Wrapped)
-                    return Time[WritePointer];
-                else
-                    return Time[0];
-            }
-        }
-
-        public override int Height
-        {
-            get { return 16; }
-        }
-
-        public override string Name
-        {
-            get { return "P" + PinNumber.ToString(); }
-        }
-
-        /// @brief Default Constructor
-        /// @param pin Pin map to use
-        public LogicDigital(int pin) : base()
-        {
-            Pins = new PinState[MAXIMUM_SAMPLES];
-            Time = new double[MAXIMUM_SAMPLES];
-            Wrapped = false;
-            PinNumber = pin;
-
-            //use the new method Reset()
+            _pins = new PinState[MaximumSamples];
+            _time = new double[MaximumSamples];
+            _wrapped = false;
+            _pinNumber = pin;
             Reset();
         }
 
-        public override void Click()
-        { }
+        /// <summary></summary>
+        public override void Click() { }
 
-        /// @brief Clear samples when reset is needed
-        public override void Reset()
+        /// @brief Clear samples when reset is needed.
+        public sealed override void Reset()
         {
-            Time[0] = 0.0;
-            Pins[0] = PinState.FLOATING;
-            WritePointer = 1;
+            _time[0] = 0.0;
+            _pins[0] = PinState.FLOATING;
+            _writePointer = 1;
         }
 
+        /// <summary></summary>
+        /// <param name="pin"></param>
+        /// <param name="time"></param>
         public void Update(PinState pin, double time)
         {
-            if (Pins[(WritePointer - 1) & (MAXIMUM_SAMPLES - 1)] == pin)
+            if (_pins[(_writePointer - 1) & SamplesMask] == pin)
                 return;
-
-            Pins[WritePointer] = pin;
-            Time[WritePointer] = time;
-
-            WritePointer = (WritePointer + 1) & (MAXIMUM_SAMPLES - 1);
-
-            if (WritePointer == 0)
-                Wrapped = true;
+            _pins[_writePointer] = pin;
+            _time[_writePointer] = time;
+            _writePointer = (_writePointer + 1) & SamplesMask;
+            if (_writePointer == 0)
+                _wrapped = true;
         }
 
-        public double GetTime(int entry)
-        {
-            return Time[(WritePointer - 1 - entry) & (MAXIMUM_SAMPLES - 1)];
-        }
+        /// <summary></summary>
+        /// <param name="entry"></param>
+        /// <returns></returns>
+        public double GetTime(int entry) => 
+            _time[(_writePointer - 1 - entry) & SamplesMask];
 
-        public PinState GetState(int entry)
-        {
-            return Pins[(WritePointer - 1 - entry) & (MAXIMUM_SAMPLES - 1)];
-        }
+        /// <summary></summary>
+        /// <param name="entry"></param>
+        /// <returns></returns>
+        public PinState GetState(int entry) =>
+            _pins[(_writePointer - 1 - entry) & SamplesMask];
 
-        public bool Overflow(int entry)
-        {
-            if (entry >= MAXIMUM_SAMPLES)
-                return true;
+        /// <summary></summary>
+        /// <param name="entry"></param>
+        /// <returns></returns>
+        public bool Overflow(int entry) =>
+            entry >= MaximumSamples || entry >= _writePointer && !_wrapped;
 
-            else if (entry >= WritePointer && !Wrapped)
-                return true;
-
-            return false;
-        }
-
+        /// <summary></summary>
+        /// <param name="graph"></param>
+        /// <param name="top"></param>
+        /// <param name="left"></param>
+        /// <param name="width"></param>
+        /// <param name="minTime"></param>
+        /// <param name="scale"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// @version v.22.06.01 - Added exception and changed local variable
+        /// name to clarify it.
         public override int Draw(Graphics graph, int top, float left, float width, double minTime, double scale)
         {
-            float height = Height * 2 / 6;
-            float center = top + Height / 2;
-
-            Pen color;
+            float height = Height * 2.0f / 6.0f;
+            float center = top + Height / 2.0f;
             float previousX = width + left;
             float previousY = center;
             float nextX;
-            float nextY;
-            int s = 0;
-
+            int entry = 0;
             do
             {
-                nextX = (float)((GetTime(s) - minTime) / scale);
-                switch (GetState(s))
+                nextX = (float)((GetTime(entry) - minTime) / scale);
+                Pen color;
+                float nextY;
+                switch (GetState(entry))
                 {
                     case PinState.INPUT_HI:
                         nextY = center - height;
@@ -151,25 +158,23 @@ namespace Gear.GUI.LogicProbe
                         nextY = center + height;
                         color = Pens.Red;
                         break;
+                    case PinState.FLOATING:
                     default:
                         nextY = center;
                         color = Pens.Yellow;
                         break;
                 }
-
                 nextX = nextX * width + left;
-
                 if (nextX < left)
                     nextX = left;
-
+                if (graph == null)
+                    throw new ArgumentNullException(nameof(graph));
                 graph.DrawLine(color, previousX, nextY, nextX, nextY);
                 graph.DrawLine(color, previousX, previousY, previousX, nextY);
-
                 previousX = nextX;
                 previousY = nextY;
-
-                s++;
-            } while (!Overflow(s) && nextX > left);
+                entry++;
+            } while (!Overflow(entry) && nextX > left);
 
             return Height;
         }

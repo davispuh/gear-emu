@@ -2,7 +2,7 @@
  * Gear: Parallax Inc. Propeller P1 Emulator
  * Copyright 2007-2022 - Gear Developers
  * --------------------------------------------------------------------------------
- * NumberFormatExt.cs
+ * NumberFormatEnumExtension.cs
  * --------------------------------------------------------------------------------
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,38 +22,43 @@
 
 using System.Globalization;
 
+// ReSharper disable InvalidXmlDocComment
 /// @brief Utilities classes.
 /// @version v20.09.01 - Added.
 namespace Gear.Utils
 {
     /// @brief Available Number Formats.
     /// @version v20.09.01 - Added.
-    public enum NumberFormatEnum
+    public enum NumberFormatEnum : byte
     {
         /// @brief No format (old default).
         None = 0,
         /// @brief Format given from system default.
-        System_Default,
+        SystemDefault,
         /// @brief Using '_' as separator.
-        Parallax_SPIN
+        ParallaxSpin
     }
 
     /// @brief Provides number separators formats for clock and counters.
     /// @version v20.09.01 - Added.
     public static class NumberFormatEnumExtension
     {
+        /// <summary></summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static NumberFormatInfo GetFormatInfo(NumberFormatEnum value)
         {
            NumberFormatInfo retVal =
                 (NumberFormatInfo)CultureInfo.CurrentCulture.NumberFormat.Clone();
             switch (value)
             {
+                default:
                 case NumberFormatEnum.None:
                     retVal.NumberGroupSeparator = string.Empty;
                     break;
-                case NumberFormatEnum.System_Default:
+                case NumberFormatEnum.SystemDefault:
                     break;
-                case NumberFormatEnum.Parallax_SPIN:
+                case NumberFormatEnum.ParallaxSpin:
                     retVal.NumberGroupSeparator = "_";
                     break;
             }

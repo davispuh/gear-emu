@@ -113,6 +113,9 @@ namespace Gear.EmulationCore
         /// @brief Number of pins of P1 Chip.
         /// @version v22.05.04 - Name changed to follow naming conventions.
         public const int TotalPins = 64;
+        /// @brief Number of physical pins of P1 Chip.
+        /// @version v22.06.01 - Added.
+        public const int PhysicalPins = 32;
         /// @brief Pin mask for all the 64 pins of P1 Chip.
         /// @version v22.05.04 - Name changed to follow naming conventions.
         public const ulong PinFullMask = 0xFFFFFFFFFFFFFFFF;
@@ -214,13 +217,13 @@ namespace Gear.EmulationCore
         /// <summary>Property to return only register of <c>DIRA</c> pins
         /// (<c>P31..P0</c>).</summary>
         /// @version v22.05.04 - Property name changed to clarify meaning of it.
-        /// @todo Parallelism point in loop of Cogs[]
+        /// @todo Parallelism [complex:low, cycles:8] point in loop _cogs[].RegisterDIRA
         public uint RegisterDIRA
         {
             get
             {
                 uint direction = 0;
-                for (int i = 0; i < _cogs.Length; i++)  //TODO Parallelism point in loop
+                for (int i = 0; i < _cogs.Length; i++)  //TODO Parallelism [complex:low, cycles:8] point in loop _cogs[].RegisterDIRA
                     if (_cogs[i] != null)
                         direction |= _cogs[i].RegisterDIRA;
                 return direction;
@@ -230,13 +233,13 @@ namespace Gear.EmulationCore
         /// <summary> Property to return only register of <c>DIRB</c> pins
         /// (<c>P63..P32</c>).</summary>
         /// @version v22.05.04 - Property name changed to clarify meaning of it.
-        /// @todo Parallelism point in loop of Cogs[]
+        /// @todo Parallelism [complex:low, cycles:8] point in loop _cogs[].RegisterDIRB
         public uint RegisterDIRB
         {
             get
             {
                 uint direction = 0;
-                for (int i = 0; i < _cogs.Length; i++)  //TODO Parallelism point in loop
+                for (int i = 0; i < _cogs.Length; i++)  //TODO Parallelism [complex:low, cycles:8] point in loop _cogs[].RegisterDIRB
                     if (_cogs[i] != null)
                         direction |= _cogs[i].RegisterDIRB;
                 return direction;
@@ -246,14 +249,14 @@ namespace Gear.EmulationCore
         /// <summary>Property to return only register of <c>INA</c> pins
         /// (<c>P31..P0</c>).</summary>
         /// @version v22.05.04 - Property name changed to clarify meaning of it.
-        /// @todo Parallelism point in loop of Cogs[]
+        /// @todo Parallelism [complex:low, cycles:8] point in loop _cogs[].RegisterOUTA
         public uint RegisterINA
         {
             get
             {
                 uint localOut = 0;
                 uint directionOut = RegisterDIRA;
-                for (int i = 0; i < _cogs.Length; i++)  //TODO Parallelism point in loop
+                for (int i = 0; i < _cogs.Length; i++)  //TODO Parallelism [complex:low, cycles:8] point in loop _cogs[].RegisterOUTA
                     if (_cogs[i] != null)
                         localOut |= _cogs[i].RegisterOUTA;
                 return (localOut & directionOut) | ((uint)_pinsDriven & ~directionOut);
@@ -263,14 +266,14 @@ namespace Gear.EmulationCore
         /// <summary>Property to return only register of <c>INB</c> pins
         /// (<c>P63..P32</c>).</summary>
         /// @version v22.05.04 - Property name changed to clarify meaning of it.
-        /// @todo Parallelism point in loop of Cogs[]
+        /// @todo Parallelism [complex:low, cycles:8] point in loop _cogs[].RegisterOUTB
         public uint RegisterINB
         {
             get
             {
                 uint localOut = 0;
                 uint directionOut = RegisterDIRB;
-                for (int i = 0; i < _cogs.Length; i++)  //TODO Parallelism point in loop
+                for (int i = 0; i < _cogs.Length; i++)  //TODO Parallelism [complex:low, cycles:8] point in loop _cogs[].RegisterOUTB
                     if (_cogs[i] != null)
                         localOut |= _cogs[i].RegisterOUTB;
                 return (localOut & directionOut) | ((uint)(_pinsDriven >> 32) & ~directionOut);
@@ -281,13 +284,13 @@ namespace Gear.EmulationCore
         /// (<c>P63..P0</c>).
         /// @details Only take Pin use of ACTIVES cogs, making OR between them.
         /// @version v22.05.04 - Property name changed to clarify meaning of it.
-        /// @todo Parallelism point in loop of Cogs[]
+        /// @todo Parallelism [complex:low, cycles:8] point in loop of_cogs[].RegisterDIR
         public ulong RegisterDIR
         {
             get
             {
                 ulong direction = 0;
-                for (int i = 0; i < _cogs.Length; i++)  //TODO Parallelism point in loop
+                for (int i = 0; i < _cogs.Length; i++)  //TODO Parallelism [complex:low, cycles:8] point in loop _cogs[].RegisterDIR
                     if (_cogs[i] != null)
                         direction |= _cogs[i].RegisterDIR;
                 return direction;
@@ -298,14 +301,14 @@ namespace Gear.EmulationCore
         /// (<c>P63..P0</c>).
         /// @details Only take Pin use of ACTIVES cogs.
         /// @version v22.05.04 - Property name changed to clarify meaning of it.
-        /// @todo Parallelism point in loop of Cogs[]
+        /// @todo Parallelism [complex:low, cycles:8] point in loop _cogs[].RegisterOUT
         public ulong RegisterIN
         {
             get
             {
                 ulong localOut = 0;
                 ulong directionOut = RegisterDIR;   //get total pins Dir (P63..P0)
-                for (int i = 0; i < _cogs.Length; i++)  //TODO Parallelism point in loop
+                for (int i = 0; i < _cogs.Length; i++)  //TODO Parallelism [complex:low, cycles:8] point in loop _cogs[].RegisterOUT
                     if (_cogs[i] != null)
                         localOut |= _cogs[i].RegisterOUT;
                 return (localOut & directionOut) | (_pinsDriven & ~directionOut);
@@ -316,13 +319,13 @@ namespace Gear.EmulationCore
         /// (<c>P63..P0</c>).
         /// @details Only take Pin use of ACTIVES cogs, making OR between them.
         /// @version v22.05.04 - Property name changed to clarify meaning of it.
-        /// @todo Parallelism point in loop of Cogs[]
+        /// @todo Parallelism [complex:low, cycles:8] point in loop _cogs[].RegisterOUT
         public ulong RegisterOUT
         {
             get
             {
                 ulong localOut = 0;
-                for (int i = 0; i < _cogs.Length; i++)  //TODO Parallelism point in loop
+                for (int i = 0; i < _cogs.Length; i++)  //TODO Parallelism [complex:low, cycles:8] point in loop _cogs[].RegisterOUT
                     if (_cogs[i] != null)
                         localOut |= _cogs[i].RegisterOUT;
                 return localOut;
@@ -334,13 +337,13 @@ namespace Gear.EmulationCore
         public ulong Floating => _pinsFloating & ~RegisterDIR;
 
         /// <summary></summary>
-        /// @todo Parallelism point in loop of _locksState[]
+        /// @todo Parallelism [complex:low, cycles:8] point in loop _locksState[]
         public byte Locks
         {
             get
             {
                 byte b = 0;
-                for (int i = 0; i < TotalLocks; i++)  //TODO Parallelism point in loop
+                for (int i = 0; i < TotalLocks; i++)  //TODO Parallelism [complex:low, cycles:8] point in loop _locksState[]
                     b |= (byte)(_locksState[i] ?
                         1 << i :
                         0b0);
@@ -349,13 +352,13 @@ namespace Gear.EmulationCore
         }
 
         /// <summary></summary>
-        /// @todo Parallelism point in loop of _locksAvailable[]
+        /// @todo Parallelism [complex:low, cycles:8] point in loop _locksAvailable[]
         public byte LocksFree
         {
             get
             {
                 byte b = 0;
-                for (int i = 0; i < TotalLocks; i++)  //TODO Parallelism point in loop
+                for (int i = 0; i < TotalLocks; i++)  //TODO Parallelism [complex:low, cycles:8] point in loop _locksAvailable[]
                     b |= (byte)(_locksAvailable[i] ?
                         1 << i :
                         0);
@@ -729,9 +732,9 @@ namespace Gear.EmulationCore
         /// @details Inside it calls the OnClock() method for each plugin as clock advances. Also
         /// update the pins, by effect of calling each cog and source of clocks.
         /// @returns Success of all cog status (=true), or if some fail (=false).
-        /// @todo Parallelism point in loop of _clockSources[]
-        /// @todo Parallelism point in loop of cog.Step()
-        /// @todo Parallelism point in loop of Plugin.OnClock()
+        /// @todo Parallelism [complex:low, cycles:8] point in loop of _clockSources[]
+        /// @todo Parallelism [complex:high, cycles:up to 8] point in loop of cog.Step()
+        /// @todo Parallelism [complex:medium, cycles:varies] point in loop of Plugin.OnClock()
         public bool Step()
         {
             ulong pinsPrev;
@@ -745,7 +748,7 @@ namespace Gear.EmulationCore
                 // Preserve initial state of the pins
                 pinsPrev = RegisterIN;
                 dirPrev = RegisterDIR;
-                for (int i = 0; i < TotalCogs; i++)  //TODO Parallelism point in loop of _clockSources[]
+                for (int i = 0; i < TotalCogs; i++)  //TODO Parallelism [complex:low, cycles:8] point in loop of _clockSources[]
                 {
                     if (_clockSources[i] == null)
                         continue;
@@ -770,7 +773,7 @@ namespace Gear.EmulationCore
             // CPU advances on the main clock source
             RingPosition = (RingPosition + 1) & 0xF;    // 16 positions on the ring counter
             //execute a step on each cog
-            for (int i = 0; i < TotalCogs; i++)  //TODO Parallelism point in loop of cog.Step()
+            for (int i = 0; i < TotalCogs; i++)  //TODO Parallelism [complex:high, cycles:up to 8] point in loop of cog.Step()
                 if (_cogs[i] != null)
                     result &= _cogs[i].Step();
 
@@ -790,7 +793,7 @@ namespace Gear.EmulationCore
             Counter++;
             // Run each module of the list on Time event (calling OnClock()).
             foreach (PluginBase plugin in _tickHandlers)
-                plugin.OnClock(EmulatorTime, Counter);  // TODO Parallelism point in Plugin.OnClock()
+                plugin.OnClock(EmulatorTime, Counter);  // TODO Parallelism [complex:medium, cycles:varies] point in Plugin.OnClock()
             if (pinsPrev != RegisterIN || dirPrev != RegisterDIR || _pinChanged)
                 PinChanged();
 
@@ -801,14 +804,14 @@ namespace Gear.EmulationCore
         /// @details Consider changes in registers DIRA and DIRB, and also
         /// generated in plugins.
         /// Inside it calls the OnPinChange() method for each plugin.
-        /// @todo Parallelism point in loop of TotalPins
-        /// @todo Parallelism point plugin.OnPinChange()
+        /// @todo Parallelism [complex:low, cycles:64] point in loop _pinStates[]
+        /// @todo Parallelism [complex:low, cycles:low-many] point in loop plugin.OnPinChange()
         public void PinChanged()
         {
             _pinChanged = false;
             ulong outState = RegisterOUT;
             ulong dirState = RegisterDIR;
-            for (ulong mask = 1UL, i = 0UL; i < TotalPins; mask <<= 1, i++)// TODO Parallelism point on loop
+            for (ulong mask = 1UL, i = 0UL; i < TotalPins; mask <<= 1, i++)// TODO Parallelism [complex:low, cycles:64] point on loop _pinStates[]
             {
                 //if Pin i has direction set to INPUT
                 if ((dirState & mask) == 0UL)
@@ -827,8 +830,8 @@ namespace Gear.EmulationCore
                         PinState.OUTPUT_LO;
             }
             //traverse across plugins that use OnPinChange()
-            foreach (PluginBase plugin in _pinHandlers)
-                plugin.OnPinChange(EmulatorTime, _pinStates);    // TODO Parallelism point on loop
+            foreach (PluginBase plugin in _pinHandlers)    // TODO Parallelism [complex:low, cycles:low-many] point in loop plugin.OnPinChange()
+                plugin.OnPinChange(EmulatorTime, _pinStates);
         }
 
         /// <summary>Modify the state of a pin of CPU.</summary>

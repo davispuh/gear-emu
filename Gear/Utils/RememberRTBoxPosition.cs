@@ -25,51 +25,49 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
+// ReSharper disable InconsistentNaming
 namespace Gear.Utils
 {
     /// @brief Remember and restore displayed position and insert
     /// point (aka caret in MS documentation) for a RichTextBox.
     /// @details Based on code from https://stackoverflow.com/a/20746931/10200101
-    class RememberRTBoxPosition
+    public class RememberRTBoxPosition
     {
         /// @brief Object reference.
-        private readonly RichTextBox obj;
+        private readonly RichTextBox _obj;
 
         /// @brief Store first displayed character.
-        private int start;
+        private int _start;
 
         /// @brief Store last displayed character.
-        private int end;
+        private int _end;
 
         /// @brief Store cursor position.
-        private int cursor_position;
+        private int _cursorPosition;
 
-        /// @brief Store cursor lenght
-        private int cursor_lenght;
+        /// @brief Store cursor length.
+        private int _cursorLength;
 
         /// @brief Default constructor, remembers current position of
-        ///  text displayed and selection.
+        /// text displayed and selection.
         /// @param textBox RichTextBox object to remember and restore state.
+        /// @throws ArgumentNullException
         public RememberRTBoxPosition(RichTextBox textBox)
         {
-            if (textBox != null)
-            {
-                obj = textBox;
-                RememberNewPosition();
-            }
-            else
-                throw new ArgumentNullException(nameof(textBox));
+            _obj = textBox ?? throw new ArgumentNullException(nameof(textBox));
+            RememberNewPosition();
         }
 
         /// @brief Remember position of text displayed and current selection.
         public void RememberNewPosition()
         {
             // Get first and last displayed character
-            start = obj.GetCharIndexFromPosition(new Point(0, 0));
-            end = obj.GetCharIndexFromPosition(new Point(obj.ClientSize.Width, obj.ClientSize.Height));
+            _start = _obj.GetCharIndexFromPosition(new Point(0, 0));
+            _end = _obj.GetCharIndexFromPosition(
+                new Point(_obj.ClientSize.Width, _obj.ClientSize.Height));
             // Save cursor position
-            cursor_position = obj.SelectionStart;
-            cursor_lenght = obj.SelectionLength;
+            _cursorPosition = _obj.SelectionStart;
+            _cursorLength = _obj.SelectionLength;
         }
 
         /// @brief Restore position of text displayed and last properties
@@ -77,16 +75,16 @@ namespace Gear.Utils
         public void RestorePosition()
         {
             // Scroll to the last character and then to the first + line width
-            obj.SelectionLength = 0;
-            obj.SelectionStart = end;
-            obj.ScrollToCaret();
-            obj.SelectionStart =
-                start + obj.Lines[obj.GetLineFromCharIndex(start)].Length + 1;
-            obj.ScrollToCaret();
+            _obj.SelectionLength = 0;
+            _obj.SelectionStart = _end;
+            _obj.ScrollToCaret();
+            _obj.SelectionStart =
+                _start + _obj.Lines[_obj.GetLineFromCharIndex(_start)].Length + 1;
+            _obj.ScrollToCaret();
 
             // Finally, set cursor to original position
-            obj.SelectionStart = cursor_position;
-            obj.SelectionLength = cursor_lenght;
+            _obj.SelectionStart = _cursorPosition;
+            _obj.SelectionLength = _cursorLength;
         }
     }
 }

@@ -23,22 +23,30 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
+// ReSharper disable CommentTypo
+// ReSharper disable InconsistentNaming
 namespace Gear.Utils
 {
     /// @brief Managed Time units enumeration expansion.
     [Serializable]
-    public enum TimeUnitsEnum : int
+    public enum TimeUnitsEnum : byte
     {
-        None = 0,   //!< @brief None selected
-        ns,     //!< @brief nano seconds (10^-9 s)
-        us,     //!< @brief micro seconds (10^-6 s)
-        ms,     //!< @brief mili seconds (10^-3 s)
-        s,      //!< @brief seconds (1 s)
-        min_s   //!< @brief minutes and seconds
+        /// <summary>None selected</summary>
+        None = 0,
+        /// <summary>nano seconds (10^-9 s)</summary>
+        ns,
+        /// <summary>micro seconds (10^-6 s)</summary>
+        us,
+        /// <summary>mili seconds (10^-3 s)</summary>
+        ms,
+        /// <summary>seconds (1 s)</summary>
+        s,
+        /// <summary>minutes and seconds</summary>
+        min_s
     }
 
     /// @brief Delegate to Format to text a numeric value considering its
@@ -50,23 +58,14 @@ namespace Gear.Utils
     public class TimeUnitsEnumExtension : IComparable
     {
         /// @brief Time Unit value.
-        public TimeUnitsEnum Id { get; private set; }
-
-        /// @brief Internal name store.
-        private string name;
+        public readonly TimeUnitsEnum Id;
 
         /// @brief Name to display property.
         /// @return Name to display.
-        public string Name
-        {
-            get => name;
-            private set {
-                if (Id != TimeUnitsEnum.min_s)
-                    name = Id.ToString();
-                else
-                    name = "m:s";
-            }
-        }
+        public string Name =>
+            Id != TimeUnitsEnum.min_s ?
+                Id.ToString() :
+                "m:s";
 
         /// @brief External defined method to format to text a value using
         /// time unit support.
@@ -75,35 +74,25 @@ namespace Gear.Utils
         /// @brief Factor of this time unit. If this is defined to multiply
         /// or divide, is given by IsMultiplyFactor property.
         /// @return Number factor.
-        public double Factor
-        {
-            get => GetFactor(Id);
-        }
+        public double Factor =>
+            GetFactor(Id);
 
-        /// @brief Determine if Factor has to multiplyed, or divided.
+        /// @brief Determine if Factor has to multiplied, or divided.
         /// @return If Factor has to multiply (=true), or divide (=false).
-        public bool IsMultiplyFactor
-        {
-            get
-            {
-                if (Id == TimeUnitsEnum.min_s)
-                    return false;
-                else
-                    return true;
-            }
-        }
+        public bool IsMultiplyFactor =>
+            Id != TimeUnitsEnum.min_s;
 
         /// @brief Default constructor.
-        /// @param id Time unit with extended atributes.
+        /// @param id Time unit with extended attributes.
         public TimeUnitsEnumExtension(TimeUnitsEnum id)
         {
             Id = id;
-            Name = string.Empty;
         }
 
         /// @brief Get the factor associated to the unit.
         /// @param unit The time unit.
         /// @return Factor.
+        /// <exception cref="InvalidEnumArgumentException"></exception>
         public static double GetFactor(TimeUnitsEnum unit)
         {
             switch (unit)
@@ -121,26 +110,22 @@ namespace Gear.Utils
                 case TimeUnitsEnum.min_s:
                     return 60.0;
                 default:
-                    {
-                        string msg = $" Value {unit} has not assigned conversion factor.";
-                        Debug.Assert(false, msg);
-                        throw new Exception(msg);
-                    }
+                {
+                    string msg = $" Value {unit} has not assigned conversion factor.";
+                    throw new InvalidEnumArgumentException(msg);
+                }
             }
         }
 
-        /// @brief
-        /// @param unit
-        /// @return
+        /// <summary></summary>
+        /// <param name="unit"></param>
+        /// <returns></returns>
         public static bool GetIsMultiplyFactor(TimeUnitsEnum unit)
         {
-            if (unit == TimeUnitsEnum.min_s)
-                return false;
-            else
-                return true;
+            return unit != TimeUnitsEnum.min_s;
         }
 
-        /// @brief Factor referenced to baseUnit, to transform between
+        /// @brief Factor referenced to base unit, to transform between
         /// TimeUnitsEnum values.
         /// @param unitToTransform Time unit to transform.
         /// @param isMultiplyFactor
@@ -148,88 +133,65 @@ namespace Gear.Utils
         /// @return Multiply factor relative to base unit.
         public static double TransformUnitsFactor(TimeUnitsEnum unitToTransform,
             out bool isMultiplyFactor,
-            TimeUnitsEnum baseUnit = TimeUnitsEnum.s)
+            TimeUnitsEnum baseUnit)
         {
             isMultiplyFactor = GetIsMultiplyFactor(baseUnit);
             if (baseUnit == TimeUnitsEnum.s)
                 return GetFactor(unitToTransform);
-            else
-            {
-                if (GetIsMultiplyFactor(unitToTransform) ==
-                    GetIsMultiplyFactor(baseUnit))
-                    return GetFactor(unitToTransform) / GetFactor(baseUnit);
-                else
-                    return GetFactor(unitToTransform) * GetFactor(baseUnit);
-            }
+            if (GetIsMultiplyFactor(unitToTransform) ==
+                GetIsMultiplyFactor(baseUnit))
+                return GetFactor(unitToTransform) / GetFactor(baseUnit);
+            return GetFactor(unitToTransform) * GetFactor(baseUnit);
         }
 
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary></summary>
         /// <returns></returns>
-        public override string ToString()
-        {
-            return string.Concat(
-                $"{{{Id}, \"{Name}\", ",
-                (FormatToTextDel is null) ?
-                    "Delegate: null" :
-                    FormatToTextDel.ToString(),
-                ", ",
-                string.Format("\"{0} {1}\"",
-                    (IsMultiplyFactor) ? "*" : "/",
-                    Factor),
-                "}");
-        }
+        public override string ToString() => 
+            $"{{{Id}, \"{Name}\", {(FormatToTextDel == null ? "Delegate: null" : FormatToTextDel.ToString())}, \"{(IsMultiplyFactor ? "*" : "/")} {Factor}\"}}";
 
-        /// @brief
-        /// @tparam T
-        /// @return
+        /// <summary></summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static IEnumerable<T> GetAll<T>() where T : TimeUnitsEnumExtension
         {
             var fields = typeof(T).GetFields(BindingFlags.Public |
                                              BindingFlags.Static |
                                              BindingFlags.DeclaredOnly);
-
             return fields.Select(f => f.GetValue(null)).Cast<T>();
         }
 
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary></summary>
         /// <param name="obj"></param>
         /// <returns></returns>
         public override bool Equals(object obj)
         {
-            TimeUnitsEnumExtension otherValue = obj as TimeUnitsEnumExtension;
-            if (otherValue == null)
+            if (!(obj is TimeUnitsEnumExtension otherValue))
                 return false;
-            var typeMatches = GetType().Equals(obj.GetType());
+            var typeMatches = GetType() == obj.GetType();
             var valueMatches = Id.Equals(otherValue.Id);
             return typeMatches && valueMatches;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary></summary>
         /// <returns></returns>
         public override int GetHashCode()
         {
-            return Tuple.Create<TimeUnitsEnum, string>(Id, Name).GetHashCode();
+            return Tuple.Create(Id, Name).GetHashCode();
         }
 
         /// @brief Comparison between current instance and the parameter object.
         /// @details Implements IComparable interface.
-        /// @param other Other object to compare.
+        /// @param obj Other object to compare.
         /// @return Comparison result, this instance precedes the other (< 0), both are
         /// in the same position (= 0), or the other instance precedes this (> 0).
-        public int CompareTo(object other) =>
-            Id.CompareTo(((TimeUnitsEnumExtension)other).Id);
+        public int CompareTo(object obj) =>
+            Id.CompareTo(((TimeUnitsEnumExtension)obj).Id);
 
-        /// @brief
+        /// <summary></summary>
         /// @details Implements IComparable interface.
-        /// @param left
-        /// @param right
-        /// @returns
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public static bool operator ==(TimeUnitsEnumExtension left, TimeUnitsEnumExtension right)
         {
             if (left is null)
@@ -237,21 +199,21 @@ namespace Gear.Utils
             return left.Equals(right);
         }
 
-        /// @brief
+        /// <summary></summary>
         /// @details Implements IComparable interface.
-        /// @param left
-        /// @param right
-        /// @returns
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public static bool operator !=(TimeUnitsEnumExtension left, TimeUnitsEnumExtension right)
         {
             return !(left == right);
         }
 
-        /// @brief
+        /// <summary></summary>
         /// @details Implements IComparable interface.
-        /// @param left
-        /// @param right
-        /// @returns
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public static bool operator <(TimeUnitsEnumExtension left, TimeUnitsEnumExtension right)
         {
             return left is null ?
@@ -259,38 +221,36 @@ namespace Gear.Utils
                 left.CompareTo(right) < 0;
         }
 
-        /// @brief
+        /// <summary></summary>
         /// @details Implements IComparable interface.
-        /// @param left
-        /// @param right
-        /// @returns
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public static bool operator <=(TimeUnitsEnumExtension left, TimeUnitsEnumExtension right)
         {
             return left is null || left.CompareTo(right) <= 0;
         }
 
-        /// @brief
+        /// <summary></summary>
         /// @details Implements IComparable interface.
-        /// @param left
-        /// @param right
-        /// @returns
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public static bool operator >(TimeUnitsEnumExtension left, TimeUnitsEnumExtension right)
         {
             return left is object && left.CompareTo(right) > 0;
         }
 
-        /// @brief
+        /// <summary></summary>
         /// @details Implements IComparable interface.
-        /// @param left
-        /// @param right
-        /// @returns
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public static bool operator >=(TimeUnitsEnumExtension left, TimeUnitsEnumExtension right)
         {
             return left is null ?
                 right is null :
                 left.CompareTo(right) >= 0;
         }
-
-    } //end class TimeUnitsEnumExtension
-
-} //end namespace Gear.Utils
+    }
+}

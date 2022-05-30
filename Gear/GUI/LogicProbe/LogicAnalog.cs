@@ -28,67 +28,59 @@ using System.Drawing;
 namespace Gear.GUI.LogicProbe
 {
     /// @brief Provides a analog channel for LogicView.
-    class LogicAnalog : LogicRow
+    public class LogicAnalog : LogicRow
     {
         /// <summary></summary>
-        private readonly LogicDigital[] Channels;
+        private readonly LogicDigital[] _channels;
 
-        /// <summary></summary>
+        /// <summary>Name of channel.</summary>
         public override string Name
         {
             get
             {
-                string s = "[";
-                foreach (LogicDigital r in Channels)
-                    s += r.Name + ",\n";
-                return s.Substring(0, s.Length - 2) + "]";
+                string name = "[";
+                foreach (LogicDigital channel in _channels)
+                    name += channel.Name + ",\n";
+                return name.Substring(0, name.Length - 2) + "]";
             }
         }
 
-        /// <summary></summary>
+        /// <summary>Height this channel on screen.</summary>
         public override int Height => 64;
 
         /// <summary></summary>
+        /// @todo Parallelism [complex:low, cycles:_channels.Length ~low] point in loop of LogicAnalog._channels[]
         public override double MinTime
         {
             get
             {
-                double minimum = Channels[0].MinTime;
-
-                for (int i = 1; i < Channels.Length; i++)
-                {
-                    if (Channels[i].MinTime > minimum)
-                        minimum = Channels[i].MinTime;
-                }
-
+                double minimum = _channels[0].MinTime;
+                for (int i = 1; i < _channels.Length; i++) //TODO Parallelism [complex:low, cycles:_channels.Length ~low] point in loop _channels[]
+                    if (_channels[i].MinTime > minimum)
+                        minimum = _channels[i].MinTime;
                 return minimum;
             }
         }
 
-        /// <summary>
-        /// Default constructor
-        /// </summary>
-        /// <param name="rows"></param>
+        /// <summary>Default constructor.</summary>
+        /// <param name="rows">Number of channels.</param>
         public LogicAnalog(LogicDigital[] rows)
         {
-            Channels = rows;
+            _channels = rows;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary></summary>
         public override void Click() { }
 
         /// @brief Clear samples when reset is needed.
+        /// @todo Parallelism [complex:low, cycles:_channels.Length ~low] point in loop of LogicAnalog._channels[]
         public override void Reset()
         {
-            foreach (LogicDigital channel in Channels)
+            foreach (LogicDigital channel in _channels)  //TODO Parallelism [complex:low, cycles:_channels.Length ~low] point in loop _channels[]
                 channel.Reset();
         }
 
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary></summary>
         /// <param name="graph"></param>
         /// <param name="top"></param>
         /// <param name="left"></param>
@@ -96,60 +88,50 @@ namespace Gear.GUI.LogicProbe
         /// <param name="minTime"></param>
         /// <param name="scale"></param>
         /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
         /// @version v22.03.02 - Bugfix on comparisons of
         /// <c>_channels[i].GetTime(index[i]) >= time</c>
+        /// @todo Parallelism [complex:low, cycles:_channels.Length ~low] point in 3 loops of index[i]
         public override int Draw(Graphics graph, int top, float left, float width,
             double minTime, double scale)
         {
             if (graph == null)
                 throw new ArgumentNullException(nameof(graph));
-
-            float height = Height * 3f / 4f;
+            float height = Height * 3.0f / 4.0f;
             float bottom = top + Height;
-
             float previousX = width + left;
             float previousY = bottom;
             float nextX;
-            int[] index = new int[Channels.Length];  //automatically set to 0 all elements
+            int[] index = new int[_channels.Length];  //automatically set to 0 all elements
 
             do
             {
-                double time = Channels[0].GetTime(index[0]);
-                int seekindex = 0;
-
-                for (int i = 1; i < index.Length; i++)
-                    if (Channels[i].GetTime(index[i]) >= time)  //Corrected comparison for double
+                double time = _channels[0].GetTime(index[0]);
+                int seekIndex = 0;
+                for (int i = 1; i < index.Length; i++)  //TODO Parallelism [complex:low, cycles:_channels.Length ~low] point in loop _channels[]
+                    if (_channels[i].GetTime(index[i]) >= time)  //Corrected comparison for double
                     {
-                        time = Channels[i].GetTime(index[i]);
-                        seekindex = i;
+                        time = _channels[i].GetTime(index[i]);
+                        seekIndex = i;
                     }
-
                 int outputLevel = 0;
-
-                for (int i = 0, divider = 2; i < Channels.Length; i++, divider *= 2)
-                    if (Channels[i].GetState(index[i]) == PinState.OUTPUT_HI)
+                for (int i = 0; i < _channels.Length; i++)  //TODO Parallelism [complex:low, cycles:_channels.Length ~low] point in loop _channels[]
+                    if (_channels[i].GetState(index[i]) == PinState.OUTPUT_HI)
                         outputLevel += 1 << i;
-
-                float nextY = bottom - height * (outputLevel + 1f) / ((1 << Channels.Length) + 2f);
+                float nextY = bottom - height * (outputLevel + 1f) / ((1 << _channels.Length) + 2f);
                 nextX = (float)((time - minTime) / scale) * width + left;
-
                 if (nextX < left)
                     nextX = left;
-
                 graph.DrawLine(Pens.Magenta, previousX, nextY, nextX, nextY);
                 graph.DrawLine(Pens.Magenta, previousX, previousY, previousX, nextY);
-
                 previousX = nextX;
                 previousY = nextY;
-
-                for (int i = 0; i < index.Length; i++)
-                    if (Channels[i].GetTime(index[i]) >= time)  //Corrected comparison for double
+                for (int i = 0; i < index.Length; i++)  //TODO Parallelism [complex:low, cycles:_channels.Length ~low] point in loop _channels[]
+                    if (_channels[i].GetTime(index[i]) >= time)  //Corrected comparison for double
                         index[i]++;
-
-                if (Channels[seekindex].Overflow(index[seekindex]))
+                if (_channels[seekIndex].Overflow(index[seekIndex]))
                     break;
             } while (nextX > left);
-
             return Height;
         }
     }

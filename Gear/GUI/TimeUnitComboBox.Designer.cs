@@ -52,7 +52,6 @@ namespace Gear.GUI
         {
             this.SuspendLayout();
             this.ResumeLayout(false);
-
         }
 
         #endregion

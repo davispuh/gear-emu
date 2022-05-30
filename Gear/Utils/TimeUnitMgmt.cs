@@ -27,6 +27,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Forms;
 
+// ReSharper disable UnusedMemberInSuper.Global
+// ReSharper disable IdentifierTypo
 namespace Gear.Utils
 {
 
@@ -45,10 +47,10 @@ namespace Gear.Utils
         /// @brief Factor of the time unit selected on this combobox.
         double FactorSelected { get; }
 
-        /// @brief Determine if Factor has to multiplyed, or divided.
+        /// @brief Determine if Factor has to multiplied, or divided.
         bool IsMultiplyFactor { get; }
 
-        /// @brief Syncronize values dependent of excludedUnits
+        /// @brief Synchronize values dependent of excludedUnits
         void SyncValues();
 
         /// @brief Select the next value of enabled values of ComboBox.
@@ -59,41 +61,42 @@ namespace Gear.Utils
 
         /// @brief Assign the list of TextFormats methods to corresponding
         /// enum values.
-        void AssignTextFormats(DelegatesPerTimeUnitsList assigments);
+        void AssignTextFormats(DelegatesPerTimeUnitsList assignments);
 
-        /// @brief Get the formated text representation of parameter,
+        /// @brief Get the formatted text representation of parameter,
         /// using the assigned delegate method.
-        string GetFormatedText(double val);
+        ///@version v22.06.01 - Method name changed to correct misspelling.
+        string GetFormattedText(double val);
     }
 
     /// @brief Management of Time Units.
     public class TimeUnitMgmt : ITimeUnitMgmt
     {
         /// @brief Reference to callback of ComboBox.
-        private readonly ComboBox Owner;
+        private readonly ComboBox _owner;
 
         /// @brief Internal member for excluded time units.
-        private TimeUnitCollection excludedUnits = null;
+        private TimeUnitCollection _excludedUnits;
 
         /// @brief Excluded time units.
-        [CategoryAttribute("Misc")]
-        [DescriptionAttribute("Excluded Time Units for this control.")]
-        [DisplayNameAttribute("Excluded Time Units")]
-        [BrowsableAttribute(true)]
+        [Category("Misc")]
+        [Description("Excluded Time Units for this control.")]
+        [DisplayName("Excluded Time Units")]
+        [Browsable(true)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
         public TimeUnitCollection ExcludedUnits
         {
-            get => excludedUnits;
+            get => _excludedUnits;
             set
             {
                 if (value == null)
                 {
-                    excludedUnits = null;
+                    _excludedUnits = null;
                     SyncValues();
                 }
-                else if (!value.Equals(excludedUnits))
+                else if (!value.Equals(_excludedUnits))
                 {
-                    excludedUnits = value;
+                    _excludedUnits = value;
                     SyncValues();
                 }
             }
@@ -104,142 +107,112 @@ namespace Gear.Utils
             new TimeUnitsList();
 
         /// @brief Base unit used to transform multiply factors values.
-        [CategoryAttribute("Misc")]
-        [DescriptionAttribute("Base Unit of Time for this control.")]
-        [DisplayNameAttribute("Base Time Unit")]
-        [BrowsableAttribute(true)]
+        [Category("Misc")]
+        [Description("Base Unit of Time for this control.")]
+        [DisplayName("Base Time Unit")]
+        [Browsable(true)]
         public TimeUnitsEnum BaseUnit { get; set; } = TimeUnitsEnum.None;
 
         /// @brief Time unit selected on this combobox.
-        [CategoryAttribute("Misc")]
-        [DescriptionAttribute("Initial selected unit of time for this control.")]
-        [DisplayNameAttribute("Selected Time Unit")]
-        [BrowsableAttribute(true)]
+        [Category("Misc")]
+        [Description("Initial selected unit of time for this control.")]
+        [DisplayName("Selected Time Unit")]
+        [Browsable(true)]
         public TimeUnitsEnum TimeUnitSelected
         {
-            get
-            {
-                if ((Owner.SelectedIndex >= 0) && (EnabledValuesList.Count > 0))
-                    return EnabledValuesList.Values[Owner.SelectedIndex].Id;
-                else
-                    return TimeUnitsEnum.None;
-            }
-            set => Owner.SelectedIndex = EnabledValuesList.IndexOfKey(value);
+            get =>
+                _owner.SelectedIndex >= 0 && EnabledValuesList.Count > 0 ?
+                    EnabledValuesList.Values[_owner.SelectedIndex].Id :
+                    TimeUnitsEnum.None;
+            set => _owner.SelectedIndex = EnabledValuesList.IndexOfKey(value);
         }
 
         /// @brief Factor of the time unit selected on this combobox.
         /// @return Number factor.
-        public double FactorSelected
-        {
-            get
-            {
-                if ((Owner.SelectedIndex >= 0) && (EnabledValuesList.Count > 0))
-                    return EnabledValuesList.Values[Owner.SelectedIndex].Factor;
-                else
-                    return 0.0;
-            }
-        }
+        public double FactorSelected =>
+            _owner.SelectedIndex >= 0 && EnabledValuesList.Count > 0 ?
+                EnabledValuesList.Values[_owner.SelectedIndex].Factor :
+                0.0;
 
-        /// @brief Determine if Factor has to multiplyed, or divided.
+        /// @brief Determine if Factor has to multiplied, or divided.
         /// @return If Factor has to multiply (=true), or divide (=false).
-        public bool IsMultiplyFactor
-        {
-            get
-            {
-                if ((Owner.SelectedIndex >= 0) && (EnabledValuesList.Count > 0))
-                    return EnabledValuesList.Values[Owner.SelectedIndex].IsMultiplyFactor;
-                else
-                    return true;
-            }
-        }
+        public bool IsMultiplyFactor =>
+            _owner.SelectedIndex < 0 || EnabledValuesList.Count <= 0 ||
+            EnabledValuesList.Values[_owner.SelectedIndex].IsMultiplyFactor;
 
         /// @brief Default constructor
         /// @param baseObj ComboBox for callback.
         /// @exception ArgumentNullException Thrown if baseObj is null.
         public TimeUnitMgmt(ComboBox baseObj)
         {
-            if (baseObj != null)
-            {
-                Owner = baseObj;
-                ExcludedUnits = new TimeUnitCollection { TimeUnitsEnum.None };
-                TimeUnitSelected = EnabledValuesList.Keys.FirstOrDefault();
-            }
-            else
-                throw new ArgumentNullException(nameof(baseObj));
+            _owner = baseObj ?? throw new ArgumentNullException(nameof(baseObj));
+            ExcludedUnits = new TimeUnitCollection { TimeUnitsEnum.None };
+            TimeUnitSelected = EnabledValuesList.Keys.FirstOrDefault();
         }
 
-        /// @brief Syncronize values dependent of excludedUnits:
+        /// @brief Synchronize values dependent of excludedUnits:
         /// EnabledValuesList and comboBox list values.
         public void SyncValues()
         {
-            EnabledValuesList = new TimeUnitsList(excludedUnits);
-            Owner.Items.Clear();
-            Owner.Items.AddRange(EnabledValuesList.GetNames());
+            EnabledValuesList = new TimeUnitsList(_excludedUnits);
+            _owner.Items.Clear();
+            _owner.Items.AddRange(EnabledValuesList.GetNames());
         }
 
         /// @brief Select the next value of enabled values of ComboBox. If it
-        /// is the last one, starts from the begining.
+        /// is the last one, starts from the beginning.
         public void SelectNext()
         {
-            if (Owner.SelectedIndex != -1)
-            {
-                int next = Owner.SelectedIndex + 1;
-                Owner.SelectedIndex = (next < EnabledValuesList.Count) ? next : 0;
-            }
+            if (_owner.SelectedIndex == -1)
+                return;
+            int next = _owner.SelectedIndex + 1;
+            _owner.SelectedIndex = next < EnabledValuesList.Count ?
+                next :
+                0;
         }
 
         /// @brief Select the previous value of enabled values of ComboBox. If it
         /// is the first one, starts from the end.
         public void SelectPrev()
         {
-            if (Owner.SelectedIndex != -1)
-            {
-                int prev = Owner.SelectedIndex - 1;
-                Owner.SelectedIndex = (prev >= 0) ?
-                    prev :
-                    EnabledValuesList.Count - 1;
-            }
+            if (_owner.SelectedIndex == -1)
+                return;
+            int prev = _owner.SelectedIndex - 1;
+            _owner.SelectedIndex = prev >= 0 ?
+                prev :
+                EnabledValuesList.Count - 1;
         }
 
         /// @brief Assign the list of TextFormats methods to corresponding
         /// enum values.
-        /// @param assigments List of assigments.
-        public void AssignTextFormats(DelegatesPerTimeUnitsList assigments)
+        /// @param assignments List of assignments.
+        public void AssignTextFormats(DelegatesPerTimeUnitsList assignments)
         {
-            EnabledValuesList.AssignTextFormats(assigments);
+            EnabledValuesList.AssignTextFormats(assignments);
         }
 
-        /// @brief Get the formated text representation of parameter,
+        /// @brief Get the formatted text representation of parameter,
         /// using the assigned delegate method.
         /// @param val Numeric value to format.
-        /// @return Formated text.
-        public string GetFormatedText(double val)
+        /// @return Formatted text.
+        /// @throws KeyNotFoundException If selected time unit is not on
+        /// enabled values list or Delegate method not set for TimeUnitsEnum.
+        public string GetFormattedText(double val)
         {
             TimeUnitsEnum sel = TimeUnitSelected;
             if (EnabledValuesList.TryGetValue(sel,
-                out TimeUnitsEnumExtension obj) && (obj != null))
+                out TimeUnitsEnumExtension obj) && obj != null)
             {
                 if (EnabledValuesList.HaveAssignedTextFormat(sel))
                     return obj.FormatToTextDel(sel, val);
-                else
-                {
-                    string msg = $"Selected time unit 'TimeUnitsEnum.{sel}' " +
-                        $"isn't in enabled values list!";
-                    throw new KeyNotFoundException(msg);
-                    //Debug.Assert(false, msg);
-                    //return string.Empty;
-                }
+                string msg = $"Selected time unit 'TimeUnitsEnum.{sel}' is not on enabled values list!";
+                throw new KeyNotFoundException(msg);
             }
             else
             {
                 string msg = $"Delegate method not set for TimeUnitsEnum.{sel}!";
                 throw new KeyNotFoundException(msg);
-                //Debug.Assert(false, msg);
-                //return string.Empty;
             }
         }
-
-    } //end class TimeUnitMgmt
-
-} //end namespace Gear.Utils
-
+    }
+}

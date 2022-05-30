@@ -21,7 +21,7 @@
       <Value Profile="(Default)">4</Value>
     </Setting>
     <Setting Name="FreqFormat" Type="Gear.GUI.FreqFormatEnum" Scope="User">
-      <Value Profile="(Default)">Parallax_SPIN</Value>
+      <Value Profile="(Default)">ParallaxSpin</Value>
     </Setting>
     <Setting Name="HubTimeUnit" Type="Gear.GUI.TimeUnitsEnum" Scope="User">
       <Value Profile="(Default)">s</Value>

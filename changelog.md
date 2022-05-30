@@ -1,6 +1,14 @@
 # Change Log
 
-## Release Version [22.05.04](https://github.com/davispuh/gear-emu/releases/tag/v22.05.04) Emulator Core code Cleanup and Commit  Bugfix VGA & television not working
+## Commit Code cleanup UI LogicView & TimeUnit
+
+- Code cleanup in files: [`LogicView.cs`](Gear/GUI/LogicProbe/LogicView.cs), [`LogicView.Designer.cs`](Gear/GUI/LogicProbe/LogicView.Designer.cs), [`LogicView.resx`](Gear/GUI/LogicProbe/LogicView.resx), [`LogicRow.cs`](Gear/GUI/LogicProbe/LogicRow.cs), [`LogicAnalog.cs`](Gear/GUI/LogicProbe/LogicAnalog.cs), [`LogicDigital.cs`](Gear/GUI/LogicProbe/LogicDigital.cs), [`TimeUnitComboBox.cs`](Gear/GUI/TimeUnitComboBox.cs), [`TimeUnitToolStripComboBox.cs`](Gear/GUI/TimeUnitToolStripComboBox.cs), [`TimeUnitToolStripComboBox.Designer.cs`](Gear/GUI/TimeUnitToolStripComboBox.Designer.cs), [`TimeUnitsList.cs`](Gear/Utils/TimeUnitsList.cs), [`TimeUnitCollection.cs`](Gear/Utils/TimeUnitCollection.cs), [`TimeUnitMgmt.cs`](Gear/Utils/TimeUnitMgmt.cs), [`TimeUnitsEnumExtension.cs`](Gear/Utils/TimeUnitsEnumExtension.cs), [`NumberFormatEnumExtension.cs`](Gear/Utils/NumberFormatEnumExtension.cs), [`RememberRTBoxPosition.cs`](Gear/Utils/RememberRTBoxPosition.cs).
+  - Refactored naming and visibility of members, parameters and local variables in classes, methods and enums.
+  - Added legacy TODO tags in Doxygen documentation, and also identify paralellism points with complexity.
+  - Added XML & Doxygen comments in files.
+
+
+## Release Version [22.05.04](https://github.com/davispuh/gear-emu/releases/tag/v22.05.04) Emulator Core code Cleanup and Commit [d2613c4](https://github.com/davispuh/gear-emu/commit/d2613c4cb78cff2f73f650f412c011b424ef4be9) Bugfix VGA & television not working
 
 - Fixes bug on clearing arrays that broke VGA and television plugins, on [`PropellerCPU.cs`](Gear/EmulationCore/PropellerCPU.cs).
 
