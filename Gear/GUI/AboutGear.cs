@@ -3,7 +3,7 @@
  * Copyright 2007-2022 - Gear Developers
  * --------------------------------------------------------------------------------
  * AboutGear.cs
- * About box for gear.
+ * About box for Gear Emulator.
  * --------------------------------------------------------------------------------
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,15 +21,27 @@
  * --------------------------------------------------------------------------------
  */
 
-using System;
 using System.Reflection;
 using System.Windows.Forms;
 
+// ReSharper disable LocalizableElement
 namespace Gear.GUI
 {
-    /// @brief About box for gear.
-    partial class AboutGear : Form
+    /// @brief About form for %Gear %Emulator.
+    public partial class AboutGear : Form
     {
+        /// <summary>Property to get/set the Form text.</summary>
+        /// @version v22.06.01 - Added.
+        public sealed override string Text
+        {
+            get => base.Text;
+            set => base.Text = value;
+        }
+
+        /// <summary>Default constructor.</summary>
+        /// <remarks>Initialize the AboutBox to display the product information
+        /// from the assembly information.</remarks>
+        /// @version v22.06.01 - Changed to string interpolation.
         public AboutGear()
         {
             InitializeComponent();
@@ -38,16 +50,18 @@ namespace Gear.GUI
             //  Change assembly information settings for your application through either:
             //  - Project->Properties->Application->Assembly Information
             //  - AssemblyInfo.cs
-            this.Text = string.Format("About {0}", AssemblyTitle);
-            this.labelProductName.Text = AssemblyProduct;
-            this.labelVersion.Text = string.Format("Version: {0}", AssemblyVersion);
-            this.labelCopyright.Text = AssemblyCopyright;
-            this.labelCompanyName.Text = string.Format("Project: {0}", AssemblyCompany);
-            this.textBoxDescription.Text = AssemblyDescription;
+            Text = $"About {AssemblyTitle}";
+            labelProductName.Text = AssemblyProduct;
+            labelVersion.Text = $"Version: {AssemblyVersion}";
+            labelCopyright.Text = AssemblyCopyright;
+            labelCompanyName.Text = $"Project: {AssemblyCompany}";
+            textBoxDescription.Text = AssemblyDescription;
         }
 
         #region Assembly Attribute Accessors
 
+        /// <summary>Returns the Assembly title.</summary>
+        /// @version v22.06.01 - Added management for an empty Title on return value.
         public static string AssemblyTitle
         {
             get
@@ -55,84 +69,76 @@ namespace Gear.GUI
                 // Get all Title attributes on this assembly
                 object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
                 // If there is at least one Title attribute
-                if (attributes.Length > 0)
-                {
-                    // Select the first one
-                    AssemblyTitleAttribute titleAttribute = (AssemblyTitleAttribute)attributes[0];
-                    // If it is not an empty string, return it
-                    if (!string.IsNullOrEmpty(titleAttribute.Title))
-                        return titleAttribute.Title;
-                }
+                if (attributes.Length <= 0)
+                    return System.IO.Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().CodeBase);
+                // Select the first one
+                AssemblyTitleAttribute titleAttribute = (AssemblyTitleAttribute)attributes[0];
+                // If it is not an empty string, return it
                 // If there was no Title attribute, or if the Title attribute was the empty string, return the .exe name
-                return System.IO.Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().CodeBase);
+                return string.IsNullOrEmpty(titleAttribute.Title) ?
+                    System.IO.Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().CodeBase) :
+                    titleAttribute.Title;
             }
         }
 
-        public string AssemblyVersion
-        {
-            get
-            {
-                return Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            }
-        }
+        /// <summary>Returns the assembly Version.</summary>
+        /// @version v22.06.01 - Added static access to Property.
+        public static string AssemblyVersion =>
+            Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
-        public string AssemblyDescription
+        /// <summary>Returns the assembly Description.</summary>
+        /// @version v22.06.01 - Added static access to Property.
+        public static string AssemblyDescription
         {
             get
             {
                 // Get all Description attributes on this assembly
                 object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
-                // If there aren't any Description attributes, return an empty string
-                if (attributes.Length == 0)
-                    return string.Empty;
-                // If there is a Description attribute, return its value
-                return ((AssemblyDescriptionAttribute)attributes[0]).Description;
+                return attributes.Length == 0 ?
+                    string.Empty :
+                    ((AssemblyDescriptionAttribute)attributes[0]).Description;
             }
         }
 
+        /// <summary>Returns the assembly Product name.</summary>
         public static string AssemblyProduct
         {
             get
             {
                 // Get all Product attributes on this assembly
                 object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyProductAttribute), false);
-                // If there aren't any Product attributes, return an empty string
-                if (attributes.Length == 0)
-                    return string.Empty;
-                // If there is a Product attribute, return its value
-                return ((AssemblyProductAttribute)attributes[0]).Product;
-            }
+                return attributes.Length == 0 ?
+                    string.Empty :
+                    ((AssemblyProductAttribute)attributes[0]).Product;
+           }
         }
 
+        /// <summary>Returns the assembly Copyright text.</summary>
         public static string AssemblyCopyright
         {
             get
             {
                 // Get all Copyright attributes on this assembly
                 object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
-                // If there aren't any Copyright attributes, return an empty string
-                if (attributes.Length == 0)
-                    return string.Empty;
-                // If there is a Copyright attribute, return its value
-                return ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
+                return attributes.Length == 0 ?
+                    string.Empty :
+                    ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
             }
         }
 
+        /// <summary>Returns the assembly Company text.</summary>
         public static string AssemblyCompany
         {
             get
             {
                 // Get all Company attributes on this assembly
                 object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCompanyAttribute), false);
-                // If there aren't any Company attributes, return an empty string
-                if (attributes.Length == 0)
-                    return string.Empty;
-                // If there is a Company attribute, return its value
-                return ((AssemblyCompanyAttribute)attributes[0]).Company;
+                return attributes.Length == 0 ?
+                    string.Empty :
+                    ((AssemblyCompanyAttribute)attributes[0]).Company;
             }
         }
         #endregion
-
 
     }
 }

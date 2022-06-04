@@ -1,6 +1,24 @@
 # Change Log
 
-## Commit Code cleanup UI LogicView & TimeUnit
+## Commit  Code cleanup UI Emulator, FloatedWindow, PluginEditor and AboutGear
+
+- Fixed bug when running emulator, but floated windows were not updated on [`Emulator.cs`](Gear/GUI/Emulator.cs).
+- The order of tabs on emulator is remembered when a view is pinned/unpinned or floated/unfloated. Also, now tab repetitions are numbered if multiple copies of a plug-in are loaded. Created [`GUI.TabManager class`](Gear/GUI/TabManager.cs) to manage the document tabs.
+- Fixed bug on enable/disable buttons (step Instruction and step Clock) when the emulator arrives to a breakpoint.
+- Added new app property: `UseAnimations`, to enable/disable the use of animations on splitters of Emulator.
+- Corrected namespace dependency of app properties on `Gear.Utils` for classes `TimeUnitsEnum` and `NumberFormatEnum`.
+- Moved `RememberRTBoxPosition` class to `Gear/GUI` namespace and folder, on File ['RememberRTBoxPosition.cs'](Gear/GUI/RememberRTBoxPosition.cs).
+- Code cleanup in files: [`Emulator.cs`](Gear/GUI/Emulator.cs), [`FloatedWindow.cs`](Gear/GUI/FloatedWindow.cs), [`AboutGear.cs`](Gear/GUI/AboutGear.cs), [`AppPropertiesEditor.cs`](Gear/GUI/AppPropertiesEditor.cs), [`CollapsibleSplitter.cs`](Gear/GUI/CollapsibleSplitter.cs), [`TabManager.cs`](Gear/GUI/TabManager.cs), [`PluginEditor.cs`](Gear/GUI/PluginEditor.cs).
+  - Refactored naming and visibility of members, parameters and local variables in classes, methods and enums.
+  - Added legacy TODO tags in Doxygen documentation, and also identify paralellism points with complexity.
+  - Added XML & Doxygen comments in files.
+  - Updated format of `@version` tags to `vYY.MM.dd`.
+  - Removed extra spaces at line ends.
+
+- Added `.gitattributes` file to preserve line endings for `*.sh` files on windows.
+
+
+## Commit [999845e](https://github.com/davispuh/gear-emu/commit/999845e1dff9fc77d1a64c6ef178255d35d3c0b6) Code cleanup UI LogicView & TimeUnit
 
 - Code cleanup in files: [`LogicView.cs`](Gear/GUI/LogicProbe/LogicView.cs), [`LogicView.Designer.cs`](Gear/GUI/LogicProbe/LogicView.Designer.cs), [`LogicView.resx`](Gear/GUI/LogicProbe/LogicView.resx), [`LogicRow.cs`](Gear/GUI/LogicProbe/LogicRow.cs), [`LogicAnalog.cs`](Gear/GUI/LogicProbe/LogicAnalog.cs), [`LogicDigital.cs`](Gear/GUI/LogicProbe/LogicDigital.cs), [`TimeUnitComboBox.cs`](Gear/GUI/TimeUnitComboBox.cs), [`TimeUnitToolStripComboBox.cs`](Gear/GUI/TimeUnitToolStripComboBox.cs), [`TimeUnitToolStripComboBox.Designer.cs`](Gear/GUI/TimeUnitToolStripComboBox.Designer.cs), [`TimeUnitsList.cs`](Gear/Utils/TimeUnitsList.cs), [`TimeUnitCollection.cs`](Gear/Utils/TimeUnitCollection.cs), [`TimeUnitMgmt.cs`](Gear/Utils/TimeUnitMgmt.cs), [`TimeUnitsEnumExtension.cs`](Gear/Utils/TimeUnitsEnumExtension.cs), [`NumberFormatEnumExtension.cs`](Gear/Utils/NumberFormatEnumExtension.cs), [`RememberRTBoxPosition.cs`](Gear/Utils/RememberRTBoxPosition.cs).
   - Refactored naming and visibility of members, parameters and local variables in classes, methods and enums.
@@ -15,7 +33,7 @@
 
 ## Commit [0b06168](https://github.com/davispuh/gear-emu/commit/0b061683cb05006abc54a2af635b82659bac18e5) Code cleanup on PropellerCPU
 
-- Ordered update of `ClockMode`, `XtalFrequency` & `CoreFrequency` in HubView, using event detection when that properties changes in `PropellerCPU`. Files: [`HubView.cs`](Gear/GUI/HubView.cs), [`HubView.Designer.cs`](Gear/GUI/HubView.Designer.cs), [`Emulator.cs`](Gear/GUI/Emulator.cs) and [`PropellerCPU.cs`](Gear/EmulationCore/PropellerCPU.cs). 
+- Ordered update of `ClockMode`, `XtalFrequency` & `CoreFrequency` in HubView, using event detection when that properties changes in `PropellerCPU`. Files: [`HubView.cs`](Gear/GUI/HubView.cs), [`HubView.Designer.cs`](Gear/GUI/HubView.Designer.cs), [`Emulator.cs`](Gear/GUI/Emulator.cs) and [`PropellerCPU.cs`](Gear/EmulationCore/PropellerCPU.cs).
 - Code cleanup in files: specially on [`PropellerCPU.cs`](Gear/EmulationCore/PropellerCPU.cs), but also in [`NativeCog.cs`](Gear/EmulationCore/NativeCog.cs), [`InterpretedCog.cs`](Gear/EmulationCore/InterpretedCog.cs), [`Cog.cs`](Gear/EmulationCore/Cog.cs).
   - Added `Cog.CogNum` property that replace `PropellerCPU.CogID()`.
   - Changed method names to `Cog.RequestHubOperation()` and `PropellerCPU.ExecuteHubOperation()` to clarify the colaboration between classes.
@@ -29,7 +47,7 @@
 ## Commit [bf3509d](https://github.com/davispuh/gear-emu/commit/bf3509dfa0dfcdbc128b07dd8d2843b3f1560236) Code cleanup on NativeCog
 
 - Code cleanup in files: specially on [`NativeCog.cs`](Gear/EmulationCore/NativeCog.cs), [`NativeCogInstructions.cs`](Gear/EmulationCore/NativeCogInstructions.cs), and also  [`ClockSource`](Gear/EmulationCore/ClockSource.cs), [`FreqGenerator.cs`](Gear/EmulationCore/FreqGenerator.cs), [`PLL.cs`](Gear/EmulationCore/PLL.cs), [`PLLGroup.cs`](Gear/EmulationCore/PLLGroup.cs), [`SystemXtal.cs`](Gear/EmulationCore/SystemXtal.cs), [`VideoGenerator.cs`](Gear/EmulationCore/VideoGenerator.cs).
-  - Refactored naming and visibility of members, parameters and local variables in classes, methods and enums. 
+  - Refactored naming and visibility of members, parameters and local variables in classes, methods and enums.
   - Added XML & Doxygen comments in files.
 
 
@@ -37,7 +55,7 @@
 
 - Corrected visibility of abstract method `Cog.Boot()` to `private protected`, affecting descendents classes `InterpretedCog` and `NativeCog`.
 - Code cleanup in files: specially [`InterpretedCog.cs`](Gear/EmulationCore/InterpretedCog.cs).
-  - Refactored naming and visibility of members, parameters and local variables in classes, methods and enums. 
+  - Refactored naming and visibility of members, parameters and local variables in classes, methods and enums.
   - Added XML & Doxygen comments in files.
 
 
@@ -49,7 +67,7 @@
 ## Release Version [22.05.03](https://github.com/davispuh/gear-emu/releases/tag/v22.05.03) and Commit [3dc6dad](https://github.com/davispuh/gear-emu/commit/3dc6dadf57879b979c5d78a0b773871b7d1b33a2) Refactored EmulationCore.Cog, Code cleanup 6
 
 - Code cleanup in files: specially [`Cog.cs`](Gear/EmulationCore/Cog.cs) and [`Disassembler/Assembly.cs`](Gear/Disassembler/Assembly.cs), [`Propeller/Assembly.cs`](Gear/Propeller/Assembly.cs), [`AssemblyInstructions.cs`](Gear/Propeller/AssemblyInstructions.cs), [`DataUnpacker.cs`](Gear/Disassembler/DataUnpacker.cs), [`InstructionDisassembler.cs`](Gear/EmulationCore/InstructionDisassembler.cs), [`NativeCogInstructions.cs`](Gear/EmulationCore/NativeCogInstructions.cs), [`Disassembler/Spin.cs`](Gear/Disassembler/Spin.cs).
-  - Refactored naming and visibility of members, parameters and local variables in classes, methods and enums. 
+  - Refactored naming and visibility of members, parameters and local variables in classes, methods and enums.
   - Added XML & Doxygen comments in files.
   - Unification of references to a PropellerCPU, using the same name convention: CpuHost. Files [`Cog.cs`](Gear/EmulationCore/Cog.cs), [`InterpretedCog.cs`](Gear/EmulationCore/InterpretedCog.cs), [`NativeCog.cs`](Gear/EmulationCore/NativeCog.cs), [`VideoGenerator.cs`](Gear/EmulationCore/VideoGenerator.cs).
 
@@ -58,18 +76,19 @@
 
 - Temporal emulator speedup: Corrected latency on rerun emulator. The definitive solution is use a new background thread to run the emulation cicle and incorporate paralellism to `Emulator.Step()`.
 - Code cleanup in files: [`Propeller/Spin.cs`](Gear/Propeller/Spin.cs), [`SpinAssignments.cs`](Gear/Propeller/SpinAssignments.cs), [`SpinInstructions.cs`](Gear/Propeller/SpinInstructions.cs), [`SpinMathInstruction.cs`](Gear/Propeller/SpinMathInstructions.cs), [`SpinRegisters.cs`](Gear/Propeller/SpinRegisters.cs), [`PluginBase.cs`](Gear/PluginSupport/PluginBase.cs), [`BinarySizeException.cs`](Gear/Utils/BinarySizeException.cs), [`SingleInstanceException.cs`](Gear/Utils/SingleInstanceException.cs).
-  - Refactored naming and visibility of members, parameters and local variables in classes, methods and enums. 
+  - Refactored naming and visibility of members, parameters and local variables in classes, methods and enums.
   - Added XML & Doxygen comments in files.
 
 - Fix security warning CA2105: 'Array fields should not be read only', adopting ReadOnlyCollection static object as storage in files [`SpinAssignments.cs`](Gear/Propeller/SpinAssignments.cs), [`SpinInstructions.cs`](Gear/Propeller/SpinInstructions.cs), [`SpinMathInstruction.cs`](Gear/Propeller/SpinMathInstructions.cs), [`SpinRegisters.cs`](Gear/Propeller/SpinRegisters.cs).
 - File name changed from `ModuleLoader.cs` to [`ModuleCompiler.cs`](Gear/PluginSupport/ModuleCompiler.cs), to be sincronized the class name with the file, as good practice.
 - Updated documentation for plugins in [`Plugins_notes`](plug-ins/Plugins_notes.md), [`PluginTemplate.cs`](Gear/Resources/PluginTemplate.cs) and correspondly format corrections on xml plugins [`PinNoise.xml`](plug-ins/PinNoise.xml), [`SerialIO.xml`](plug-ins/SerialIO.xml), [`Stimulus.xml`](plug-ins/Stimulus.xml), [`Television.xml`](plug-ins/Television.xml), [`vgamonitor.xml`](plug-ins/vgamonitor.xml).
+- Corrected documentation on method PluginBase.PresentChip() of [`PluginBase.cs`](Gear/PluginSupport/PluginBase.cs). Also updated on [`PluginTemplate.cs`](Gear/Resources/PluginTemplate.cs) and [`Plugins_notes.md`](plug-ins/Plugins_notes.md).
 
 
 ## Release Version [22.05.01](https://github.com/davispuh/gear-emu/releases/tag/v22.05.01) and Commit [56ce3b6](https://github.com/davispuh/gear-emu/commit/56ce3b6c126d3cfb75f107a906dbe8d754e97422) Code cleanup 4
 
 - Code cleanup in files: [`Propeller/Assembly.cs`](Gear/Propeller/Assembly.cs), [`AssemblyConditions.cs`](Gear/Propeller/AssemblyConditions.cs), [`AssemblyInstructions.cs`](Gear/Propeller/AssemblyInstructions.cs), [`AssemblyRegisters.cs`](Gear/Propeller/AssemblyRegisters.cs), [`MemoryManager.cs`](Gear/Propeller/MemoryManager.cs), [`Propeller.cs`](Gear/Propeller/Propeller.cs), [`GearProgram.cs`](Gear/GearProgram.cs).
-  - Refactored naming and visibility of members, parameters and local variables in classes, methods and enums. 
+  - Refactored naming and visibility of members, parameters and local variables in classes, methods and enums.
   - Added XML & Doxygen comments in files.
 - Fix security warning CA2105: 'Array fields should not be read only', adopting ReadOnlyCollection static object as storage in files [`AssemblyConditions.cs`](Gear/Propeller/AssemblyConditions.cs), [`AssemblyInstructions.cs`](Gear/Propeller/AssemblyInstructions.cs) & [`AssemblyRegisters.cs`](Gear/Propeller/AssemblyRegisters.cs).
 - Added custom tag to Doxygen: `pullreq{<num>}` to link to specific github pull request. Corrected custom tag `issue{<num>}` to the same implementation.

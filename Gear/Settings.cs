@@ -31,7 +31,7 @@ namespace Gear.Properties
     //  El evento PropertyChanged se desencadena después de cambiar el valor de configuración.
     //  El evento SettingsLoaded se desencadena después de cargar los valores de configuración.
     //  El evento SettingsSaving se desencadena antes de guardar los valores de configuración.
-    internal sealed partial class Settings {
+    public sealed partial class Settings {
 
         /// @brief Default constructor.
         public Settings() {
@@ -67,49 +67,53 @@ namespace Gear.Properties
 
         /// @property LastTickMarkGrid
         /// @brief Last value used as grid separation in the logic view plugin.
-        /// @version V15.03.26 - Added as a User property of the program.
+        /// @version v15.03.26 - Added as a User property of the program.
 
         /// @property LastTimeFrame
         /// @brief Last value used as a width in the logic view plugin.
-        /// @version V15.03.26 - Added as a User property of the program.
+        /// @version v15.03.26 - Added as a User property of the program.
 
         /// @property LogicViewTimeUnit
         /// @brief Unit of measure for elapsed time label in logic probe.
-        /// @version V20.09.01 - Added as a User property of the program.
+        /// @version v20.09.01 - Added as a User property of the program.
 
         /// @property EmbeddedCode
         /// @brief Determine if the code for the plugin is embedded in the XML file or resides on
         /// a separate file, on Plugin Editor.
-        /// @version V15.03.26 - Added as a User property of the program.
+        /// @version v15.03.26 - Added as a User property of the program.
 
         /// @property LastPlugin
         /// @brief Last plugin successfully opened or saved on Plugin Editor.
         /// @details Include complete path and name.
-        /// @version V15.03.26 - Added as a User property of the program.
+        /// @version v15.03.26 - Added as a User property of the program.
 
         /// @property TabSize
         /// @brief Tabulator size in characters, from Plugin Editor.
-        /// @version V20.09.01 - Added as a User property of the program.
+        /// @version v20.09.01 - Added as a User property of the program.
 
         /// @property FreqFormat
         /// @brief Format of frequency labels in %GUI.
-        /// @version V20.06.01 - Added as a User property of the program.
+        /// @version v20.06.01 - Added as a User property of the program.
 
         /// @property HubTimeUnit
         /// @brief Unit of measure for elapsed time label in Hub view.
-        /// @version V20.06.01 - Added as a User property of the program.
+        /// @version v20.06.01 - Added as a User property of the program.
 
         /// @property LastBinary
         /// @brief Last binary file successfully opened.
         /// @details Include complete path and name.
-        /// @version V15.03.26 - Added as a User property of the program.
+        /// @version v15.03.26 - Added as a User property of the program.
 
         /// @property UpdateEachSteps
         /// @brief Number of steps before update the windows and tabs.
-        /// @version V15.03.26 - Added as a User property of the program.
+        /// @version v15.03.26 - Added as a User property of the program.
 
         /// @property TabSize
         /// @brief Tabulator size in characters.
-        /// @version V20.08.01 - Added as a User property of the program.
+        /// @version v20.08.01 - Added as a User property of the program.
+
+        /// @property UseAnimations
+        /// @brief Use animations on splitters.
+        /// @version v22.06.01 - Added as a User property of the program.
     }
 }

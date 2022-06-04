@@ -15,9 +15,9 @@ namespace Gear.Properties {
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.10.0.0")]
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+    public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
-        private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
+        public static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
         
         public static Settings Default {
             get {
@@ -121,7 +121,7 @@ namespace Gear.Properties {
         [global::System.Configuration.DefaultSettingValueAttribute("ParallaxSpin")]
         [CategoryAttribute("Hub View")]
         [DescriptionAttribute("Format of counter and frequency labels in Hub view.")]
-        [DisplayNameAttribute("Freq & Time format")]
+        [DisplayNameAttribute("Frequency and Time format")]
         public global::Gear.Utils.NumberFormatEnum FreqFormat {
             get {
                 return ((global::Gear.Utils.NumberFormatEnum)(this["FreqFormat"]));
@@ -173,6 +173,21 @@ namespace Gear.Properties {
             }
             set {
                 this["UpdateEachSteps"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [CategoryAttribute("Propeller Emulator")]
+        [DescriptionAttribute("Use animations on splitters.")]
+        [DisplayNameAttribute("Use animations")]
+        public bool UseAnimations {
+            get {
+                return ((bool)(this["UseAnimations"]));
+            }
+            set {
+                this["UseAnimations"] = value;
             }
         }
     }

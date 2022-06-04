@@ -29,17 +29,31 @@ namespace Gear.GUI
     /// @brief Window container for a floated plugin.
     public partial class FloatedWindow : Form
     {
-        private readonly Emulator SourceHost;
+        /// <summary>Reference to Emulator form.</summary>
+        private readonly Emulator _sourceEmulator;
+        /// <summary>Control to handle floating.</summary>
+        /// @version v22.06.01 - Added.
+        private Control _control;
 
-        public FloatedWindow(Emulator originalHost)
+        /// <summary>Default constructor.</summary>
+        /// <param name="relatedEmulator"></param>
+        /// <param name="controlToFloat"></param>
+        /// @version v22.06.01 - Changed signature to add parameter
+        /// to reference the Control to keep floating.
+        public FloatedWindow(Emulator relatedEmulator, Control controlToFloat)
         {
-            SourceHost = originalHost;
+            _sourceEmulator = relatedEmulator;
+            _control = controlToFloat;
             InitializeComponent();
         }
 
+        /// <summary>When close the floated window, restore the control
+        /// to the Emulator owns it.</summary>
+        /// <param name="e">Event data arguments.</param>
         protected override void OnClosed(EventArgs e)
         {
-            SourceHost.Unfloat(GetNextControl(null, true));
+            _sourceEmulator.UnFloatCtrl(_control);
+            _control = null;
             base.OnClosed(e);
         }
     }

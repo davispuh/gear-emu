@@ -102,7 +102,7 @@ namespace Gear.GUI
         {
             _cpuHost = host ?? throw new ArgumentNullException(nameof(host));
             //subscribe some properties of PropellerCPU to be notified to this Control
-            _cpuHost.PropertyChanged += CoreFreq_PropertyChanged; 
+            _cpuHost.PropertyChanged += CoreFreq_PropertyChanged;
             _cpuHost.PropertyChanged += XtalFreq_PropertyChanged;
             _cpuHost.PropertyChanged += ClockModeLabel_PropertyChanged;
             DataChanged();

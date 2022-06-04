@@ -135,7 +135,7 @@ function Main() {
    parallel --line-buffer find "$basePath/{}" -maxdepth 1 -type f -name "*$fileExt" -print ::: $targetDirs |
       parallel --line-buffer --tagstring '{/}' sed -E -n -e \'s/^[\* ]+[Cc]opyright \([[:digit:],-]+\).*$/\\1/p\; T \; Q\' {} |
       stdbuf --output=L sort | stdbuf --output=L cat --number-nonblank |
-      stdbuf --output=L cat <(echo -e "${fmtBold}${fmtUnd}Number\tFile\tDate\t${fmtReset}") - |
+      stdbuf --output=L cat <(echo -e "${fmtBold}${fmtUnd}Number\tFile\tDate\t${fmtReset} ") - |
       stdbuf --output=L column -s '	' -t
 }
 

@@ -31,6 +31,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Xml;
 
+// ReSharper disable LocalizableElement
 namespace Gear.GUI
 {
     /// @brief View class for PropellerCPU emulator instance.
@@ -38,59 +39,76 @@ namespace Gear.GUI
     /// the chip, like start, go through steps, reset or reload.
     public partial class Emulator : Form
     {
-        private readonly PropellerCPU Chip;          //!< @brief Reference to PropellerCPU running instance.
-        private string source;                       //!< @brief Name of Binary program loaded.
-        private uint stepInterval;                   //!< @brief How many steps to update screen.
-        private readonly List<Control> FloatControls;//!< @brief List of floating controls.
+        /// <summary>Reference to PropellerCPU running instance.</summary>
+        /// @version v22.06.01 - Name changed to follow naming conventions.
+        private readonly PropellerCPU _cpuHost;
+        /// <summary>Name of Binary program loaded.</summary>
+        /// @version v22.06.01 - Name changed to follow naming conventions and to clarify its meaning.
+        private string _sourceFileName;
+        /// <summary>How many steps to update screen.</summary>
+        /// @version v22.06.01 - Name changed to follow naming conventions.
+        private uint _stepInterval;
+        /// <summary>List of floating controls.</summary>
+        /// @version v22.06.01 - Name changed to follow naming conventions.
+        private readonly List<Control> _floatControls;
+        /// <summary>Manager to maintain documents tabs ordered.</summary>
+        /// @version v22.06.01 - Added.
+        private readonly TabManager _docsManager;
 
         /// @brief Stopwatch to periodically rerun a step of the emulation
-        private readonly Timer runTimer;
+        /// @version v22.06.01 - Name changed to follow naming conventions.
+        private readonly Timer _runTimer;
 
         /// @brief Get if emulator is in running state.
         /// @version v20.10.01 - Added.
-        private bool IsRunningState { get => runTimer.Enabled; }
+        private bool IsRunningState => _runTimer.Enabled;
 
         /// @brief Get the last binary opened successfully.
-        public string LastBinary { get => source; }
+        public string LastBinary => _sourceFileName;
+
+        /// @brief Text of the base %Form.
+        /// @version v22.06.01 - Added to prevent warning 'Virtual member call in constructor'.
+        public sealed override string Text
+        {
+            get => base.Text;
+            set => base.Text = $"Propeller: {value}";
+        }
 
         /// @brief Default Constructor.
-        /// @param _source Binary program loaded (path & name)
-        public Emulator(string _source)
+        /// @param sourceFileName Binary program loaded (path & name)
+        /// @version v22.06.01 Maintain tabs order: Added criteria for documents tab name generation for system plugins.
+        /// @todo [Enhancement] Remove run timer and replace with a new runner in a different thread.
+        public Emulator(string sourceFileName)
         {
-            Chip = new PropellerCPU(this);
-            source = _source;
-            FloatControls = new List<Control>();
-
+            _cpuHost = new PropellerCPU(this);
+            _sourceFileName = sourceFileName;
+            _floatControls = new List<Control>();
             InitializeComponent();
-
+            _docsManager = new TabManager(documentsTab);
+            hubView.SetHost(_cpuHost);
             hubView.SetFontSpecialLabels();
-
-            Text = "Propeller: " + source;
-
+            Text = _sourceFileName;
             // Create default layout
-            for (int i = 0; i < PropellerCPU.TotalCogs; i++)  //using constant TOTAL_COGS
-                AttachPlugin(new CogView(i, Chip));
-
-            AttachPlugin(new MemoryView(Chip));
-            AttachPlugin(new SpinView(Chip));
-            AttachPlugin(new LogicProbe.LogicView(Chip));   //changed to LogicProbe be the last tab
+            for (int i = 0; i < PropellerCPU.TotalCogs; i++)
+                AttachPlugin(new CogView(i, _cpuHost), TabManager.NumericZeroBased);
+            AttachPlugin(new MemoryView(_cpuHost), TabManager.OnlyRepetitionNumberedFromOne);
+            AttachPlugin(new SpinView(_cpuHost), TabManager.OnlyRepetitionNumberedFromOne);
+            AttachPlugin(new LogicProbe.LogicView(_cpuHost), TabManager.OnlyRepetitionNumberedFromOne);
             documentsTab.SelectedIndex = 0;
-
-            // TEMPORARY RUN FUNCTION
-            runTimer = new Timer
+            // TODO REMOVE TEMPORARY RUN FUNCTION
+            _runTimer = new Timer
             {
                 Interval = 10
             };
-            runTimer.Tick += new EventHandler(RunEmulatorStep);
+            _runTimer.Tick += RunEmulatorStep;
             UpdateRunningButtons();
-
-            hubView.SetHost(Chip);
             UpdateStepInterval();
         }
 
         /// @brief Update value of system properties inside of
         /// contained controls.
-        /// @version v20.09.01 - Added.
+        /// @version v22.06.01 - Added updating UseAnimations property on
+        /// CollapsibleSplitter controls.
         public void UpdateVarValue(string variableName)
         {
             switch (variableName)
@@ -138,7 +156,8 @@ namespace Gear.GUI
                 case "UpdateEachSteps":
                     UpdateStepInterval();
                     break;
-                default:
+                case "UseAnimations":
+                    UpdateUseAnimation();
                     break;
             }
         }
@@ -147,27 +166,37 @@ namespace Gear.GUI
         /// @version v20.09.01 - Added.
         private void UpdateStepInterval()
         {
-            stepInterval = Properties.Settings.Default.UpdateEachSteps;
+            _stepInterval = Properties.Settings.Default.UpdateEachSteps;
         }
 
-        /// @brief Include a plugin to a propeller chip instance.
-        /// @details Attach a plugin, linking the propeller instance to the plugin, opening a new
-        /// tab window and enabling the close button by plugin's isClosable property.
-        /// @param plugin Instance of a Gear.PluginSupport.PluginBase class to be attached.
-        private void AttachPlugin(PluginBase plugin)
+        /// <summary>Update attribute use animation of each
+        /// CollapsibleSplitter used in this form.</summary>
+        /// @version v22.06.01 - Added.
+        public void UpdateUseAnimation()
         {
-            Chip.IncludePlugin(plugin); //include into plugin lists of a PropellerCPU instance
-            plugin.PresentChip();       //invoke initial setup of plugin.
+            hubViewSplitter.UseAnimations = Properties.Settings.Default.UseAnimations;
+            pinnedSplitter.UseAnimations = Properties.Settings.Default.UseAnimations;
+        }
 
-            TabPage t = new TabPage(plugin.Title)
-            {
-                Parent = documentsTab
-            };
-            plugin.Dock = DockStyle.Fill;
-            plugin.Parent = t;
-            documentsTab.SelectedTab = t;
+        /// <summary>Include a plugin to a propeller chip instance and insert
+        /// into documents tab.</summary>
+        /// <remarks>Attach a plugin, linking the propeller instance to the plugin,
+        /// opening a new tab window and enabling the close button by plugin isClosable
+        /// property.</remarks>
+        /// <param name="newPlugin">Instance of a Gear.PluginSupport.PluginBase
+        /// class to be attached.</param>
+        /// <param name="generator"></param>
+        /// @version v22.06.01 - Maintain tabs order: insert tab just created in document tabs. Changed parameter name to clarify its meaning. Added new parameter to generate numbering on duplicated tabs.
+        private void AttachPlugin(PluginBase newPlugin, TabManager.QuantityPostFixGenerator generator)
+        {
+            //include into plugin lists of a PropellerCPU instance
+            _cpuHost.IncludePlugin(newPlugin);
+            //invoke initial setup of plugin
+            newPlugin.PresentChip();
+            //add to documents tabs
+            _docsManager.AddToTabControl(newPlugin, generator);
             //Maintain the close button availability
-            closeButton.Enabled = plugin.IsClosable;
+            closeButton.Enabled = newPlugin.IsClosable;
         }
 
         /// @brief Delete a plugin from a propeller chip instance.
@@ -175,32 +204,34 @@ namespace Gear.GUI
         /// effectively stopping the plugin. Remove also from pins and clock watch list.
         /// @param plugin Instance of a Gear.PluginSupport.PluginCommon class to be detached.
         /// @version v15.03.26 - Added.
-        //Added method to detach a plugin from the active plugin list of the propeller instance.
         private void DetachPlugin(PluginBase plugin)
         {
             if (plugin.IsClosable)      //check if the plugin is able to close, then remove...
             {
-                Chip.RemoveOnPins(plugin);  //from pins watch list
-                Chip.RemoveOnClock(plugin); //from clock watch list
-                Chip.RemovePlugin(plugin);  //from the plugins registered to the propeller emulator
-            };
+                _cpuHost.RemoveOnPins(plugin);  //from pins watch list
+                _cpuHost.RemoveOnClock(plugin); //from clock watch list
+                _cpuHost.RemovePlugin(plugin);  //from the plugins registered to the propeller emulator
+            }
         }
 
         /// @brief Run the emulator updating the screen between a number of steps.
         /// @details The program property "UpdateEachSteps" gives the number of steps before
         /// screen repaint.
+        ///
         /// Adjusting this number in configuration (like increasing the number) enable to obtain
         /// faster execution at expense of less screen responsiveness.
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
+        /// @version v22.06.01 - Fixed problem of enable/disable buttons get incoherent when the emulator arrives to a breakpoint.
         private void RunEmulatorStep(object sender, EventArgs e)
         {
-            for (uint i = 0; i < stepInterval; i++)
-                if (!Chip.Step())
+            for (uint i = 0; i < _stepInterval; i++)
+                if (!_cpuHost.Step())
                 {
-                    runTimer.Stop();
+                    _runTimer.Stop();
                     break;
                 }
+            UpdateRunningButtons();  //bugfix correction
             RepaintViews();
         }
 
@@ -210,45 +241,43 @@ namespace Gear.GUI
         /// buttons to be controlled.
         private void UpdateRunningButtons()
         {
-            if (IsRunningState != runEmulatorButton.Checked)
+            if (IsRunningState == runEmulatorButton.Checked)
+                return;
+            runEmulatorButton.Checked = IsRunningState;
+            if (IsRunningState)
             {
-                runEmulatorButton.Checked = IsRunningState;
-                if (IsRunningState)
-                {
-                    runEmulatorButton.Text = "Run";
-                    runEmulatorButton.Image = Properties.Resources.Image_runStatus;
-                    stopEmulatorButton.Text = "&Stop";
-                    stopEmulatorButton.Image = Properties.Resources.Image_stopStill;
-                    stepInstructionButton.Text = "Step Instruction";
-                    stepInstructionButton.Enabled = false;
-                    stepClockButton.Enabled = false;
-                }
-                else
-                {
-                    runEmulatorButton.Text = "&Run";
-                    runEmulatorButton.Image = Properties.Resources.Image_runStill;
-                    stopEmulatorButton.Text = "Stop";
-                    stopEmulatorButton.Image = Properties.Resources.Image_stopStatus;
-                    stepInstructionButton.Text = "&Step Instruction";
-                    stepInstructionButton.Enabled = true;
-                    stepClockButton.Enabled = true;
-                }
+                runEmulatorButton.Text = "Run";
+                runEmulatorButton.Image = Properties.Resources.Image_runStatus;
+                stopEmulatorButton.Text = "&Stop";
+                stopEmulatorButton.Image = Properties.Resources.Image_stopStill;
+                stepInstructionButton.Text = "Step Instruction";
+                stepInstructionButton.Enabled = false;
+                stepClockButton.Enabled = false;
+            }
+            else
+            {
+                runEmulatorButton.Text = "&Run";
+                runEmulatorButton.Image = Properties.Resources.Image_runStill;
+                stopEmulatorButton.Text = "Stop";
+                stopEmulatorButton.Image = Properties.Resources.Image_stopStatus;
+                stepInstructionButton.Text = "&Step Instruction";
+                stepInstructionButton.Enabled = true;
+                stepClockButton.Enabled = true;
             }
         }
 
         /// @brief Load a binary image from file.
         /// @details Generate a new instance of a `PropellerCPU` and load
         /// the program from the binary.
-        /// @version v22.03.02 - Bugfix of Form name not updated when open
-        /// another binary file.
-        public bool OpenFile(string FileName)
+        /// @version v22.06.01 - Parameter name changed to follow naming conventions.
+        public bool OpenFile(string fileName)
         {
             try
             {
-                Chip.Initialize(File.ReadAllBytes(FileName));
-                source = FileName;
-                Text = FileName;
-                Properties.Settings.Default.LastBinary = source;
+                _cpuHost.Initialize(File.ReadAllBytes(fileName));
+                _sourceFileName = fileName;
+                Text = fileName;
+                Properties.Settings.Default.LastBinary = _sourceFileName;
                 Properties.Settings.Default.Save();
                 UpdateRunningButtons();
                 RepaintViews();
@@ -280,9 +309,12 @@ namespace Gear.GUI
         /// and source code to compile), trying to compile the C# source code (based on
         /// Gear.PluginSupport.PluginBase class) and returning the new class instance. If the
         /// compilation fails, then it opens the plugin editor to show errors and source code.
-        /// @param FileName Name and path to the XML plugin file to open
+        /// @param fileName Name and path to the XML plugin file to open
         /// @returns Reference to the new plugin instance (on success) or NULL (on fail).
-        public PluginBase LoadPlugin(string FileName)
+        /// @version v22.06.01 - Parameter name and local variable name changed to follow naming conventions.
+        /// @todo [Enhance] show dialog to inform user the compilation error and plugin open in editor instead of loading it
+        /// @todo [Bug] Manage all possible exceptions thrown at plugin load in Emulator
+        public PluginBase LoadPlugin(string fileName)
         {
             XmlReaderSettings settings = new XmlReaderSettings
             {
@@ -292,94 +324,89 @@ namespace Gear.GUI
                 DtdProcessing = DtdProcessing.Parse,
                 ValidationType = ValidationType.DTD
             };
-            XmlReader tr = XmlReader.Create(FileName, settings);
-            bool ReadText = false;
-
+            XmlReader reader = XmlReader.Create(fileName, settings);
+            bool readText = false;
             List<string> references = new List<string>();
             string instanceName = string.Empty;
             string code = string.Empty;
             string codeFileName = string.Empty;
             string pluginVersion = "0.1";
-
             try
             {
-
-                while (tr.Read())
+                while (reader.Read())
                 {
-                    if (ReadText)
+                    if (readText)
                     {
                         if (string.IsNullOrEmpty(codeFileName))
                         {
-                            //Mantain compatibility with old plugins (using Text section)
-                            if (tr.NodeType == XmlNodeType.Text ||
-                                    tr.NodeType == XmlNodeType.CDATA)
-                                code = tr.Value;
+                            //Maintain compatibility with old plugins (using Text section)
+                            if (reader.NodeType == XmlNodeType.Text ||
+                                    reader.NodeType == XmlNodeType.CDATA)
+                                code = reader.Value;
                         }
                         else
                         {
-                            codeFileName =
-                                Path.Combine(Path.GetDirectoryName(FileName), codeFileName);
+                            codeFileName = Path.Combine(
+                                Path.GetDirectoryName(fileName) ?? string.Empty,
+                                codeFileName);
                             code = File.ReadAllText(codeFileName);
                         }
-                        ReadText = false;
+                        readText = false;
                     }
-                    switch (tr.Name.ToLower())
+                    switch (reader.Name.ToLower())
                     {
                         case "plugin":
                             pluginVersion =
-                                string.IsNullOrEmpty(tr.GetAttribute("version")) ?
+                                string.IsNullOrEmpty(reader.GetAttribute("version")) ?
                                 pluginVersion :
-                                tr.GetAttribute("version");
+                                reader.GetAttribute("version");
                             break;
                         case "reference":
-                            if (!tr.IsEmptyElement)
-                                references.Add(tr.GetAttribute("name"));
+                            if (!reader.IsEmptyElement)
+                                references.Add(reader.GetAttribute("name"));
                             break;
                         case "instance":
-                            instanceName = tr.GetAttribute("class");
+                            instanceName = reader.GetAttribute("class");
                             break;
                         case "code":
-                            ReadText = true;
-                            codeFileName = tr.GetAttribute("codeFileName");
+                            readText = true;
+                            codeFileName = reader.GetAttribute("codeFileName");
                             break;
                     }
                 }
-
                 //Dynamic load and compile the plugin module as a class, giving the chip
                 // instance as a parameter.
                 PluginBase plugin = ModuleCompiler.LoadModule(
                     code,
                     instanceName,
                     references.ToArray(),
-                    Chip
+                    _cpuHost
                 );
-
                 if (plugin == null)  //if it fails...
                 {
                     // ...open plugin editor in other window
                     PluginEditor pe = new PluginEditor(false);
-                    pe.OpenFile(FileName, true);
-                    pe.MdiParent = this.MdiParent;
+                    pe.OpenFile(fileName, true);
+                    pe.MdiParent = MdiParent;
                     pe.Show();
                     //the compilation errors are displayed in the error grid
                     ModuleCompiler.EnumerateErrors(pe.EnumErrors);
                     //show the error list
                     pe.ShowErrorGrid(true);
+                    //TODO show dialog to inform user the compilation error and plugin open in editor instead of loading it
                 }
-                else  //successful compiling & instantiating of the new class...
+                else  //successful compiling & instantiating of the new class
                 {
-                    //...add the reference to the plugin list of the emulator instance
-                    AttachPlugin(plugin);
                     //update location of last plugin
-                    Properties.Settings.Default.LastPlugin = FileName;
+                    Properties.Settings.Default.LastPlugin = fileName;
                     Properties.Settings.Default.Save();
                 }
-
                 return plugin;
             }
+            // TODO  Analyze all possible exceptions thrown inside and manage them appropriately
             catch (Exception ex)
             {
-                if ((ex is IOException) | (ex is XmlException))
+                if (ex is IOException | ex is XmlException)
                 {
                     MessageBox.Show(this,
                         ex.Message,
@@ -393,7 +420,7 @@ namespace Gear.GUI
             }
             finally
             {
-                tr.Close();
+                reader.Close();
             }
         }
 
@@ -408,7 +435,7 @@ namespace Gear.GUI
                        Filter = "Propeller Runtime Image (*.binary;*.eeprom)|*.binary;" +
                                 "*.eeprom|All Files (*.*)|*.*",
                        Title = "Open Propeller Binary...",
-                       FileName = source
+                       FileName = _sourceFileName
                    })
             {
                 //retrieve last binary location
@@ -428,8 +455,8 @@ namespace Gear.GUI
         /// @version v20.10.01 - UpdateRunningButtons.
         private void ReloadBinary_Click(object sender, EventArgs e)
         {
-            OpenFile(source);
-            Chip.Reset();
+            OpenFile(_sourceFileName);
+            _cpuHost.Reset();
             UpdateRunningButtons();
             RepaintViews();
         }
@@ -437,176 +464,165 @@ namespace Gear.GUI
         /// <summary>
         ///
         /// </summary>
-        /// <param name="e"></param>
+        /// <param name="e">Event data arguments.</param>
+        /// @version v22.06.01 - Local variable name changed to clarify it meaning.
         protected override void OnClosed(EventArgs e)
         {
-            foreach (Control c in FloatControls)
-                c.Parent = null;
-
-            FloatControls.Clear();
-
+            foreach (Control control in _floatControls)
+                control.Parent = null;
+            _floatControls.Clear();
             base.OnClosed(e);
         }
 
         /// @brief Repaint the Views, including float windows.
+        /// @version v22.06.01 - Corrected bug on float windows not were updated.
+        /// @todo Parallelism [complex:medium, cycles:typ1] point in loop of list of _floatControls
         private void RepaintViews()
         {
-            foreach (Control s in FloatControls)
-                s.Refresh();
-
-            Control c = pinnedPanel.GetNextControl(null, true);
-
-            if (c != null)
-                ((PluginBase)c).Repaint(true);
-
-            if ((documentsTab.SelectedTab != null) &&
-                 ((c = documentsTab.SelectedTab.GetNextControl(null, true)) != null))
-                ((PluginBase)c).Repaint(true);
-
+            foreach (Control floatControl in _floatControls)  // TODO Parallelism [complex:medium, cycles:typ1] point in loop _floatControls
+                foreach (Control control in floatControl.Controls)
+                    if (control is PluginBase pluginControl)
+                        pluginControl.Repaint(true);
+                    else
+                        control.Refresh();
+            Control pinnedControl = pinnedPanel.GetNextControl(pinnedPanel, true);
+            ((PluginBase)pinnedControl)?.Repaint(true);
+            if (documentsTab.SelectedTab != null &&
+                (pinnedControl = documentsTab.SelectedTab.GetNextControl(documentsTab.SelectedTab, true)) != null)
+                ((PluginBase)pinnedControl).Repaint(true);
             hubView.DataChanged();
         }
 
         /// @brief Event to reset the whole %Propeller Chip.
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
-        /// @version v20.10.01 - UpdateRunningButtons.
+        /// @version v20.10.01 - Update running buttons.
         private void ResetEmulator_Click(object sender, EventArgs e)
         {
-            Chip.Reset();
+            _cpuHost.Reset();
             UpdateRunningButtons();
             RepaintViews();
         }
 
-        /// @brief Close the plugin window and terminate the plugin instance.
-        /// @details Not only close the tab window, also detach the plugin
-        /// from the PropellerCPU what uses it.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
-        private void CloseActiveTab_Click(object sender, EventArgs e)
-        {
-            TabPage tp = documentsTab.SelectedTab;
-            PluginBase p = (PluginBase)tp.Controls[0];
-
-            if (p != null)          //test if cast to PluginBase works...
-            {
-                if (p.IsClosable)   //... so, test if we can close the tab
-                {
-                    if (documentsTab.SelectedIndex > 0)
-                    {
-                        //select the previous tab
-                        documentsTab.SelectedIndex -= 1;
-                        //tab changing housekeeping for plugin close button
-                        DocumentsTab_Click(this, e);
-                        //detach the plugin from the emulator
-                        this.DetachPlugin(p);
-                        p.Dispose();
-                    }
-                    tp.Parent = null;   //delete the reference to plugin
-                };
-            }
-        }
-
-        /// @brief
+        /// @brief Send the active tab to a floating window.
         /// @param sender Reference to the object where this event was called.
-        /// @param e Class with the details event.
+        /// @param e Class with the event details.
+        /// @version v22.06.01 - Refactored to maintain tabs ordered.
         private void FloatActiveTab_Click(object sender, EventArgs e)
         {
-            TabPage tp = documentsTab.SelectedTab;
-            tp.Parent = null;
-
-            FloatedWindow fw = new FloatedWindow(this);
-
-            Control c = tp.GetNextControl(null, true);
-            c.Dock = DockStyle.Fill;
-            c.Parent = fw;
-            c.Text = tp.Text;
-
-            fw.MdiParent = this.MdiParent;
-            fw.Show();
-            fw.Text = tp.Text + ": " + source;
-
-            FloatControls.Add(fw);
-        }
-
-        /// @brief Unfloat the tab object.
-        /// @param c Tab object.
-        public void Unfloat(Control c)
-        {
-            TabPage tp = new TabPage(c.Text)
+            TabPage selectedTab = documentsTab.SelectedTab;
+            //get plugin control
+            Control controlToFloat = null;
+            foreach (Control control in selectedTab.Controls)
+                if (control is PluginBase)
+                    controlToFloat = control;
+            if (controlToFloat == null)
+                return;
+            if (documentsTab.SelectedIndex > 0)
             {
-                Parent = documentsTab
-            };
-            c.Parent = tp;
-            c.Dock = DockStyle.Fill;
-
-            FloatControls.Remove(c.Parent);
+                //select the previous tab
+                documentsTab.SelectedIndex -= 1;
+                //tab changing housekeeping for plugin close button
+                DocumentsTab_Click(this, e);
+            }
+            selectedTab.Parent = null;
+            FloatedWindow floatedWindow = new FloatedWindow(this, controlToFloat);
+            controlToFloat.Parent = floatedWindow;
+            controlToFloat.Dock = DockStyle.Fill;
+            controlToFloat.Text = selectedTab.Text;
+            floatedWindow.MdiParent = MdiParent;
+            floatedWindow.Text = $"{selectedTab.Text}: {_sourceFileName}";
+            floatedWindow.Show();
+            _floatControls.Add(floatedWindow);
+            _docsManager.FloatingTabsQuantity = _floatControls.Count;
         }
 
-        /// @brief
+        /// @brief Unfloat the control, opening in a new tab.
+        /// @param control Control object to move.
+        /// @throws ArgumentNullException
+        /// @version v22.06.01 - Changed method name from `Unfloat` and Refactored to maintain documents tabs order.
+        public void UnFloatCtrl(Control control)
+        {
+            if (control is null)
+                throw new ArgumentNullException(nameof(control));
+            Control lastParent = control.Parent;
+            //reinsert tab in saved position
+            _docsManager.RestoreToTabControl(control);
+            //tab changing housekeeping for plugin close button
+            DocumentsTab_Click(this, EventArgs.Empty);
+            _floatControls.Remove(lastParent);
+            _docsManager.FloatingTabsQuantity = _floatControls.Count;
+        }
+
+        /// @brief Send the active tab to pin panel.
         /// @param sender Reference to the object where this event was called.
-        /// @param e Class with the details event.
+        /// @param e Class with the event details.
+        /// @version v22.06.01 - Refactored to maintain tabs ordered.
         private void PinActiveTab_Click(object sender, EventArgs e)
         {
-            Control oldPin = pinnedPanel.GetNextControl(null, true);
-
-            TabPage tp = documentsTab.SelectedTab;
-            tp.Parent = null;
-
-            Control newPin = tp.GetNextControl(null, true);
-            newPin.Dock = DockStyle.Fill;
-            newPin.Parent = pinnedPanel;
-            newPin.Text = tp.Text;
-
+            Control oldPinnedControl = pinnedPanel.GetNextControl(pinnedPanel, true);
+            TabPage selectedTab = documentsTab.SelectedTab;
+            Control newPinControl = selectedTab?.GetNextControl(selectedTab, true);
+            if (newPinControl == null)
+                return;
+            if (documentsTab.SelectedIndex > 0)
+            {
+                //select the previous tab
+                documentsTab.SelectedIndex -= 1;
+                //tab changing housekeeping for plugin close button
+                DocumentsTab_Click(this, e);
+            }
+            selectedTab.Parent = null;
             if (pinnedSplitter.IsCollapsed)
                 pinnedSplitter.ToggleState();
-
-            if (oldPin != null)
-            {
-                tp = new TabPage(oldPin.Text)
-                {
-                    Parent = documentsTab
-                };
-                oldPin.Parent = tp;
-            }
+            newPinControl.Parent = pinnedPanel;
+            newPinControl.Dock = DockStyle.Fill;
+            newPinControl.Text = selectedTab.Text;
+            _docsManager.TabPinnedExist = true;
+            //restore old pinned control to tab pages, if any
+            if (oldPinnedControl == null)
+                return;
+            //reinsert tab in saved position
+            _docsManager.RestoreToTabControl(oldPinnedControl);
+            //tab changing housekeeping for plugin close button
+            DocumentsTab_Click(this, EventArgs.Empty);
         }
 
-        /// @brief
+        /// @brief Unpin a view, attaching to a tab.
         /// @param sender Reference to the object where this event was called.
-        /// @param e Class with the details event.
+        /// @param e Class with the event details.
+        /// @version v22.06.01 - Refactored to maintain documents tabs order.
         private void UnpinButton_Click(object sender, EventArgs e)
         {
-            Control oldPin = pinnedPanel.GetNextControl(null, true);
-
-            if (oldPin != null)
-            {
-                TabPage tp = new TabPage(oldPin.Text)
-                {
-                    Parent = documentsTab
-                };
-                oldPin.Parent = tp;
-
-                if (!pinnedSplitter.IsCollapsed)
-                    pinnedSplitter.ToggleState();
-            }
+            Control oldPinnedControl = pinnedPanel.GetNextControl(pinnedPanel, true);
+            if (oldPinnedControl == null)
+                return;
+            //reinsert tab in saved position
+            _docsManager.RestoreToTabControl(oldPinnedControl);
+            //tab changing housekeeping for plugin close button
+            DocumentsTab_Click(this, EventArgs.Empty);
+            if (!pinnedSplitter.IsCollapsed)
+                pinnedSplitter.ToggleState();
+            _docsManager.TabPinnedExist = false;
         }
 
         /// @brief Event to run the emulator freely.
         /// @param sender Reference to the object where this event was called.
-        /// @param e Class with the details event.
+        /// @param e Class with the event details.
         /// @version v20.10.01 - UpdateRunningButtons.
         private void RunEmulator_Click(object sender, EventArgs e)
         {
-            runTimer.Start();
+            _runTimer.Start();
             UpdateRunningButtons();
         }
 
         /// @brief Stop the emulation.
         /// @param sender Reference to the object where this event was called.
-        /// @param e Class with the details event.
+        /// @param e Class with the event details.
         /// @version v20.10.01 - UpdateRunningButtons.
         private void StopEmulator_Click(object sender, EventArgs e)
         {
-            runTimer.Stop();
+            _runTimer.Stop();
             UpdateRunningButtons();
             RepaintViews(); //added the repaint, to refresh the views
         }
@@ -614,30 +630,32 @@ namespace Gear.GUI
         /// @brief Run one clock tick of the active cog, stopping after executed.
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
-        /// @version v22.04.02 - Corrected method name.
+        /// @version v22.04.02 - Corrected method name to clarify its meaning.
         private void StepClock_Click(object sender, EventArgs e)
         {
-            Chip.Step();
+            _cpuHost.Step();
             UpdateRunningButtons();
             RepaintViews();
         }
 
         /// @brief Event to run one instruction in emulator, stopping after executed.
+        /// @details Only makes sense to run a step  if a cog is selected.
         /// @param sender Reference to the object where this event was called.
-        /// @param e Class with the details event.
-        /// @version v20.10.01 - UpdateRunningButtons.
+        /// @param e Class with the event details.
+        /// @version v22.06.01 - Refactored to improve detection.
+        /// @todo Review visibility of step button when not a CogView is active
         private void StepInstruction_Click(object sender, EventArgs e)
         {
-            if (documentsTab.SelectedTab != null)
+            Control control = documentsTab.SelectedTab?.GetNextControl(documentsTab.SelectedTab, true);
+            switch (control)
             {
-                Control c = documentsTab.SelectedTab.GetNextControl(null, true);
-
-                if (c != null && c is CogView view)
+                case null:
+                    return;
+                case CogView view:
                 {
                     Cog cog = view.GetViewCog();
-
-                    if (cog != null)
-                        cog.StepInstruction();
+                    cog?.StepInstruction();
+                    break;
                 }
             }
             UpdateRunningButtons();
@@ -650,7 +668,7 @@ namespace Gear.GUI
         /// @version v20.10.01 - UpdateRunningButtons.
         public void BreakPoint()
         {
-            runTimer.Stop();
+            _runTimer.Stop();
             UpdateRunningButtons();
             RepaintViews();
         }
@@ -658,7 +676,8 @@ namespace Gear.GUI
         /// @brief Try to open a plugin, compiling it and attaching to the active
         /// emulator instance.
         /// @param sender Reference to the object where this event was called.
-        /// @param e Class with the details event.
+        /// @param e Class with the event details.
+        /// @version v22.06.01 - Code for attach plugin to emulator moved here.
         private void OpenPlugin_Click(object sender, EventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog
@@ -672,92 +691,138 @@ namespace Gear.GUI
                     Path.GetDirectoryName(Properties.Settings.Default.LastPlugin);
             //ask the user what plugin file to open
             if (dialog.ShowDialog(this) == DialogResult.OK)
-                LoadPlugin(dialog.FileName);
+            {
+                PluginBase newPlugin = LoadPlugin(dialog.FileName);
+                if (newPlugin != null)
+                    AttachPlugin(newPlugin, TabManager.OnlyRepetitionNumberedFromOne);
+            }
         }
 
         /// @brief Event when the Emulator windows begin to close.
         /// @param sender Reference to the object where this event was called.
-        /// @param e Class with the details event.
+        /// @param e Class with the event details.
         private void Emulator_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Chip.OnClose(sender, e);
+            _cpuHost.OnClose(sender, e);
         }
 
-        /// @brief
+        /// @brief Event when emulator goes out of focus.
         /// @param sender Reference to the object where this event was called.
-        /// @param e Class with the details event.
+        /// @param e Class with the event details.
         /// @version v20.10.01 - UpdateRunningButtons.
         private void OnDeactivate(object sender, EventArgs e)
         {
-            runTimer.Stop();
+            _runTimer.Stop();
             UpdateRunningButtons();
         }
 
-        /// @brief Determine availability of close plugin button when tab is changed.
+        /// @brief Close the plugin window and terminate the plugin instance.
+        /// @details Not only close the tab window, also detach the plugin
+        /// from the PropellerCPU what uses it.
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
+        /// @version v22.06.01 - Refactored to maintain tabs order: remove tab associated to plugin from documents tabs.
+        private void CloseActiveTab_Click(object sender, EventArgs e)
+        {
+            //get selected tab object
+            TabPage selectedTab = documentsTab.SelectedTab;
+            if (selectedTab == null)
+                return;
+            //get plugin
+            PluginBase pluginAssociated = null;
+            foreach (Control ctl in selectedTab.Controls)
+            {
+                pluginAssociated = ctl as PluginBase;
+                if (pluginAssociated == null)
+                    continue;
+                if (!pluginAssociated.IsClosable)
+                    return;
+                break;
+            }
+            if (pluginAssociated == null) //if none of controls is a PluginBase
+                return;
+            if (documentsTab.SelectedIndex > 0)
+            {
+                //select the previous tab
+                documentsTab.SelectedIndex -= 1;
+                //tab changing housekeeping for plugin close button
+                DocumentsTab_Click(this, e);
+            }
+            //remove objects from UI
+            _docsManager.RemoveFromTabControl(selectedTab, pluginAssociated);
+            selectedTab.Dispose();
+            //detach the plugin from the emulator
+            DetachPlugin(pluginAssociated);
+            pluginAssociated.Dispose();
+        }
+
+        /// @brief Refresh tab page.
         /// @details Enable close plugin button based on if active tab is subclass of
         /// Gear.PluginSupport.PluginBase and if that class permit close the window. Typically
         /// the user plugins enabled it; but the cog window, main memory, logic probe, etc,
         /// don't allow to close.
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
-        /// @version V14.07.03 - Added.
+        /// @version v22.06.01 - Refactored to improve logic.
         private void DocumentsTab_Click(object sender, EventArgs e)
         {
-            TabPage tp = documentsTab.SelectedTab;
-            if (tp.Controls[0] is PluginBase)
-            {
-                PluginBase b = (tp.Controls[0]) as PluginBase;
-                if (b.IsClosable)
-                    closeButton.Enabled = true;
+            TabPage selectedTab = documentsTab.SelectedTab;
+            if (selectedTab == null)
+                return;
+            foreach (Control control in selectedTab.Controls)
+                if (control is PluginBase pluginControl)
+                {
+                    closeButton.Enabled = pluginControl.IsClosable;
+                    pluginControl.Repaint(false);
+                }
                 else
                     closeButton.Enabled = false;
-                b.Repaint(false);
-            }
-            else
-            {
-                closeButton.Enabled = false;
-            }
-            tp.Invalidate();
+            selectedTab.Invalidate();
         }
 
         /// @brief Process key press to manage the run state of emulator.
         /// @param sender Reference to the object where this event was called.
-        /// @param e Class with the details event.
-        /// @version v22.04.02 - Added input key for clock step.
+        /// @param e Class with the event details.
+        /// @version v22.06.01 - Refactored to improve logic.
+        /// @todo [enhance:] More feedback: Add feedback of hot key ignored.
         private void DocumentsTab_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (ActiveControl is PluginBase)
-            {
-                PluginBase b = ActiveControl as PluginBase;
-                if (!b.AllowHotKeys)
+            TabPage tp = documentsTab.SelectedTab;
+            if (tp == null)
+                return;
+            foreach (Control control in tp.Controls)
+                if (control is PluginBase pluginControl && !pluginControl.AllowHotKeys)
                     return;
-            }
-
-            string key = e.KeyChar.ToString().ToLowerInvariant();
-            if (key == "s")
+            switch (e.KeyChar.ToString().ToLowerInvariant())
             {
-                if (IsRunningState)
-                {
-                    runTimer.Stop();
-                    UpdateRunningButtons();
-                }
-                else
-                    StepInstruction_Click(this, EventArgs.Empty);
+                case "s":
+                    if (IsRunningState)
+                    {
+                        _runTimer.Stop();
+                        UpdateRunningButtons();
+                    }
+                    else
+                        StepInstruction_Click(this, EventArgs.Empty);
+                    break;
+                case "r":
+                    if (!IsRunningState)
+                    {
+                        _runTimer.Start();
+                        UpdateRunningButtons();
+                    }
+                    //else { }  //TODO [enhance:] More feedback: Add feedback of hot key ignored
+                    break;
+                case "c":
+                    if (!IsRunningState)
+                        StepClock_Click(this, EventArgs.Empty);
+                    //else { }  //TODO [enhance:] More feedback: Add feedback of hot key ignored
+                    break;
             }
-
-            if ((key == "r") & !IsRunningState)
-            {
-                runTimer.Start();
-                UpdateRunningButtons();
-            }
-
-            if ((key == "c") & !IsRunningState)
-                StepClock_Click(this, EventArgs.Empty);
         }
 
-        /// @brief Refresh form's Icon
+        /// @brief Refresh form's Icon.
         /// @param sender Reference to the object where this event was called.
-        /// @param e Class with the details event.
+        /// @param e Class with the event details.
         /// @version v20.10.01 - Added.
         private void Emulator_Load(object sender, EventArgs e)
         {

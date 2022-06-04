@@ -58,7 +58,7 @@ namespace Gear.GUI
         }
 
         /// @brief Identify a plugin as user (=true) or system (=false).
-        /// @version V15.03.26 - Added.
+        /// @version v15.03.26 - Added.
         public override bool IsUserPlugin
         {
             get { return false; }

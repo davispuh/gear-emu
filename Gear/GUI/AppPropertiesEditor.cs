@@ -37,7 +37,7 @@ namespace Gear.GUI
     {
         /// @brief How many instances are created?
         /// @version v20.10.01 - Added.
-        private static int instanceNumber = 0;
+        private static int _instanceNumber = 0;
 
         /// @brief Default constructor.
         /// @throws SingleInstanceException If an intent to open a new instance
@@ -48,24 +48,25 @@ namespace Gear.GUI
         // and https://www.codeproject.com/Articles/22717/Using-PropertyGrid
         public AppPropertiesEditor()
         {
-            if (instanceNumber > 0)
+            if (_instanceNumber > 0)
                 throw new SingleInstanceException();
             InitializeComponent();
             GearPropertyGrid.SelectedObject = Settings.Default;
-            instanceNumber++;
+            _instanceNumber++;
         }
 
-        /// @brief Close the window, updating the related values in each formm.
+        /// @brief Close the window, updating the related values in each form.
         /// @param sender Sender object to this event.
         /// @param e Arguments to this event.
         private void OKButton_Click(object sender, EventArgs e)
         {
             //save to disk
-            Properties.Settings.Default.Save();
+            Settings.Default.Save();
             //redraw forms
-            foreach(Form f in ParentForm.OwnedForms)
-                f.Refresh();
-            this.Close();
+            if (ParentForm != null)
+                foreach (Form f in ParentForm.OwnedForms)
+                    f.Refresh();
+            Close();
         }
 
         /// @brief Reset the property to its default value.
@@ -73,68 +74,75 @@ namespace Gear.GUI
         /// @param e Arguments to this event.
         private void ResetButton_Click(object sender, EventArgs e)
         {
-            PropertyDescriptor prop;    //to get the underlying property
-            //check if a property is selected and if it is writeable
-            if (GearPropertyGrid.SelectedGridItem.GridItemType == GridItemType.Property &&
-                !(prop = GearPropertyGrid.SelectedGridItem.PropertyDescriptor).IsReadOnly)
+            //to get the underlying property
+            PropertyDescriptor prop = GearPropertyGrid.SelectedGridItem.PropertyDescriptor;
+            //check if a property is selected and if it is writable
+            if (prop is null || prop.IsReadOnly ||
+                GearPropertyGrid.SelectedGridItem.GridItemType != GridItemType.Property)
+                return;
+            //try to get the default value of the property
+            if (prop.Attributes[typeof(DefaultSettingValueAttribute)] is DefaultSettingValueAttribute attr)  //if exist
             {
-                //try to get the default value of the property
-                if (prop.Attributes[typeof(DefaultSettingValueAttribute)] is DefaultSettingValueAttribute attr)  //if exist
-                {
-                    //remember old value
-                    object oldValue = prop.GetValue(Settings.Default);
-                    //set the new value
-                    if (prop.CanResetValue(Settings.Default))
-                        prop.ResetValue(Settings.Default);
-                    else
-                        prop.SetValue(
-                            Settings.Default,
-                            Convert.ChangeType(attr.Value, prop.PropertyType));
-                    //call the notification event
-                    GearPropertyGrid_PropertyValueChanged(sender,
-                        new PropertyValueChangedEventArgs(
-                            GearPropertyGrid.SelectedGridItem, oldValue));
-                }
-                GearPropertyGrid.Refresh();
+                //remember old value
+                object oldValue = prop.GetValue(Settings.Default);
+                //set the new value
+                if (prop.CanResetValue(Settings.Default))
+                    prop.ResetValue(Settings.Default);
+                else
+                    prop.SetValue(Settings.Default,
+                        Convert.ChangeType(attr.Value, prop.PropertyType));
+                //call the notification event
+                GearPropertyGrid_PropertyValueChanged(sender,
+                    new PropertyValueChangedEventArgs(
+                        GearPropertyGrid.SelectedGridItem, oldValue));
             }
+            GearPropertyGrid.Refresh();
         }
 
         /// @brief Event when a property had changed its value, used to update copies of the
         /// property values used in other forms.
         /// @param s Sender object to this event.
         /// @param e Arguments to this event, including the old value.
-        /// @version v20.09.01 - Modified to include new properties.
+        /// @version v22.06.01 - Added updating UseAnimations property on
+        /// CollapsibleSplitter controls.
         private void GearPropertyGrid_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
         {
-            PropertyDescriptor prop;    //to get the underlying property
-            if (e.ChangedItem.GridItemType == GridItemType.Property &&
-                !(prop = e.ChangedItem.PropertyDescriptor).IsReadOnly)
+            //to get the underlying property
+            PropertyDescriptor prop = e.ChangedItem.PropertyDescriptor;
+            if (prop is null || prop.IsReadOnly ||
+                e.ChangedItem.GridItemType != GridItemType.Property || ParentForm == null)
+                return;
+            switch (prop.Name)
             {
-                switch (prop.Name)
-                {
-                    case "LastTickMarkGrid":
-                    case "LastTimeFrame":
-                    case "LogicViewTimeUnit":
-                    case "FreqFormat":
-                    case "HubTimeUnit":
-                    case "UpdateEachSteps":
-                        foreach (Form form in ParentForm.MdiChildren)
-                            if (form is Emulator emu)
-                                emu.UpdateVarValue(prop.Name);
-                        break;
-                    case "TabSize":
-                        foreach (Form form in ParentForm.MdiChildren)
-                            if (form is PluginEditor pluginEditor)
-                                pluginEditor.UpdateTabs(reloadText: true);
-                        break;
-                    case "LastPlugin":
-                        foreach (Form form in ParentForm.MdiChildren)
-                            if (form is PluginEditor pluginEditor)
-                                pluginEditor.UpdateLastPlugin();
-                        break;
-                    default:
-                        break;
-                }
+                case "LastTickMarkGrid":
+                case "LastTimeFrame":
+                case "LogicViewTimeUnit":
+                case "FreqFormat":
+                case "HubTimeUnit":
+                case "UpdateEachSteps":
+                    foreach (Form form in ParentForm.MdiChildren)
+                        if (form is Emulator emulator)
+                            emulator.UpdateVarValue(prop.Name);
+                    break;
+                case "TabSize":
+                    foreach (Form form in ParentForm.MdiChildren)
+                        if (form is PluginEditor pluginEditor)
+                            pluginEditor.UpdateTabs(true);
+                    break;
+                case "LastPlugin":
+                    foreach (Form form in ParentForm.MdiChildren)
+                        if (form is PluginEditor pluginEditor)
+                            pluginEditor.UpdateLastPlugin();
+                    break;
+                case "UseAnimations":
+                    foreach (Form form in ParentForm.MdiChildren)
+                    {
+                        if (form is PluginEditor pluginEditor)
+                            pluginEditor.UpdateUseAnimation();
+                        if (form is Emulator emulator)
+                            emulator.UpdateVarValue(prop.Name);
+                    }
+                    break;
             }
         }
 
@@ -145,7 +153,7 @@ namespace Gear.GUI
         /// AppPropertiesEditor.
         private void AppPropertiesEditor_FormClosed(object sender, FormClosedEventArgs e)
         {
-            instanceNumber--;
+            _instanceNumber--;
         }
 
         /// @brief Refresh form's Icon

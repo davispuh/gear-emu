@@ -1838,7 +1838,7 @@ namespace Gear.EmulationCore
         /// |   ^    |`11`= PUSH#|Push address of destination onto stack            |
         ///
         /// ### Bytecode Table: 64 operations
-        /// 
+        ///
         /// | Op |Byte      |Destination |Description    |
         /// |:--:|:--------:|:----------:|:--------------|
         /// |`40`|`01000000`|`VAR`|`PUSH    addr=0*4= 00`|

@@ -146,7 +146,7 @@ namespace Gear.Utils
 
         /// <summary></summary>
         /// <returns></returns>
-        public override string ToString() => 
+        public override string ToString() =>
             $"{{{Id}, \"{Name}\", {(FormatToTextDel == null ? "Delegate: null" : FormatToTextDel.ToString())}, \"{(IsMultiplyFactor ? "*" : "/")} {Factor}\"}}";
 
         /// <summary></summary>

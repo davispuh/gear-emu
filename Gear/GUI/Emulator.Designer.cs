@@ -35,7 +35,7 @@ namespace Gear.GUI
         {
             if (disposing && (components != null))
             {
-                runTimer.Dispose();
+                _runTimer.Dispose();
                 components.Dispose();
             }
             base.Dispose(disposing);
@@ -277,8 +277,8 @@ namespace Gear.GUI
             this.pinnedSplitter.Name = "collapsibleSplitter1";
             this.pinnedSplitter.TabIndex = 6;
             this.pinnedSplitter.TabStop = false;
-            this.pinnedSplitter.UseAnimations = false;
-            this.pinnedSplitter.VisualStyle = Gear.GUI.VisualStyles.Mozilla;
+            this.pinnedSplitter.UseAnimations = global::Gear.Properties.Settings.Default.UseAnimations;
+            this.pinnedSplitter.VisualStyle = Gear.GUI.VisualStylesEnum.Mozilla;
             //
             // hubViewSplitter
             //
@@ -291,8 +291,8 @@ namespace Gear.GUI
             this.hubViewSplitter.Name = "HubSplitter";
             this.hubViewSplitter.TabIndex = 4;
             this.hubViewSplitter.TabStop = false;
-            this.hubViewSplitter.UseAnimations = false;
-            this.hubViewSplitter.VisualStyle = Gear.GUI.VisualStyles.Mozilla;
+            this.hubViewSplitter.UseAnimations = global::Gear.Properties.Settings.Default.UseAnimations;
+            this.hubViewSplitter.VisualStyle = Gear.GUI.VisualStylesEnum.Mozilla;
             //
             // hubView
             //

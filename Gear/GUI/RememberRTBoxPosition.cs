@@ -26,7 +26,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 // ReSharper disable InconsistentNaming
-namespace Gear.Utils
+namespace Gear.GUI
 {
     /// @brief Remember and restore displayed position and insert
     /// point (aka caret in MS documentation) for a RichTextBox.

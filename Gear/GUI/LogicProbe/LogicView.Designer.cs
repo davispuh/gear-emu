@@ -189,7 +189,7 @@ namespace Gear.GUI.LogicProbe
             // viewOffset
             //
             this.viewOffset.Dock = System.Windows.Forms.DockStyle.Right;
-            this.viewOffset.LargeChange = 1;
+            this.viewOffset.LargeChange = 4;
             this.viewOffset.Location = new System.Drawing.Point(680, 25);
             this.viewOffset.Name = "viewOffset";
             this.viewOffset.Size = new System.Drawing.Size(17, 411);

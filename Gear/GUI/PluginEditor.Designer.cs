@@ -52,9 +52,9 @@ namespace Gear.GUI
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-            System.Windows.Forms.ToolStripLabel classNameLabel;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PluginEditor));
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.classNameLabel = new System.Windows.Forms.ToolStripLabel();
             this.toolStripMain = new System.Windows.Forms.ToolStrip();
             this.openButton = new System.Windows.Forms.ToolStripButton();
             this.saveButton = new System.Windows.Forms.ToolStripButton();
@@ -78,8 +78,6 @@ namespace Gear.GUI
             this.detailsPanel = new Gear.GUI.DoubleBufferedPanel();
             this.errorSplitter = new Gear.GUI.CollapsibleSplitter();
             this.referencesSplitter = new Gear.GUI.CollapsibleSplitter();
-            toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            classNameLabel = new System.Windows.Forms.ToolStripLabel();
             this.toolStripMain.SuspendLayout();
             this.referencePanel.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -89,16 +87,16 @@ namespace Gear.GUI
             //
             // toolStripSeparator1
             //
-            toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new System.Drawing.Size(6, 31);
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 31);
             //
             // classNameLabel
             //
-            classNameLabel.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            classNameLabel.Name = "classNameLabel";
-            classNameLabel.Size = new System.Drawing.Size(106, 28);
-            classNameLabel.Text = "Plugin Class Name";
-            classNameLabel.ToolTipText = "Plugin Main Class Name";
+            this.classNameLabel.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.classNameLabel.Name = "classNameLabel";
+            this.classNameLabel.Size = new System.Drawing.Size(106, 28);
+            this.classNameLabel.Text = "Plugin Class Name";
+            this.classNameLabel.ToolTipText = "Plugin Main Class Name";
             //
             // toolStripMain
             //
@@ -107,10 +105,10 @@ namespace Gear.GUI
             this.openButton,
             this.saveButton,
             this.saveAsButton,
-            toolStripSeparator1,
+            this.toolStripSeparator1,
             this.checkButton,
             this.instanceName,
-            classNameLabel,
+            this.classNameLabel,
             this.toolStripSeparator2,
             this.syntaxButton,
             this.progressHighlight,
@@ -347,8 +345,8 @@ namespace Gear.GUI
             this.errorSplitter.Name = "collapsibleSplitter2";
             this.errorSplitter.TabIndex = 6;
             this.errorSplitter.TabStop = false;
-            this.errorSplitter.UseAnimations = true;
-            this.errorSplitter.VisualStyle = Gear.GUI.VisualStyles.Mozilla;
+            this.errorSplitter.UseAnimations = global::Gear.Properties.Settings.Default.UseAnimations;
+            this.errorSplitter.VisualStyle = Gear.GUI.VisualStylesEnum.Mozilla;
             //
             // referencesSplitter
             //
@@ -361,8 +359,8 @@ namespace Gear.GUI
             this.referencesSplitter.Name = "collapsibleSplitter1";
             this.referencesSplitter.TabIndex = 3;
             this.referencesSplitter.TabStop = false;
-            this.referencesSplitter.UseAnimations = true;
-            this.referencesSplitter.VisualStyle = Gear.GUI.VisualStyles.Mozilla;
+            this.referencesSplitter.UseAnimations = global::Gear.Properties.Settings.Default.UseAnimations;
+            this.referencesSplitter.VisualStyle = Gear.GUI.VisualStylesEnum.Mozilla;
             //
             // PluginEditor
             //
@@ -421,6 +419,8 @@ namespace Gear.GUI
         private System.Windows.Forms.ToolStripButton EmbeddedCode;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.ToolStripProgressBar progressHighlight;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripLabel classNameLabel;
 
         /// @brief Default font for editor code.
         /// @version v14.07.03 - Added.
@@ -428,6 +428,5 @@ namespace Gear.GUI
         /// @brief Bold font for editor code.
         /// @version v15.03.26 - Added.
         private readonly Font fontBold;
-
     }
 }

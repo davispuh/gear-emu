@@ -104,8 +104,8 @@ namespace Gear.EmulationCore
         };
 
         //Constants declarations of P1 Chip
-        /// @version v22.05.04 - Name changed to follow naming conventions.
         /// @brief Number of Cogs implemented in emulator for P1 Chip.
+        /// @version v22.05.04 - Name changed to follow naming conventions.
         public const int TotalCogs = 8;
         /// @brief Number of locks availability in P1 Chip.
         /// @version v22.05.04 - Name changed to follow naming conventions.
@@ -842,7 +842,7 @@ namespace Gear.EmulationCore
         /// or to set on input/output mode (=false).</param>
         /// <param name="isHigh">Boolean to set on High state (=true)
         /// or to set on Low (=false).</param>
-        /// @version V22.04.02 - Parameter name change, to clarify its purpose.
+        /// @version v22.04.02 - Parameter name change, to clarify its purpose.
         public void DrivePin(int pin, bool floating, bool isHigh)
         {
             if (pin < 0 | pin >= TotalPins)
@@ -900,10 +900,10 @@ namespace Gear.EmulationCore
         /// @param[in,out] carryFlag Carry flag that could be affected by the operation.
         /// @param[in,out] zeroFlag Zero flag that could be affected by the operation.
         /// @returns Value depending on operation.
-        /// @version v22.05.04 - Changed name of Method to clarify meaning
-        /// of it, added new required parameter cog number to new cogs created,
-        /// using new property Cog.CogNum and changed parameter names
-        /// to clarify meaning of them.
+        /// @version v22.05.04 - Changed name of method to clarify its meaning,
+        /// added new required parameter cog number to new cogs created, using
+        /// new property Cog.CogNum and changed parameter names to clarify
+        /// meaning of them.
         public uint ExecuteHubOperation(Cog callerCog, uint operation, uint argument,
             ref bool carryFlag, ref bool zeroFlag)
         {
@@ -1005,7 +1005,7 @@ namespace Gear.EmulationCore
             return 0;
         }
         /// @fn public uint ExecuteHubOperation(Cog callerCog, uint operation, uint argument, ref bool carryFlag, ref bool zeroFlag)
-        /// 
+        ///
         /// @note Reference of supported Operations, based in Propeller Manual v1.2:
         /// @arg HUBOP_CLKSET  - page 271.
         /// @arg HUBOP_COGID   - page 283.

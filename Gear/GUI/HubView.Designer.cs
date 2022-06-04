@@ -74,9 +74,9 @@ namespace Gear.GUI
             this.label12 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.SuspendLayout();
-            // 
+            //
             // coreFrequencyLabel
-            // 
+            //
             this.coreFrequencyLabel.AutoSize = true;
             this.coreFrequencyLabel.Cursor = System.Windows.Forms.Cursors.Hand;
             this.coreFrequencyLabel.Location = new System.Drawing.Point(76, 299);
@@ -86,9 +86,9 @@ namespace Gear.GUI
             this.coreFrequencyLabel.Text = "coreFrequency";
             this.coreFrequencyLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.coreFrequencyLabel.Click += new System.EventHandler(this.FrequencyLabels_Click);
-            // 
+            //
             // xtalFrequencyLabel
-            // 
+            //
             this.xtalFrequencyLabel.AutoSize = true;
             this.xtalFrequencyLabel.Cursor = System.Windows.Forms.Cursors.Hand;
             this.xtalFrequencyLabel.Location = new System.Drawing.Point(76, 280);
@@ -98,9 +98,9 @@ namespace Gear.GUI
             this.xtalFrequencyLabel.Text = "xtalFrequency";
             this.xtalFrequencyLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.xtalFrequencyLabel.Click += new System.EventHandler(this.FrequencyLabels_Click);
-            // 
+            //
             // clockModeLabel
-            // 
+            //
             this.clockModeLabel.AutoSize = true;
             this.clockModeLabel.Location = new System.Drawing.Point(76, 261);
             this.clockModeLabel.Name = "clockModeLabel";
@@ -108,9 +108,9 @@ namespace Gear.GUI
             this.clockModeLabel.TabIndex = 4;
             this.clockModeLabel.Text = "clockMode";
             this.clockModeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
+            //
             // systemCounterLabel
-            // 
+            //
             this.systemCounterLabel.AutoSize = true;
             this.systemCounterLabel.Cursor = System.Windows.Forms.Cursors.Hand;
             this.systemCounterLabel.Location = new System.Drawing.Point(76, 217);
@@ -120,9 +120,9 @@ namespace Gear.GUI
             this.systemCounterLabel.Text = "SystemCounter";
             this.systemCounterLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.systemCounterLabel.Click += new System.EventHandler(this.FrequencyLabels_Click);
-            // 
+            //
             // elapsedTimeLabel
-            // 
+            //
             this.elapsedTimeLabel.AutoSize = true;
             this.elapsedTimeLabel.Cursor = System.Windows.Forms.Cursors.Hand;
             this.elapsedTimeLabel.Location = new System.Drawing.Point(76, 236);
@@ -132,7 +132,7 @@ namespace Gear.GUI
             this.elapsedTimeLabel.Text = "ElapsedTime";
             this.toolTip1.SetToolTip(this.elapsedTimeLabel, "Elapsed time from begining of emulation.\r\n(Click to change to next time unit.)");
             this.elapsedTimeLabel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ElapsedTime_MouseClick);
-            // 
+            //
             // timeUnitSelector
             //
             this.timeUnitSelector.BaseUnit = Gear.Utils.TimeUnitsEnum.s;

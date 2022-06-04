@@ -105,6 +105,7 @@
     <Compile Include="GUI\SpinView.Designer.cs">
       <DependentUpon>SpinView.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\TabManager.cs" />
     <Compile Include="GUI\TimeUnitToolStripComboBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -116,7 +117,7 @@
     </Compile>
     <Compile Include="Utils\BinarySizeException.cs" />
     <Compile Include="Utils\SingleInstanceException.cs" />
-    <Compile Include="Utils\RememberRTBoxPosition.cs" />
+    <Compile Include="GUI\RememberRTBoxPosition.cs" />
     <Compile Include="Utils\TimeUnitCollection.cs" />
     <Compile Include="Utils\TimeUnitMgmt.cs" />
     <Compile Include="Utils\TimeUnitsList.cs" />
@@ -392,6 +393,9 @@
       <ProductName>Microsoft .NET Framework 4.7.2 %28x86 y x64%29</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\DataSources\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

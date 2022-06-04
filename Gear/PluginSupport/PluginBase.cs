@@ -41,7 +41,7 @@ namespace Gear.PluginSupport
     public partial class PluginBase : UserControl
     {
         /// @brief Reference to PropellerCPU for the plugin.
-        /// @version V15.03.26 - Added reference to keep PropellerCPU internal to class.
+        /// @version v15.03.26 - Added reference to keep PropellerCPU internal to class.
         protected PropellerCPU Chip;
 
         /// @brief Title of the tab window.
@@ -49,7 +49,7 @@ namespace Gear.PluginSupport
         /// Source: <a href="https://forums.parallax.com/discussion/comment/627190/#Comment_627190">
         /// Post #32 from original GEAR post</a>. It shows that the original name of the class
         /// was "BusModule". Changed to the new name of the class.
-        /// @version V15.03.26 - change the default name.
+        /// @version v15.03.26 - change the default name.
         public virtual string Title => "Plugin Base";
 
         // @brief Attribute to allow key press detecting on the plugin.
@@ -63,7 +63,7 @@ namespace Gear.PluginSupport
         public virtual bool IsClosable => true;
 
         /// @brief Identify a plugin as user (=true) or system (=false).
-        /// @version V15.03.26 - Added.
+        /// @version v15.03.26 - Added.
         public virtual bool IsUserPlugin => true;
 
         /// @brief Default constructor.
@@ -83,7 +83,7 @@ namespace Gear.PluginSupport
         /// ...
         /// @endcode
         /// @param chip Propeller CPU reference.
-        /// @version V15.03.26 - Modified to add %PropellerCPU parameter.
+        /// @version v15.03.26 - Modified to add %PropellerCPU parameter.
         public PluginBase(PropellerCPU chip)
         {
             Chip = chip;
@@ -97,7 +97,7 @@ namespace Gear.PluginSupport
         /// To keep good performance, use only the essentials ones.
         /// @note Original documentation: <a href="https://forums.parallax.com/discussion/comment/625629/#Comment_625629">
         /// API GEAR described on GEAR original Post</a>
-        /// @version V15.03.26 - Changed to method without parameters.
+        /// @version v15.03.26 - Changed to method without parameters.
         public virtual void PresentChip() { }
 
         /// @brief Event when the chip is reset.
@@ -107,7 +107,7 @@ namespace Gear.PluginSupport
         /// @brief Event when the plugin is closing.
         /// @details Useful to reset pins states or direction to initial state before loading the
         /// plugin, or to release pins driven by the plugin.
-        /// @version V15.03.26 - Added.
+        /// @version v15.03.26 - Added.
         public virtual void OnClose() { }
 
         /// @brief Event when a clock tick is informed to the plugin, in clock units.
@@ -115,7 +115,7 @@ namespace Gear.PluginSupport
         /// @param sysCounter Present system clock in ticks unit.
         /// @warning If sysCounter is used only, the plugin designer have to take measures to
         /// detect and manage system counter rollover.
-        /// @version V15.03.26 - Modified to have two parameters.
+        /// @version v15.03.26 - Modified to have two parameters.
         public virtual void OnClock(double time, uint sysCounter) { }
 
         /// @brief Event when some pin changed and is informed to the plugin.
@@ -140,7 +140,7 @@ namespace Gear.PluginSupport
 
         /// @brief Notifies that this plugin must be notified on pin changes.
         /// This method is to isolate the access to the underline Chip.
-        /// @version V15.03.26 - Added.
+        /// @version v15.03.26 - Added.
         public void NotifyOnPins()
         {
             Chip.NotifyOnPins(this);
@@ -148,7 +148,7 @@ namespace Gear.PluginSupport
 
         /// @brief Notifies that this plugin must be notified on clock ticks.
         /// This method is for isolate the access to the underline Chip.
-        /// @version V15.03.26 - Added.
+        /// @version v15.03.26 - Added.
         public void NotifyOnClock()
         {
             Chip.NotifyOnClock(this);
@@ -160,7 +160,7 @@ namespace Gear.PluginSupport
         /// @param pin Pin number to drive.
         /// @param isFloating Boolean to left the pin floating (=true) or to set on input/output mode (=false).
         /// @param isHigh Boolean to set on High state (=true) or to set on Low (=false).
-        /// @version V22.05.02 - Parameter names changed, to clarify purpose of each one.
+        /// @version v22.05.02 - Parameter names changed, to clarify purpose of each one.
         public void DrivePin(int pin, bool isFloating, bool isHigh)
         {
             Chip.DrivePin(pin, isFloating, isHigh);
@@ -169,7 +169,7 @@ namespace Gear.PluginSupport
         /// @brief Set an immediate breakpoint.
         /// @details The purpose of this method is to isolate the access to
         /// the underline Chip.
-        /// @version V15.03.26 - Added.
+        /// @version v15.03.26 - Added.
         public void BreakPoint()
         {
             Chip.BreakPoint();

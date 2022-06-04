@@ -49,7 +49,7 @@ namespace Gear.GUI.LogicProbe
         private bool _wrapped;
 
         /// <summary></summary>
-        public override double MinTime => 
+        public override double MinTime =>
             _wrapped ?
                 _time[_writePointer] :
                 _time[0];
@@ -101,7 +101,7 @@ namespace Gear.GUI.LogicProbe
         /// <summary></summary>
         /// <param name="entry"></param>
         /// <returns></returns>
-        public double GetTime(int entry) => 
+        public double GetTime(int entry) =>
             _time[(_writePointer - 1 - entry) & SamplesMask];
 
         /// <summary></summary>

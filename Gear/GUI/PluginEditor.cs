@@ -22,7 +22,6 @@
  */
 
 using Gear.PluginSupport;
-using Gear.Utils;
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
@@ -34,6 +33,9 @@ using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Schema;
 
+// ReSharper disable InconsistentNaming
+// ReSharper disable LocalizableElement
+// ReSharper disable StringLiteralTypo
 namespace Gear.GUI
 {
     /// @brief %Form to edit or create GEAR plugins.
@@ -42,11 +44,11 @@ namespace Gear.GUI
         /// @brief Flag if the plugin definition has changed.
         /// To determine changes, it includes not only the C# code, but also class name and
         /// reference list.
-        /// @version v15.03.26 - Added.
-        private bool codeChanged;
+        /// @version v22.06.01 - Name changed to follow naming conventions.
+        private bool _codeChanged;
         /// @brief Enable or not change detection event.
-        /// @version v15.03.26 - Added.
-        private bool changeDetectEnabled;
+        /// @version v22.06.01 - Name changed to follow naming conventions.
+        private bool _changeDetectEnabled;
 
         /// @brief Regex to looking for class name inside the code of plugin.
         /// @version v15.03.26 - Added.
@@ -61,13 +63,14 @@ namespace Gear.GUI
             @"\n",
             RegexOptions.Compiled);
         /// @brief Regex for parse token in lines for syntax highlight.
-        /// @version v15.03.26 - Added.
-        private readonly Regex CodeLineRegex = new Regex(
+        /// @version v22.06.01 - Name changed to follow naming conventions.
+        private readonly Regex _codeLineRegex = new Regex(
             @"([ \t{}();:])",
             RegexOptions.Compiled);
 
         /// @brief keywords to highlight in editor code
-        private static readonly HashSet<string> keywords = new HashSet<string>
+        /// @version v22.06.01 - Name changed to follow naming conventions.
+        private static readonly HashSet<string> Keywords = new HashSet<string>
         {
             "add", "abstract", "alias", "as", "ascending", "async", "await",
             "base", "bool", "break", "byte", "case", "catch", "char", "checked",
@@ -85,43 +88,47 @@ namespace Gear.GUI
             "unsafe", "ushort", "using", "value", "var", "virtual", "void",
             "volatile", "where", "while", "yield"
         };
+
+        /// @brief Tabulation array for editor.
+        /// @version v22.06.01 - Name changed to follow naming conventions.
+        private readonly int[] _tabs = new int[32];
+
+        /// @brief Detection of separated file for code.
+        /// @version v20.08.01 - Added.
+        private bool SeparatedFileExist { get; set; }
+
         /// @brief Return last plugin successfully loaded o saved.
         /// @details Useful to remember last plugin directory.
         /// @note Include full path and name to the file.
         /// @version v20.08.01 - Simplified to implicit member.
         private string LastPlugin { get; set; }
 
-        /// @brief Attribute for changed plugin detection.
+        /// @brief Complete Name for plugin, including path, for presentation purposes.
         /// @version v15.03.26 - Added.
-        public bool CodeChanged
+        private string PluginFileName =>
+            !string.IsNullOrEmpty(LastPlugin) ?
+                new FileInfo(LastPlugin).Name :
+                "<New plugin>";
+
+        /// @brief Attribute for changed plugin detection.
+        /// @version v22.04.02 - Changed to private property.
+        private bool CodeChanged
         {
-            get { return codeChanged; }
+            get => _codeChanged;
             set
             {
-                codeChanged = value;
+                _codeChanged = value;
                 UpdateTitles();
             }
         }
 
-        /// @brief Detection of separated file for code.
-        /// @version v20.08.01 - Added.
-        private bool SeparatedFileExist { get; set; }
-
-        /// @brief Complete Name for plugin, including path, for presentation purposes.
-        /// @version v15.03.26 - Added.
-        private string PluginFileName
+        /// <summary>Property to get/set the Form font.</summary>
+        /// @version v22.06.01 - Added to prevent warning 'Virtual member call in constructor'.
+        public sealed override Font Font
         {
-            get
-            {
-                if (!string.IsNullOrEmpty(LastPlugin))
-                    return new FileInfo(LastPlugin).Name;
-                else return "<New plugin>";
-            }
+            get => base.Font;
+            set => base.Font = value;
         }
-
-        /// @brief Tabulation array for editor.
-        /// @version v20.09.01 - Added.
-        private readonly int[] tabs = new int[32];
 
         /// @brief Default constructor.
         /// Initialize the class, defines columns for error grid, setting changes
@@ -132,15 +139,11 @@ namespace Gear.GUI
         public PluginEditor(bool loadDefaultTemplate)
         {
             InitializeComponent();
-
-            changeDetectEnabled = false;
-
+            _changeDetectEnabled = false;
             // setting default font
             defaultFont = new Font(FontFamily.GenericMonospace, 10, FontStyle.Regular);
             fontBold = new Font(defaultFont, FontStyle.Bold);
-            codeEditorView.Font = defaultFont;
-            if (codeEditorView.Font == null)
-                codeEditorView.Font = this.Font;
+            codeEditorView.Font = defaultFont ?? Font;
             //set editor tabulators
             UpdateTabs(reloadText: false);
             //load default plugin template
@@ -153,11 +156,10 @@ namespace Gear.GUI
                 }
                 catch (IOException) { }       //do nothing, maintaining empty the code text box
                 catch (ArgumentException) { } //
-                finally { }                   //
             }
             //init values
             LastPlugin = string.Empty;
-            changeDetectEnabled = true;
+            _changeDetectEnabled = true;
             CodeChanged = false;
             SeparatedFileExist = false;
             //Setup error grid
@@ -173,7 +175,7 @@ namespace Gear.GUI
             progressHighlight.Visible = false;
         }
 
-        /// @brief Update tab size, considering default tabsize.
+        /// @brief Update tab size, considering default tab size.
         /// @param reloadText To reload text after.
         /// @version v20.09.01 - Added.
         public void UpdateTabs(bool reloadText)
@@ -181,14 +183,14 @@ namespace Gear.GUI
             RememberRTBoxPosition checkpoint =
                 new RememberRTBoxPosition(codeEditorView);
             // setting tab width
-            for (int i = 0; i < tabs.Length; i++)
+            for (int i = 0; i < _tabs.Length; i++)
             {
                 int size = (i + 1) * (int)Properties.Settings.Default.TabSize;
-                tabs[i] = TextRenderer.MeasureText(
+                _tabs[i] = TextRenderer.MeasureText(
                     new string(' ', size),
                     defaultFont).Width;
             }
-            codeEditorView.SelectionTabs = tabs;
+            codeEditorView.SelectionTabs = _tabs;
             if (reloadText & codeEditorView.Text.Length > 0)
                 checkpoint.RestorePosition();
         }
@@ -204,21 +206,22 @@ namespace Gear.GUI
         }
 
         /// @brief Update titles of window and metadata, considering modified state.
-        /// @details Considering name of the plugin and showing modified state, to tell the user
-        /// if need to save.
+        /// @details Considering name of the plugin and showing modified state,
+        /// to tell the user if need to save.
+        /// @version v22.06.01 - Using string interpolation.
         private void UpdateTitles()
         {
-            this.Text = ("Plugin Editor: " + PluginFileName +  (CodeChanged ? " *" : string.Empty));
+            Text = $"Plugin Editor: {PluginFileName}{(CodeChanged ? " *" : string.Empty)}";
         }
 
         /// @brief Load a plugin from File in Plugin Editor, updating the screen.
         /// @details This method take care of update change state of the window.
-        /// @param FileName Name of the file to open.
+        /// @param fileName Name of the file to open.
         /// @param displayErrors Flag to show errors in the error grid.
         /// @returns Success on load the file on the editor (=true) or fail (=false).
-        /// @version v20.08.01 - Changed plugin code to a XML CDATA section,
-        /// added encoding and DTD sections.
-        public bool OpenFile(string FileName, bool displayErrors)
+        /// @version v22.06.01 - Parameter name and local variable names changed
+        /// to follow naming conventions.
+        public bool OpenFile(string fileName, bool displayErrors)
         {
             XmlReaderSettings settings = new XmlReaderSettings
             {
@@ -228,11 +231,10 @@ namespace Gear.GUI
                 DtdProcessing = DtdProcessing.Parse,
                 ValidationType = ValidationType.DTD
             };
-            settings.ValidationEventHandler +=
-                new ValidationEventHandler(DTDValidationErrHandler);
-            XmlReader tr = XmlReader.Create(FileName, settings);
+            settings.ValidationEventHandler += DTDValidationErrHandler;
+            XmlReader reader = XmlReader.Create(fileName, settings);
 
-            bool ReadText = false;
+            bool readText = false;
             string codeFileName = string.Empty;
             string pluginVersion = "0.1";
 
@@ -240,10 +242,9 @@ namespace Gear.GUI
                 referencesList.Items.Clear();   //clear out the reference list
             try
             {
-
-                while (tr.Read())
+                while (reader.Read())
                 {
-                    if (ReadText)
+                    if (readText)
                     {
                         //set or reset font and color
                         codeEditorView.SelectAll();
@@ -251,72 +252,73 @@ namespace Gear.GUI
                         codeEditorView.SelectionColor = Color.Black;
                         if (string.IsNullOrEmpty(codeFileName))
                         {
-                            //Mantain compatibility with old plugins (using Text section)
-                            if (tr.NodeType == XmlNodeType.Text ||
-                                    tr.NodeType == XmlNodeType.CDATA)
-                                codeEditorView.Text = tr.Value;
+                            //Maintain compatibility with old plugins (using Text section)
+                            if (reader.NodeType == XmlNodeType.Text ||
+                                    reader.NodeType == XmlNodeType.CDATA)
+                                codeEditorView.Text = reader.Value;
                             SetEmbeddedCodeButton(true);
                             SeparatedFileExist = false;
                         }
                         else
                         {
-                            codeFileName = Path.Combine(Path.GetDirectoryName(FileName),
-                                codeFileName);
+                            codeFileName = Path.Combine(Path.GetDirectoryName(fileName) ??
+                                                        string.Empty, codeFileName);
                             codeEditorView.Text = File.ReadAllText(codeFileName);
                             SetEmbeddedCodeButton(false);
                             SeparatedFileExist = true;
                         }
                         codeEditorView.DeselectAll();
                         CodeChanged = false;
-                        ReadText = false;
+                        readText = false;
                     }
-
-                    switch (tr.Name.ToLower())
+                    switch (reader.Name.ToLower())
                     {
                         case "plugin":
                             pluginVersion =
-                                string.IsNullOrEmpty(tr.GetAttribute("version")) ?
+                                string.IsNullOrEmpty(reader.GetAttribute("version")) ?
                                 pluginVersion :
-                                tr.GetAttribute("version");
+                                reader.GetAttribute("version");
                             break;
                         case "reference":
-                            if (!tr.IsEmptyElement)
-                                referencesList.Items.Add(tr.GetAttribute("name"));
+                            if (!reader.IsEmptyElement)
+                            {
+                                string refer = reader.GetAttribute("name");
+                                if (! string.IsNullOrEmpty(refer))
+                                    referencesList.Items.Add(refer);
+                            }
                             break;
                         case "instance":
-                            instanceName.Text = tr.GetAttribute("class");
+                            instanceName.Text = reader.GetAttribute("class");
                             break;
                         case "code":
-                            ReadText = true;
-                            codeFileName = tr.GetAttribute("codeFileName");
+                            readText = true;
+                            codeFileName = reader.GetAttribute("codeFileName");
                             break;
                     }
                 }
-                LastPlugin = FileName;
+                LastPlugin = fileName;
                 CodeChanged = false;
-
                 if (displayErrors)
                 {
                     errorListView.Items.Clear();
                     ModuleCompiler.EnumerateErrors(EnumErrors);
                 }
-
                 return true;
             }
-            catch (IOException ioe)
+            catch (IOException ioException)
             {
                 MessageBox.Show(this,
-                    ioe.Message,
+                    ioException.Message,
                     "Failed to load plug-in",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Exclamation);
 
                 return false;
             }
-            catch (XmlException xmle)
+            catch (XmlException xmlException)
             {
                 MessageBox.Show(this,
-                    xmle.Message,
+                    xmlException.Message,
                     "Failed to load plug-in",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Exclamation);
@@ -325,25 +327,25 @@ namespace Gear.GUI
             }
             finally
             {
-                tr.Close();
+                reader.Close();
             }
         }
 
         /// @brief Show message on DTD validation error.
-        /// @param sender
-        /// @param e
-        /// @version v20.08.01 - Added.
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
+        /// @version v22.06.01 - Using string interpolation.
         private static void DTDValidationErrHandler(object sender, ValidationEventArgs e)
         {
-            Console.WriteLine("DTD Validation Error on plugin file: {0}", e.Message);
+            Console.WriteLine($"DTD Validation Error on plugin file: {e.Message}");
         }
 
         /// @brief Save a XML file with the plugin information.
         /// @details Take care of update change state of the window. No need to do it in
         /// methods who call this.
-        /// @version v20.08.01 - Changed plugin code to a XML CDATA section,
-        /// added encoding and DTD sections.
-        public void SaveFile(string FileName)
+        /// @version v22.06.01 - Parameter name and local variable names changed
+        /// to follow naming conventions.
+        public void SaveFile(string fileName)
         {
             XmlDocument xmlDoc = new XmlDocument();
             //declaration section
@@ -351,27 +353,24 @@ namespace Gear.GUI
             xmlDoc.AppendChild(declaration);
             //DTD section
             string internalDTD = File.ReadAllText(@"Resources\Plugin.dtd");
-            XmlDocumentType doctype = xmlDoc.CreateDocumentType("plugin", null, null,
+            XmlDocumentType docType = xmlDoc.CreateDocumentType("plugin", null, null,
                 internalDTD);
-            xmlDoc.AppendChild(doctype);
+            xmlDoc.AppendChild(docType);
             //plugin section
             XmlElement root = xmlDoc.CreateElement("plugin");
             root.SetAttribute("version", "1.0");
             xmlDoc.AppendChild(root);
-
             XmlElement instance = xmlDoc.CreateElement("instance");
             instance.SetAttribute("class", instanceName.Text);
             root.AppendChild(instance);
-
             foreach (string s in referencesList.Items)
             {
                 instance = xmlDoc.CreateElement("reference");
                 instance.SetAttribute("name", s);
                 root.AppendChild(instance);
             }
-
             instance = xmlDoc.CreateElement("code");
-            string newName = Path.ChangeExtension(FileName, "cs");
+            string newName = Path.ChangeExtension(fileName, "cs");
             string codeFileName = Path.GetFileName(newName);
             if (EmbeddedCode.Checked)
                 instance.AppendChild(
@@ -379,8 +378,7 @@ namespace Gear.GUI
             else
                 instance.SetAttribute("codeFileName", codeFileName);
             root.AppendChild(instance);
-
-            xmlDoc.Save(FileName);
+            xmlDoc.Save(fileName);
             if (!EmbeddedCode.Checked)
             {
                 File.WriteAllText(newName, codeEditorView.Text,
@@ -390,8 +388,7 @@ namespace Gear.GUI
             else if (SeparatedFileExist)
             {
                 var result = MessageBox.Show(
-                    $"An old separate file for code exist: {codeFileName}\r\n" +
-                    $"It will be left as orphan. Do you want to remove it?",
+                    $"An old separate file for code exist: {codeFileName}\r\nIt will be left as orphan. Do you want to remove it?",
                     "Remove old separated code file?",
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Question,
@@ -400,11 +397,10 @@ namespace Gear.GUI
                     File.Delete(newName);
                 SeparatedFileExist = false;
             }
-
             //update modified state for the plugin
             CodeChanged = false;
             //refresh & store the plugin name
-            LastPlugin = FileName;
+            LastPlugin = fileName;
             UpdateTitles();
         }
 
@@ -412,6 +408,7 @@ namespace Gear.GUI
         /// Actually call a C# compiler to determine errors, using references.
         /// @param sender Object who called this on event.
         /// @param e `EventArgs` class with a list of argument to the event call.
+        /// @version v22.06.01 - Using string interpolation.
         private void CheckSource_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(codeEditorView.Text))
@@ -457,7 +454,7 @@ namespace Gear.GUI
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Compile Error: " + ex.ToString(),
+                        MessageBox.Show($"Compile Error: {ex}",
                             "Plugin Editor - Check source.",
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Error);
@@ -466,9 +463,7 @@ namespace Gear.GUI
                 else   //not detected class name
                 {
                     instanceName.Text = "Not found!";
-                    MessageBox.Show("Cannot detect main plugin class name. " +
-                        "Please use \"class <YourPluginName> : PluginBase {...\" " +
-                        "declaration on your source code.",
+                    MessageBox.Show("Cannot detect main plugin class name. Please use \"class <YourPluginName> : PluginBase {...\" declaration on your source code.",
                         "Plugin Editor - Check source.",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error);
@@ -476,16 +471,19 @@ namespace Gear.GUI
             }
         }
 
-        /// @brief Add error details on screen list.
-        /// @param e `CompileError` object.
-        public void EnumErrors(CompilerError e)
+        /// <summary>Add error details on screen list.</summary>
+        /// <param name="compilerError">`CompileError` object.</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// @version v22.06.01 - Added specific exception and changed
+        /// parameter name to clarify its meaning.
+        public void EnumErrors(CompilerError compilerError)
         {
-            ListViewItem item = new ListViewItem(e.ErrorNumber, 0);
-
-            item.SubItems.Add(e.Line.ToString());
-            item.SubItems.Add(e.Column.ToString());
-            item.SubItems.Add(e.ErrorText);
-
+            if (compilerError == null)
+                throw new ArgumentNullException(nameof(compilerError));
+            ListViewItem item = new ListViewItem(compilerError.ErrorNumber, 0);
+            item.SubItems.Add(compilerError.Line.ToString());
+            item.SubItems.Add(compilerError.Column.ToString());
+            item.SubItems.Add(compilerError.ErrorText);
             errorListView.Items.Add(item);
         }
 
@@ -536,6 +534,15 @@ namespace Gear.GUI
             LastPlugin = Properties.Settings.Default.LastPlugin;
         }
 
+        /// <summary>Update attribute use animation of each
+        /// CollapsibleSplitter used in this form.</summary>
+        /// @version v22.06.01 - Added.
+        public void UpdateUseAnimation()
+        {
+            errorSplitter.UseAnimations = Properties.Settings.Default.UseAnimations;
+            referencesSplitter.UseAnimations = Properties.Settings.Default.UseAnimations;
+        }
+
         /// @brief Show dialog to save a plugin information into file, using GEAR plugin format.
         /// @param sender Object who called this on event.
         /// @param e `EventArgs` class with a list of argument to the event call.
@@ -569,11 +576,10 @@ namespace Gear.GUI
             //propose the detected class name
             dialog.FileName = instanceName.Text;
 
-            if (dialog.ShowDialog(this) == DialogResult.OK)
-            {
-                SaveFile(dialog.FileName);
-                UpdateTitles();   //update title window
-            }
+            if (dialog.ShowDialog(this) != DialogResult.OK)
+                return;
+            SaveFile(dialog.FileName);
+            UpdateTitles();   //update title window
         }
 
         /// @brief Add a reference from the `ReferenceName`text box.
@@ -582,12 +588,11 @@ namespace Gear.GUI
         /// @param e `EventArgs` class with a list of argument to the event call.
         private void AddReferenceButton_Click(object sender, EventArgs e)
         {
-            if (!string.IsNullOrEmpty(referenceName.Text))
-            {
-                referencesList.Items.Add(referenceName.Text);
-                referenceName.Text = string.Empty;
-                CodeChanged = true;
-            }
+            if (string.IsNullOrEmpty(referenceName.Text))
+                return;
+            referencesList.Items.Add(referenceName.Text);
+            referenceName.Text = string.Empty;
+            CodeChanged = true;
         }
 
         /// @brief Remove the selected reference of the list.
@@ -596,11 +601,10 @@ namespace Gear.GUI
         /// @param e `EventArgs` class with a list of argument to the event call.
         private void RemoveReferenceButton_Click(object sender, EventArgs e)
         {
-            if (referencesList.SelectedIndex != -1)
-            {
-                referencesList.Items.RemoveAt(referencesList.SelectedIndex);
-                CodeChanged = true;
-            }
+            if (referencesList.SelectedIndex == -1)
+                return;
+            referencesList.Items.RemoveAt(referencesList.SelectedIndex);
+            CodeChanged = true;
         }
 
         /// @brief Position the cursor in code window, corresponding to selected error row.
@@ -610,7 +614,6 @@ namespace Gear.GUI
         {
             if (errorListView.SelectedIndices.Count < 1)
                 return;
-
             int i = 0;
             int index = errorListView.SelectedIndices[0];   //determine the current row
             ListViewItem lvi = errorListView.Items[index];
@@ -622,25 +625,24 @@ namespace Gear.GUI
                 int column = Convert.ToInt32(lvi.SubItems[2].Text) - 1;
                 if (column < 0)
                     column = 0;
-                while (line != codeEditorView.GetLineFromCharIndex(i++)) ;
-                i += column;
+                while (line != codeEditorView.GetLineFromCharIndex(i++))
+                    i += column;
                 codeEditorView.SelectionStart = i;
                 codeEditorView.ScrollToCaret();
                 codeEditorView.Select();
             }
             catch (FormatException) { } //on errors do nothing
-            return;
         }
 
         /// @brief Check syntax on the C# source code.
         /// @param sender Object who called this on event.
         /// @param e `EventArgs` class with a list of argument to the event call.
-        /// @version V14.07.03 - Added.
+        /// @version v14.07.03 - Added.
         private void SyntaxButton_Click(object sender, EventArgs e)
         {
             int pos = 0;
             RememberRTBoxPosition checkpoint = new RememberRTBoxPosition(codeEditorView);
-            changeDetectEnabled = false;    //not enable change detection
+            _changeDetectEnabled = false;    //not enable change detection
             bool commentMultiline = false;  //initially not in comment mode
             //For each line in input, identify key words and format them when
             // adding to the rich text box.
@@ -664,7 +666,7 @@ namespace Gear.GUI
             checkpoint.RestorePosition();
             codeEditorView.Visible = true;
             codeEditorView.Enabled = true;
-            changeDetectEnabled = true; //restore change detection
+            _changeDetectEnabled = true; //restore change detection
         }
 
         /// @brief Auxiliary method to check syntax.
@@ -672,105 +674,108 @@ namespace Gear.GUI
         /// @param line Text line from the source code.
         /// @param[in,out] commentMultiline Flag to indicate if it is on comment mode
         /// between multi lines (=true) or normal mode (=false).
-        /// @version v14.07.03 - Added.
-        /// @warning Experimental highlighting. Probably will be changes in the future.
+        /// @version v22.06.01 - Changed from recursive to iterative.
         private void ParseLine(string line, ref bool commentMultiline)
         {
-            int index;
-
-            if (commentMultiline)
+            while (true)
             {
-                // Check for a c style end comment
-                index = line.IndexOf("*/");
-                if (index != -1)    //found end comment in this line?
+                int index;
+                if (commentMultiline)
                 {
-                    string comment = line.Substring(0, (index += 2));
-                    codeEditorView.SelectionColor = Color.Green;
-                    codeEditorView.SelectionFont = defaultFont;
-                    codeEditorView.SelectedText = comment;
-                    //parse the rest of the line (if any)
-                    commentMultiline = false;
-                    //is there more text after the comment?
-                    if (line.Length > index)
-                        ParseLine(line.Substring(index), ref commentMultiline);
-                    else  //no more text, so ...
-                        codeEditorView.SelectedText = "\n"; //..finalize the line
-                }
-                else  //not end comment in this line..
-                {
-                    //.. so all the line will be a comment
-                    codeEditorView.SelectionColor = Color.Green;
-                    codeEditorView.SelectionFont = defaultFont;
-                    codeEditorView.SelectedText = line;
-                    codeEditorView.SelectedText = "\n"; //finalize the line
-                }
-            }
-            else  //we are not in comment multi line mode
-            {
-                bool putEndLine = true;
-                string[] tokens = CodeLineRegex.Split(line);
-                //parse the line searching tokens
-                foreach (string token in tokens)
-                {
-                    // Check for a c style comment opening
-                    if (token == "/*" || token.StartsWith("/*"))
+                    // Check for a c style end comment
+                    index = line.IndexOf("*/", StringComparison.Ordinal);
+                    if (index != -1) //found end comment in this line?
                     {
-                        index = line.IndexOf("/*");
-                        int indexEnd = line.IndexOf("*/");
-                        //end comment found in the rest of the line?
-                        if ((indexEnd != -1) && (indexEnd > index))
+                        string comment = line.Substring(0, index += 2);
+                        codeEditorView.SelectionColor = Color.Green;
+                        codeEditorView.SelectionFont = defaultFont;
+                        codeEditorView.SelectedText = comment;
+                        //parse the rest of the line (if any)
+                        commentMultiline = false;
+                        //is there more text after the comment?
+                        if (line.Length > index)
                         {
-                            //extract the comment text
-                            string comment = line.Substring(index, (indexEnd += 2) - index);
-                            codeEditorView.SelectionColor = Color.Green;
-                            codeEditorView.SelectionFont = defaultFont;
-                            codeEditorView.SelectedText = comment;
-                            //is there more text after the comment?
-                            if (line.Length > indexEnd)
-                            {
-                                ParseLine(line.Substring(indexEnd), ref commentMultiline);
-                                putEndLine = false;
-                            }
-                            break;
+                            line = line.Substring(index);
+                            continue;
                         }
-                        else  //as there is no end comment in the line..
+                        //no more text, so ...
+                        codeEditorView.SelectedText = "\n"; //..finalize the line
+                    }
+                    else //not end comment in this line..
+                    {
+                        //.. so all the line will be a comment
+                        codeEditorView.SelectionColor = Color.Green;
+                        codeEditorView.SelectionFont = defaultFont;
+                        codeEditorView.SelectedText = line;
+                        codeEditorView.SelectedText = "\n"; //finalize the line
+                    }
+                }
+                else //we are not in comment multi line mode
+                {
+                    bool putEndLine = true;
+                    string[] tokens = _codeLineRegex.Split(line);
+                    //parse the line searching tokens
+                    foreach (string token in tokens)
+                    {
+                        // Check for a c style comment opening
+                        if (token == "/*" || token.StartsWith("/*"))
                         {
-                            //..entering comment multi line mode
-                            commentMultiline = true;
+                            index = line.IndexOf("/*", StringComparison.Ordinal);
+                            int indexEnd = line.IndexOf("*/", StringComparison.Ordinal);
+                            //end comment found in the rest of the line?
+                            if (indexEnd != -1 && indexEnd > index)
+                            {
+                                //extract the comment text
+                                string comment = line.Substring(index, (indexEnd += 2) - index);
+                                codeEditorView.SelectionColor = Color.Green;
+                                codeEditorView.SelectionFont = defaultFont;
+                                codeEditorView.SelectedText = comment;
+                                //is there more text after the comment?
+                                if (line.Length > indexEnd)
+                                {
+                                    ParseLine(line.Substring(indexEnd), ref commentMultiline);
+                                    putEndLine = false;
+                                }
+                                break;
+                            }
+                            else //as there is no end comment in the line..
+                            {
+                                //..entering comment multi line mode
+                                commentMultiline = true;
+                                string comment = line.Substring(index, line.Length - index);
+                                codeEditorView.SelectionColor = Color.Green;
+                                codeEditorView.SelectionFont = defaultFont;
+                                codeEditorView.SelectedText = comment;
+                                break;
+                            }
+                        }
+                        // Check for a c++ style comment.
+                        if (token == "//" || token.StartsWith("//"))
+                        {
+                            // Find the start of the comment and then extract the whole comment.
+                            index = line.IndexOf("//", StringComparison.Ordinal);
                             string comment = line.Substring(index, line.Length - index);
                             codeEditorView.SelectionColor = Color.Green;
                             codeEditorView.SelectionFont = defaultFont;
                             codeEditorView.SelectedText = comment;
                             break;
                         }
-                    }
-
-                    // Check for a c++ style comment.
-                    if (token == "//" || token.StartsWith("//"))
-                    {
-                        // Find the start of the comment and then extract the whole comment.
-                        index = line.IndexOf("//");
-                        string comment = line.Substring(index, line.Length - index);
-                        codeEditorView.SelectionColor = Color.Green;
+                        // Set the token's default color and font.
+                        codeEditorView.SelectionColor = Color.Black;
                         codeEditorView.SelectionFont = defaultFont;
-                        codeEditorView.SelectedText = comment;
-                        break;
+                        // Check whether the token is a keyword.
+                        if (Keywords.Contains(token))
+                        {
+                            // Apply alternative color and font to highlight keyword.
+                            codeEditorView.SelectionColor = Color.Blue;
+                            codeEditorView.SelectionFont = fontBold;
+                        }
+                        codeEditorView.SelectedText = token;
                     }
-
-                    // Set the token's default color and font.
-                    codeEditorView.SelectionColor = Color.Black;
-                    codeEditorView.SelectionFont = defaultFont;
-                    // Check whether the token is a keyword.
-                    if (keywords.Contains(token))
-                    {
-                        // Apply alternative color and font to highlight keyword.
-                        codeEditorView.SelectionColor = Color.Blue;
-                        codeEditorView.SelectionFont = fontBold;
-                    }
-                    codeEditorView.SelectedText = token;
+                    if (putEndLine)
+                        codeEditorView.SelectedText = "\n";
                 }
-                if (putEndLine)
-                    codeEditorView.SelectedText = "\n";
+                break;
             }
         }
 
@@ -781,7 +786,7 @@ namespace Gear.GUI
         /// @version v15.03.26 - Added.
         private void CodeEditorView_TextChanged(object sender, EventArgs e)
         {
-            if (changeDetectEnabled)
+            if (_changeDetectEnabled)
                 CodeChanged = true;
         }
 
@@ -790,26 +795,20 @@ namespace Gear.GUI
         /// name declaration.
         /// @param[out] match Name of the plugin class found. If not, it will be null.
         /// @returns If a match had found =True, else =False.
-        /// @version v15.03.26 - Added.
-        private bool DetectClassName(string code, out string match)
+        /// @version v22.06.01 - Changed to static access and refactored.
+        private static bool DetectClassName(string code, out string match)
         {
             match = null;
             //Look for a 'suspect' for class definition to show it to user later.
             Match suspect = ClassNameExpressionRegex.Match(code);
-            if (suspect.Success)  //if a match is found
-            {
-                //detect class name from the detected groups
-                string name = suspect.Groups["classname"].Value;
-                if (string.IsNullOrEmpty(name))
-                    return false;
-                else
-                {
-                    match = name;
-                    return true;
-                }
-            }
-            else
+            if (!suspect.Success)
                 return false;
+            //detect class name from the detected groups
+            string name = suspect.Groups["classname"].Value;
+            if (string.IsNullOrEmpty(name))
+                return false;
+            match = name;
+            return true;
         }
 
         /// @brief Event handler for closing plugin window.
@@ -820,30 +819,27 @@ namespace Gear.GUI
         /// @version v15.03.26 - Added.
         private void PluginEditor_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (CodeChanged)
-                if (!CloseAnyway(PluginFileName)) //ask the user to not lose changes
-                    e.Cancel = true;    //cancel the closing event
+            if (CodeChanged && !CloseAnyway(PluginFileName)) //ask the user to not lose changes
+                e.Cancel = true;    //cancel the closing event
         }
 
-        /// @brief Ask the user to not loose changes.
-        /// @param fileName Filename to show in dialog.
-        /// @returns Boolean to close (=true) or not (=false).
-        /// @version v15.03.26 - Added.
-        private bool CloseAnyway(string fileName)
+        /// <summary>
+        /// Ask the user to not loose changes.
+        /// </summary>
+        /// <param name="fileName">Filename to show in dialog.</param>
+        /// <returns>True to close or False to stay open.</returns>
+        /// @version v22.06.01 - Changed to static access and interpolate strings.
+        private static bool CloseAnyway(string fileName)
         {
             //dialog to not lost changes
             DialogResult confirm = MessageBox.Show(
-                "Are you sure to close plugin \"" + fileName +
-                "\" without saving?\nYour changes will lost.",
+                $"Are you sure to close plugin \"{fileName}\" without saving?\nYour changes will lost.",
                 "Save.",
                 MessageBoxButtons.OKCancel,
                 MessageBoxIcon.Exclamation,
                 MessageBoxDefaultButton.Button2
             );
-            if (confirm == DialogResult.OK)
-                return true;
-            else
-                return false;
+            return confirm == DialogResult.OK;
         }
 
         /// @brief Toggle the button state, updating the name & tooltip text.
@@ -858,7 +854,7 @@ namespace Gear.GUI
 
         /// @brief Set the state of EmbeddedCode button.
         /// @param newValue Value to set.
-        /// @version v20.08.01 - Separed in 2 methods.
+        /// @version v20.08.01 - Separated in 2 methods.
         private void SetEmbeddedCodeButton(bool newValue)
         {
             EmbeddedCode.Checked = newValue;
@@ -872,13 +868,13 @@ namespace Gear.GUI
             {
                 EmbeddedCode.Text = "Embedded";
                 EmbeddedCode.ToolTipText = "Embedded code in XML plugin file.";
-                EmbeddedCode.Image = Gear.Properties.Resources.Image_embedded;
+                EmbeddedCode.Image = Properties.Resources.Image_embedded;
             }
             else
             {
                 EmbeddedCode.Text = "Separated";
                 EmbeddedCode.ToolTipText = "Code in separated file from XML plugin file.";
-                EmbeddedCode.Image = Gear.Properties.Resources.Image_separated;
+                EmbeddedCode.Image = Properties.Resources.Image_separated;
             }
         }
 
