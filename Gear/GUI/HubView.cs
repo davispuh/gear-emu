@@ -26,15 +26,18 @@ using Gear.Utils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 
+// ReSharper disable LocalizableElement
 namespace Gear.GUI
 {
     /// @brief %GUI Control to show Hub status
-    /// @version v20.09.01 - Modified to use custom format.
+    /// @version v22.06.01 - Added custom debugger text.
+    [DefaultProperty("Name"), DebuggerDisplay("{TextForDebugger,nq}")]
     public partial class HubView : UserControl
     {
         /// @brief Reference to propeller cpu instance.
@@ -48,6 +51,10 @@ namespace Gear.GUI
         /// @brief Storage for frequency format.
         /// @version v20.09.01 - Added.
         private NumberFormatEnum _reqFormatValue;
+
+        /// <summary></summary>
+        /// @version v22.06.01 - Added to implement conditional painting.
+        private readonly List<IRequestRepaintable> _repaintableList;
 
         /// @brief Frequency format to be displayed.
         /// @version v22.04.02 - Check to update only on changes.
@@ -68,11 +75,18 @@ namespace Gear.GUI
         /// @version v20.09.01 - Added.
         public TimeUnitsEnum TimeUnit { get; set; }
 
+        /// <summary>Returns a summary text of this class, to be used in debugger view.</summary>
+        /// @version v22.06.01 - Added to provide debugging info.
+        private string TextForDebugger =>
+            $"{{{GetType().FullName}, Id: {(_cpuHost == null ? "[none yet]" : _cpuHost.InstanceNumber.ToString("D2"))} }}";
+
         /// @brief Default constructor
-        /// @version v20.09.01 - Modified to retrieve last formats.
+        /// @version v22.06.01 - Modified to support conditional painting.
         public HubView()
         {
             InitializeComponent();
+            _repaintableList = new List<IRequestRepaintable>();
+            RegisterRepaintableControls();
             timeUnitSelector.SyncValues();
             //Assign delegates for formatting text of timeUnitSelector
             var textFormats = new DelegatesPerTimeUnitsList(
@@ -105,7 +119,17 @@ namespace Gear.GUI
             _cpuHost.PropertyChanged += CoreFreq_PropertyChanged;
             _cpuHost.PropertyChanged += XtalFreq_PropertyChanged;
             _cpuHost.PropertyChanged += ClockModeLabel_PropertyChanged;
-            DataChanged();
+            DataChanged(false);
+        }
+
+        /// <summary>Maintain a list of Controls with support of request
+        /// full re-paint.</summary>
+        /// @version v22.06.01 - Added to implement conditional painting.
+        private void RegisterRepaintableControls()
+        {
+            foreach (object obj in Controls)
+                if (obj is IRequestRepaintable complaintControl)
+                    _repaintableList.Add(complaintControl);
         }
 
         /// <summary>Event handler when PropellerCPU.ClockMode had changed.</summary>
@@ -192,20 +216,33 @@ namespace Gear.GUI
         }
 
         /// @brief Update screen data on event.
-        /// @version v20.09.01 - Modified to use custom format.
+        /// @param force TRUE to request full painting, FALSE to paint only
+        /// differences.
+        /// @version v22.06.01 - Modified signature to implement conditional
+        /// painting.
         /// @todo Analyze bottleneck on DataChanged()
-        public void DataChanged()
+        public void DataChanged(bool force)
         {
             if (_cpuHost == null)
                 return;
+            if (force)
+                RequestFullOnNextRepaint();
+            pinLocksFree.Value = _cpuHost.LocksFree;
+            pinLocks.Value = _cpuHost.Locks;
             pinDIR.Value = _cpuHost.RegisterDIR;
             pinIN.Value = _cpuHost.RegisterIN;
             pinFloating.Value = _cpuHost.Floating;
-            pinLocksFree.Value = _cpuHost.LocksFree;
-            pinLocks.Value = _cpuHost.Locks;
             UpdateCounterText();
             UpdateTimeText();
             ringMeter.Value = _cpuHost.RingPosition;
+        }
+
+        /// <summary>Request full painting of objects on List.</summary>
+        /// @version v22.06.01 - Added to implement conditional painting.
+        public void RequestFullOnNextRepaint()
+        {
+            foreach (IRequestRepaintable objRepaintable in _repaintableList)
+                objRepaintable.RequestFullOnNextRepaint();
         }
 
         /// <summary>Update Counter label with current format and value.</summary>
@@ -247,7 +284,6 @@ namespace Gear.GUI
             return string.Format(_currentCultureMod, "{0,17:#,##0}", val);
         }
 
-
         /// @brief Format the value to string, for all time units except
         ///  Minutes (TimeUnitsEnum.min_s).
         /// @details Implements Gear.Utils.FormatToTextDelegate delegate.
@@ -257,11 +293,11 @@ namespace Gear.GUI
         /// @version v20.09.01 - Added.
         private string StandardTimeFormatText(TimeUnitsEnum unit, double val)
         {
-            double factor = ((unit <= TimeUnitsEnum.s) ?
-                timeUnitSelector.FactorSelected : 1.0);
+            double factor = unit <= TimeUnitsEnum.s ?
+                timeUnitSelector.FactorSelected : 1.0;
             string decimalsSymbols = new string('0', 3 * (int)unit - 2);
             string numFormat = $"{{0,17:#,##0.{decimalsSymbols}}}";
-            double value = (timeUnitSelector.IsMultiplyFactor) ?
+            double value = timeUnitSelector.IsMultiplyFactor ?
                 val * factor : val / factor;
             return string.Format(_currentCultureMod, numFormat, value);
         }
@@ -308,7 +344,7 @@ namespace Gear.GUI
             else
                 FreqFormatValue = Enum.GetValues(typeof(NumberFormatEnum)).Cast<NumberFormatEnum>().Min();
             UpdateFreqToolTips();
-            DataChanged();
+            DataChanged(false);
             UpdateFrequenciesTexts();
             //remember the setting
             Properties.Settings.Default.FreqFormat = FreqFormatValue;
@@ -333,7 +369,7 @@ namespace Gear.GUI
 
         /// @brief Change the time unit, remembering the user setting.
         /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
+        /// @param e Mouse event data arguments.
         /// @version v20.09.01 - Added.
         private void ElapsedTime_MouseClick(object sender, MouseEventArgs e)
         {
@@ -348,6 +384,38 @@ namespace Gear.GUI
             }
         }
 
-    }
+        /// <summary></summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
+        /// @version v22.06.01 - Added to implement conditional painting.
+        private void HubView_SizeChanged(object sender, EventArgs e)
+        {
+            if (!Visible)
+                return;
+            foreach (IRequestRepaintable repaintable in _repaintableList)
+                if (!repaintable.IsThisFullyVisible())
+                    repaintable.RequestFullOnNextRepaint();
+        }
 
+        /// <summary></summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
+        /// @version v22.06.01 - Added to implement conditional painting.
+        private void HubView_VisibleChanged(object sender, EventArgs e)
+        {
+            if (!Visible)
+                return;
+            RequestFullOnNextRepaint();
+        }
+
+        /// <summary></summary>
+        /// <param name="e">Paint event data arguments.</param>
+        /// @version v22.06.01 - Added to implement conditional painting.
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            if (DesignMode)
+                RequestFullOnNextRepaint();
+            base.OnPaint(e);
+        }
+    }
 }

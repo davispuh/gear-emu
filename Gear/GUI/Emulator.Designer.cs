@@ -2,6 +2,8 @@
  * Gear: Parallax Inc. Propeller P1 Emulator
  * Copyright 2007-2022 - Gear Developers
  * --------------------------------------------------------------------------------
+ * Emulator.Designer.cs
+ * --------------------------------------------------------------------------------
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
@@ -65,9 +67,9 @@ namespace Gear.GUI
             this.unpinButton = new System.Windows.Forms.ToolStripButton();
             this.pinButton = new System.Windows.Forms.ToolStripButton();
             this.floatButton = new System.Windows.Forms.ToolStripButton();
-            this.pinnedPanel = new Gear.GUI.DoubleBufferedPanel();
             this.documentsTab = new System.Windows.Forms.TabControl();
             this.pinnedSplitter = new Gear.GUI.CollapsibleSplitter();
+            this.pinnedPanel = new Gear.GUI.DoubleBufferedPanel();
             this.hubViewSplitter = new Gear.GUI.CollapsibleSplitter();
             this.hubView = new Gear.GUI.HubView();
             this.controlBar.SuspendLayout();
@@ -91,9 +93,9 @@ namespace Gear.GUI
             this.unpinButton,
             this.pinButton,
             this.floatButton});
-            this.controlBar.Location = new System.Drawing.Point(215, 0);
+            this.controlBar.Location = new System.Drawing.Point(222, 0);
             this.controlBar.Name = "controlBar";
-            this.controlBar.Size = new System.Drawing.Size(657, 25);
+            this.controlBar.Size = new System.Drawing.Size(650, 25);
             this.controlBar.TabIndex = 1;
             this.controlBar.TabStop = true;
             this.controlBar.Text = "Control Bar";
@@ -241,25 +243,15 @@ namespace Gear.GUI
             this.floatButton.ToolTipText = "Float the selected tab to a new window";
             this.floatButton.Click += new System.EventHandler(this.FloatActiveTab_Click);
             //
-            // pinnedPanel
-            //
-            this.pinnedPanel.AutoScroll = true;
-            this.pinnedPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pinnedPanel.Location = new System.Drawing.Point(215, 436);
-            this.pinnedPanel.Name = "pinnedPanel";
-            this.pinnedPanel.Size = new System.Drawing.Size(657, 100);
-            this.pinnedPanel.TabIndex = 5;
-            this.pinnedPanel.Visible = false;
-            //
             // documentsTab
             //
             this.documentsTab.Dock = System.Windows.Forms.DockStyle.Fill;
             this.documentsTab.HotTrack = true;
-            this.documentsTab.Location = new System.Drawing.Point(215, 25);
+            this.documentsTab.Location = new System.Drawing.Point(222, 25);
             this.documentsTab.Name = "documentsTab";
             this.documentsTab.SelectedIndex = 0;
             this.documentsTab.ShowToolTips = true;
-            this.documentsTab.Size = new System.Drawing.Size(657, 403);
+            this.documentsTab.Size = new System.Drawing.Size(650, 403);
             this.documentsTab.TabIndex = 2;
             this.documentsTab.Click += new System.EventHandler(this.DocumentsTab_Click);
             this.documentsTab.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.DocumentsTab_KeyPress);
@@ -273,12 +265,22 @@ namespace Gear.GUI
             this.pinnedSplitter.Cursor = System.Windows.Forms.Cursors.HSplit;
             this.pinnedSplitter.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.pinnedSplitter.ExpandParentForm = false;
-            this.pinnedSplitter.Location = new System.Drawing.Point(215, 428);
+            this.pinnedSplitter.Location = new System.Drawing.Point(222, 428);
             this.pinnedSplitter.Name = "collapsibleSplitter1";
             this.pinnedSplitter.TabIndex = 6;
             this.pinnedSplitter.TabStop = false;
             this.pinnedSplitter.UseAnimations = global::Gear.Properties.Settings.Default.UseAnimations;
             this.pinnedSplitter.VisualStyle = Gear.GUI.VisualStylesEnum.Mozilla;
+            //
+            // pinnedPanel
+            //
+            this.pinnedPanel.AutoScroll = true;
+            this.pinnedPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pinnedPanel.Location = new System.Drawing.Point(222, 436);
+            this.pinnedPanel.Name = "pinnedPanel";
+            this.pinnedPanel.Size = new System.Drawing.Size(650, 100);
+            this.pinnedPanel.TabIndex = 5;
+            this.pinnedPanel.Visible = false;
             //
             // hubViewSplitter
             //
@@ -287,7 +289,7 @@ namespace Gear.GUI
             this.hubViewSplitter.BorderStyle3D = System.Windows.Forms.Border3DStyle.Raised;
             this.hubViewSplitter.ControlToHide = this.hubView;
             this.hubViewSplitter.ExpandParentForm = false;
-            this.hubViewSplitter.Location = new System.Drawing.Point(207, 0);
+            this.hubViewSplitter.Location = new System.Drawing.Point(214, 0);
             this.hubViewSplitter.Name = "HubSplitter";
             this.hubViewSplitter.TabIndex = 4;
             this.hubViewSplitter.TabStop = false;
@@ -299,9 +301,10 @@ namespace Gear.GUI
             this.hubView.Dock = System.Windows.Forms.DockStyle.Left;
             this.hubView.Location = new System.Drawing.Point(0, 0);
             this.hubView.Name = "hubView";
-            this.hubView.Size = new System.Drawing.Size(207, 536);
+            this.hubView.Size = new System.Drawing.Size(214, 536);
             this.hubView.TabIndex = 3;
             this.hubView.TimeUnit = Gear.Utils.TimeUnitsEnum.s;
+            this.hubView.Paint += new System.Windows.Forms.PaintEventHandler(this.HubView_Paint);
             //
             // Emulator
             //
@@ -321,6 +324,7 @@ namespace Gear.GUI
             this.Deactivate += new System.EventHandler(this.OnDeactivate);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Emulator_FormClosing);
             this.Load += new System.EventHandler(this.Emulator_Load);
+            this.Move += new System.EventHandler(this.Emulator_Move);
             this.controlBar.ResumeLayout(false);
             this.controlBar.PerformLayout();
             this.ResumeLayout(false);

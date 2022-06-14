@@ -25,6 +25,7 @@ using Gear.Utils;
 using System.ComponentModel;
 using System.Windows.Forms;
 
+// ReSharper disable CommentTypo
 namespace Gear.GUI
 {
     /// @brief Combobox specialization for time unit management.
@@ -37,10 +38,9 @@ namespace Gear.GUI
 
         /// @brief Excluded time units.
         /// @details Implements ITimeUnitMgmt interface.
-        [Category("Misc")]
-        [Description("Excluded Time Units for this control.")]
-        [DisplayName("Excluded Time Units")]
-        [Browsable(true)]
+        /// @version v22.06.01 - Changed designer category to default.
+        [Category("Default"), Description("Excluded Time Units for this control."),
+         DisplayName("Excluded Time Units"), Browsable(true)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
         public TimeUnitCollection ExcludedUnits
         {
@@ -50,10 +50,9 @@ namespace Gear.GUI
 
         /// @brief Base unit used to transform multiply factors values.
         /// @details Implements ITimeUnitMgmt interface.
-        [Category("Misc")]
-        [Description("Base Unit of Time for this control.")]
-        [DisplayName("Base Time Unit")]
-        [Browsable(true)]
+        /// @version v22.06.01 - Changed designer category to default.
+        [Category("Default"), Description("Base Unit of Time for this control."),
+         DisplayName("Base Time Unit"), Browsable(true)]
         public TimeUnitsEnum BaseUnit
         {
             get => _manager.BaseUnit;
@@ -62,10 +61,9 @@ namespace Gear.GUI
 
         /// @brief Time unit selected on this combobox.
         /// @details Implements ITimeUnitMgmt interface.
-        [Category("Misc")]
-        [Description("Initial selected unit of time for this control.")]
-        [DisplayName("Selected Time Unit")]
-        [Browsable(true)]
+        /// @version v22.06.01 - Changed designer category to default.
+        [Category("Default"), Description("Initial selected unit of time for this control."),
+         DisplayName("Selected Time Unit"), Browsable(true)]
         public TimeUnitsEnum TimeUnitSelected
         {
             get => _manager.TimeUnitSelected;

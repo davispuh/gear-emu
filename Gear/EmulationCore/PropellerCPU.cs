@@ -28,6 +28,7 @@ using Gear.Utils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 // ReSharper disable StringLiteralTypo
@@ -79,8 +80,8 @@ namespace Gear.EmulationCore
     /// @details Conceptually it comprehends the ROM, RAM (hub memory), clock , locks, hub ring,
     /// main pin state, and references to each cog (with their own cog memory, counters, frequency
     /// generator, program cursor).
-    /// @version v22.05.04 - Added interface INotifyPropertyChanged to provide
-    /// data binding of properties of this CPU.
+    /// @version v22.06.01 - Added custom debugger text.
+    [DefaultProperty("Name"), DebuggerDisplay("{TextForDebugger,nq}")]
     public class PropellerCPU : DirectMemory, INotifyPropertyChanged
     {
         /// @brief Name of Constants for setting clock of the %Cpu.
@@ -129,10 +130,19 @@ namespace Gear.EmulationCore
         /// @version v22.05.04 - Name changed to follow naming conventions.
         public const int MaxRAMAddress = 0xFFFF;
 
+        /// <summary>Global counter for CPU instances.</summary>
+        /// @version v22.06.01 - Added.
+        private static int _instances;
+
+        /// <summary>Identification number of this instance of CPU.</summary>
+        /// @version v22.06.01 - Added.
+        public int InstanceNumber { get; }
+
         /// @brief Array of cogs in the CPU.
         private readonly Cog[] _cogs;
         /// @brief Number of cogs Running in the CPU.
-        /// @details Helpful to detect when all the cogs are stopped so you can stop the emulator.
+        /// @details Helpful to detect when all the cogs are stopped so you can
+        /// stop the emulator.
         /// @version v22.05.04 - Name changed to follow naming conventions.
         private uint _cogsRunning;
 
@@ -457,13 +467,19 @@ namespace Gear.EmulationCore
             }
         }
 
+        /// <summary>Returns a summary text of this class, to be used in debugger view.</summary>
+        /// @version v22.06.01 - Added to provide debugging info.
+        private string TextForDebugger =>
+            $"{{{GetType().FullName}, Id: {InstanceNumber:D2}, Cogs running: {_cogsRunning:D} }}";
+
         /// <summary>Default Constructor.</summary>
         /// <param name="emulator">Reference to the Gear.GUI.Emulator instance
         /// controlling this PropellerCPU.</param>
-        /// @version v22.05.04 - Parameter name changed to clarify meaning of it.
+        /// @version v22.06.01 - Support added for instance numbering.
         public PropellerCPU(Emulator emulator)
         {
             _emulator = emulator;
+            InstanceNumber = ++_instances;
             _cogs = new Cog[TotalCogs];  // 8 general purpose cogs
             for (int i = 0; i < TotalCogs; i++)
                 _cogs[i] = null;
@@ -486,6 +502,9 @@ namespace Gear.EmulationCore
             // Put ROM it top part of main RAM.
             Resources.BiosImage.CopyTo(Memory, TotalMemory - TotalRAM);
         }
+
+        /// <summary>Default destructor.</summary>
+        ~PropellerCPU() => _instances--;
 
         /// @brief Set a breakpoint at this CPU, showing that in the emulator
         /// where this runs.
@@ -551,7 +570,7 @@ namespace Gear.EmulationCore
         /// @version v22.05.04 - Added to implement interface INotifyPropertyChanged.
         protected virtual void OnPropertyChanged(string propertyName)
         {
-            var handler = PropertyChanged;
+            PropertyChangedEventHandler handler = PropertyChanged;
             handler?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 

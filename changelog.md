@@ -1,6 +1,23 @@
 # Change Log
 
-## Commit  Code cleanup UI Emulator, FloatedWindow, PluginEditor and AboutGear
+## Commit  Code cleanup UI BitView + paint optimization
+
+- Improved performance of GUI on `BitView` control, redrawing it only on value changes.
+  - Conditional control painting: only pins changed or full redraw if it is requested.
+  - Pre-calculated rectangle coordinates for each pin.
+  - Refactored logic to set `Brush` only once in constructor.
+
+- Code cleanup and refactoring in files: [`BitView.cs`](Gear/GUI/BitView.cs), and in some places in [`HubView.cs`](Gear/GUI/HubView.cs), [`Emulator.cs`](Gear/GUI/Emulator.cs).
+  - Refactored naming and visibility of members, parameters and local variables in classes, methods and enums.
+  - Identify paralellism points with complexity.
+  - Added XML & Doxygen comments in files.
+  - Removed extra spaces at line ends.
+- Added custom Text for debugging with selected information, on files: [`BitView.cs`](Gear/GUI/BitView.cs), [`Emulator.cs`](Gear/GUI/Emulator.cs), [`HubView.cs`](Gear/GUI/HubView.cs), [`PropellerCPU.cs`](Gear/EmulationCore/PropellerCPU.cs).
+- Compacted decorations in attributes or members with multiple Attributes on [`TimeUnitComboBox.cs`](Gear/GUI/TimeUnitComboBox.cs), [`TimeUnitMgmt.cs`](Gear/Utils/TimeUnitMgmt.cs), [`TimeUnitToolStripComboBox.cs`](Gear/GUI/TimeUnitToolStripComboBox.cs).
+- Added file name in header comments on `xx.Designer.cs` files.
+
+
+## Commit [3202daf](https://github.com/davispuh/gear-emu/commit/3202daf732d01f42ad95ea7796c20928ffb222f9) Code cleanup UI Emulator, FloatedWindow, PluginEditor and AboutGear
 
 - Fixed bug when running emulator, but floated windows were not updated on [`Emulator.cs`](Gear/GUI/Emulator.cs).
 - The order of tabs on emulator is remembered when a view is pinned/unpinned or floated/unfloated. Also, now tab repetitions are numbered if multiple copies of a plug-in are loaded. Created [`GUI.TabManager class`](Gear/GUI/TabManager.cs) to manage the document tabs.

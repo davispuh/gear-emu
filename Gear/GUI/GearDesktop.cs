@@ -203,7 +203,7 @@ namespace Gear.GUI
             }
             catch (SingleInstanceException)
             {
-                foreach(var form in this.MdiChildren)
+                foreach(var form in MdiChildren)
                 {
                     if (form is AppPropertiesEditor)
                     {
@@ -223,5 +223,4 @@ namespace Gear.GUI
             OptionsButton_Click(sender, e);
         }
     }
-
 }

@@ -49,7 +49,7 @@ namespace Gear.Utils
         min_s
     }
 
-    /// @brief Delegate to Format to text a numeric value considering its
+    /// @brief Delegate to Format text a numeric value considering its
     /// associated time unit value.
     public delegate string FormatToTextDelegate(TimeUnitsEnum unit, double val);
 

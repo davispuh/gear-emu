@@ -177,7 +177,7 @@ namespace Gear.GUI
         /// The visual style that will be painted on the control
         /// </summary>
         [Bindable(true), Category("Collapsing Options"), DefaultValue("VisualStyles.XP"),
-        Description("The visual style that will be painted on the control")]
+         Description("The visual style that will be painted on the control")]
         public VisualStylesEnum VisualStyle
         {
             get => _visualStyle;
@@ -194,7 +194,7 @@ namespace Gear.GUI
         /// An optional border style to paint on the control. Set to Flat for no border
         /// </summary>
         [Bindable(true), Category("Collapsing Options"), DefaultValue("System.Windows.Forms.Border3DStyle.Flat"),
-        Description("An optional border style to paint on the control. Set to Flat for no border")]
+         Description("An optional border style to paint on the control. Set to Flat for no border")]
         public Border3DStyle BorderStyle3D
         {
             get => _borderStyle;

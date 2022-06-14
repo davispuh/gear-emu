@@ -2,6 +2,8 @@
  * Gear: Parallax Inc. Propeller P1 Emulator
  * Copyright 2007-2022 - Gear Developers
  * --------------------------------------------------------------------------------
+ * HubView.Designer.cs
+ * --------------------------------------------------------------------------------
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
@@ -49,21 +51,14 @@ namespace Gear.GUI
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HubView));
             this.coreFrequencyLabel = new System.Windows.Forms.Label();
             this.xtalFrequencyLabel = new System.Windows.Forms.Label();
             this.clockModeLabel = new System.Windows.Forms.Label();
             this.systemCounterLabel = new System.Windows.Forms.Label();
             this.elapsedTimeLabel = new System.Windows.Forms.Label();
-            this.timeUnitSelector = new Gear.GUI.TimeUnitComboBox();
             this.timeLabel = new System.Windows.Forms.Label();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.pinIN = new Gear.GUI.BitView();
-            this.pinDIR = new Gear.GUI.BitView();
-            this.pinFloating = new Gear.GUI.BitView();
-            this.pinLocksFree = new Gear.GUI.BitView();
-            this.pinLocks = new Gear.GUI.BitView();
-            this.ringMeter = new Gear.GUI.RingMeter();
+            this.timeUnitSelector = new Gear.GUI.TimeUnitComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
@@ -73,6 +68,12 @@ namespace Gear.GUI
             this.label11 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
+            this.pinLocksFree = new Gear.GUI.BitView();
+            this.pinLocks = new Gear.GUI.BitView();
+            this.pinIN = new Gear.GUI.BitView();
+            this.pinDIR = new Gear.GUI.BitView();
+            this.pinFloating = new Gear.GUI.BitView();
+            this.ringMeter = new Gear.GUI.RingMeter();
             this.SuspendLayout();
             //
             // coreFrequencyLabel
@@ -133,6 +134,15 @@ namespace Gear.GUI
             this.toolTip1.SetToolTip(this.elapsedTimeLabel, "Elapsed time from begining of emulation.\r\n(Click to change to next time unit.)");
             this.elapsedTimeLabel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ElapsedTime_MouseClick);
             //
+            // timeLabel
+            //
+            this.timeLabel.AutoSize = true;
+            this.timeLabel.Location = new System.Drawing.Point(3, 236);
+            this.timeLabel.Name = "timeLabel";
+            this.timeLabel.Size = new System.Drawing.Size(30, 13);
+            this.timeLabel.TabIndex = 0;
+            this.timeLabel.Text = "Time";
+            //
             // timeUnitSelector
             //
             this.timeUnitSelector.BaseUnit = Gear.Utils.TimeUnitsEnum.s;
@@ -148,86 +158,6 @@ namespace Gear.GUI
             this.timeUnitSelector.TimeUnitSelected = Gear.Utils.TimeUnitsEnum.None;
             this.toolTip1.SetToolTip(this.timeUnitSelector, "Time unit of emulation time.");
             this.timeUnitSelector.SelectedIndexChanged += new System.EventHandler(this.TimeUnitSelector_SelectedIndexChanged);
-            //
-            // timeLabel
-            //
-            this.timeLabel.AutoSize = true;
-            this.timeLabel.Location = new System.Drawing.Point(3, 236);
-            this.timeLabel.Name = "timeLabel";
-            this.timeLabel.Size = new System.Drawing.Size(30, 13);
-            this.timeLabel.TabIndex = 0;
-            this.timeLabel.Text = "Time";
-            //
-            // pinIN
-            //
-            this.pinIN.Bits = 64;
-            this.pinIN.Location = new System.Drawing.Point(78, 368);
-            this.pinIN.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.pinIN.Name = "pinIN";
-            this.pinIN.Postfix = "";
-            this.pinIN.Prefix = "P";
-            this.pinIN.Size = new System.Drawing.Size(128, 32);
-            this.pinIN.TabIndex = 9;
-            this.pinIN.Value = ((ulong)(0ul));
-            //
-            // pinDIR
-            //
-            this.pinDIR.Bits = 64;
-            this.pinDIR.Location = new System.Drawing.Point(78, 406);
-            this.pinDIR.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.pinDIR.Name = "pinDIR";
-            this.pinDIR.Postfix = "";
-            this.pinDIR.Prefix = "P";
-            this.pinDIR.Size = new System.Drawing.Size(128, 32);
-            this.pinDIR.TabIndex = 10;
-            this.pinDIR.Value = ((ulong)(0ul));
-            //
-            // pinFloating
-            //
-            this.pinFloating.Bits = 64;
-            this.pinFloating.Location = new System.Drawing.Point(78, 444);
-            this.pinFloating.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.pinFloating.Name = "pinFloating";
-            this.pinFloating.Postfix = "";
-            this.pinFloating.Prefix = "P";
-            this.pinFloating.Size = new System.Drawing.Size(128, 32);
-            this.pinFloating.TabIndex = 11;
-            this.pinFloating.Value = ((ulong)(0ul));
-            //
-            // pinLocksFree
-            //
-            this.pinLocksFree.Bits = 8;
-            this.pinLocksFree.Location = new System.Drawing.Point(78, 327);
-            this.pinLocksFree.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.pinLocksFree.Name = "pinLocksFree";
-            this.pinLocksFree.Postfix = "";
-            this.pinLocksFree.Prefix = "Lock";
-            this.pinLocksFree.Size = new System.Drawing.Size(110, 10);
-            this.pinLocksFree.TabIndex = 7;
-            this.pinLocksFree.Value = ((ulong)(0ul));
-            //
-            // pinLocks
-            //
-            this.pinLocks.AutoSize = true;
-            this.pinLocks.Bits = 8;
-            this.pinLocks.Location = new System.Drawing.Point(78, 346);
-            this.pinLocks.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.pinLocks.Name = "pinLocks";
-            this.pinLocks.Postfix = "";
-            this.pinLocks.Prefix = "Lock";
-            this.pinLocks.Size = new System.Drawing.Size(107, 10);
-            this.pinLocks.TabIndex = 8;
-            this.pinLocks.Value = ((ulong)(0ul));
-            //
-            // ringMeter
-            //
-            this.ringMeter.Location = new System.Drawing.Point(0, 0);
-            this.ringMeter.MaximumSize = new System.Drawing.Size(214, 214);
-            this.ringMeter.MinimumSize = new System.Drawing.Size(214, 214);
-            this.ringMeter.Name = "ringMeter";
-            this.ringMeter.Size = new System.Drawing.Size(214, 214);
-            this.ringMeter.TabIndex = 0;
-            this.ringMeter.Value = ((uint)(0u));
             //
             // label3
             //
@@ -319,6 +249,81 @@ namespace Gear.GUI
             this.label13.Text = "Counter";
             this.label13.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             //
+            // pinLocksFree
+            //
+            this.pinLocksFree.AutoSize = true;
+            this.pinLocksFree.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.pinLocksFree.BitWidth = ((uint)(8u));
+            this.pinLocksFree.Location = new System.Drawing.Point(78, 327);
+            this.pinLocksFree.Name = "pinLocksFree";
+            this.pinLocksFree.Postfix = "";
+            this.pinLocksFree.Prefix = "Lock";
+            this.pinLocksFree.Size = new System.Drawing.Size(64, 8);
+            this.pinLocksFree.TabIndex = 7;
+            this.pinLocksFree.Value = ((ulong)(0ul));
+            //
+            // pinLocks
+            //
+            this.pinLocks.AutoSize = true;
+            this.pinLocks.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.pinLocks.BitWidth = ((uint)(8u));
+            this.pinLocks.Location = new System.Drawing.Point(78, 346);
+            this.pinLocks.Name = "pinLocks";
+            this.pinLocks.Postfix = "";
+            this.pinLocks.Prefix = "Lock";
+            this.pinLocks.Size = new System.Drawing.Size(64, 8);
+            this.pinLocks.TabIndex = 8;
+            this.pinLocks.Value = ((ulong)(0ul));
+            //
+            // pinIN
+            //
+            this.pinIN.AutoSize = true;
+            this.pinIN.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.pinIN.BitWidth = ((uint)(64u));
+            this.pinIN.Location = new System.Drawing.Point(78, 368);
+            this.pinIN.Name = "pinIN";
+            this.pinIN.Postfix = "";
+            this.pinIN.Prefix = "P";
+            this.pinIN.Size = new System.Drawing.Size(128, 32);
+            this.pinIN.TabIndex = 9;
+            this.pinIN.Value = ((ulong)(0ul));
+            //
+            // pinDIR
+            //
+            this.pinDIR.AutoSize = true;
+            this.pinDIR.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.pinDIR.BitWidth = ((uint)(64u));
+            this.pinDIR.Location = new System.Drawing.Point(78, 406);
+            this.pinDIR.Name = "pinDIR";
+            this.pinDIR.Postfix = "";
+            this.pinDIR.Prefix = "P";
+            this.pinDIR.Size = new System.Drawing.Size(128, 32);
+            this.pinDIR.TabIndex = 10;
+            this.pinDIR.Value = ((ulong)(0ul));
+            //
+            // pinFloating
+            //
+            this.pinFloating.AutoSize = true;
+            this.pinFloating.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.pinFloating.BitWidth = ((uint)(64u));
+            this.pinFloating.Location = new System.Drawing.Point(78, 444);
+            this.pinFloating.Name = "pinFloating";
+            this.pinFloating.Postfix = "";
+            this.pinFloating.Prefix = "P";
+            this.pinFloating.Size = new System.Drawing.Size(128, 32);
+            this.pinFloating.TabIndex = 11;
+            this.pinFloating.Value = ((ulong)(0ul));
+            //
+            // ringMeter
+            //
+            this.ringMeter.Location = new System.Drawing.Point(0, 0);
+            this.ringMeter.MaximumSize = new System.Drawing.Size(214, 214);
+            this.ringMeter.MinimumSize = new System.Drawing.Size(214, 214);
+            this.ringMeter.Name = "ringMeter";
+            this.ringMeter.Size = new System.Drawing.Size(214, 214);
+            this.ringMeter.TabIndex = 0;
+            this.ringMeter.Value = ((uint)(0u));
+            //
             // HubView
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -330,11 +335,11 @@ namespace Gear.GUI
             this.Controls.Add(this.elapsedTimeLabel);
             this.Controls.Add(this.timeUnitSelector);
             this.Controls.Add(this.timeLabel);
+            this.Controls.Add(this.pinLocksFree);
+            this.Controls.Add(this.pinLocks);
             this.Controls.Add(this.pinIN);
             this.Controls.Add(this.pinDIR);
             this.Controls.Add(this.pinFloating);
-            this.Controls.Add(this.pinLocksFree);
-            this.Controls.Add(this.pinLocks);
             this.Controls.Add(this.ringMeter);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label4);
@@ -348,6 +353,8 @@ namespace Gear.GUI
             this.DoubleBuffered = true;
             this.Name = "HubView";
             this.Size = new System.Drawing.Size(214, 546);
+            this.SizeChanged += new System.EventHandler(this.HubView_SizeChanged);
+            this.VisibleChanged += new System.EventHandler(this.HubView_VisibleChanged);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -363,11 +370,11 @@ namespace Gear.GUI
         private TimeUnitComboBox timeUnitSelector;
         private System.Windows.Forms.Label timeLabel;
         private System.Windows.Forms.ToolTip toolTip1;
+        private BitView pinLocksFree;
+        private BitView pinLocks;
         private BitView pinIN;
         private BitView pinDIR;
         private BitView pinFloating;
-        private BitView pinLocksFree;
-        private BitView pinLocks;
         private RingMeter ringMeter;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;

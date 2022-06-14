@@ -79,11 +79,9 @@ namespace Gear.Utils
         private TimeUnitCollection _excludedUnits;
 
         /// @brief Excluded time units.
-        [Category("Misc")]
-        [Description("Excluded Time Units for this control.")]
-        [DisplayName("Excluded Time Units")]
-        [Browsable(true)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+        [Category("Default"), Description("Excluded Time Units for this control."),
+         DisplayName("Excluded Time Units"), Browsable(true),
+         DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
         public TimeUnitCollection ExcludedUnits
         {
             get => _excludedUnits;
@@ -107,17 +105,13 @@ namespace Gear.Utils
             new TimeUnitsList();
 
         /// @brief Base unit used to transform multiply factors values.
-        [Category("Misc")]
-        [Description("Base Unit of Time for this control.")]
-        [DisplayName("Base Time Unit")]
-        [Browsable(true)]
+        [Category("Default"), Description("Base Unit of Time for this control."),
+         DisplayName("Base Time Unit"), Browsable(true)]
         public TimeUnitsEnum BaseUnit { get; set; } = TimeUnitsEnum.None;
 
         /// @brief Time unit selected on this combobox.
-        [Category("Misc")]
-        [Description("Initial selected unit of time for this control.")]
-        [DisplayName("Selected Time Unit")]
-        [Browsable(true)]
+        [Category("Default"), Description("Initial selected unit of time for this control."),
+         DisplayName("Selected Time Unit"), Browsable(true)]
         public TimeUnitsEnum TimeUnitSelected
         {
             get =>

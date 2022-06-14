@@ -2,6 +2,8 @@
  * Gear: Parallax Inc. Propeller P1 Emulator
  * Copyright 2007-2022 - Gear Developers
  * --------------------------------------------------------------------------------
+ * BitView.Designer.cs
+ * --------------------------------------------------------------------------------
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
@@ -17,6 +19,8 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * --------------------------------------------------------------------------------
  */
+
+using System.ComponentModel;
 
 namespace Gear.GUI
 {
@@ -54,10 +58,13 @@ namespace Gear.GUI
             //
             // BitView
             //
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Name = "BitView";
+            this.Size = new System.Drawing.Size(10, 10);
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.BitView_Paint);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.BitView_MouseMove);
+            this.Resize += new System.EventHandler(this.BitView_Resize);
             this.ResumeLayout(false);
         }
 

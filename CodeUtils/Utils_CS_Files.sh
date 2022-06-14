@@ -53,6 +53,9 @@ declare -g basePath=${basePathThisProgram%/*}
 
 #Show progress bar
 declare showProgress
+#Hide messages of Line converter
+declare quietLineConvert
+
 #===============================================
 #Set global error level tags
 declare -r -i err_OptionNotRecognized=1
@@ -197,6 +200,7 @@ function ProcessParams() {
          ;;
       -p | --show-progress)
          showProgress="--bar"
+         quietLineConvert="--quiet"
          shift
          ;;
       -l | --list-predefined)
@@ -319,7 +323,7 @@ function Main() {
                   fi
                fi
                if eval "$retVal" |
-               parallel $showProgress --tag --tagstring "{/}:" --line-buffer unix2dos --verbose --keep-bom -ascii --oldfile {}; then
+               parallel $showProgress --tag --tagstring "{/}:" --line-buffer unix2dos $quietLineConvert --keep-bom -ascii --oldfile {}; then
                   echo -e "${fmtOk}New values:${fmtReset}\n"
                   REPLY=$opSummaryLineEndings
                else
@@ -335,7 +339,7 @@ function Main() {
                   fi
                fi
                if eval "$retVal" |
-               parallel $showProgress --tag --tagstring "{/}:" --line-buffer dos2unix --verbose --keep-bom -ascii --oldfile {}; then
+               parallel $showProgress --tag --tagstring "{/}:" --line-buffer dos2unix $quietLineConvert --keep-bom -ascii --oldfile {}; then
                   echo -e "${fmtOk}New values:${fmtReset}\n"
                   REPLY=$opSummaryLineEndings
                else

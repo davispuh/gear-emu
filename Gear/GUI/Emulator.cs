@@ -26,6 +26,8 @@ using Gear.PluginSupport;
 using Gear.Utils;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -37,17 +39,26 @@ namespace Gear.GUI
     /// @brief View class for PropellerCPU emulator instance.
     /// @details This class implements a view over a propeller emulator, with interface to control
     /// the chip, like start, go through steps, reset or reload.
+    /// @version v22.06.01 - Added custom debugger text.
+    [DefaultProperty("Name"), DebuggerDisplay("{TextForDebugger,nq}")]
     public partial class Emulator : Form
     {
         /// <summary>Reference to PropellerCPU running instance.</summary>
         /// @version v22.06.01 - Name changed to follow naming conventions.
         private readonly PropellerCPU _cpuHost;
-        /// <summary>Name of Binary program loaded.</summary>
-        /// @version v22.06.01 - Name changed to follow naming conventions and to clarify its meaning.
-        private string _sourceFileName;
+
+        /// <summary>Full name and path of binary program loaded.</summary>
+        /// @version v22.06.01 - Name changed to follow naming conventions and
+        /// to clarify its meaning.
+        private string _lastBinary;
+        /// <summary>Hold only name portion of binary program loaded.</summary>
+        /// @version v22.06.01 - Added to provide debugging info.
+        private string _binaryNameOnly;
+
         /// <summary>How many steps to update screen.</summary>
         /// @version v22.06.01 - Name changed to follow naming conventions.
         private uint _stepInterval;
+
         /// <summary>List of floating controls.</summary>
         /// @version v22.06.01 - Name changed to follow naming conventions.
         private readonly List<Control> _floatControls;
@@ -63,8 +74,23 @@ namespace Gear.GUI
         /// @version v20.10.01 - Added.
         private bool IsRunningState => _runTimer.Enabled;
 
-        /// @brief Get the last binary opened successfully.
-        public string LastBinary => _sourceFileName;
+        /// @brief Get the last binary opened.
+        /// @version v22.06.01 - Modified to support debugging info.
+        public string LastBinary
+        {
+            get => _lastBinary;
+            private set
+            {
+                _lastBinary = value;
+                _binaryNameOnly = Path.GetFileName(Path.GetFileNameWithoutExtension(_lastBinary));
+            }
+        }
+
+        /// <summary>Returns a summary text of this class, to be used in debugger view.</summary>
+        /// @version v22.06.01 - Added to provide debugging info.
+        private string TextForDebugger =>
+            $"{{{GetType().FullName}, Binary: {_binaryNameOnly}, Id:" +
+            $" {(_cpuHost == null ? "[none yet]" : _cpuHost.InstanceNumber.ToString("D2"))} }}";
 
         /// @brief Text of the base %Form.
         /// @version v22.06.01 - Added to prevent warning 'Virtual member call in constructor'.
@@ -81,13 +107,13 @@ namespace Gear.GUI
         public Emulator(string sourceFileName)
         {
             _cpuHost = new PropellerCPU(this);
-            _sourceFileName = sourceFileName;
+            LastBinary = sourceFileName;
             _floatControls = new List<Control>();
             InitializeComponent();
             _docsManager = new TabManager(documentsTab);
             hubView.SetHost(_cpuHost);
             hubView.SetFontSpecialLabels();
-            Text = _sourceFileName;
+            Text = LastBinary;
             // Create default layout
             for (int i = 0; i < PropellerCPU.TotalCogs; i++)
                 AttachPlugin(new CogView(i, _cpuHost), TabManager.NumericZeroBased);
@@ -232,7 +258,7 @@ namespace Gear.GUI
                     break;
                 }
             UpdateRunningButtons();  //bugfix correction
-            RepaintViews();
+            RepaintViews(false);
         }
 
         /// @brief Update Text and Images of buttons involved on running and
@@ -269,18 +295,17 @@ namespace Gear.GUI
         /// @brief Load a binary image from file.
         /// @details Generate a new instance of a `PropellerCPU` and load
         /// the program from the binary.
-        /// @version v22.06.01 - Parameter name changed to follow naming conventions.
+        /// @version v22.06.01 - Parameter name changed to follow naming
+        /// conventions and removed screen updating from here, to caller method.
         public bool OpenFile(string fileName)
         {
             try
             {
                 _cpuHost.Initialize(File.ReadAllBytes(fileName));
-                _sourceFileName = fileName;
+                LastBinary = fileName;
                 Text = fileName;
-                Properties.Settings.Default.LastBinary = _sourceFileName;
+                Properties.Settings.Default.LastBinary = LastBinary;
                 Properties.Settings.Default.Save();
-                UpdateRunningButtons();
-                RepaintViews();
                 return true;
             }
             catch (IOException ioe)
@@ -427,7 +452,7 @@ namespace Gear.GUI
         /// @brief Select binary propeller image to load.
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
-        /// @version v22.03.02 - Remember last binary open from Settings.
+        /// @version v22.06.01 - Moved screen updating here.
         private void OpenBinary_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog openFileDialog = new OpenFileDialog
@@ -435,7 +460,7 @@ namespace Gear.GUI
                        Filter = "Propeller Runtime Image (*.binary;*.eeprom)|*.binary;" +
                                 "*.eeprom|All Files (*.*)|*.*",
                        Title = "Open Propeller Binary...",
-                       FileName = _sourceFileName
+                       FileName = LastBinary
                    })
             {
                 //retrieve last binary location
@@ -443,8 +468,11 @@ namespace Gear.GUI
                     openFileDialog.InitialDirectory =
                         Path.GetDirectoryName(Properties.Settings.Default.LastBinary);
                 //invoke Dialog
-                if (openFileDialog.ShowDialog(this) == DialogResult.OK)
-                    OpenFile(openFileDialog.FileName);
+                if (openFileDialog.ShowDialog(this) != DialogResult.OK ||
+                    !OpenFile(openFileDialog.FileName))
+                    return;
+                UpdateRunningButtons();
+                RepaintViews(true);
             }
         }
 
@@ -455,15 +483,14 @@ namespace Gear.GUI
         /// @version v20.10.01 - UpdateRunningButtons.
         private void ReloadBinary_Click(object sender, EventArgs e)
         {
-            OpenFile(_sourceFileName);
+            if (!OpenFile(LastBinary))
+                return;
             _cpuHost.Reset();
             UpdateRunningButtons();
-            RepaintViews();
+            RepaintViews(true);
         }
 
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary>Event handler when this form is closed.</summary>
         /// <param name="e">Event data arguments.</param>
         /// @version v22.06.01 - Local variable name changed to clarify it meaning.
         protected override void OnClosed(EventArgs e)
@@ -475,22 +502,24 @@ namespace Gear.GUI
         }
 
         /// @brief Repaint the Views, including float windows.
-        /// @version v22.06.01 - Corrected bug on float windows not were updated.
+        /// @param force If TRUE, force a full redraw on components allow that.
+        /// @version v22.06.01 - Corrected error on float windows not were
+        /// updated and added parameter to specify full redraw.
         /// @todo Parallelism [complex:medium, cycles:typ1] point in loop of list of _floatControls
-        private void RepaintViews()
+        private void RepaintViews(bool force)
         {
             foreach (Control floatControl in _floatControls)  // TODO Parallelism [complex:medium, cycles:typ1] point in loop _floatControls
                 foreach (Control control in floatControl.Controls)
                     if (control is PluginBase pluginControl)
-                        pluginControl.Repaint(true);
+                        pluginControl.Repaint(force);
                     else
                         control.Refresh();
             Control pinnedControl = pinnedPanel.GetNextControl(pinnedPanel, true);
-            ((PluginBase)pinnedControl)?.Repaint(true);
+            ((PluginBase)pinnedControl)?.Repaint(force);
             if (documentsTab.SelectedTab != null &&
                 (pinnedControl = documentsTab.SelectedTab.GetNextControl(documentsTab.SelectedTab, true)) != null)
-                ((PluginBase)pinnedControl).Repaint(true);
-            hubView.DataChanged();
+                ((PluginBase)pinnedControl).Repaint(force);
+            hubView.DataChanged(force);
         }
 
         /// @brief Event to reset the whole %Propeller Chip.
@@ -501,7 +530,7 @@ namespace Gear.GUI
         {
             _cpuHost.Reset();
             UpdateRunningButtons();
-            RepaintViews();
+            RepaintViews(true);
         }
 
         /// @brief Send the active tab to a floating window.
@@ -531,7 +560,7 @@ namespace Gear.GUI
             controlToFloat.Dock = DockStyle.Fill;
             controlToFloat.Text = selectedTab.Text;
             floatedWindow.MdiParent = MdiParent;
-            floatedWindow.Text = $"{selectedTab.Text}: {_sourceFileName}";
+            floatedWindow.Text = $"{selectedTab.Text}: {LastBinary}";
             floatedWindow.Show();
             _floatControls.Add(floatedWindow);
             _docsManager.FloatingTabsQuantity = _floatControls.Count;
@@ -624,7 +653,7 @@ namespace Gear.GUI
         {
             _runTimer.Stop();
             UpdateRunningButtons();
-            RepaintViews(); //added the repaint, to refresh the views
+            RepaintViews(false); //added the repaint, to refresh the views
         }
 
         /// @brief Run one clock tick of the active cog, stopping after executed.
@@ -635,7 +664,7 @@ namespace Gear.GUI
         {
             _cpuHost.Step();
             UpdateRunningButtons();
-            RepaintViews();
+            RepaintViews(false);
         }
 
         /// @brief Event to run one instruction in emulator, stopping after executed.
@@ -659,7 +688,7 @@ namespace Gear.GUI
                 }
             }
             UpdateRunningButtons();
-            RepaintViews();
+            RepaintViews(false);
         }
 
         /// @brief Make a stop on the emulation, when a breakpoint is requested by a plugin.
@@ -670,7 +699,7 @@ namespace Gear.GUI
         {
             _runTimer.Stop();
             UpdateRunningButtons();
-            RepaintViews();
+            RepaintViews(false);
         }
 
         /// @brief Try to open a plugin, compiling it and attaching to the active
@@ -709,11 +738,12 @@ namespace Gear.GUI
         /// @brief Event when emulator goes out of focus.
         /// @param sender Reference to the object where this event was called.
         /// @param e Class with the event details.
-        /// @version v20.10.01 - UpdateRunningButtons.
+        /// @version v22.06.01 - Modified to support conditional painting.
         private void OnDeactivate(object sender, EventArgs e)
         {
             _runTimer.Stop();
             UpdateRunningButtons();
+            hubView.RequestFullOnNextRepaint();
         }
 
         /// @brief Close the plugin window and terminate the plugin instance.
@@ -721,7 +751,8 @@ namespace Gear.GUI
         /// from the PropellerCPU what uses it.
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
-        /// @version v22.06.01 - Refactored to maintain tabs order: remove tab associated to plugin from documents tabs.
+        /// @version v22.06.01 - Refactored to maintain tabs order: remove
+        /// tab associated to plugin from documents tabs.
         private void CloseActiveTab_Click(object sender, EventArgs e)
         {
             //get selected tab object
@@ -828,6 +859,28 @@ namespace Gear.GUI
         {
             //workaround of bug on MDI Form (https://stackoverflow.com/a/6701490/10200101)
             Icon = Icon.Clone() as Icon;
+        }
+
+        /// <summary>Event Handler when the form moves to another position
+        /// on screen.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
+        /// @version v22.06.01 - Added to support conditional painting.
+        private void Emulator_Move(object sender, EventArgs e)
+        {
+            hubView.RequestFullOnNextRepaint();
+        }
+
+        /// <summary>Event Handler when the form is painted on screen.</summary>
+        /// <remarks>Manage full painting of conditional paint controls in
+        /// Design mode.</remarks>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Paint event data arguments.</param>
+        /// @version v22.06.01 - Added to support conditional painting.
+        private void HubView_Paint(object sender, PaintEventArgs e)
+        {
+            if (DesignMode)
+                hubView.RequestFullOnNextRepaint();
         }
     }
 
