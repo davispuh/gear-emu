@@ -39,7 +39,6 @@ namespace Gear.GUI
             {
                 components.Dispose();
             }
-            this.MonoFont.Dispose();
             this.BackBuffer.Dispose();
             base.Dispose(disposing);
         }
@@ -60,34 +59,35 @@ namespace Gear.GUI
             //
             this.positionScrollBar.Dock = System.Windows.Forms.DockStyle.Right;
             this.positionScrollBar.LargeChange = 16;
-            this.positionScrollBar.Location = new System.Drawing.Point(208, 0);
+            this.positionScrollBar.Location = new System.Drawing.Point(183, 0);
             this.positionScrollBar.Name = "positionScrollBar";
-            this.positionScrollBar.Size = new System.Drawing.Size(17, 231);
-            this.positionScrollBar.TabIndex = 0;
+            this.positionScrollBar.Size = new System.Drawing.Size(17, 185);
+            this.positionScrollBar.SmallChange = 4;
+            this.positionScrollBar.TabIndex = 1;
             this.positionScrollBar.TabStop = true;
-            this.positionScrollBar.Scroll += new System.Windows.Forms.ScrollEventHandler(this.PositionChanged);
+            this.positionScrollBar.Scroll += new System.Windows.Forms.ScrollEventHandler(this.PositionScrollBar_PositionChanged);
             //
             // memoryPanel
             //
             this.memoryPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.memoryPanel.Location = new System.Drawing.Point(0, 0);
-            this.memoryPanel.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.memoryPanel.Margin = new System.Windows.Forms.Padding(4);
             this.memoryPanel.Name = "memoryPanel";
-            this.memoryPanel.Size = new System.Drawing.Size(360, 231);
-            this.memoryPanel.TabIndex = 1;
-            this.memoryPanel.SizeChanged += new System.EventHandler(this.SizeChange);
-            this.memoryPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintMemoryView);
+            this.memoryPanel.Size = new System.Drawing.Size(183, 185);
+            this.memoryPanel.TabIndex = 0;
+            this.memoryPanel.SizeChanged += new System.EventHandler(this.MemoryPanel_SizeChange);
+            this.memoryPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.MemoryPanel_Paint);
             this.memoryPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.MemoryPanel_MouseClick);
             //
             // MemoryView
             //
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.memoryPanel);
             this.Controls.Add(this.positionScrollBar);
-            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "MemoryView";
-            this.Size = new System.Drawing.Size(225, 231);
+            this.Size = new System.Drawing.Size(200, 185);
             this.ResumeLayout(false);
 
         }

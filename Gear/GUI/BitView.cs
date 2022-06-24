@@ -26,22 +26,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 namespace Gear.GUI
 {
-    /// <summary>Interface to request full re-paint of a control.</summary>
-    /// @version v22.06.01 - Added.
-    public interface IRequestRepaintable
-    {
-        /// <summary>Determine if this control is visible on screen.</summary>
-        /// <returns>TRUE if all the control area is visible on screen,
-        /// else FALSE.</returns>
-        bool IsThisFullyVisible();
-        /// <summary>Request full paint on next Repaint event.</summary>
-        void RequestFullOnNextRepaint();
-    }
-
     /// @brief Simple highlighted bit viewer.
     [DefaultProperty("Name"), DebuggerDisplay("{TextForDebugger,nq}")]
     public partial class BitView : UserControl, IRequestRepaintable
@@ -380,8 +369,10 @@ namespace Gear.GUI
         /// <summary>Event handler to paint this control.</summary>
         /// <param name="sender">Reference to object where event was raised.</param>
         /// <param name="e">Paint event data arguments.</param>
+        /// @version v22.06.02 - Modify to set the drawing aliased lines style.
         private void BitView_Paint(object sender, PaintEventArgs e)
         {
+            e.Graphics.SmoothingMode = SmoothingMode.Default;
             ConditionalPaint(e.Graphics);
         }
 

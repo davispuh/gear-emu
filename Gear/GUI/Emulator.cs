@@ -29,6 +29,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Text;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml;
@@ -292,9 +294,9 @@ namespace Gear.GUI
             }
         }
 
-        /// @brief Load a binary image from file.
-        /// @details Generate a new instance of a `PropellerCPU` and load
-        /// the program from the binary.
+        /// <summary>Load a binary image from file.</summary>
+        /// <remarks>Generate a new instance of a <c>PropellerCPU</c> and load
+        /// the program from the binary.</remarks>
         /// @version v22.06.01 - Parameter name changed to follow naming
         /// conventions and removed screen updating from here, to caller method.
         public bool OpenFile(string fileName)
@@ -329,17 +331,23 @@ namespace Gear.GUI
         }
 
         /// @brief Load a plugin from XML file.
-        /// @details Try to open the XML definition for the plugin from the file name given as
-        /// parameter. Then extract information from the XML (class name, auxiliary references
-        /// and source code to compile), trying to compile the C# source code (based on
-        /// Gear.PluginSupport.PluginBase class) and returning the new class instance. If the
-        /// compilation fails, then it opens the plugin editor to show errors and source code.
+        /// @details Try to open the XML definition for the plugin from the
+        /// file name given as parameter. Then extract information from the XML
+        /// (class name, auxiliary references and source code to compile),
+        /// trying to compile the C# source code (based on
+        /// Gear.PluginSupport.PluginBase class) and returning the new class
+        /// instance. If the compilation fails, then it opens the plugin editor
+        /// to show errors and source code.
         /// @param fileName Name and path to the XML plugin file to open
-        /// @returns Reference to the new plugin instance (on success) or NULL (on fail).
-        /// @version v22.06.01 - Parameter name and local variable name changed to follow naming conventions.
-        /// @todo [Enhance] show dialog to inform user the compilation error and plugin open in editor instead of loading it
+        /// @returns Reference to the new plugin instance (on success) or
+        /// NULL (on fail).
+        /// @version v22.06.01 - Changed method name to clarify its meaning,
+        /// changed method visibility, parameter name and local variable names
+        /// changed to follow naming conventions. Added dialog to inform to
+        /// user the compilation error and plugin will open in editor instead
+        /// of loading it.
         /// @todo [Bug] Manage all possible exceptions thrown at plugin load in Emulator
-        public PluginBase LoadPlugin(string fileName)
+        private PluginBase LoadPluginFromFile(string fileName)
         {
             XmlReaderSettings settings = new XmlReaderSettings
             {
@@ -410,15 +418,19 @@ namespace Gear.GUI
                 if (plugin == null)  //if it fails...
                 {
                     // ...open plugin editor in other window
-                    PluginEditor pe = new PluginEditor(false);
-                    pe.OpenFile(fileName, true);
-                    pe.MdiParent = MdiParent;
-                    pe.Show();
-                    //the compilation errors are displayed in the error grid
-                    ModuleCompiler.EnumerateErrors(pe.EnumErrors);
-                    //show the error list
-                    pe.ShowErrorGrid(true);
-                    //TODO show dialog to inform user the compilation error and plugin open in editor instead of loading it
+                    PluginEditor pluginEditor = new PluginEditor(false);
+                    if (pluginEditor.OpenPluginFromFile(fileName, true))
+                    {
+                        pluginEditor.MdiParent = MdiParent;
+                        pluginEditor.Show();
+                        //show the error list
+                        pluginEditor.ShowErrorGrid(true);
+                        MessageBox.Show(this,
+                            $"'{fileName}' plugin has errors when compiling to load in memory.\nOpening in editor instead.",
+                            "Failed to load plug-in",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Exclamation);
+                    }
                 }
                 else  //successful compiling & instantiating of the new class
                 {
@@ -452,10 +464,12 @@ namespace Gear.GUI
         /// @brief Select binary propeller image to load.
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
-        /// @version v22.06.01 - Moved screen updating here.
+        /// @version v22.06.02 - Corrected error if no file name was selected
+        /// on dialog, but pressed open button. Also changed local variable
+        /// name to clarify its meaning.
         private void OpenBinary_Click(object sender, EventArgs e)
         {
-            using (OpenFileDialog openFileDialog = new OpenFileDialog
+            using (OpenFileDialog dialog = new OpenFileDialog
                    {
                        Filter = "Propeller Runtime Image (*.binary;*.eeprom)|*.binary;" +
                                 "*.eeprom|All Files (*.*)|*.*",
@@ -465,11 +479,12 @@ namespace Gear.GUI
             {
                 //retrieve last binary location
                 if (!string.IsNullOrEmpty(Properties.Settings.Default.LastBinary))
-                    openFileDialog.InitialDirectory =
+                    dialog.InitialDirectory =
                         Path.GetDirectoryName(Properties.Settings.Default.LastBinary);
                 //invoke Dialog
-                if (openFileDialog.ShowDialog(this) != DialogResult.OK ||
-                    !OpenFile(openFileDialog.FileName))
+                if (dialog.ShowDialog(this) != DialogResult.OK ||
+                    string.IsNullOrEmpty(dialog.FileName) ||
+                    !OpenFile(dialog.FileName))
                     return;
                 UpdateRunningButtons();
                 RepaintViews(true);
@@ -569,7 +584,8 @@ namespace Gear.GUI
         /// @brief Unfloat the control, opening in a new tab.
         /// @param control Control object to move.
         /// @throws ArgumentNullException
-        /// @version v22.06.01 - Changed method name from `Unfloat` and Refactored to maintain documents tabs order.
+        /// @version v22.06.01 - Changed method name from `Unfloat` and
+        /// refactored to maintain documents tabs order.
         public void UnFloatCtrl(Control control)
         {
             if (control is null)
@@ -706,7 +722,9 @@ namespace Gear.GUI
         /// emulator instance.
         /// @param sender Reference to the object where this event was called.
         /// @param e Class with the event details.
-        /// @version v22.06.01 - Code for attach plugin to emulator moved here.
+        /// @version v22.06.02 - Corrected error if no file name was selected
+        /// on dialog, but pressed open button. Also changed local variable
+        /// name to clarify its meaning.
         private void OpenPlugin_Click(object sender, EventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog
@@ -719,12 +737,12 @@ namespace Gear.GUI
                 dialog.InitialDirectory =
                     Path.GetDirectoryName(Properties.Settings.Default.LastPlugin);
             //ask the user what plugin file to open
-            if (dialog.ShowDialog(this) == DialogResult.OK)
-            {
-                PluginBase newPlugin = LoadPlugin(dialog.FileName);
-                if (newPlugin != null)
-                    AttachPlugin(newPlugin, TabManager.OnlyRepetitionNumberedFromOne);
-            }
+            if (dialog.ShowDialog(this) != DialogResult.OK ||
+                string.IsNullOrEmpty(dialog.FileName))
+                return;
+            PluginBase newPlugin = LoadPluginFromFile(dialog.FileName);
+            if (newPlugin != null)
+                AttachPlugin(newPlugin, TabManager.OnlyRepetitionNumberedFromOne);
         }
 
         /// @brief Event when the Emulator windows begin to close.
@@ -882,8 +900,18 @@ namespace Gear.GUI
             if (DesignMode)
                 hubView.RequestFullOnNextRepaint();
         }
-    }
 
+        /// <summary>Event Handler to paint the control.</summary>
+        /// <param name="e">Paint event data arguments.</param>
+        /// @version v22.06.02 - Added to set the font aliasing style for text
+        /// and drawing smoothing of the control.
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+            e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
+            base.OnPaint(e);
+        }
+    }
 }
 
 // Reference link to MSCGEN: http://www.mcternan.me.uk/mscgen/

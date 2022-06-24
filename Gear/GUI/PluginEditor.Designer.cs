@@ -67,7 +67,12 @@ namespace Gear.GUI
             this.syntaxButton = new System.Windows.Forms.ToolStripButton();
             this.progressHighlight = new System.Windows.Forms.ToolStripProgressBar();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.EmbeddedCode = new System.Windows.Forms.ToolStripButton();
+            this.EmbeddedCodeButton = new System.Windows.Forms.ToolStripButton();
+            this.errorListView = new System.Windows.Forms.ListView();
+            this.codeEditorView = new System.Windows.Forms.RichTextBox();
+            this.errorSplitter = new Gear.GUI.CollapsibleSplitter();
+            this.referencesSplitter = new Gear.GUI.CollapsibleSplitter();
+            this.detailsPanel = new Gear.GUI.DoubleBufferedPanel();
             this.referencePanel = new Gear.GUI.DoubleBufferedPanel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.referencesList = new System.Windows.Forms.ListBox();
@@ -75,16 +80,11 @@ namespace Gear.GUI
             this.referenceName = new System.Windows.Forms.ToolStripTextBox();
             this.addReferenceButton = new System.Windows.Forms.ToolStripButton();
             this.removeReferenceButton = new System.Windows.Forms.ToolStripButton();
-            this.errorListView = new System.Windows.Forms.ListView();
-            this.codeEditorView = new System.Windows.Forms.RichTextBox();
-            this.detailsPanel = new Gear.GUI.DoubleBufferedPanel();
-            this.errorSplitter = new Gear.GUI.CollapsibleSplitter();
-            this.referencesSplitter = new Gear.GUI.CollapsibleSplitter();
             this.toolStripMain.SuspendLayout();
+            this.detailsPanel.SuspendLayout();
             this.referencePanel.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.toolStripReferences.SuspendLayout();
-            this.detailsPanel.SuspendLayout();
             this.SuspendLayout();
             //
             // toolStripSeparator1
@@ -115,7 +115,7 @@ namespace Gear.GUI
             this.syntaxButton,
             this.progressHighlight,
             this.toolStripSeparator3,
-            this.EmbeddedCode});
+            this.EmbeddedCodeButton});
             this.toolStripMain.Location = new System.Drawing.Point(0, 0);
             this.toolStripMain.Name = "toolStripMain";
             this.toolStripMain.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
@@ -172,7 +172,7 @@ namespace Gear.GUI
             this.instanceName.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.instanceName.Name = "instanceName";
             this.instanceName.ReadOnly = true;
-            this.instanceName.Size = new System.Drawing.Size(100, 31);
+            this.instanceName.Size = new System.Drawing.Size(130, 31);
             this.instanceName.ToolTipText = "Name of the Class for the plugin\r\nMust be the same as the class inherited from Pl" +
     "uginBase.";
             //
@@ -205,17 +205,89 @@ namespace Gear.GUI
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(6, 31);
             //
-            // EmbeddedCode
+            // EmbeddedCodeButton
             //
-            this.EmbeddedCode.Checked = global::Gear.Properties.Settings.Default.EmbeddedCode;
-            this.EmbeddedCode.CheckOnClick = true;
-            this.EmbeddedCode.CheckState = System.Windows.Forms.CheckState.Indeterminate;
-            this.EmbeddedCode.Image = global::Gear.Properties.Resources.Image_embedded;
-            this.EmbeddedCode.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.EmbeddedCode.Name = "EmbeddedCode";
-            this.EmbeddedCode.Size = new System.Drawing.Size(92, 28);
-            this.EmbeddedCode.Text = "Embedded";
-            this.EmbeddedCode.Click += new System.EventHandler(this.EmbeddedCode_Click);
+            this.EmbeddedCodeButton.Checked = true;
+            this.EmbeddedCodeButton.CheckOnClick = true;
+            this.EmbeddedCodeButton.CheckState = System.Windows.Forms.CheckState.Indeterminate;
+            this.EmbeddedCodeButton.Image = global::Gear.Properties.Resources.Image_embedded;
+            this.EmbeddedCodeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.EmbeddedCodeButton.Name = "EmbeddedCodeButton";
+            this.EmbeddedCodeButton.Size = new System.Drawing.Size(92, 28);
+            this.EmbeddedCodeButton.Text = "Embedded";
+            this.EmbeddedCodeButton.Click += new System.EventHandler(this.EmbeddedCode_Click);
+            //
+            // errorListView
+            //
+            this.errorListView.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.errorListView.HideSelection = false;
+            this.errorListView.Location = new System.Drawing.Point(208, 345);
+            this.errorListView.MultiSelect = false;
+            this.errorListView.Name = "errorListView";
+            this.errorListView.ShowItemToolTips = true;
+            this.errorListView.Size = new System.Drawing.Size(511, 97);
+            this.errorListView.TabIndex = 5;
+            this.errorListView.UseCompatibleStateImageBehavior = false;
+            this.errorListView.View = System.Windows.Forms.View.Details;
+            this.errorListView.Visible = false;
+            this.errorListView.ItemActivate += new System.EventHandler(this.ErrorView_SelectedIndexChanged);
+            this.errorListView.SelectedIndexChanged += new System.EventHandler(this.ErrorView_SelectedIndexChanged);
+            //
+            // codeEditorView
+            //
+            this.codeEditorView.AcceptsTab = true;
+            this.codeEditorView.DetectUrls = false;
+            this.codeEditorView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.codeEditorView.HideSelection = false;
+            this.codeEditorView.Location = new System.Drawing.Point(208, 31);
+            this.codeEditorView.Name = "codeEditorView";
+            this.codeEditorView.Size = new System.Drawing.Size(511, 306);
+            this.codeEditorView.TabIndex = 7;
+            this.codeEditorView.Text = "";
+            this.codeEditorView.WordWrap = false;
+            this.codeEditorView.TextChanged += new System.EventHandler(this.CodeEditorView_TextChanged);
+            //
+            // errorSplitter
+            //
+            this.errorSplitter.AnimationDelay = 20;
+            this.errorSplitter.AnimationStep = 20;
+            this.errorSplitter.BorderStyle3D = System.Windows.Forms.Border3DStyle.RaisedOuter;
+            this.errorSplitter.ControlToHide = this.errorListView;
+            this.errorSplitter.Cursor = System.Windows.Forms.Cursors.HSplit;
+            this.errorSplitter.DataBindings.Add(new System.Windows.Forms.Binding("UseAnimations", global::Gear.Properties.Settings.Default, "UseAnimations", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.errorSplitter.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.errorSplitter.ExpandParentForm = false;
+            this.errorSplitter.Location = new System.Drawing.Point(208, 337);
+            this.errorSplitter.Name = "collapsibleSplitter2";
+            this.errorSplitter.TabIndex = 6;
+            this.errorSplitter.TabStop = false;
+            this.errorSplitter.UseAnimations = global::Gear.Properties.Settings.Default.UseAnimations;
+            this.errorSplitter.VisualStyle = Gear.GUI.VisualStylesEnum.Mozilla;
+            //
+            // referencesSplitter
+            //
+            this.referencesSplitter.AnimationDelay = 20;
+            this.referencesSplitter.AnimationStep = 20;
+            this.referencesSplitter.BorderStyle3D = System.Windows.Forms.Border3DStyle.RaisedOuter;
+            this.referencesSplitter.ControlToHide = this.detailsPanel;
+            this.referencesSplitter.DataBindings.Add(new System.Windows.Forms.Binding("UseAnimations", global::Gear.Properties.Settings.Default, "UseAnimations", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.referencesSplitter.ExpandParentForm = false;
+            this.referencesSplitter.Location = new System.Drawing.Point(200, 31);
+            this.referencesSplitter.Name = "collapsibleSplitter1";
+            this.referencesSplitter.TabIndex = 3;
+            this.referencesSplitter.TabStop = false;
+            this.referencesSplitter.UseAnimations = global::Gear.Properties.Settings.Default.UseAnimations;
+            this.referencesSplitter.VisualStyle = Gear.GUI.VisualStylesEnum.Mozilla;
+            //
+            // detailsPanel
+            //
+            this.detailsPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.detailsPanel.Controls.Add(this.referencePanel);
+            this.detailsPanel.Dock = System.Windows.Forms.DockStyle.Left;
+            this.detailsPanel.Location = new System.Drawing.Point(0, 31);
+            this.detailsPanel.Name = "detailsPanel";
+            this.detailsPanel.Size = new System.Drawing.Size(200, 411);
+            this.detailsPanel.TabIndex = 2;
             //
             // referencePanel
             //
@@ -268,7 +340,6 @@ namespace Gear.GUI
             //
             // referenceName
             //
-            this.referenceName.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.referenceName.Name = "referenceName";
             this.referenceName.Size = new System.Drawing.Size(90, 25);
             this.referenceName.ToolTipText = "Reference Name to add/remove";
@@ -295,75 +366,6 @@ namespace Gear.GUI
             this.removeReferenceButton.ToolTipText = "Remove selected Reference";
             this.removeReferenceButton.Click += new System.EventHandler(this.RemoveReferenceButton_Click);
             //
-            // errorListView
-            //
-            this.errorListView.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.errorListView.HideSelection = false;
-            this.errorListView.Location = new System.Drawing.Point(208, 345);
-            this.errorListView.MultiSelect = false;
-            this.errorListView.Name = "errorListView";
-            this.errorListView.ShowItemToolTips = true;
-            this.errorListView.Size = new System.Drawing.Size(511, 97);
-            this.errorListView.TabIndex = 5;
-            this.errorListView.UseCompatibleStateImageBehavior = false;
-            this.errorListView.View = System.Windows.Forms.View.Details;
-            this.errorListView.ItemActivate += new System.EventHandler(this.ErrorView_SelectedIndexChanged);
-            this.errorListView.SelectedIndexChanged += new System.EventHandler(this.ErrorView_SelectedIndexChanged);
-            //
-            // codeEditorView
-            //
-            this.codeEditorView.AcceptsTab = true;
-            this.codeEditorView.DetectUrls = false;
-            this.codeEditorView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.codeEditorView.HideSelection = false;
-            this.codeEditorView.Location = new System.Drawing.Point(208, 31);
-            this.codeEditorView.Name = "codeEditorView";
-            this.codeEditorView.Size = new System.Drawing.Size(511, 306);
-            this.codeEditorView.TabIndex = 7;
-            this.codeEditorView.Text = "";
-            this.codeEditorView.WordWrap = false;
-            this.codeEditorView.TextChanged += new System.EventHandler(this.CodeEditorView_TextChanged);
-            //
-            // detailsPanel
-            //
-            this.detailsPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.detailsPanel.Controls.Add(this.referencePanel);
-            this.detailsPanel.Dock = System.Windows.Forms.DockStyle.Left;
-            this.detailsPanel.Location = new System.Drawing.Point(0, 31);
-            this.detailsPanel.Name = "detailsPanel";
-            this.detailsPanel.Size = new System.Drawing.Size(200, 411);
-            this.detailsPanel.TabIndex = 2;
-            //
-            // errorSplitter
-            //
-            this.errorSplitter.AnimationDelay = 20;
-            this.errorSplitter.AnimationStep = 20;
-            this.errorSplitter.BorderStyle3D = System.Windows.Forms.Border3DStyle.RaisedOuter;
-            this.errorSplitter.ControlToHide = this.errorListView;
-            this.errorSplitter.Cursor = System.Windows.Forms.Cursors.HSplit;
-            this.errorSplitter.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.errorSplitter.ExpandParentForm = false;
-            this.errorSplitter.Location = new System.Drawing.Point(208, 337);
-            this.errorSplitter.Name = "collapsibleSplitter2";
-            this.errorSplitter.TabIndex = 6;
-            this.errorSplitter.TabStop = false;
-            this.errorSplitter.UseAnimations = global::Gear.Properties.Settings.Default.UseAnimations;
-            this.errorSplitter.VisualStyle = Gear.GUI.VisualStylesEnum.Mozilla;
-            //
-            // referencesSplitter
-            //
-            this.referencesSplitter.AnimationDelay = 20;
-            this.referencesSplitter.AnimationStep = 20;
-            this.referencesSplitter.BorderStyle3D = System.Windows.Forms.Border3DStyle.RaisedOuter;
-            this.referencesSplitter.ControlToHide = this.detailsPanel;
-            this.referencesSplitter.ExpandParentForm = false;
-            this.referencesSplitter.Location = new System.Drawing.Point(200, 31);
-            this.referencesSplitter.Name = "collapsibleSplitter1";
-            this.referencesSplitter.TabIndex = 3;
-            this.referencesSplitter.TabStop = false;
-            this.referencesSplitter.UseAnimations = global::Gear.Properties.Settings.Default.UseAnimations;
-            this.referencesSplitter.VisualStyle = Gear.GUI.VisualStylesEnum.Mozilla;
-            //
             // PluginEditor
             //
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
@@ -385,12 +387,12 @@ namespace Gear.GUI
             this.Load += new System.EventHandler(this.PluginEditor_Load);
             this.toolStripMain.ResumeLayout(false);
             this.toolStripMain.PerformLayout();
+            this.detailsPanel.ResumeLayout(false);
             this.referencePanel.ResumeLayout(false);
             this.referencePanel.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.toolStripReferences.ResumeLayout(false);
             this.toolStripReferences.PerformLayout();
-            this.detailsPanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -418,7 +420,9 @@ namespace Gear.GUI
         private System.Windows.Forms.ToolStripButton syntaxButton;
         private Gear.GUI.DoubleBufferedPanel detailsPanel;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
-        private System.Windows.Forms.ToolStripButton EmbeddedCode;
+        /// @version v22.06.02 - Name changed from `EmbeddedCode` to resolve
+        /// the conflict with new property of the same name.
+        private System.Windows.Forms.ToolStripButton EmbeddedCodeButton;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.ToolStripProgressBar progressHighlight;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;

@@ -37,25 +37,27 @@ namespace Gear.PluginSupport
     /// @brief Compile a PluginBase Module, keeping the errors if they appears.
     public static class ModuleCompiler
     {
-        /// @brief Collection for error list on compile a dynamic plugin.
-        private static CompilerErrorCollection _errorColl;
+        /// @brief Error list generated when compiling a dynamic plugin.
+        /// @version v22.06.02 - Changed member name to clarify its meaning.
+        private static CompilerErrorCollection _errorList;
 
         /// @brief Enumerate errors from the compiling process.
         /// @param proc Method to invoke for each error.
         /// @throws InvalidOperationException If the collection of compiler
         /// errors is null.
         /// @throws ArgumentNullException If delegate <c>proc</c> is null.
-        /// @version v22.05.02 - Throws exceptions on errors.
+        /// @version v22.06.02 - Local variable name changed to clarify
+        /// its meaning.
         public static void EnumerateErrors(ErrorEnumProc proc)
         {
-            if (_errorColl == null)
+            if (_errorList == null)
                 throw new InvalidOperationException(
-                    $"CompilerErrorCollection '{nameof(_errorColl)}' is null. " +
+                    $"CompilerErrorCollection '{nameof(_errorList)}' is null. " +
                     "Had ModuleCompiler.LoadModule() successfully run?");
             if (proc == null)
                 throw new ArgumentNullException(nameof(proc));
-            foreach (CompilerError e in _errorColl)
-                proc(e);
+            foreach (CompilerError errorItem in _errorList)
+                proc(errorItem);
         }
 
         /// @brief Dynamic compiling & loading for a plugin.
@@ -112,7 +114,7 @@ namespace Gear.PluginSupport
 
             if (results.Errors.HasErrors | results.Errors.HasWarnings)
             {
-                _errorColl = results.Errors;
+                _errorList = results.Errors;
                 return null;
             }
 
@@ -131,17 +133,17 @@ namespace Gear.PluginSupport
             {
                 CompilerError c = new CompilerError(string.Empty, 0, 0, "CS0103",
                     $"The name '{className}' does not exist in the current context. Does the class name is the same that is declared in c# code?");
-                _errorColl = new CompilerErrorCollection(new[] { c });
+                _errorList = new CompilerErrorCollection(new[] { c });
                 return null;
             }
             if (!(target is PluginBase pluginBase))
             {
                 CompilerError c = new CompilerError(string.Empty, 0, 0, "CS0029",
                     $"Cannot implicitly convert type '{target.GetType().FullName}' to 'Gear.PluginSupport.PluginBase'");
-                _errorColl = new CompilerErrorCollection(new[] { c });
+                _errorList = new CompilerErrorCollection(new[] { c });
                 return null;
             }
-            _errorColl = null;
+            _errorList = null;
             return pluginBase;
         }
     }

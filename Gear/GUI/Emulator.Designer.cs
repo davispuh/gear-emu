@@ -263,6 +263,7 @@ namespace Gear.GUI
             this.pinnedSplitter.BorderStyle3D = System.Windows.Forms.Border3DStyle.Raised;
             this.pinnedSplitter.ControlToHide = this.pinnedPanel;
             this.pinnedSplitter.Cursor = System.Windows.Forms.Cursors.HSplit;
+            this.pinnedSplitter.DataBindings.Add(new System.Windows.Forms.Binding("UseAnimations", global::Gear.Properties.Settings.Default, "UseAnimations", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.pinnedSplitter.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.pinnedSplitter.ExpandParentForm = false;
             this.pinnedSplitter.Location = new System.Drawing.Point(222, 428);
@@ -288,6 +289,7 @@ namespace Gear.GUI
             this.hubViewSplitter.AnimationStep = 20;
             this.hubViewSplitter.BorderStyle3D = System.Windows.Forms.Border3DStyle.Raised;
             this.hubViewSplitter.ControlToHide = this.hubView;
+            this.hubViewSplitter.DataBindings.Add(new System.Windows.Forms.Binding("UseAnimations", global::Gear.Properties.Settings.Default, "UseAnimations", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.hubViewSplitter.ExpandParentForm = false;
             this.hubViewSplitter.Location = new System.Drawing.Point(214, 0);
             this.hubViewSplitter.Name = "HubSplitter";

@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Text;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
@@ -410,11 +411,13 @@ namespace Gear.GUI
 
         /// <summary></summary>
         /// <param name="e">Paint event data arguments.</param>
-        /// @version v22.06.01 - Added to implement conditional painting.
+        /// @version v22.06.02 - Modified to font aliasing style for text of
+        /// the control.
         protected override void OnPaint(PaintEventArgs e)
         {
             if (DesignMode)
                 RequestFullOnNextRepaint();
+            e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
             base.OnPaint(e);
         }
     }

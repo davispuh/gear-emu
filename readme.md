@@ -4,7 +4,7 @@
 
 **What is GEAR?** Is a C# program that simulates the inner workings of the Propeller P1 chip.
 
-![Gear Emulator](./images/Gear_LogicProbe.png)
+![Gear Emulator](./images/Gear_VGA+LogicProbe.png)
 
 It is NOT intended to be a replacement for the board, as it is considerably slower (for the sake of accuracy).
 

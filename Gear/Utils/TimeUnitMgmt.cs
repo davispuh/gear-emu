@@ -79,6 +79,7 @@ namespace Gear.Utils
         private TimeUnitCollection _excludedUnits;
 
         /// @brief Excluded time units.
+        /// @version v22.06.01 - Changed designer category to default.
         [Category("Default"), Description("Excluded Time Units for this control."),
          DisplayName("Excluded Time Units"), Browsable(true),
          DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
@@ -105,11 +106,13 @@ namespace Gear.Utils
             new TimeUnitsList();
 
         /// @brief Base unit used to transform multiply factors values.
+        /// @version v22.06.01 - Changed designer category to default.
         [Category("Default"), Description("Base Unit of Time for this control."),
          DisplayName("Base Time Unit"), Browsable(true)]
         public TimeUnitsEnum BaseUnit { get; set; } = TimeUnitsEnum.None;
 
         /// @brief Time unit selected on this combobox.
+        /// @version v22.06.01 - Changed designer category to default.
         [Category("Default"), Description("Initial selected unit of time for this control."),
          DisplayName("Selected Time Unit"), Browsable(true)]
         public TimeUnitsEnum TimeUnitSelected

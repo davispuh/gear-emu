@@ -57,21 +57,30 @@ namespace Gear.GUI
 
         /// @brief Close the window, updating the related values in each form.
         /// @param sender Sender object to this event.
-        /// @param e Arguments to this event.
+        /// @param e Event arguments to this event.
         private void OKButton_Click(object sender, EventArgs e)
         {
             //save to disk
             Settings.Default.Save();
             //redraw forms
             if (ParentForm != null)
-                foreach (Form f in ParentForm.OwnedForms)
-                    f.Refresh();
+                foreach (Form form in ParentForm.OwnedForms)
+                    form.Refresh();
             Close();
+        }
+
+        /// <summary>Event handler to refresh the data grid contents.</summary>
+        /// <param name="sender">Sender object to this event.</param>
+        /// <param name="e">Event arguments to this event.</param>
+        /// @version v22.06.02 - Added.
+        private void RefreshButton_Click(object sender, EventArgs e)
+        {
+            GearPropertyGrid.Refresh();
         }
 
         /// @brief Reset the property to its default value.
         /// @param sender Sender object to this event.
-        /// @param e Arguments to this event.
+        /// @param e Event arguments to this event.
         private void ResetButton_Click(object sender, EventArgs e)
         {
             //to get the underlying property
@@ -99,12 +108,13 @@ namespace Gear.GUI
             GearPropertyGrid.Refresh();
         }
 
-        /// @brief Event when a property had changed its value, used to update copies of the
-        /// property values used in other forms.
+        /// @brief Event when a property had changed its value, used to update
+        /// copies of the property values used in other forms.
         /// @param s Sender object to this event.
         /// @param e Arguments to this event, including the old value.
-        /// @version v22.06.01 - Added updating UseAnimations property on
-        /// CollapsibleSplitter controls.
+        /// @version v22.06.02 - Removes updating of `TabSize`, `LastPlugin`
+        /// and `UseAnimations` properties because now they are using
+        /// DataBindings as update mechanism.
         private void GearPropertyGrid_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
         {
             //to get the underlying property
@@ -124,31 +134,12 @@ namespace Gear.GUI
                         if (form is Emulator emulator)
                             emulator.UpdateVarValue(prop.Name);
                     break;
-                case "TabSize":
-                    foreach (Form form in ParentForm.MdiChildren)
-                        if (form is PluginEditor pluginEditor)
-                            pluginEditor.UpdateTabs(true);
-                    break;
-                case "LastPlugin":
-                    foreach (Form form in ParentForm.MdiChildren)
-                        if (form is PluginEditor pluginEditor)
-                            pluginEditor.UpdateLastPlugin();
-                    break;
-                case "UseAnimations":
-                    foreach (Form form in ParentForm.MdiChildren)
-                    {
-                        if (form is PluginEditor pluginEditor)
-                            pluginEditor.UpdateUseAnimation();
-                        if (form is Emulator emulator)
-                            emulator.UpdateVarValue(prop.Name);
-                    }
-                    break;
             }
         }
 
         /// @brief Manage event of closed window.
-        /// @param sender
-        /// @param e
+        /// @param sender Reference to object where event was raised.
+        /// @param e Form closed event data arguments.
         /// @version v20.10.01 - Added to manage only one instance of
         /// AppPropertiesEditor.
         private void AppPropertiesEditor_FormClosed(object sender, FormClosedEventArgs e)
@@ -157,13 +148,41 @@ namespace Gear.GUI
         }
 
         /// @brief Refresh form's Icon
-        /// @param sender
-        /// @param e
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
         /// @version v20.10.01 - Added.
         private void AppPropertiesEditor_Load(object sender, EventArgs e)
         {
             //workaround of bug on MDI Form (https://stackoverflow.com/a/6701490/10200101)
             Icon = Icon.Clone() as Icon;
+        }
+
+        /// <summary>Event handler when the grid lost the focus.</summary>
+        /// <param name="sender">Sender object to this event.</param>
+        /// <param name="e">Event arguments to this event.</param>
+        /// @version v22.06.02 - Added to manage visibility of Reset button.
+        private void GearPropertyGrid_Leave(object sender, EventArgs e)
+        {
+            ResetButton.Enabled = false;
+        }
+
+        /// <summary>Event handler when the property grid get the focus.</summary>
+        /// <param name="sender">Sender object to this event.</param>
+        /// <param name="e">Event arguments to this event.</param>
+        /// @version v22.06.02 - Added to manage visibility of Reset button.
+        private void GearPropertyGrid_Enter(object sender, EventArgs e)
+        {
+            if (GearPropertyGrid.SelectedGridItem != null)
+                ResetButton.Enabled = true;
+        }
+
+        /// <summary>Event handler when the selected grid item is changed.</summary>
+        /// <param name="sender">Sender object to this event.</param>
+        /// <param name="e">Event arguments to this event.</param>
+        /// @version v22.06.02 - Added to manage visibility of Reset button.
+        private void GearPropertyGrid_SelectedGridItemChanged(object sender, SelectedGridItemChangedEventArgs e)
+        {
+            ResetButton.Enabled = GearPropertyGrid.SelectedGridItem != null;
         }
     }
 }

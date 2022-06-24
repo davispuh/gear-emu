@@ -52,8 +52,9 @@ namespace Gear.GUI
         {
             this.GearPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.OKButton = new System.Windows.Forms.Button();
-            this.ButtonsPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.RefreshButton = new System.Windows.Forms.Button();
             this.ResetButton = new System.Windows.Forms.Button();
+            this.ButtonsPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.ButtonsPanel.SuspendLayout();
             this.SuspendLayout();
             //
@@ -64,8 +65,11 @@ namespace Gear.GUI
             this.GearPropertyGrid.MinimumSize = new System.Drawing.Size(250, 210);
             this.GearPropertyGrid.Name = "GearPropertyGrid";
             this.GearPropertyGrid.Size = new System.Drawing.Size(375, 279);
-            this.GearPropertyGrid.TabIndex = 0;
+            this.GearPropertyGrid.TabIndex = 1;
             this.GearPropertyGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.GearPropertyGrid_PropertyValueChanged);
+            this.GearPropertyGrid.SelectedGridItemChanged += new System.Windows.Forms.SelectedGridItemChangedEventHandler(this.GearPropertyGrid_SelectedGridItemChanged);
+            this.GearPropertyGrid.Enter += new System.EventHandler(this.GearPropertyGrid_Enter);
+            this.GearPropertyGrid.Leave += new System.EventHandler(this.GearPropertyGrid_Leave);
             //
             // OKButton
             //
@@ -73,14 +77,36 @@ namespace Gear.GUI
             this.OKButton.Location = new System.Drawing.Point(297, 3);
             this.OKButton.Name = "OKButton";
             this.OKButton.Size = new System.Drawing.Size(75, 23);
-            this.OKButton.TabIndex = 3;
-            this.OKButton.Text = "OK";
+            this.OKButton.TabIndex = 2;
+            this.OKButton.Text = "&OK";
             this.OKButton.UseVisualStyleBackColor = true;
             this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
+            //
+            // RefreshButton
+            //
+            this.RefreshButton.Location = new System.Drawing.Point(216, 3);
+            this.RefreshButton.Name = "RefreshButton";
+            this.RefreshButton.Size = new System.Drawing.Size(75, 23);
+            this.RefreshButton.TabIndex = 3;
+            this.RefreshButton.Text = "&Refresh";
+            this.RefreshButton.UseVisualStyleBackColor = true;
+            this.RefreshButton.Click += new System.EventHandler(this.RefreshButton_Click);
+            //
+            // ResetButton
+            //
+            this.ResetButton.AutoSize = true;
+            this.ResetButton.Location = new System.Drawing.Point(130, 3);
+            this.ResetButton.Name = "ResetButton";
+            this.ResetButton.Size = new System.Drawing.Size(80, 23);
+            this.ResetButton.TabIndex = 4;
+            this.ResetButton.Text = "&Default value";
+            this.ResetButton.UseVisualStyleBackColor = true;
+            this.ResetButton.Click += new System.EventHandler(this.ResetButton_Click);
             //
             // ButtonsPanel
             //
             this.ButtonsPanel.Controls.Add(this.OKButton);
+            this.ButtonsPanel.Controls.Add(this.RefreshButton);
             this.ButtonsPanel.Controls.Add(this.ResetButton);
             this.ButtonsPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.ButtonsPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
@@ -89,23 +115,12 @@ namespace Gear.GUI
             this.ButtonsPanel.MinimumSize = new System.Drawing.Size(250, 29);
             this.ButtonsPanel.Name = "ButtonsPanel";
             this.ButtonsPanel.Size = new System.Drawing.Size(375, 29);
-            this.ButtonsPanel.TabIndex = 5;
-            //
-            // ResetButton
-            //
-            this.ResetButton.AutoSize = true;
-            this.ResetButton.Location = new System.Drawing.Point(170, 3);
-            this.ResetButton.Name = "ResetButton";
-            this.ResetButton.Size = new System.Drawing.Size(121, 23);
-            this.ResetButton.TabIndex = 4;
-            this.ResetButton.Text = "Reset to default value";
-            this.ResetButton.UseVisualStyleBackColor = true;
-            this.ResetButton.Click += new System.EventHandler(this.ResetButton_Click);
+            this.ButtonsPanel.TabIndex = 0;
             //
             // AppPropertiesEditor
             //
             this.AcceptButton = this.OKButton;
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.AutoScroll = true;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(375, 308);
@@ -129,7 +144,9 @@ namespace Gear.GUI
 
         private System.Windows.Forms.PropertyGrid GearPropertyGrid;
         private System.Windows.Forms.Button OKButton;
-        private System.Windows.Forms.FlowLayoutPanel ButtonsPanel;
+        /// @version v22.06.02 - Added.
+        private System.Windows.Forms.Button RefreshButton;
         private System.Windows.Forms.Button ResetButton;
+        private System.Windows.Forms.FlowLayoutPanel ButtonsPanel;
     }
 }

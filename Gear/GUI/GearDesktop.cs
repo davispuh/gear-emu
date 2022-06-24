@@ -43,10 +43,12 @@ namespace Gear.GUI
         /// @details Load an binary image into a new emulator, from user
         /// selected file, remembering last binary directory, independently
         /// from last plugin directory.
-        /// @version v22.03.02 - Refactoring using OpenFileDialog.
+        /// @version v22.06.02 - Corrected error if no file name was selected
+        /// on dialog, but pressed open button. Also changed local variable
+        /// name to clarify its meaning.
         private void OpenBinaryButton_Click(object sender, EventArgs e)
         {
-            using (OpenFileDialog openFileDialog = new OpenFileDialog
+            using (OpenFileDialog dialog = new OpenFileDialog
                    {
                        Filter = "Propeller Runtime Image (*.binary;*.eeprom)|*.binary;" +
                                 "*.eeprom|All Files (*.*)|*.*",
@@ -55,14 +57,15 @@ namespace Gear.GUI
             {
                 //retrieve last binary location
                 if (!string.IsNullOrEmpty(Properties.Settings.Default.LastBinary))
-                    openFileDialog.InitialDirectory =
+                    dialog.InitialDirectory =
                         Path.GetDirectoryName(Properties.Settings.Default.LastBinary);
                 //invoke Dialog
-                if (openFileDialog.ShowDialog(this) != DialogResult.OK)
+                if (dialog.ShowDialog(this) != DialogResult.OK ||
+                    string.IsNullOrEmpty(dialog.FileName))
                     return;
-                Emulator emulator = new Emulator(Path.GetFileName(openFileDialog.FileName));
+                Emulator emulator = new Emulator(Path.GetFileName(dialog.FileName));
                 //if successfully load binary in emulator
-                if (emulator.OpenFile(openFileDialog.FileName))
+                if (emulator.OpenFile(dialog.FileName))
                 {
                     //show emulator window
                     emulator.MdiParent = this;
@@ -126,30 +129,30 @@ namespace Gear.GUI
         /// remembering independently from last binary directory.
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
+        /// @version v22.06.02 - Corrected error if no file name was selected
+        /// on dialog, but pressed open button and modified local variables
+        /// name to clarify its meaning.
         private void OpenPluginButton_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog
+            OpenFileDialog dialog = new OpenFileDialog
             {
                 Filter = "Gear plug-in component (*.xml)|*.xml|All Files (*.*)|*.*",
                 Title = "Open Gear Plug-in..."
             };
             if (!string.IsNullOrEmpty(Properties.Settings.Default.LastPlugin))
-                openFileDialog.InitialDirectory =
+                dialog.InitialDirectory =
                     Path.GetDirectoryName(Properties.Settings.Default.LastPlugin);
 
-            if (openFileDialog.ShowDialog(this) == DialogResult.OK)
-            {
-                PluginEditor plugin = new PluginEditor(false);
+            if (dialog.ShowDialog(this) != DialogResult.OK ||
+                string.IsNullOrEmpty(dialog.FileName))
+                return;
+            PluginEditor pluginEditor = new PluginEditor(false);
 
-                if (plugin.OpenFile(openFileDialog.FileName, false))
-                {
-                    //remember plugin successfully loaded
-                    plugin.UpdateDefaultLastPluginOpened();
-                    //show plugin editor loaded with selected one
-                    plugin.MdiParent = this;
-                    plugin.ShowErrorGrid(false);    //hide it by default
-                    plugin.Show();
-                }
+            if (pluginEditor.OpenPluginFromFile(dialog.FileName, false))
+            {
+                //show plugin editor loaded with selected one
+                pluginEditor.MdiParent = this;
+                pluginEditor.Show();
             }
         }
 
@@ -167,14 +170,16 @@ namespace Gear.GUI
         /// @brief Open a window with the plugin editor to create a new plugin.
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
+        /// @version v22.06.02 - Modified local variable name to clarify
+        /// its meaning.
         private void NewPluginButton_Click(object sender, EventArgs e)
         {
             //load default plugin template
-            PluginEditor plugin = new PluginEditor(true)
+            PluginEditor pluginEditor = new PluginEditor(true)
             {
                 MdiParent = this
             };
-            plugin.Show();
+            pluginEditor.Show();
         }
 
         /// @brief Open a window with the plugin editor to create a new plugin.
@@ -204,13 +209,11 @@ namespace Gear.GUI
             catch (SingleInstanceException)
             {
                 foreach(var form in MdiChildren)
-                {
                     if (form is AppPropertiesEditor)
                     {
                         form.Activate();
                         break;
                     }
-                }
             }
         }
 

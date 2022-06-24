@@ -50,13 +50,19 @@ namespace Gear.GUI
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RingMeter));
             this.SuspendLayout();
             //
             // RingMeter
             //
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("Gear_Control0")));
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.CausesValidation = false;
             this.DoubleBuffered = true;
+            this.Font = new System.Drawing.Font("Courier New", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "RingMeter";
             this.Size = new System.Drawing.Size(214, 214);
             this.ResumeLayout(false);

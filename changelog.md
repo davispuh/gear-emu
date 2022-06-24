@@ -1,6 +1,22 @@
 # Change Log
 
-## Commit  Code cleanup UI BitView + paint optimization
+## Commit  Code cleanup UI on RingMeter & MemoryView + performance improvement
+
+- Changed Gear image on ring meter: updated to better quality and colorful image and improved performance, thanks to refactoring, use precalculated screen positions for numbers on ring, pre-defined images, paralellism to load resources and precalculate.
+- Corrected error if no file name was selected on dialog to open a plugin or binary file, but pressed open button. Corrected methods `PluginEditor.OpenButton_Click(.)`, `GearDesktop.OpenPluginButton_Click(.)`, `GearDesktop.OpenBinaryButton_Click(.)`, `Emulator.OpenPlugin_Click(.)`, `Emulator.OpenBinary_Click(.)`.
+- Auto update of program properties, using binding instead of custom methods, for `EmbeddedCode`, `TabSize`, `LastPlugin` and `UseAnimations`in files [`AppPropertiesEditor.cs`](Gear/GUI/AppPropertiesEditor.cs), [`Emulator.cs`](Gear/GUI/Emulator.cs), [`PluginEditor.cs`](Gear/GUI/PluginEditor.cs).
+- Added Refresh button and manage visibility of Reset button on [`AppPropertiesEditor.cs`](Gear/GUI/AppPropertiesEditor.cs).
+- Improved font rendering and drawing aliased lines on [`Emulator.cs`](Gear/GUI/Emulator.cs), [`HubView.cs`](Gear/GUI/HubView.cs), [`RingMeter.cs`](Gear/GUI/RingMeter.cs), [`BitView.cs`](Gear/GUI/BitView.cs), [`MemoryView.cs`](Gear/GUI/MemoryView.cs), [`PluginEditor.cs`](Gear/GUI/PluginEditor.cs).
+- Code cleanup and refactoring in files: [`RingMeter.cs`](Gear/GUI/RingMeter.cs), [`MemoryView.cs`](Gear/GUI/MemoryView.cs) and in some places in [`PluginBase.cs`](Gear/PluginSupport/PluginBase.cs), [`PluginEditor.cs`](Gear/GUI/PluginEditor.cs), [`PropellerCPU.cs`](Gear/EmulationCore/PropellerCPU.cs), [`ModuleCompiler.cs`](Gear/PluginSupport/ModuleCompiler.cs).
+  - Refactored naming and visibility of members, parameters and local variables in classes, methods and enums.
+  - Identify paralellism points with complexity.
+  - Added XML & Doxygen comments in files.
+  - Removed extra spaces at line ends.
+
+- New file [`CommonUI.cs`](Gear/GUI/CommonUI.cs) to declare common objects for User Interface. Moved there declaration of `IRequestRepaintable` interface.
+
+
+## Release Version [22.06.01](https://github.com/davispuh/gear-emu/releases/tag/v22.06.01) UI Speed optimizations and Commit [27bcd05](https://github.com/davispuh/gear-emu/commit/27bcd05fd06c5c43dcbca9d0c3eaa37c89d0c7a9) Code cleanup UI BitView + paint optimization
 
 - Improved performance of GUI on `BitView` control, redrawing it only on value changes.
   - Conditional control painting: only pins changed or full redraw if it is requested.

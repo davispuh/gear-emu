@@ -25,9 +25,9 @@ using Gear.EmulationCore;
 using System.Windows.Forms;
 
 /// @brief Name space for Plugin support.
-/// @details Contains the classes that defines the plugin system: the plugin class
-/// structure itself, the loading of plugins from XML files, the compiling and instantiation
-/// of a plugin class.
+/// @details Contains the classes that defines the plugin system: the plugin
+/// class structure itself, the loading of plugins from XML files,
+/// the compiling and instantiation of a plugin class.
 namespace Gear.PluginSupport
 {
     /// @brief Base class for plugin support.
@@ -36,19 +36,22 @@ namespace Gear.PluginSupport
     /// @note See Asterisk's comments:
     /// Source: <a href="https://forums.parallax.com/discussion/comment/636953/#Comment_636953">
     /// Original thread on GEAR with explanation of plugin class</a>
-    /// @remarks To see examples of how to use it, see the directory 'plugins' included with
-    /// the source code.
+    /// @remarks To see examples of how to use it, see the directory 'plugins'
+    /// included with the source code.
     public partial class PluginBase : UserControl
     {
         /// @brief Reference to PropellerCPU for the plugin.
-        /// @version v15.03.26 - Added reference to keep PropellerCPU internal to class.
+        /// @version v15.03.26 - Added reference to keep PropellerCPU internal
+        /// to class.
         protected PropellerCPU Chip;
 
         /// @brief Title of the tab window.
-        /// @note Changed default value , based on a comment from Asterisk from propeller forum:
+        /// @note Changed default value , based on a comment from Asterisk
+        /// from propeller forum:
         /// Source: <a href="https://forums.parallax.com/discussion/comment/627190/#Comment_627190">
-        /// Post #32 from original GEAR post</a>. It shows that the original name of the class
-        /// was "BusModule". Changed to the new name of the class.
+        /// Post #32 from original GEAR post</a>. It shows that the original
+        /// name of the class was "BusModule". Changed to the new name of
+        /// the class.
         /// @version v15.03.26 - change the default name.
         public virtual string Title => "Plugin Base";
 
@@ -58,7 +61,8 @@ namespace Gear.PluginSupport
         // Mirror Post for Version V08_10_16 in propeller forums</a>
         public virtual bool AllowHotKeys => true;
 
-        /// @brief Attribute to allow the window to be closed (default) or not (like cog windows).
+        /// @brief Attribute to allow the window to be closed (default) or
+        /// not (like cog windows).
         /// @remarks Not to be used in Plugin Editor by user plugins.
         public virtual bool IsClosable => true;
 
@@ -67,7 +71,8 @@ namespace Gear.PluginSupport
         public virtual bool IsUserPlugin => true;
 
         /// @brief Default constructor.
-        /// @note Not to be used by plugin derived class, only by the Designer in MSVC.
+        /// @note Not to be used by plugin derived class, only by the
+        /// Designer in Visual Studio.
         /// @remarks Not to be used in Plugin Editor by user plugins.
         protected PluginBase()
         {
@@ -91,7 +96,9 @@ namespace Gear.PluginSupport
         }
 
         /// @brief Register the events to be notified to this plugin.
-        /// @details Set the reference to the emulated chip. Occurs once the plugin is loaded.
+        /// @details Set the reference to the emulated chip. Occurs once
+        /// the plugin is loaded.
+        ///
         /// Also, if you need the plugin be notified on pin or clock changes, you
         /// need to add inside this method calls to NotifyOnPins or NotifyOnClock.
         /// To keep good performance, use only the essentials ones.
@@ -105,23 +112,24 @@ namespace Gear.PluginSupport
         public virtual void OnReset() { }
 
         /// @brief Event when the plugin is closing.
-        /// @details Useful to reset pins states or direction to initial state before loading the
-        /// plugin, or to release pins driven by the plugin.
+        /// @details Useful to reset pins states or direction to initial state
+        /// before loading the plugin, or to release pins driven by the plugin.
         /// @version v15.03.26 - Added.
         public virtual void OnClose() { }
 
-        /// @brief Event when a clock tick is informed to the plugin, in clock units.
+        /// @brief Event when a clock tick is informed to the plugin, in clock
+        /// units.
         /// @param time Time in seconds of the emulation.
         /// @param sysCounter Present system clock in ticks unit.
-        /// @warning If sysCounter is used only, the plugin designer have to take measures to
-        /// detect and manage system counter rollover.
+        /// @warning If sysCounter is used only, the plugin designer have
+        /// to take measures to detect and manage system counter rollover.
         /// @version v15.03.26 - Modified to have two parameters.
         public virtual void OnClock(double time, uint sysCounter) { }
 
         /// @brief Event when some pin changed and is informed to the plugin.
-        /// @note Asterisk's: occurs every time a pin has changed states. PinState tells you if
-        /// either the propeller or another component has set the pin Hi or Lo, or if the pin is
-        /// floating.
+        /// @note Asterisk's: occurs every time a pin has changed states.
+        /// PinState tells you if either the propeller or another component
+        /// has set the pin Hi or Lo, or if the pin is floating.
         /// @note Source: <a href="https://forums.parallax.com/discussion/comment/625629/#Comment_625629">
         /// API GEAR described on GEAR original Post</a>
         /// @param time Time in seconds.
@@ -130,9 +138,10 @@ namespace Gear.PluginSupport
         public virtual void OnPinChange(double time, PinState[] pinStates) { }
 
         /// @brief Event to repaint the plugin screen (if used).
-        /// @note Asterisk's: occurs when the GUI has finished executing a emulation 'frame'
-        /// (variable number of clocks). Force is always true (this means that the call wants to
-        /// 'force' an update, this is provided so you can pass a false for non-forced repaints).
+        /// @note Asterisk's: occurs when the GUI has finished executing
+        /// a emulation 'frame' (variable number of clocks). Force is always
+        /// true (this means that the call wants to 'force' an update, this is
+        /// provided so you can pass a false for non-forced repaints).
         /// @note Source: <a href="https://forums.parallax.com/discussion/comment/625629/#Comment_625629">
         /// API GEAR described on GEAR original Post</a>
         /// @param force Flag to indicate the intention to force the repaint.
@@ -158,9 +167,12 @@ namespace Gear.PluginSupport
         /// @details The purpose of this method is to isolate the access to
         /// the underline Chip.
         /// @param pin Pin number to drive.
-        /// @param isFloating Boolean to left the pin floating (=true) or to set on input/output mode (=false).
-        /// @param isHigh Boolean to set on High state (=true) or to set on Low (=false).
-        /// @version v22.05.02 - Parameter names changed, to clarify purpose of each one.
+        /// @param isFloating Boolean to left the pin floating (=true) or to
+        /// set on input/output mode (=false).
+        /// @param isHigh Boolean to set on High state (=true) or to set
+        /// on Low (=false).
+        /// @version v22.05.02 - Parameter names changed, to clarify purpose
+        /// of each one.
         public void DrivePin(int pin, bool isFloating, bool isHigh)
         {
             Chip.DrivePin(pin, isFloating, isHigh);

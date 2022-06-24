@@ -50,9 +50,9 @@ namespace Gear.GUI
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
-            System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GearDesktop));
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.openBinaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -78,8 +78,6 @@ namespace Gear.GUI
             this.OptionsButton = new System.Windows.Forms.ToolStripButton();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.statusStrip.SuspendLayout();
@@ -87,13 +85,13 @@ namespace Gear.GUI
             //
             // toolStripSeparator3
             //
-            toolStripSeparator3.Name = "toolStripSeparator3";
-            toolStripSeparator3.Size = new System.Drawing.Size(183, 6);
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(183, 6);
             //
             // toolStripSeparator1
             //
-            toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
             //
             // menuStrip
             //
@@ -113,7 +111,7 @@ namespace Gear.GUI
             //
             this.fileMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openBinaryToolStripMenuItem,
-            toolStripSeparator3,
+            this.toolStripSeparator3,
             this.newPluginToolStripMenuItem,
             this.editPluginToolStripMenuItem,
             this.toolStripSeparator4,
@@ -266,7 +264,7 @@ namespace Gear.GUI
             //
             this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openBinaryButton,
-            toolStripSeparator1,
+            this.toolStripSeparator1,
             this.newPluginButton,
             this.openPluginButton,
             this.toolStripSeparator2,
@@ -340,7 +338,7 @@ namespace Gear.GUI
             // toolStripStatusLabel
             //
             this.toolStripStatusLabel.Name = "toolStripStatusLabel";
-            this.toolStripStatusLabel.Size = new System.Drawing.Size(343, 17);
+            this.toolStripStatusLabel.Size = new System.Drawing.Size(404, 17);
             this.toolStripStatusLabel.Text = "Emulator shortcut keys:  R - Run; S - Stop or Step Instruction; C - Step Clock";
             //
             // GearDesktop
@@ -369,7 +367,6 @@ namespace Gear.GUI
         }
         #endregion
 
-
         private System.Windows.Forms.MenuStrip menuStrip;
         private System.Windows.Forms.ToolStrip toolStrip;
         private System.Windows.Forms.StatusStrip statusStrip;
@@ -395,5 +392,7 @@ namespace Gear.GUI
         private System.Windows.Forms.ToolStripMenuItem editPluginToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
     }
 }

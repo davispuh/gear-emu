@@ -24,84 +24,134 @@
 using Gear.EmulationCore;
 using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 namespace Gear.GUI
 {
     /// @brief Main memory viewer.
-    public partial class MemoryView : Gear.PluginSupport.PluginBase
+    public partial class MemoryView : PluginSupport.PluginBase
     {
-        private readonly Font MonoFont;
-        private Bitmap BackBuffer;
+        /// <summary>Bitmap buffer to draw the memory lines.</summary>
+        /// @version v22.06.02 - Name changed to follow naming conventions.
+        private Bitmap _backBuffer;
 
-        public override string Title
+        /// <summary>Graphic style to draw text.</summary>
+        /// @version v22.06.02 - Added.
+        private Graphics _mainGraphics;
+
+        /// <summary>Pen style to draw lines.</summary>
+        /// @version v22.06.02 - Added.
+        private readonly Pen _defaultPen;
+
+        /// <summary>Bitmap buffer property to draw the memory lines.</summary>
+        /// @version v22.06.02 - Added as property to hold the relationship
+        /// with MainGraphics property.
+        private Bitmap BackBuffer
         {
-            get { return "Main Memory"; }
+            get => _backBuffer;
+            set
+            {
+                if (_backBuffer == value | value == null)
+                    return;
+                _backBuffer = value;
+                MainGraphics = Graphics.FromImage(_backBuffer);
+            }
         }
 
-        public override bool IsClosable
+        /// <summary>Graphic style property to draw text.</summary>
+        /// @version v22.06.02 - Added as property to set the font
+        /// aliasing style for text of the control.
+        private Graphics MainGraphics
         {
-            get { return false; }
+            get => _mainGraphics;
+            set
+            {
+                _mainGraphics = value;
+                _mainGraphics.SmoothingMode = SmoothingMode.HighQuality;
+            }
         }
 
-        public override bool IsUserPlugin
-        {
-            get { return false; }
-        }
+        /// <summary>Title of the tab window.</summary>
+        public override string Title => "Main Memory";
 
+        /// <summary>Attribute to allow the window to be closed (default) or
+        /// not (like cog windows).</summary>
+        public override bool IsClosable => false;
+
+        /// <summary>Identify a plugin as user (=true) or system (=false).</summary>
+        public override bool IsUserPlugin => false;
+
+        /// <summary>Default Constructor.</summary>
+        /// <param name="chip"></param>
+        /// @version v22.06.02 - Modified to remove the definition of
+        /// a separated Font object.
         public MemoryView(PropellerCPU chip) : base(chip)
         {
-            MonoFont = new Font(FontFamily.GenericMonospace, 10);
-            if (MonoFont == null)
-                MonoFont = this.Font;
-
             InitializeComponent();
-            positionScrollBar.Minimum = 0;
+            _defaultPen = new Pen(Color.Black, 1);
         }
 
-        public override void PresentChip()
+        /// <summary>Register the events to be notified to this plugin.</summary>
+        public override void PresentChip() { }
+
+        /// <summary>Event to repaint the plugin screen (if used).</summary>
+        /// <param name="force">Flag to indicate the intention to force the repaint.</param>
+        /// @version v22.06.01 - Modified to minimize the rectangle paints,
+        /// changed local variable names to clarify their meaning and to use
+        /// constant `PropellerCPU.TotalMemory`. Added header to clarify the
+        /// meaning of each column.
+        public override void Repaint(bool force)
         {
-
-        }
-
-        public override void Repaint(bool tick)
-        {
-            Graphics g = Graphics.FromImage((Image)BackBuffer);
-            byte[] b = new byte[4];
-
             if (Chip == null)
                 return;
-
-            for (int i = positionScrollBar.Value, p = 0;
-                p < memoryPanel.Height && i < 0x10000;
-                i += 4, p += MonoFont.Height)
+            byte[] valueAsByte = new byte[4];
+            //clear all panel
+            MainGraphics.FillRectangle(SystemBrushes.Control, 0, 0,
+                memoryPanel.Width, memoryPanel.Height);
+            //draw the header
+            MainGraphics.DrawLine(_defaultPen, 0, Font.Height + 1,
+                memoryPanel.Width, Font.Height + 1);
+            MainGraphics.DrawString(
+                "Address     :   +0  +1  +2  +3  :\t WORD0\t WORD1 :\tSWORD0\tSWORD1\t:\tSIGNED LONG",
+                Font, SystemBrushes.ControlText, 0, 0);
+            //draw all other lines
+            for (int idx = positionScrollBar.Value, linePosition = Font.Height + 2;
+                 idx < PropellerCPU.TotalMemory && linePosition < memoryPanel.Height;
+                 idx += 4, linePosition += Font.Height)
             {
-                for (int bi = 0; bi < 4; bi++)
-                    b[bi] = Chip[i + bi];
-
-                ushort s1 = (ushort)(b[0] | (b[1] << 8));
-                ushort s2 = (ushort)(b[2] | (b[3] << 8));
-
-                int i1 = (int)(s1 | (s2 << 16));
-
-                g.FillRectangle(SystemBrushes.Control, 0, p, memoryPanel.Width,
-                    p + MonoFont.Height);
-                g.DrawString(string.Format("{0:X4}:  {1:X2} {2:X2} {3:X2} {4:X2}  :" +
-                    "\t{5}\t{6}\t{7}\t{8}\t{9:d}", i, b[0], b[1], b[2], b[3], s1, s2,
-                    (short)s1, (short)s2, i1), MonoFont, SystemBrushes.ControlText, 0, p);
+                for (int byteGroupIndex = 0; byteGroupIndex < 4; byteGroupIndex++)
+                    valueAsByte[byteGroupIndex] = Chip[idx + byteGroupIndex];
+                ushort valueAsUnsignedWord1 = (ushort)(valueAsByte[0] | (valueAsByte[1] << 8));
+                ushort valueAsUnsignedWord2 = (ushort)(valueAsByte[2] | (valueAsByte[3] << 8));
+                int valueAsSignedLong = valueAsUnsignedWord1 | (valueAsUnsignedWord2 << 16);
+                MainGraphics.DrawString(
+                    $"${idx:X4} {idx,5:D} :  ${valueAsByte[0]:X2} ${valueAsByte[1]:X2} ${valueAsByte[2]:X2} ${valueAsByte[3]:X2}  :" +
+                    $"\t{valueAsUnsignedWord1,6}\t{valueAsUnsignedWord2,6} :\t" +
+                    $"{(short)valueAsUnsignedWord1,6}\t{(short)valueAsUnsignedWord2,6} :\t" +
+                    $"{valueAsSignedLong,11:d}",
+                    Font, SystemBrushes.ControlText, 0, linePosition);
             }
-
             memoryPanel.CreateGraphics().DrawImageUnscaled(BackBuffer, 0, 0);
         }
 
-        private void PaintMemoryView(object sender, PaintEventArgs e)
+        /// <summary>Event handler to paint memory panel.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Paint event data arguments.</param>
+        /// @version v22.06.01 - Method name changed to clarify its meaning.
+        private void MemoryPanel_Paint(object sender, PaintEventArgs e)
         {
             e.Graphics.DrawImageUnscaled(BackBuffer, 0, 0);
         }
 
-        private void SizeChange(object sender, EventArgs e)
+        /// <summary>Event Handler on size changed of Memory panel.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
+        /// @version v22.06.01 - Method name changed to clarify its meaning and
+        /// modified to use constant `PropellerCPU.TotalMemory`.
+        private void MemoryPanel_SizeChange(object sender, EventArgs e)
         {
-            positionScrollBar.Maximum = 0x10000 - memoryPanel.Height / MonoFont.Height;
+            positionScrollBar.Maximum = PropellerCPU.TotalMemory - memoryPanel.Height / Font.Height;
 
             if (memoryPanel.Width > 0 && memoryPanel.Height > 0)
                 BackBuffer = new Bitmap(
@@ -112,11 +162,18 @@ namespace Gear.GUI
             Repaint(false);
         }
 
-        private void PositionChanged(object sender, ScrollEventArgs e)
+        /// <summary>Event Handler on position changed of scroll bar.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Scroll event data arguments.</param>
+        /// @version v22.06.01 - Method name changed to clarify its meaning.
+        private void PositionScrollBar_PositionChanged(object sender, ScrollEventArgs e)
         {
             Repaint(false);
         }
 
+        /// <summary>Event Handler on mouse click on Memory panel.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Mouse event data arguments.</param>
         private void MemoryPanel_MouseClick(object sender, MouseEventArgs e)
         {
             positionScrollBar.Focus();

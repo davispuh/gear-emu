@@ -27,6 +27,7 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
@@ -42,8 +43,8 @@ namespace Gear.GUI
     public partial class PluginEditor : Form
     {
         /// @brief Flag if the plugin definition has changed.
-        /// To determine changes, it includes not only the C# code, but also class name and
-        /// reference list.
+        /// @details To determine changes, it includes not only the C# code,
+        /// but also class name and reference list.
         /// @version v22.06.01 - Name changed to follow naming conventions.
         private bool _codeChanged;
         /// @brief Enable or not change detection event.
@@ -89,9 +90,24 @@ namespace Gear.GUI
             "volatile", "where", "while", "yield"
         };
 
+        /// <summary>Tabulator size for code editor.</summary>
+        /// @version v22.06.02 - Added as member to establish data binding
+        /// to program properties.
+        private uint _tabSize;
+
         /// @brief Tabulation array for editor.
         /// @version v22.06.01 - Name changed to follow naming conventions.
         private readonly int[] _tabs = new int[32];
+
+        /// <summary></summary>
+        /// @version v22.06.02 - Added as member to establish data binding
+        /// to program properties.
+        private bool _embeddedCode;
+
+        /// <summary>File name of the plugin.</summary>
+        /// <remarks>If it is not saved, its value is empty.</remarks>
+        /// @version v22.06.02 - Added.
+        private string _pluginFileName;
 
         /// @brief Detection of separated file for code.
         /// @version v20.08.01 - Added.
@@ -100,15 +116,25 @@ namespace Gear.GUI
         /// @brief Return last plugin successfully loaded o saved.
         /// @details Useful to remember last plugin directory.
         /// @note Include full path and name to the file.
-        /// @version v20.08.01 - Simplified to implicit member.
-        private string LastPlugin { get; set; }
+        /// @version v22.06.02 - Modified visibility to enable data binding
+        /// to program properties.
+        public string LastPlugin{ get; set; }
 
         /// @brief Complete Name for plugin, including path, for presentation purposes.
         /// @version v15.03.26 - Added.
-        private string PluginFileName =>
-            !string.IsNullOrEmpty(LastPlugin) ?
-                new FileInfo(LastPlugin).Name :
-                "<New plugin>";
+        private string PluginFileName
+        {
+            get => string.IsNullOrEmpty(_pluginFileName) ?
+                "<New plugin>" :
+                _pluginFileName;
+            set
+            {
+                if (_pluginFileName == value)
+                    return;
+                _pluginFileName = value;
+                UpdateTitles();
+            }
+        }
 
         /// @brief Attribute for changed plugin detection.
         /// @version v22.04.02 - Changed to private property.
@@ -117,13 +143,46 @@ namespace Gear.GUI
             get => _codeChanged;
             set
             {
+                if (_codeChanged == value)
+                    return;
                 _codeChanged = value;
                 UpdateTitles();
             }
         }
 
+        /// <summary>Property to establish tabulator size for code editor.</summary>
+        /// @version v22.06.02 - Added as property to establish data binding
+        /// to program properties and reformat editor text with new values.
+        public uint TabSize
+        {
+            get => _tabSize;
+            set
+            {
+                _tabSize = value;
+                UpdateTabPositions();
+                if (!DesignMode && !_tabs.SequenceEqual(codeEditorView.SelectionTabs))
+                    ReformatTextOnTabsUpdated();
+            }
+        }
+
+        /// <summary>Property to set flag to embed the code of a plugin into XML,
+        /// or to have it on a separated file.</summary>
+        /// @version v22.06.02 - Added as property to establish data binding
+        /// to program properties.
+        public bool EmbeddedCode
+        {
+            get => _embeddedCode;
+            set
+            {
+                _embeddedCode = value;
+                EmbeddedCodeButton.Checked = _embeddedCode;
+                UpdateTextEmbeddedCodeButton();
+            }
+        }
+
         /// <summary>Property to get/set the Form font.</summary>
-        /// @version v22.06.01 - Added to prevent warning 'Virtual member call in constructor'.
+        /// @version v22.06.01 - Added to prevent warning 'Virtual member call
+        /// in constructor'.
         public sealed override Font Font
         {
             get => base.Font;
@@ -131,21 +190,34 @@ namespace Gear.GUI
         }
 
         /// @brief Default constructor.
-        /// Initialize the class, defines columns for error grid, setting changes
+        /// @details Initialize the class, defines columns for error grid, setting changes
         /// detection, and trying to load the default template for plugin.
         /// @param loadDefaultTemplate Indicate to load default template (=true) or
         /// no template at all(=false).
-        /// @version v15.03.26 - Added parameter for loading default template for plugin.
+        /// @version v22.06.02 - Added data bindings of program settings
+        /// `EmbeddedCode`, `TabSize`, `LastPlugin` and `UseAnimations` properties.
         public PluginEditor(bool loadDefaultTemplate)
         {
             InitializeComponent();
+            //init values
+            _pluginFileName = string.Empty;
             _changeDetectEnabled = false;
+            CodeChanged = false;
+            SeparatedFileExist = false;
+            //bonded properties
+            TabSize = Properties.Settings.Default.TabSize;
+            DataBindings.Add(new Binding("TabSize", Properties.Settings.Default,
+                "TabSize", false, DataSourceUpdateMode.OnPropertyChanged));
+            LastPlugin = Properties.Settings.Default.LastPlugin;
+            DataBindings.Add(new Binding("LastPlugin", Properties.Settings.Default,
+                "LastPlugin", false, DataSourceUpdateMode.OnPropertyChanged));
+            EmbeddedCode = Properties.Settings.Default.EmbeddedCode;
+            DataBindings.Add(new Binding("EmbeddedCode", Properties.Settings.Default,
+                "EmbeddedCode", false, DataSourceUpdateMode.OnPropertyChanged));
             // setting default font
             defaultFont = new Font(FontFamily.GenericMonospace, 10, FontStyle.Regular);
             fontBold = new Font(defaultFont, FontStyle.Bold);
             codeEditorView.Font = defaultFont ?? Font;
-            //set editor tabulators
-            UpdateTabs(reloadText: false);
             //load default plugin template
             if (loadDefaultTemplate)
             {
@@ -153,12 +225,11 @@ namespace Gear.GUI
                 {
                     codeEditorView.LoadFile(@"Resources\PluginTemplate.cs",
                         RichTextBoxStreamType.PlainText);
+                    CodeChanged = true;
                 }
                 catch (IOException) { }       //do nothing, maintaining empty the code text box
                 catch (ArgumentException) { } //
             }
-            //init values
-            LastPlugin = string.Empty;
             _changeDetectEnabled = true;
             CodeChanged = false;
             SeparatedFileExist = false;
@@ -169,30 +240,53 @@ namespace Gear.GUI
             errorListView.Columns.Add("Line", -2, HorizontalAlignment.Right);
             errorListView.Columns.Add("Column", -2, HorizontalAlignment.Right);
             errorListView.Columns.Add("Message", -2, HorizontalAlignment.Left);
-            //retrieve the last state for embedded code from settings
-            SetEmbeddedCodeButton(Properties.Settings.Default.EmbeddedCode);
             //additional UI init
             progressHighlight.Visible = false;
         }
 
-        /// @brief Update tab size, considering default tab size.
-        /// @param reloadText To reload text after.
-        /// @version v20.09.01 - Added.
-        public void UpdateTabs(bool reloadText)
+        /// @brief Update tab positions, considering default tab size.
+        /// @version v22.06.02 - Changed method name to clarify its meaning,
+        /// modified to use new property TabSize, changed method visibility,
+        /// and separate logic of reformat in new method
+        /// `ReformatTextOnTabsUpdated()`.
+        private void UpdateTabPositions()
         {
-            RememberRTBoxPosition checkpoint =
-                new RememberRTBoxPosition(codeEditorView);
-            // setting tab width
+            // tab width
             for (int i = 0; i < _tabs.Length; i++)
             {
-                int size = (i + 1) * (int)Properties.Settings.Default.TabSize;
+                int size = (i + 1) * (int)TabSize - 1;
                 _tabs[i] = TextRenderer.MeasureText(
                     new string(' ', size),
                     defaultFont).Width;
             }
-            codeEditorView.SelectionTabs = _tabs;
-            if (reloadText & codeEditorView.Text.Length > 0)
+        }
+
+        /// <summary>Reformat editor text with new positions of tab stops.</summary>
+        /// @version v22.06.02 - Added to implement reformat text after tab
+        /// size changed on program properties.
+        private void ReformatTextOnTabsUpdated()
+        {
+            if (codeEditorView.Text.Length > 0)
+            {
+                //don't alter code changed status
+                _changeDetectEnabled = false;
+                //remember text cursor position
+                RememberRTBoxPosition checkpoint =
+                    new RememberRTBoxPosition(codeEditorView);
+                //using temporary file to store contents of editor text
+                string tempFile = Path.GetTempFileName();
+                codeEditorView.SaveFile(tempFile, RichTextBoxStreamType.PlainText);
+                codeEditorView.Clear();
+                codeEditorView.SelectionTabs = _tabs;
+                //reload to reformat
+                codeEditorView.LoadFile(tempFile, RichTextBoxStreamType.PlainText);
+                File.Delete(tempFile);
+                //restore text cursor position
                 checkpoint.RestorePosition();
+                _changeDetectEnabled = true;
+            }
+            else
+                codeEditorView.SelectionTabs = _tabs;
         }
 
         /// @brief Shows or hide the error grid.
@@ -214,14 +308,13 @@ namespace Gear.GUI
             Text = $"Plugin Editor: {PluginFileName}{(CodeChanged ? " *" : string.Empty)}";
         }
 
-        /// @brief Load a plugin from File in Plugin Editor, updating the screen.
-        /// @details This method take care of update change state of the window.
-        /// @param fileName Name of the file to open.
-        /// @param displayErrors Flag to show errors in the error grid.
-        /// @returns Success on load the file on the editor (=true) or fail (=false).
-        /// @version v22.06.01 - Parameter name and local variable names changed
-        /// to follow naming conventions.
-        public bool OpenFile(string fileName, bool displayErrors)
+        /// <summary>Load a plugin from File in Plugin Editor, updating the screen.</summary>
+        /// <param name="fileName">Name of the file to open.</param>
+        /// <param name="displayErrors">Flag to show errors in the error grid.</param>
+        /// <returns>Success on load the file on the editor (=true) or fail (=false).</returns>
+        /// @version v22.06.02 - Modified method name to clarify its meaning,
+        /// and modified to use new EmbeddedCode property.
+        public bool OpenPluginFromFile(string fileName, bool displayErrors)
         {
             XmlReaderSettings settings = new XmlReaderSettings
             {
@@ -256,7 +349,7 @@ namespace Gear.GUI
                             if (reader.NodeType == XmlNodeType.Text ||
                                     reader.NodeType == XmlNodeType.CDATA)
                                 codeEditorView.Text = reader.Value;
-                            SetEmbeddedCodeButton(true);
+                            EmbeddedCode = true;
                             SeparatedFileExist = false;
                         }
                         else
@@ -264,7 +357,7 @@ namespace Gear.GUI
                             codeFileName = Path.Combine(Path.GetDirectoryName(fileName) ??
                                                         string.Empty, codeFileName);
                             codeEditorView.Text = File.ReadAllText(codeFileName);
-                            SetEmbeddedCodeButton(false);
+                            EmbeddedCode = false;
                             SeparatedFileExist = true;
                         }
                         codeEditorView.DeselectAll();
@@ -296,7 +389,13 @@ namespace Gear.GUI
                             break;
                     }
                 }
+                //end loading
+                reader.Close();
+                //refresh & store the plugin name
+                PluginFileName = fileName;
                 LastPlugin = fileName;
+                UpdateDefaultLastPluginOpened();
+                //update modified state for the plugin
                 CodeChanged = false;
                 if (displayErrors)
                 {
@@ -340,12 +439,10 @@ namespace Gear.GUI
             Console.WriteLine($"DTD Validation Error on plugin file: {e.Message}");
         }
 
-        /// @brief Save a XML file with the plugin information.
-        /// @details Take care of update change state of the window. No need to do it in
-        /// methods who call this.
-        /// @version v22.06.01 - Parameter name and local variable names changed
-        /// to follow naming conventions.
-        public void SaveFile(string fileName)
+        /// <summary>Save a XML file with the plugin information.</summary>
+        /// @version v22.06.02 - Modified to use new EmbeddedCode property and
+        /// changed method visibility.
+        private void SavePluginToFile(string fileName)
         {
             XmlDocument xmlDoc = new XmlDocument();
             //declaration section
@@ -372,14 +469,14 @@ namespace Gear.GUI
             instance = xmlDoc.CreateElement("code");
             string newName = Path.ChangeExtension(fileName, "cs");
             string codeFileName = Path.GetFileName(newName);
-            if (EmbeddedCode.Checked)
+            if (EmbeddedCode)
                 instance.AppendChild(
                     xmlDoc.CreateCDataSection(codeEditorView.Text));
             else
                 instance.SetAttribute("codeFileName", codeFileName);
             root.AppendChild(instance);
             xmlDoc.Save(fileName);
-            if (!EmbeddedCode.Checked)
+            if (!EmbeddedCode)
             {
                 File.WriteAllText(newName, codeEditorView.Text,
                     new UTF8Encoding(true));
@@ -397,17 +494,18 @@ namespace Gear.GUI
                     File.Delete(newName);
                 SeparatedFileExist = false;
             }
+            //refresh & store the plugin name
+            PluginFileName = fileName;
+            LastPlugin = fileName;
+            UpdateDefaultLastPluginOpened();
             //update modified state for the plugin
             CodeChanged = false;
-            //refresh & store the plugin name
-            LastPlugin = fileName;
-            UpdateTitles();
         }
 
         /// @brief Method to compile C# source code to check errors on it.
-        /// Actually call a C# compiler to determine errors, using references.
-        /// @param sender Object who called this on event.
-        /// @param e `EventArgs` class with a list of argument to the event call.
+        /// @details Actually, call a C# compiler to determine errors, using references.
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
         /// @version v22.06.01 - Using string interpolation.
         private void CheckSource_Click(object sender, EventArgs e)
         {
@@ -472,7 +570,7 @@ namespace Gear.GUI
         }
 
         /// <summary>Add error details on screen list.</summary>
-        /// <param name="compilerError">`CompileError` object.</param>
+        /// <param name="compilerError">CompilerError object.</param>
         /// <exception cref="ArgumentNullException"></exception>
         /// @version v22.06.01 - Added specific exception and changed
         /// parameter name to clarify its meaning.
@@ -490,13 +588,15 @@ namespace Gear.GUI
         /// @brief Show a dialog to load a file with plugin information.
         /// @details This method checks if the previous plugin data was
         /// modified and not saved.
-        /// @param sender Object who called this on event.
-        /// @param e `EventArgs` class with a list of argument to the event call.
-        /// @version v22.03.02 - Refactoring method on using OpenFileDialog.
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
+        /// @version v22.06.02 - Corrected errors if no file name was selected
+        /// on dialog, but pressed open button, and to show dialog to save
+        /// before lose changes in all circumstances.
         private void OpenButton_Click(object sender, EventArgs e)
         {
             //ask the user to not lost changes
-            if (CodeChanged & !CloseAnyway(PluginFileName))
+            if (CodeChanged && !CloseAnyway(PluginFileName))
                 return;
             using (OpenFileDialog dialog = new OpenFileDialog
                    {
@@ -512,52 +612,37 @@ namespace Gear.GUI
                     dialog.InitialDirectory =
                         Path.GetDirectoryName(Properties.Settings.Default.LastPlugin);
                 //invoke Dialog and open plugin file
-                if (dialog.ShowDialog(this) == DialogResult.OK &
-                        OpenFile(dialog.FileName, false))
-                    UpdateDefaultLastPluginOpened();
+                if (dialog.ShowDialog(this) != DialogResult.OK ||
+                    string.IsNullOrEmpty(dialog.FileName))
+                    return;
+                OpenPluginFromFile(dialog.FileName, false);
             }
         }
 
-        /// @brief Update the default for last plugin opened or saved in
-        /// the editor.
-        /// @version v20.09.01 - Changed method name.
-        public void UpdateDefaultLastPluginOpened()
+        /// <summary>Update the default name for last plugin opened or saved in
+        /// the editor.</summary>
+        /// @version v22.06.02 - Changed method visibility.
+        private void UpdateDefaultLastPluginOpened()
         {
             Properties.Settings.Default.LastPlugin = LastPlugin;
             Properties.Settings.Default.Save();
         }
 
-        /// @brief Update the last plugin from other class.
-        /// @version v20.09.01 - Added.
-        public void UpdateLastPlugin()
-        {
-            LastPlugin = Properties.Settings.Default.LastPlugin;
-        }
-
-        /// <summary>Update attribute use animation of each
-        /// CollapsibleSplitter used in this form.</summary>
-        /// @version v22.06.01 - Added.
-        public void UpdateUseAnimation()
-        {
-            errorSplitter.UseAnimations = Properties.Settings.Default.UseAnimations;
-            referencesSplitter.UseAnimations = Properties.Settings.Default.UseAnimations;
-        }
-
-        /// @brief Show dialog to save a plugin information into file, using GEAR plugin format.
-        /// @param sender Object who called this on event.
-        /// @param e `EventArgs` class with a list of argument to the event call.
+        /// @brief Show dialog to save a plugin information into file, using
+        /// GEAR plugin format.
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
         private void SaveButton_Click(object sender, EventArgs e)
         {
-            if (!string.IsNullOrEmpty(LastPlugin))
-                SaveFile(LastPlugin);
+            if (!string.IsNullOrEmpty(_pluginFileName))
+                SavePluginToFile(PluginFileName);
             else
                 SaveAsButton_Click(sender, e);
-            UpdateTitles();   //update title window
         }
 
         /// @brief Show dialog to save a plugin information into file, using GEAR plugin format.
-        /// @param sender Object who called this on event.
-        /// @param e `EventArgs` class with a list of argument to the event call.
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
         private void SaveAsButton_Click(object sender, EventArgs e)
         {
             SaveFileDialog dialog = new SaveFileDialog
@@ -565,27 +650,28 @@ namespace Gear.GUI
                 Filter = "Gear plug-in component (*.xml)|*.xml|All Files (*.*)|*.*",
                 Title = "Save Gear Plug-in..."
             };
-            if (!string.IsNullOrEmpty(LastPlugin))
+            //get directory name for init directory for dialog
+            if (!string.IsNullOrEmpty(_pluginFileName))
                 //retrieve from last plugin edited
-                dialog.InitialDirectory = Path.GetDirectoryName(LastPlugin);
+                dialog.InitialDirectory = Path.GetDirectoryName(PluginFileName);
             else
-                if (!string.IsNullOrEmpty(Properties.Settings.Default.LastPlugin))
-                //retrieve from global last plugin
-                dialog.InitialDirectory =
-                    Path.GetDirectoryName(Properties.Settings.Default.LastPlugin);
-            //propose the detected class name
+                if (!string.IsNullOrEmpty(LastPlugin))
+                    //retrieve from global last plugin
+                    dialog.InitialDirectory = Path.GetDirectoryName(LastPlugin);
+            //propose the detected class name as file name
             dialog.FileName = instanceName.Text;
 
-            if (dialog.ShowDialog(this) != DialogResult.OK)
+            if (dialog.ShowDialog(this) != DialogResult.OK ||
+                string.IsNullOrEmpty(dialog.FileName))
                 return;
-            SaveFile(dialog.FileName);
-            UpdateTitles();   //update title window
+            PluginFileName = dialog.FileName;
+            SavePluginToFile(PluginFileName);
         }
 
-        /// @brief Add a reference from the `ReferenceName`text box.
-        /// Also update change state for the plugin module, marking as changed.
-        /// @param sender Object who called this on event.
-        /// @param e `EventArgs` class with a list of argument to the event call.
+        /// <summary>Add a reference from the <c>ReferenceName</c> text box.</summary>
+        /// <remarks>Also update change state for the plugin module, marking as changed.</remarks>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         private void AddReferenceButton_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(referenceName.Text))
@@ -596,9 +682,10 @@ namespace Gear.GUI
         }
 
         /// @brief Remove the selected reference of the list.
-        /// Also update change state for the plugin module, marking as changed.
-        /// @param sender Object who called this on event.
-        /// @param e `EventArgs` class with a list of argument to the event call.
+        /// @details Also update change state for the plugin module, marking
+        /// as changed.
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
         private void RemoveReferenceButton_Click(object sender, EventArgs e)
         {
             if (referencesList.SelectedIndex == -1)
@@ -635,8 +722,8 @@ namespace Gear.GUI
         }
 
         /// @brief Check syntax on the C# source code.
-        /// @param sender Object who called this on event.
-        /// @param e `EventArgs` class with a list of argument to the event call.
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
         /// @version v14.07.03 - Added.
         private void SyntaxButton_Click(object sender, EventArgs e)
         {
@@ -670,7 +757,7 @@ namespace Gear.GUI
         }
 
         /// @brief Auxiliary method to check syntax.
-        /// Examines line by line, parsing reserved C# words.
+        /// @details Examines line by line, parsing reserved C# words.
         /// @param line Text line from the source code.
         /// @param[in,out] commentMultiline Flag to indicate if it is on comment mode
         /// between multi lines (=true) or normal mode (=false).
@@ -780,9 +867,9 @@ namespace Gear.GUI
         }
 
         /// @brief Update change state for code text box.
-        /// It marks as changed, to prevent not averted loses at closure of the window.
-        /// @param sender Object who called this on event.
-        /// @param e `EventArgs` class with a list of argument to the event call.
+        /// @details It marks as changed, to prevent not averted loses at closure of the window.
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
         /// @version v15.03.26 - Added.
         private void CodeEditorView_TextChanged(object sender, EventArgs e)
         {
@@ -812,10 +899,11 @@ namespace Gear.GUI
         }
 
         /// @brief Event handler for closing plugin window.
-        /// If code, references or class name have changed and them are not saved, a Dialog is
-        /// presented to the user to proceed or abort the closing.
-        /// @param sender Object who called this on event.
-        /// @param e `FormClosingEventArgs` class with a list of argument to the event call.
+        /// @details If code, references or class name have changed and them
+        /// are not saved, a dialog is presented to the user to proceed or
+        /// abort the closing.
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
         /// @version v15.03.26 - Added.
         private void PluginEditor_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -823,9 +911,7 @@ namespace Gear.GUI
                 e.Cancel = true;    //cancel the closing event
         }
 
-        /// <summary>
-        /// Ask the user to not loose changes.
-        /// </summary>
+        /// <summary>Ask the user to not loose changes.</summary>
         /// <param name="fileName">Filename to show in dialog.</param>
         /// <returns>True to close or False to stay open.</returns>
         /// @version v22.06.01 - Changed to static access and interpolate strings.
@@ -843,44 +929,36 @@ namespace Gear.GUI
         }
 
         /// @brief Toggle the button state, updating the name & tooltip text.
-        /// @param sender Object who called this on event.
-        /// @param e `EventArgs` class with a list of argument to the event call.
-        /// @version v15.03.26 - Added.
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
+        /// @version v22.06.02 - Modified to use new EmbeddedCode property and
+        /// changed method visibility.
         private void EmbeddedCode_Click(object sender, EventArgs e)
         {
-            SetEmbeddedCodeButton(EmbeddedCode.Checked);
-            UpdateTextEmbeddedCodeButton();
-        }
-
-        /// @brief Set the state of EmbeddedCode button.
-        /// @param newValue Value to set.
-        /// @version v20.08.01 - Separated in 2 methods.
-        private void SetEmbeddedCodeButton(bool newValue)
-        {
-            EmbeddedCode.Checked = newValue;
+            EmbeddedCode = !EmbeddedCode;
         }
 
         /// @brief Update the name & tooltip text depending on state.
-        /// @version v20.08.01 - Added.
-        public void UpdateTextEmbeddedCodeButton()
+        /// @version v22.06.02 - modified to use new name of Embedded code button.
+        private void UpdateTextEmbeddedCodeButton()
         {
-            if (EmbeddedCode.Checked)
+            if (EmbeddedCodeButton.Checked)
             {
-                EmbeddedCode.Text = "Embedded";
-                EmbeddedCode.ToolTipText = "Embedded code in XML plugin file.";
-                EmbeddedCode.Image = Properties.Resources.Image_embedded;
+                EmbeddedCodeButton.Text = "Embedded";
+                EmbeddedCodeButton.ToolTipText = "Embedded code in XML plugin file.";
+                EmbeddedCodeButton.Image = Properties.Resources.Image_embedded;
             }
             else
             {
-                EmbeddedCode.Text = "Separated";
-                EmbeddedCode.ToolTipText = "Code in separated file from XML plugin file.";
-                EmbeddedCode.Image = Properties.Resources.Image_separated;
+                EmbeddedCodeButton.Text = "Separated";
+                EmbeddedCodeButton.ToolTipText = "Code in separated file from XML plugin file.";
+                EmbeddedCodeButton.Image = Properties.Resources.Image_separated;
             }
         }
 
         /// @brief On visible property changed, perform layout on tool strip.
-        /// @param sender Object who called this on event.
-        /// @param e `EventArgs` class with a list of argument to the event call.
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
         /// @version v20.08.01 - Added.
         private void ProgressHighlight_VisibleChanged(object sender, EventArgs e)
         {
@@ -889,8 +967,8 @@ namespace Gear.GUI
         }
 
         /// @brief Refresh form's Icon
-        /// @param sender
-        /// @param e
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
         /// @version v20.10.01 - Added.
         private void PluginEditor_Load(object sender, EventArgs e)
         {

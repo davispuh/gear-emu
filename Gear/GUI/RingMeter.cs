@@ -22,7 +22,10 @@
  */
 
 using System;
+using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Gear.GUI
@@ -30,113 +33,157 @@ namespace Gear.GUI
     /// @brief Rotating gear hub view object.
     public partial class RingMeter : UserControl
     {
-        /// <summary></summary>
-        private uint _ringPosition;
-
-        /// <summary></summary>
-        private static readonly StringFormat DrawFormat = new StringFormat();
-
         /// <summary>Number of tooth for gear representation.</summary>
         private const int ToothNumber = 8;
 
-        /// <summary></summary>
+        /// <summary>Format for text on ring.</summary>
+        private static readonly StringFormat DrawFormat =
+            new StringFormat(StringFormatFlags.NoClip);
+
+        /// <summary>Object to access Resources for this control, like
+        /// rendered images of the Ring.</summary>
+        /// @version v22.06.02 - Added to draw the Ring on screen.
+        private static readonly ComponentResourceManager Resources =
+            new ComponentResourceManager(typeof(RingMeter));
+
+        /// <summary>Position of ring: 0..16.</summary>
+        private uint _ringPosition;
+
+        /// <summary>Graphic position of ring: 0..8, using symmetries of the
+        /// gear design.</summary>
+        /// @version v22.06.02 - Added to draw the Ring on screen.
+        private uint _gearPosition;
+
+        /// <summary>Brush color to Draw numbers.</summary>
+        /// @version v22.06.02 - Added to accelerate the drawing on screen.
+        private readonly SolidBrush _brushNumbers;
+
+        /// <summary>Pre-calculated coordinates of the numbers on tooth.</summary>
+        /// @version v22.06.02 - Added to accelerate the drawing on screen.
+        private readonly Point[] _numberCoordinates;
+
+        /// <summary>Rendered Image array of the Ring, without numbers.</summary>
+        /// @version v22.06.02 - Added to accelerate the drawing on screen.
+        private readonly Image[] _ringImages;
+
+        /// <summary>Value of the position of the Ring.</summary>
+        /// <remarks>Also update the background image corresponding with
+        /// the position.</remarks>
+        /// @version v22.06.02 - Modified to use image array and optimized
+        /// for image symmetries to redraw only in changes.
         public uint Value
         {
             get => _ringPosition;
             set
             {
-                uint old = _ringPosition;
-                _ringPosition = (value & 0xF);
-                if (old != _ringPosition)
-                    Invalidate();
+                //update only on changes of value
+                if (_ringPosition == (value & 0xF))
+                    return;
+                _ringPosition = value & 0xF;
+                //check for ring image symmetries
+                if (_gearPosition == _ringPosition % 8)
+                    return;
+                _gearPosition = _ringPosition % 8;
+                //update image of ring
+                BackgroundImage = _ringImages[_gearPosition];
             }
         }
 
         /// <summary>Default constructor</summary>
+        /// @version v22.06.02 - Modified to accelerate drawing on screen
+        /// of this control, and parallel processing.
         public RingMeter()
         {
-            InitializeComponent();
             DrawFormat.LineAlignment = StringAlignment.Center;
             DrawFormat.Alignment = StringAlignment.Center;
+            _brushNumbers = new SolidBrush(Color.Black);
+            InitializeComponent();
+            _ringImages = new Image[ToothNumber];
+            _numberCoordinates = new Point[ToothNumber * 2];
+            Parallel.Invoke(
+                CalculateNumberCoordinates,
+                AssignImageFromResources);
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="e"></param>
+        /// <summary>Pre calculate coordinates of numbers on tooth.</summary>
+        /// <remarks>Calculate in the first eight points, the positions of each
+        /// teeth, not rotated. The second group of eight points, contains the
+        /// rotated positions of the tooth.</remarks>
+        /// @image html Gear_Control_Geometry.svg "Gear geometric design" width=75%
+        /// @version v22.06.02 - Added to accelerate drawing on screen of this
+        /// control and modified method visibility.
+        private void CalculateNumberCoordinates()
+        {
+            const double toothSepAngle = Math.PI / 4.0; //45°
+            const double oddShiftAngle = toothSepAngle / 2.0; //22.5°
+            const double featureAngle = toothSepAngle / 8.0; //5.625°
+            double scale = Width;
+            double baseLocationX = scale / 2;
+            double baseLocationY = scale / 2;
+            double outerSize = scale / 2 - 16;
+            double innerSize = outerSize * 0.75;
+            double numRadius = (outerSize * Math.Cos(featureAngle) + innerSize * Math.Cos(3 * featureAngle)) / 2;
+
+            //First group: even ring positions -> gear not rotated
+            for (int i = 0; i < ToothNumber; i++)
+            {
+                _numberCoordinates[i].X = (int)Math.Round(baseLocationX + Math.Sin(i * toothSepAngle) * numRadius);
+                _numberCoordinates[i].Y = (int)Math.Round(baseLocationY - Math.Cos(i * toothSepAngle) * numRadius);
+            }
+
+            //Second group: odd ring positions -> gear rotated 22.5°
+            for (int i = ToothNumber; i < ToothNumber * 2; i++)
+            {
+                _numberCoordinates[i].X =
+                    (int)Math.Round(baseLocationX + Math.Sin(i * toothSepAngle - oddShiftAngle) * numRadius);
+                _numberCoordinates[i].Y =
+                    (int)Math.Round(baseLocationY - Math.Cos(i * toothSepAngle - oddShiftAngle) * numRadius);
+            }
+        }
+
+        /// <summary>Assign images of rotating Ring to array from resources.</summary>
+        /// @version v22.06.02 - Added to accelerate drawing on screen
+        /// of this control.
+        private void AssignImageFromResources()
+        {
+            for (uint index = 0; index < ToothNumber; index++)
+                _ringImages[index] =
+                    (Image)Resources.GetObject($"Gear_Control{index:D}");
+        }
+
+        /// <summary>Event Handler on size changed.</summary>
+        /// <remarks>Maintain aspect ratio of 1:1 between height and width.</remarks>
+        /// <param name="e">Event data arguments.</param>
+        /// @version v22.06.02 - Modified to use preferred method `Control.Invalidate()`.
         protected override void OnSizeChanged(EventArgs e)
         {
             Height = Width;
             base.OnSizeChanged(e);
-            Refresh();
+            Invalidate();
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="e"></param>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <summary>Event Handler to paint the control.</summary>
+        /// <remarks>Draw only the numbers on teeth.</remarks>
+        /// <param name="e">Paint event data arguments.</param>
+        /// @version v22.06.02 - Refactored to accelerate drawing on screen
+        /// of this control, and set the font aliasing style for text.
         protected override void OnPaint(PaintEventArgs e)
         {
-            if (e is null)
-                throw new ArgumentNullException(nameof(e));
-            double scale = this.Width;
-            double rotation = 14.50 - _ringPosition * 2;
-            double baseLocationX = scale / 2;
-            double baseLocationY = scale / 2;
-            double innerSize = scale / 2 - 16;
-            double outerSize = innerSize * 0.75;
-            double topShift = Math.PI / 24;
-
-            Point[] points = new Point[ToothNumber * 4];
-
-            for (int i = 0; i < points.Length; i += 4)
-            {
-                points[i + 0] = new Point(
-                    (int)(-Math.Sin((i + topShift + rotation) * Math.PI / 16.0) * outerSize + baseLocationX),
-                    (int)(Math.Cos((i + topShift + rotation) * Math.PI / 16.0) * outerSize + baseLocationY)
-                );
-                points[i + 1] = new Point(
-                    (int)(-Math.Sin((i + 1 + rotation) * Math.PI / 16.0) * innerSize + baseLocationX),
-                    (int)(Math.Cos((i + 1 + rotation) * Math.PI / 16.0) * innerSize + baseLocationY)
-                );
-                points[i + 2] = new Point(
-                    (int)(-Math.Sin((i + 2 + rotation) * Math.PI / 16.0) * innerSize + baseLocationX),
-                    (int)(Math.Cos((i + 2 + rotation) * Math.PI / 16.0) * innerSize + baseLocationY)
-                );
-                points[i + 3] = new Point(
-                    (int)(-Math.Sin((i + 3 - topShift + rotation) * Math.PI / 16.0) * outerSize + baseLocationX),
-                    (int)(Math.Cos((i + 3 - topShift + rotation) * Math.PI / 16.0) * outerSize + baseLocationY)
-                );
-            }
-
-            e.Graphics.FillPolygon(Brushes.White, points);
-            e.Graphics.DrawPolygon(Pens.Black, points);
-            e.Graphics.DrawEllipse(Pens.Black,
-                new Rectangle(
-                    (int)(baseLocationX - outerSize / 5),
-                    (int)(baseLocationY - outerSize / 5),
-                    (int)(outerSize / 2.5),
-                    (int)(outerSize / 2.5)
-                )
-            );
-
-            for (int i = 0; i < points.Length; i += 4)
-            {
-                float x = points[i].X + points[i + 1].X + points[i + 2].X + points[i + 3].X;
-                float y = points[i].Y + points[i + 1].Y + points[i + 2].Y + points[i + 3].Y;
-
-                e.Graphics.DrawString((i / 4).ToString(), this.Font, Brushes.Black, x / 4, y / 4, DrawFormat);
-            }
-
-            points = new Point[3];
-
-            points[0] = new Point((int)(baseLocationX), (int)(baseLocationY - outerSize + scale * 0.02));
-            points[1] = new Point((int)(baseLocationX - scale * 0.06), (int)(baseLocationY - outerSize + scale * 0.06));
-            points[2] = new Point((int)(baseLocationX + scale * 0.06), (int)(baseLocationY - outerSize + scale * 0.06));
-
-            e.Graphics.DrawPolygon(Pens.Black, points);
+            //use font aliasing style
+            e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
             base.OnPaint(e);
+            int oddShift = _ringPosition % 2 == 0 ?
+                0 :
+                ToothNumber;
+            int numAdvance = (int)_ringPosition / 2; //integer division
+            //draw the number on each teeth
+            for (int i = 0; i < ToothNumber; i++)
+            {
+                int number = (i + numAdvance) % 8;
+                e.Graphics.DrawString($"{number:D}", Font, _brushNumbers,
+                    _numberCoordinates[i + oddShift].X,
+                    _numberCoordinates[i + oddShift].Y, DrawFormat);
+            }
         }
     }
 }

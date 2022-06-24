@@ -150,10 +150,11 @@ namespace Gear.EmulationCore
         /// @version v22.05.04 - Name changed to follow naming conventions.
         private byte[] _resetMemory;
 
-        /// <summary></summary>
+        /// <summary>Array of Locks available to be used for PASM or
+        /// interpreted program.</summary>
         /// @version v22.05.04 - Name changed to follow naming conventions.
         private readonly bool[] _locksAvailable;
-        /// <summary></summary>
+        /// <summary>Locking state of a requested lock.</summary>
         /// @version v22.05.04 - Name changed to follow naming conventions.
         private readonly bool[] _locksState;
 
@@ -167,13 +168,13 @@ namespace Gear.EmulationCore
         /// <summary>Pins driven by a plugin, system or user types.</summary>
         /// @version v22.05.04 - Name changed to clarify.
         private ulong _pinsDriven;
-        /// <summary></summary>
+        /// <summary>Pins that aren't used, electrically floating.</summary>
         /// @version v22.05.04 - Name changed to follow naming conventions.
         private ulong _pinsFloating;
-        /// <summary>Indicator of some pin has changed.</summary>
-        /// @version v22.05.04 - Name changed to follow naming conventions.
-        private bool _pinChanged;
-        /// <summary>Array for the state of each pin.</summary>
+        /// <summary>Indicator flag if any pin has changed.</summary>
+        /// @version v22.06.02 - Name changed to clarify its meaning.
+        private bool _anyPinChanged;
+        /// <summary>Array coding the state of each pin.</summary>
         /// Mainly used to expose to plugins the pin state of CPU.
         /// @version v22.05.04 - Name changed to follow naming conventions.
         private readonly PinState[] _pinStates;
@@ -240,7 +241,7 @@ namespace Gear.EmulationCore
             }
         }
 
-        /// <summary> Property to return only register of <c>DIRB</c> pins
+        /// <summary>Property to return only register of <c>DIRB</c> pins
         /// (<c>P63..P32</c>).</summary>
         /// @version v22.05.04 - Property name changed to clarify meaning of it.
         /// @todo Parallelism [complex:low, cycles:8] point in loop _cogs[].RegisterDIRB
@@ -346,7 +347,7 @@ namespace Gear.EmulationCore
         /// <summary></summary>
         public ulong Floating => _pinsFloating & ~RegisterDIR;
 
-        /// <summary></summary>
+        /// <summary>Property to return the Locks available for all the Cogs.</summary>
         /// @todo Parallelism [complex:low, cycles:8] point in loop _locksState[]
         public byte Locks
         {
@@ -361,7 +362,8 @@ namespace Gear.EmulationCore
             }
         }
 
-        /// <summary></summary>
+        /// <summary>Property to return the Locks states available for all
+        /// the Cogs.</summary>
         /// @todo Parallelism [complex:low, cycles:8] point in loop _locksAvailable[]
         public byte LocksFree
         {
@@ -371,7 +373,7 @@ namespace Gear.EmulationCore
                 for (int i = 0; i < TotalLocks; i++)  //TODO Parallelism [complex:low, cycles:8] point in loop _locksAvailable[]
                     b |= (byte)(_locksAvailable[i] ?
                         1 << i :
-                        0);
+                        0b0);
                 return b;
             }
         }
@@ -504,6 +506,7 @@ namespace Gear.EmulationCore
         }
 
         /// <summary>Default destructor.</summary>
+        /// @version v22.06.01 - Added to support instance numbering.
         ~PropellerCPU() => _instances--;
 
         /// @brief Set a breakpoint at this CPU, showing that in the emulator
@@ -784,7 +787,7 @@ namespace Gear.EmulationCore
                     clockSource?.AdvanceClock(minimumTime);
                 // Time increment
                 EmulatorTime += minimumTime;
-                if (sourceTicked != -1 && (pinsPrev != RegisterIN || dirPrev != RegisterDIR || _pinChanged))
+                if (sourceTicked != -1 && (pinsPrev != RegisterIN || dirPrev != RegisterDIR || _anyPinChanged))
                     PinChanged();
             }
             while (sourceTicked != -1);
@@ -803,7 +806,7 @@ namespace Gear.EmulationCore
                 if (_cogs[cog] != null)
                     _cogs[cog].RequestHubOperation();
             }
-            if (pinsPrev != RegisterIN || dirPrev != RegisterDIR || _pinChanged)
+            if (pinsPrev != RegisterIN || dirPrev != RegisterDIR || _anyPinChanged)
                 PinChanged();
 
             pinsPrev = RegisterIN;
@@ -813,7 +816,7 @@ namespace Gear.EmulationCore
             // Run each module of the list on Time event (calling OnClock()).
             foreach (PluginBase plugin in _tickHandlers)
                 plugin.OnClock(EmulatorTime, Counter);  // TODO Parallelism [complex:medium, cycles:varies] point in Plugin.OnClock()
-            if (pinsPrev != RegisterIN || dirPrev != RegisterDIR || _pinChanged)
+            if (pinsPrev != RegisterIN || dirPrev != RegisterDIR || _anyPinChanged)
                 PinChanged();
 
             return result;
@@ -827,7 +830,7 @@ namespace Gear.EmulationCore
         /// @todo Parallelism [complex:low, cycles:low-many] point in loop plugin.OnPinChange()
         public void PinChanged()
         {
-            _pinChanged = false;
+            _anyPinChanged = false;
             ulong outState = RegisterOUT;
             ulong dirState = RegisterDIR;
             for (ulong mask = 1UL, i = 0UL; i < TotalPins; mask <<= 1, i++)// TODO Parallelism [complex:low, cycles:64] point on loop _pinStates[]
@@ -875,7 +878,7 @@ namespace Gear.EmulationCore
                 _pinsDriven |= mask;  //set bit to 1
             else
                 _pinsDriven &= ~mask; //set bit to 0
-            _pinChanged = true;
+            _anyPinChanged = true;
         }
 
         /// <summary></summary>

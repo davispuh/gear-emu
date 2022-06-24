@@ -947,7 +947,8 @@ EXCLUDE                = ./plug-ins \
                          ./Gear/Resources \
                          ./TestThings \
                          ./CodeUtils \
-                         ./distribution
+                         ./distribution \
+                         ./Gear/Resources/Images/source/output
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded
@@ -1017,7 +1018,8 @@ EXAMPLE_RECURSIVE      = NO
 # that contain images that are to be included in the documentation (see the
 # \image command).
 
-IMAGE_PATH             = ./Gear/Resources/Images/source
+IMAGE_PATH             = ./Gear/Resources/Images/source \
+                         ./Gear/Resources/Images/source/Gear_Control_Geometry.svg
 
 # The INPUT_FILTER tag can be used to specify a program that doxygen should
 # invoke to filter for each input file. Doxygen will invoke the filter program
@@ -1073,7 +1075,7 @@ FILTER_SOURCE_PATTERNS =
 # (index.html). This can be useful if you have a project on for instance GitHub
 # and want to reuse the introduction page also for the doxygen output.
 
-USE_MDFILE_AS_MAINPAGE = ./readme.md
+USE_MDFILE_AS_MAINPAGE = ./documentation.md
 
 #---------------------------------------------------------------------------
 # Configuration options related to source browsing
