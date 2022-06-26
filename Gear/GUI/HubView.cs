@@ -82,11 +82,12 @@ namespace Gear.GUI
             $"{{{GetType().FullName}, Id: {(_cpuHost == null ? "[none yet]" : _cpuHost.InstanceNumber.ToString("D2"))} }}";
 
         /// @brief Default constructor
-        /// @version v22.06.01 - Modified to support conditional painting.
+        /// @issue{30} Linux-Mono: Version 22.06.02 crashes directly after loading a binary.
+        /// @version v22.06.03 - Hotfix for issue #30.
         public HubView()
         {
-            InitializeComponent();
             _repaintableList = new List<IRequestRepaintable>();
+            InitializeComponent();
             RegisterRepaintableControls();
             timeUnitSelector.SyncValues();
             //Assign delegates for formatting text of timeUnitSelector

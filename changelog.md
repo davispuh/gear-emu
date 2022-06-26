@@ -1,6 +1,11 @@
 # Change Log
 
-## Commit  Code cleanup UI on RingMeter & MemoryView + performance improvement
+## Commit  Fix issue [#30](https://github.com/davispuh/gear-emu/issues/30) - Linux-Mono: Version 22.06.02 crashes directly after loading a binary.
+
+- Wrong initialization order of components in [`HubView.cs`](Gear/GUI/HubView.cs) and [`MemoryView.cs`](Gear/GUI/MemoryView.cs).
+
+
+## Release Version [22.06.02](https://github.com/davispuh/gear-emu/releases/tag/v22.06.02) Commit [812346a](https://github.com/davispuh/gear-emu/commit/812346ae97354ca1d00c5c1435568a27b124dc91) Code cleanup UI on RingMeter & MemoryView + performance improvement
 
 - Changed Gear image on ring meter: updated to better quality and colorful image and improved performance, thanks to refactoring, use precalculated screen positions for numbers on ring, pre-defined images, paralellism to load resources and precalculate.
 - Corrected error if no file name was selected on dialog to open a plugin or binary file, but pressed open button. Corrected methods `PluginEditor.OpenButton_Click(.)`, `GearDesktop.OpenPluginButton_Click(.)`, `GearDesktop.OpenBinaryButton_Click(.)`, `Emulator.OpenPlugin_Click(.)`, `Emulator.OpenBinary_Click(.)`.

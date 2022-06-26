@@ -84,12 +84,12 @@ namespace Gear.GUI
 
         /// <summary>Default Constructor.</summary>
         /// <param name="chip"></param>
-        /// @version v22.06.02 - Modified to remove the definition of
-        /// a separated Font object.
+        /// @issue{30} Linux-Mono: Version 22.06.02 crashes directly after loading a binary.
+        /// @version v22.06.03 - Hotfix for issue #30.
         public MemoryView(PropellerCPU chip) : base(chip)
         {
-            InitializeComponent();
             _defaultPen = new Pen(Color.Black, 1);
+            InitializeComponent();
         }
 
         /// <summary>Register the events to be notified to this plugin.</summary>
