@@ -134,7 +134,7 @@ namespace Gear.EmulationCore
             StateCount = InterpreterBootTime; // how many cycles takes to boot
             uint initFrame = this[(int)Assembly.RegisterAddress.PAR];
             this[(int)Assembly.RegisterAddress.COGID] = (uint)CogNum;
-            initFrame &= PropellerCPU.MaxRAMAddress;
+            initFrame &= PropellerCPU.MaxMemoryAddress;
             ObjectFrame = CpuHost.DirectReadWord(initFrame - 8);
             VariableFrame = CpuHost.DirectReadWord(initFrame - 6);
             ProgramCursor = CpuHost.DirectReadWord(initFrame - 4);
@@ -212,8 +212,8 @@ namespace Gear.EmulationCore
         /// @pullreq{18} Correct video frame load timing, added video break,
         /// fix tab refresh.
         /// @issue{23} Inaccuracy in Spin literal decoding.
-        /// @version v22.05.04 - Changed local variable names to follow naming
-        /// conventions or to clarify meaning of it.
+        /// @version v22.07.01 - Use constant PropellerCPU.TotalMemory in
+        /// operation 0x16 (string size).
         /// @todo [Legacy] RAISE AN EXCEPTION on Executed undefined, OpCode 0x14
         /// @todo [Legacy] Should complain on invalid op if MSB is set, OpCode 0x37
         /// @todo [Legacy] ALERT ON BAD OP on Executed undefined, OpCode 0x3C
@@ -510,7 +510,9 @@ namespace Gear.EmulationCore
                     case 0x16:  // string size
                     {
                         uint i = 0;
-                        for (uint b = PopStack(); CpuHost.DirectReadByte(b) != 0 && b < 0x10000; b++)
+                        for (uint b = PopStack();
+                             CpuHost.DirectReadByte(b) != 0 && b < PropellerCPU.TotalMemory;
+                             b++)
                             i++;
                         PushStack(i);
                     }

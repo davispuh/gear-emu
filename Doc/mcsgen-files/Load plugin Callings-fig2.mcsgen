@@ -14,7 +14,7 @@ E [label="5"];
 
 #titles Phase
 A box A [label="Emulator.\nAttachPlugin(plugin)", url="\ref Gear.GUI.Emulator.AttachPlugin", textbgcolor="#DCE2EF"],
-B box B [label="plugin.PresentChip()", url="\ref Gear.GUI.Emulator.LoadPlugin", textbgcolor="#DCE2EF"];
+B box B [label="plugin.PresentChip()", url="\ref Gear.GUI.Emulator.LoadPluginFromFile", textbgcolor="#DCE2EF"];
 
 #Transicions Phase
 A => B [label="Invoking the compiled\nplugin method."];

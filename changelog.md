@@ -1,6 +1,23 @@
 # Change Log
 
-## Commit  Code cleanup UI on RingMeter & MemoryView + performance improvement
+## Commit  Code cleanup UI on SpinView.
+
+- Changed constant name `PropellerCPU.MaxRAMAddress` to `PropellerCPU.MaxMemoryAddress`, to clarify it refers to top of ROM, not RAM. Affects [`PropellerCPU.cs`](Gear/EmulationCore/PropellerCPU.cs), [`CogView.cs`](Gear/GUI/CogView.cs), [`InterpretedCog.cs`](Gear/EmulationCore/InterpretedCog.cs), [`MemoryManager.cs`](Gear/Propeller/MemoryManager.cs), [`SpinView.cs`](Gear/GUI/SpinView.cs).
+- Code cleanup and refactoring in [`SpinView.cs`](Gear/GUI/SpinView.cs) and in some parts of [`Emulator.cs`](Gear/GUI/Emulator.cs).
+  - Improved visualitation of Spin objects in map, with more details and different colors. Added three alignment modes on map: none, at Byte, or at Word, with a new tool strip selector with icons.
+  - Refactored naming and visibility of members, parameters and local variables in classes, methods and enums.
+  - Use of data bindings to global properties, for `FreqFormat` to show clock frequency on Spin byte code.
+  - Added XML & Doxygen comments in files.
+  - Removed extra spaces at line ends.
+- Corrected Doxygen documentation on mcsgen diagrams, for method name change of `Gear.GUI.Emulator.LoadPluginFromFile()`.
+
+
+## Release Version [22.06.03](https://github.com/davispuh/gear-emu/releases/tag/v22.06.03) Commit [f2647ca](https://github.com/davispuh/gear-emu/commit/f2647cabfd65c3570a505e330cb5e8d60e51eb8f) Fix issue [#30](https://github.com/davispuh/gear-emu/issues/30) - Linux-Mono: Version 22.06.02 crashes directly after loading a binary.
+
+- Wrong initialization order of components in [`HubView.cs`](Gear/GUI/HubView.cs) and [`MemoryView.cs`](Gear/GUI/MemoryView.cs).
+
+
+## Release Version [22.06.02](https://github.com/davispuh/gear-emu/releases/tag/v22.06.02) Commit [812346a](https://github.com/davispuh/gear-emu/commit/812346ae97354ca1d00c5c1435568a27b124dc91) Code cleanup UI on RingMeter & MemoryView + performance improvement
 
 - Changed Gear image on ring meter: updated to better quality and colorful image and improved performance, thanks to refactoring, use precalculated screen positions for numbers on ring, pre-defined images, paralellism to load resources and precalculate.
 - Corrected error if no file name was selected on dialog to open a plugin or binary file, but pressed open button. Corrected methods `PluginEditor.OpenButton_Click(.)`, `GearDesktop.OpenPluginButton_Click(.)`, `GearDesktop.OpenBinaryButton_Click(.)`, `Emulator.OpenPlugin_Click(.)`, `Emulator.OpenBinary_Click(.)`.

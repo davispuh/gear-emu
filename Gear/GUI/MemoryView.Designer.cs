@@ -37,6 +37,7 @@ namespace Gear.GUI
         {
             if (disposing && (components != null))
             {
+                _backBuffer.Dispose();
                 components.Dispose();
             }
             this.BackBuffer.Dispose();
@@ -62,7 +63,7 @@ namespace Gear.GUI
             this.positionScrollBar.Location = new System.Drawing.Point(183, 0);
             this.positionScrollBar.Name = "positionScrollBar";
             this.positionScrollBar.Size = new System.Drawing.Size(17, 185);
-            this.positionScrollBar.SmallChange = 4;
+            this.positionScrollBar.SmallChange = 1;
             this.positionScrollBar.TabIndex = 1;
             this.positionScrollBar.TabStop = true;
             this.positionScrollBar.Scroll += new System.Windows.Forms.ScrollEventHandler(this.PositionScrollBar_PositionChanged);

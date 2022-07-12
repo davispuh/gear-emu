@@ -20,6 +20,8 @@
  * --------------------------------------------------------------------------------
  */
 
+using Gear.EmulationCore;
+
 namespace Gear.GUI
 {
     partial class HubView
@@ -253,7 +255,7 @@ namespace Gear.GUI
             //
             this.pinLocksFree.AutoSize = true;
             this.pinLocksFree.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.pinLocksFree.BitWidth = ((uint)(8u));
+            this.pinLocksFree.BitWidth = (uint)PropellerCPU.TotalLocks;
             this.pinLocksFree.Location = new System.Drawing.Point(78, 327);
             this.pinLocksFree.Name = "pinLocksFree";
             this.pinLocksFree.Postfix = "";
@@ -266,7 +268,7 @@ namespace Gear.GUI
             //
             this.pinLocks.AutoSize = true;
             this.pinLocks.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.pinLocks.BitWidth = ((uint)(8u));
+            this.pinLocks.BitWidth = (uint)PropellerCPU.TotalLocks;
             this.pinLocks.Location = new System.Drawing.Point(78, 346);
             this.pinLocks.Name = "pinLocks";
             this.pinLocks.Postfix = "";
@@ -279,7 +281,7 @@ namespace Gear.GUI
             //
             this.pinIN.AutoSize = true;
             this.pinIN.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.pinIN.BitWidth = ((uint)(64u));
+            this.pinIN.BitWidth = (uint)PropellerCPU.TotalPins;
             this.pinIN.Location = new System.Drawing.Point(78, 368);
             this.pinIN.Name = "pinIN";
             this.pinIN.Postfix = "";
@@ -292,7 +294,7 @@ namespace Gear.GUI
             //
             this.pinDIR.AutoSize = true;
             this.pinDIR.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.pinDIR.BitWidth = ((uint)(64u));
+            this.pinDIR.BitWidth = (uint)PropellerCPU.TotalPins;
             this.pinDIR.Location = new System.Drawing.Point(78, 406);
             this.pinDIR.Name = "pinDIR";
             this.pinDIR.Postfix = "";
@@ -305,7 +307,7 @@ namespace Gear.GUI
             //
             this.pinFloating.AutoSize = true;
             this.pinFloating.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.pinFloating.BitWidth = ((uint)(64u));
+            this.pinFloating.BitWidth = (uint)PropellerCPU.TotalPins;
             this.pinFloating.Location = new System.Drawing.Point(78, 444);
             this.pinFloating.Name = "pinFloating";
             this.pinFloating.Postfix = "";

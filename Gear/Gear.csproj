@@ -254,6 +254,10 @@
     <None Include="Resources\Images\Gear_Control5.png" />
     <None Include="Resources\Images\Gear_Control6.png" />
     <None Include="Resources\Images\Gear_Control7.png" />
+    <None Include="Resources\Images\AlignmentByte.png" />
+    <None Include="Resources\Images\AlignmentNone.png" />
+    <None Include="Resources\Images\AlignmentWord.png" />
+    <Content Include="Resources\Images\FrameIcon.png" />
     <Content Include="Resources\Images\Image_addPlugin.png" />
     <Content Include="Resources\Images\Image_cascadeView.png" />
     <Content Include="Resources\Images\Image_checkCode.png" />

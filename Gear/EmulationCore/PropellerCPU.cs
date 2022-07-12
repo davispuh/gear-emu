@@ -126,9 +126,9 @@ namespace Gear.EmulationCore
         /// @brief Total RAM Hub memory implemented on P1 Chip.
         /// @version v22.05.04 - Name changed to follow naming conventions.
         public const int TotalRAM = 0x8000;
-        /// @brief max RAM address implemented on P1 Chip.
-        /// @version v22.05.04 - Name changed to follow naming conventions.
-        public const int MaxRAMAddress = 0xFFFF;
+        /// @brief Maximum Memory address implemented on P1 Chip (top of ROM).
+        /// @version v22.07.01 - Name changed to clarify the meaning of it.
+        public const int MaxMemoryAddress = 0xFFFF;
 
         /// <summary>Global counter for CPU instances.</summary>
         /// @version v22.06.01 - Added.

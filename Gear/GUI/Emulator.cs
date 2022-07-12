@@ -135,8 +135,8 @@ namespace Gear.GUI
 
         /// @brief Update value of system properties inside of
         /// contained controls.
-        /// @version v22.06.01 - Added updating UseAnimations property on
-        /// CollapsibleSplitter controls.
+        /// @version v22.07.01 - Removed SpinView control updating on
+        /// Frequency format change, because of use of data binding on it.
         public void UpdateVarValue(string variableName)
         {
             switch (variableName)
@@ -171,11 +171,6 @@ namespace Gear.GUI
                     hubView.UpdateCounterText();
                     hubView.UpdateTimeText();
                     hubView.UpdateFrequenciesTexts();
-                    //update SpinView and logicView
-                    foreach (TabPage tabCtl in documentsTab.TabPages)
-                        foreach (Control ctl in tabCtl.Controls)
-                            if (ctl is SpinView viewCtl)
-                                viewCtl.UpdateFreqFormat();
                     break;
                 case "HubTimeUnit":
                     hubView.UpdateTimeText();
@@ -806,10 +801,10 @@ namespace Gear.GUI
         }
 
         /// @brief Refresh tab page.
-        /// @details Enable close plugin button based on if active tab is subclass of
-        /// Gear.PluginSupport.PluginBase and if that class permit close the window. Typically
-        /// the user plugins enabled it; but the cog window, main memory, logic probe, etc,
-        /// don't allow to close.
+        /// @details Enable close plugin button based on if active tab is
+        /// subclass of Gear.PluginSupport.PluginBase and if that class permit
+        /// close the window. Typically the user plugins enabled it; but the
+        /// cog window, main memory, logic probe, etc, don't allow to close.
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
         /// @version v22.06.01 - Refactored to improve logic.
@@ -840,7 +835,8 @@ namespace Gear.GUI
             if (tp == null)
                 return;
             foreach (Control control in tp.Controls)
-                if (control is PluginBase pluginControl && !pluginControl.AllowHotKeys)
+                if (control is PluginBase pluginControl &&
+                    !pluginControl.AllowHotKeys)
                     return;
             switch (e.KeyChar.ToString().ToLowerInvariant())
             {

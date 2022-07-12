@@ -14,7 +14,7 @@ E [label="5"];
 
 #titles Phase
 A box A [label="Emulator.\nOpenPlugin_Click()", url="\ref Gear.GUI.Emulator.OpenPlugin_Click", textbgcolor="#DCE2EF"],
-B box B [label="Emulator.\nLoadPlugin()", url="\ref Gear.GUI.Emulator.LoadPlugin", textbgcolor="#DCE2EF"],
+B box B [label="Emulator.\nLoadPluginFromFile()", url="\ref Gear.GUI.Emulator.LoadPluginFromFile", textbgcolor="#DCE2EF"],
 C box C [label="PluginBase plugin =", url="\ref Gear.PluginSupport.ModuleCompiler.LoadModule", textbgcolor="#DCE2EF"],
 D box D [label="ModuleCompiler.\nLoadModule()", url="\ref Gear.PluginSupport.ModuleCompiler.LoadModule", textbgcolor="#DCE2EF"];
 

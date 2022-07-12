@@ -22,6 +22,7 @@
 
 using System.Drawing;
 using System.Windows.Forms;
+using Gear.EmulationCore;
 
 namespace Gear.GUI
 {
@@ -40,7 +41,7 @@ namespace Gear.GUI
         {
             if (disposing && (components != null))
             {
-                MonoSpace.Dispose();
+                _monoSpace.Dispose();
                 BackBuffer.Dispose();
                 components.Dispose();
             }
@@ -51,46 +52,64 @@ namespace Gear.GUI
 
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SpinView));
-            this.objectView = new System.Windows.Forms.TreeView();
-            this.hexView = new Gear.GUI.DoubleBufferedPanel();
+            this.objectTreeView = new System.Windows.Forms.TreeView();
+            this.imageListForTreeView = new System.Windows.Forms.ImageList(this.components);
+            this.memoryView = new Gear.GUI.DoubleBufferedPanel();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.analyzeButton = new System.Windows.Forms.ToolStripButton();
-            this.scrollPosition = new System.Windows.Forms.VScrollBar();
+            this.alignmentSplitButton = new System.Windows.Forms.ToolStripDropDownButton();
+            this.freeAlignmentMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fixedByteAlignmentMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fixedWordAlignmentMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.PositionScrollBar = new System.Windows.Forms.VScrollBar();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             //
-            // objectView
+            // objectTreeView
             //
-            this.objectView.Dock = System.Windows.Forms.DockStyle.Left;
-            this.objectView.FullRowSelect = true;
-            this.objectView.Indent = 10;
-            this.objectView.Location = new System.Drawing.Point(0, 25);
-            this.objectView.Name = "objectView";
-            this.objectView.Size = new System.Drawing.Size(260, 428);
-            this.objectView.TabIndex = 0;
-            this.objectView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.SelectChanged);
+            this.objectTreeView.Dock = System.Windows.Forms.DockStyle.Left;
+            this.objectTreeView.FullRowSelect = true;
+            this.objectTreeView.ImageIndex = 0;
+            this.objectTreeView.ImageList = this.imageListForTreeView;
+            this.objectTreeView.Indent = 15;
+            this.objectTreeView.Location = new System.Drawing.Point(0, 31);
+            this.objectTreeView.Name = "objectTreeView";
+            this.objectTreeView.SelectedImageIndex = 0;
+            this.objectTreeView.Size = new System.Drawing.Size(260, 422);
+            this.objectTreeView.TabIndex = 0;
+            this.objectTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.ObjectTreeView_SelectChanged);
             //
-            // hexView
+            // imageListForTreeView
             //
-            this.hexView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.hexView.Location = new System.Drawing.Point(260, 25);
-            this.hexView.Name = "hexView";
-            this.hexView.Size = new System.Drawing.Size(367, 428);
-            this.hexView.TabIndex = 1;
-            this.hexView.SizeChanged += new System.EventHandler(this.OnSize);
-            this.hexView.Paint += new System.Windows.Forms.PaintEventHandler(this.OnPaint);
-            this.hexView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.HexView_MouseClick);
+            this.imageListForTreeView.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
+            this.imageListForTreeView.ImageSize = new System.Drawing.Size(16, 17);
+            this.imageListForTreeView.TransparentColor = System.Drawing.Color.Transparent;
+            //
+            // memoryView
+            //
+            this.memoryView.AutoScroll = true;
+            this.memoryView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.memoryView.Location = new System.Drawing.Point(260, 31);
+            this.memoryView.MinimumSize = new System.Drawing.Size(350, 100);
+            this.memoryView.Name = "memoryView";
+            this.memoryView.Size = new System.Drawing.Size(367, 422);
+            this.memoryView.TabIndex = 1;
+            this.memoryView.SizeChanged += new System.EventHandler(this.MemoryView_SizeChange);
+            this.memoryView.Paint += new System.Windows.Forms.PaintEventHandler(this.MemoryView_Paint);
+            this.memoryView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.MemoryView_MouseClick);
             //
             // toolStrip1
             //
             this.toolStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.analyzeButton});
+            this.analyzeButton,
+            this.alignmentSplitButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(644, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(644, 31);
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
             //
@@ -100,36 +119,78 @@ namespace Gear.GUI
             this.analyzeButton.Image = ((System.Drawing.Image)(resources.GetObject("analyzeButton.Image")));
             this.analyzeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.analyzeButton.Name = "analyzeButton";
-            this.analyzeButton.Size = new System.Drawing.Size(60, 22);
-            this.analyzeButton.Text = "Reanalize";
-            this.analyzeButton.Click += new System.EventHandler(this.AnalizeButton_Click);
+            this.analyzeButton.Size = new System.Drawing.Size(52, 28);
+            this.analyzeButton.Text = "Analyze";
+            this.analyzeButton.Click += new System.EventHandler(this.AnalyzeButton_Click);
             //
-            // scrollPosition
+            // alignmentSplitButton
             //
-            this.scrollPosition.Dock = System.Windows.Forms.DockStyle.Right;
-            this.scrollPosition.LargeChange = 16;
-            this.scrollPosition.Location = new System.Drawing.Point(627, 25);
-            this.scrollPosition.Maximum = 65535;
-            this.scrollPosition.Name = "scrollPosition";
-            this.scrollPosition.Size = new System.Drawing.Size(17, 428);
-            this.scrollPosition.TabIndex = 0;
-            this.scrollPosition.TabStop = true;
-            this.scrollPosition.Scroll += new System.Windows.Forms.ScrollEventHandler(this.OnScroll);
+            this.alignmentSplitButton.AutoToolTip = false;
+            this.alignmentSplitButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.freeAlignmentMenuItem,
+            this.fixedByteAlignmentMenuItem,
+            this.fixedWordAlignmentMenuItem});
+            this.alignmentSplitButton.Image = ((System.Drawing.Image)(resources.GetObject("AlignmentNone")));
+            this.alignmentSplitButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.alignmentSplitButton.ImageTransparentColor = System.Drawing.Color.Transparent;
+            this.alignmentSplitButton.Name = "alignmentSplitButton";
+            this.alignmentSplitButton.Size = new System.Drawing.Size(110, 28);
+            this.alignmentSplitButton.Text = "Alignment";
+            this.alignmentSplitButton.ToolTipText = "Fixed or Free Alignment";
+            //
+            // freeAlignmentMenuItem
+            //
+            this.freeAlignmentMenuItem.CheckOnClick = true;
+            this.freeAlignmentMenuItem.Name = "freeAlignmentMenuItem";
+            this.freeAlignmentMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.freeAlignmentMenuItem.Text = "Free";
+            this.freeAlignmentMenuItem.ToolTipText = "Free advance in steps of 1 Byte.";
+            this.freeAlignmentMenuItem.Click += new System.EventHandler(this.FreeAlignmentToolStripMenuItem_Click);
+            //
+            // fixedByteAlignmentMenuItem
+            //
+            this.fixedByteAlignmentMenuItem.CheckOnClick = true;
+            this.fixedByteAlignmentMenuItem.Name = "fixedByteAlignmentMenuItem";
+            this.fixedByteAlignmentMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.fixedByteAlignmentMenuItem.Text = "Fixed at 8 Bytes";
+            this.fixedByteAlignmentMenuItem.ToolTipText = "Advance fixed at steps of 8 Bytes.";
+            this.fixedByteAlignmentMenuItem.Click += new System.EventHandler(this.FixedByteAlignmentToolStripMenuItem_Click);
+            //
+            // fixedWordAlignmentMenuItem
+            //
+            this.fixedWordAlignmentMenuItem.CheckOnClick = true;
+            this.fixedWordAlignmentMenuItem.Name = "fixedWordAlignmentMenuItem";
+            this.fixedWordAlignmentMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.fixedWordAlignmentMenuItem.Text = "Fixed at 16 Bytes";
+            this.fixedWordAlignmentMenuItem.ToolTipText = "Advance fixed at steps of 16 Bytes.";
+            this.fixedWordAlignmentMenuItem.Click += new System.EventHandler(this.FixedWordAlignmentToolStripMenuItem_Click);
+            //
+            // PositionScrollBar
+            //
+            this.PositionScrollBar.Dock = System.Windows.Forms.DockStyle.Right;
+            this.PositionScrollBar.LargeChange = 16;
+            this.PositionScrollBar.Location = new System.Drawing.Point(627, 31);
+            this.PositionScrollBar.Maximum = 32767;
+            this.PositionScrollBar.Name = "PositionScrollBar";
+            this.PositionScrollBar.Size = new System.Drawing.Size(17, 422);
+            this.PositionScrollBar.TabIndex = 0;
+            this.PositionScrollBar.TabStop = true;
+            this.PositionScrollBar.Scroll += new System.Windows.Forms.ScrollEventHandler(this.PositionScrollBar_PositionChanged);
             //
             // splitter1
             //
-            this.splitter1.Location = new System.Drawing.Point(260, 25);
+            this.splitter1.Location = new System.Drawing.Point(260, 31);
             this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(3, 428);
+            this.splitter1.Size = new System.Drawing.Size(3, 422);
             this.splitter1.TabIndex = 2;
             this.splitter1.TabStop = false;
             //
             // SpinView
             //
             this.Controls.Add(this.splitter1);
-            this.Controls.Add(this.hexView);
-            this.Controls.Add(this.objectView);
-            this.Controls.Add(this.scrollPosition);
+            this.Controls.Add(this.memoryView);
+            this.Controls.Add(this.objectTreeView);
+            this.Controls.Add(this.PositionScrollBar);
             this.Controls.Add(this.toolStrip1);
             this.Name = "SpinView";
             this.Size = new System.Drawing.Size(644, 453);
@@ -142,15 +203,22 @@ namespace Gear.GUI
 
         #endregion
 
-        private System.Windows.Forms.TreeView objectView;
-        private Gear.GUI.DoubleBufferedPanel hexView;
+        private System.Windows.Forms.TreeView objectTreeView;
+        private Gear.GUI.DoubleBufferedPanel memoryView;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton analyzeButton;
-        private System.Windows.Forms.VScrollBar scrollPosition;
+        // @version v22.07.01 - Name changed.
+        private System.Windows.Forms.VScrollBar PositionScrollBar;
         private System.Windows.Forms.Splitter splitter1;
-        private readonly Font MonoSpace;
-        private readonly System.Drawing.Brush[] Colorize;
-        private Bitmap BackBuffer;
-
+        // @version v22.07.01 - Added.
+        private ImageList imageListForTreeView;
+        // @version v22.07.01 - Added.
+        private ToolStripDropDownButton alignmentSplitButton;
+        // @version v22.07.01 - Added.
+        private ToolStripMenuItem freeAlignmentMenuItem;
+        // @version v22.07.01 - Added.
+        private ToolStripMenuItem fixedByteAlignmentMenuItem;
+        // @version v22.07.01 - Added.
+        private ToolStripMenuItem fixedWordAlignmentMenuItem;
     }
 }

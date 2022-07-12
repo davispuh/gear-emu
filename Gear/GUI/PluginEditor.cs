@@ -99,7 +99,8 @@ namespace Gear.GUI
         /// @version v22.06.01 - Name changed to follow naming conventions.
         private readonly int[] _tabs = new int[32];
 
-        /// <summary></summary>
+        /// <summary>Flag to signal if embed the code of a plugin into XML,
+        /// or to have it on a separated file.</summary>
         /// @version v22.06.02 - Added as member to establish data binding
         /// to program properties.
         private bool _embeddedCode;
