@@ -21,6 +21,8 @@
  * --------------------------------------------------------------------------------
  */
 
+#undef USE_MAINGRAPHICS
+
 using Gear.EmulationCore;
 using Gear.Utils;
 using System;
@@ -120,9 +122,16 @@ namespace Gear.GUI
         /// @version v22.07.01 - Name changed to follow naming conventions.
         private Bitmap _backBuffer;
 
-        /// <summary>Graphic style to draw text.</summary>
+        /// <summary>Backing field for Graphic style to draw text on buffer.</summary>
         /// @version v22.07.01 - Added.
         private Graphics _bufferGraphics;
+
+#if USE_MAINGRAPHICS
+        /// <summary>Backing field for Graphic style to draw text on
+        /// main Panel.</summary>
+        /// @version v22.07.xx - Added.
+        private Graphics _mainGraphics;
+#endif
 
         /// <summary>Image for Icon on tree view for each node.</summary>
         /// @version v22.07.01 - Added.
@@ -182,6 +191,17 @@ namespace Gear.GUI
                 _bufferGraphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
             }
         }
+
+#if USE_MAINGRAPHICS
+        /// <summary>Graphic style property to draw text and graphics
+        /// on main Panel.</summary>
+        /// @version v22.07.xx - Added.
+        private Graphics MainGraphics
+        {
+            get => _mainGraphics ?? (_mainGraphics = memoryView.CreateGraphics());
+            set => _mainGraphics = value;
+        }
+#endif
 
         /// <summary>Frequency format to be displayed.</summary>
         /// <remarks>Used to establish data binding to program properties.
@@ -643,26 +663,38 @@ namespace Gear.GUI
         /// <summary>Event to repaint the plugin screen (if used).</summary>
         /// <param name="force">Flag to indicate the intention to force the
         /// repaint.</param>
-        /// @version v22.07.01 - Modified to use string interpolation. Changed
-        /// local variable names to clarify their meaning.
+        /// @version v22.07.xx - Modified to add offset header. Corrected
+        /// to consider margin between object tree view and memory view.
         public override void Repaint(bool force)
         {
             if (Chip == null || BackBuffer == null)
                 return;
+            const int bytesToShow = 16;
+            const int mask = bytesToShow - 1;
             BufferGraphics.Clear(SystemColors.Control);
             Size dataSize = TextRenderer.MeasureText("00", _monoSpace);
             Size addressSize = TextRenderer.MeasureText("$0000:", _monoSpace);
-
-            for (int y = PositionScrollBar.Value, dy = 0;
+            //draw the header
+            BufferGraphics.FillRectangle(SystemBrushes.ControlLight, 0, 0,
+                addressSize.Width + dataSize.Width * 16, dataSize.Height);
+            BufferGraphics.DrawString(@" Addr:", _monoSpace,
+                SystemBrushes.ControlText, 2, 0);
+            for (int x = 0, shift = PositionScrollBar.Value & mask, dx = addressSize.Width;
+                 x < bytesToShow;
+                 x++, shift = (shift + 1) & mask, dx += dataSize.Width)
+                BufferGraphics.DrawString($"+{shift:X1}", _monoSpace,
+                    SystemBrushes.ControlText, dx, 0);
+            //draw all other lines
+            for (int y = PositionScrollBar.Value, dy = dataSize.Height;
                  y < PropellerCPU.TotalRAM && dy < memoryView.ClientRectangle.Height;
                  dy += dataSize.Height)
             {
                 // Draw the address
                 BufferGraphics.FillRectangle(Brushes.White, new Rectangle(0, dy, addressSize.Width, dataSize.Height));
-                BufferGraphics.DrawString($"${y:X4}:", _monoSpace, SystemBrushes.ControlText, 0, dy);
+                BufferGraphics.DrawString($"${y:X4}:", _monoSpace, SystemBrushes.ControlText, 2, dy);
                 // Draw the line of data
                 for (int x = 0, dx = addressSize.Width;
-                     y < PropellerCPU.TotalRAM && x < 16;
+                     y < PropellerCPU.TotalRAM && x < bytesToShow;
                      x++, dx += dataSize.Width, y++)
                 {
                     byte data = Chip.DirectReadByte((uint)y);
@@ -671,7 +703,11 @@ namespace Gear.GUI
                     BufferGraphics.DrawString($"{data:X2}", _monoSpace, SystemBrushes.ControlText, dx, dy);
                 }
             }
+#if USE_MAINGRAPHICS
+            MainGraphics.DrawImageUnscaled(BackBuffer, 0, 0);
+#else
             memoryView.CreateGraphics().DrawImageUnscaled(BackBuffer, 0, 0);
+#endif
         }
 
         /// <summary>Event handler to analyze the Spin packet code.</summary>
@@ -705,6 +741,10 @@ namespace Gear.GUI
                 BackBuffer = new Bitmap(memoryView.Width, memoryView.Height);
             else
                 BackBuffer = new Bitmap(1, 1);
+#if USE_MAINGRAPHICS
+            //force MainGraphics to recalculate on next get value
+            MainGraphics = null;
+#endif
             Repaint(true);
         }
 
@@ -716,7 +756,11 @@ namespace Gear.GUI
         {
             if (BackBuffer == null)
                 BackBuffer = new Bitmap(memoryView.Width, memoryView.Height);
+#if USE_MAINGRAPHICS
+            MainGraphics.DrawImageUnscaled(BackBuffer, 0, 0);
+#else
             e.Graphics.DrawImageUnscaled(BackBuffer, 0, 0);
+#endif
         }
 
         /// <summary>Event handler to manage a mouse click on memory panel.</summary>

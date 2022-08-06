@@ -1,10 +1,32 @@
 # Change Log
 
-## Commit  Code cleanup UI on SpinView.
+## Commit  Code cleanup UI on CogView.
+
+- Changed in Cog View UI:
+  - Separated and ordered in two different toolstips: buttons to perform actions, and labels to show information.
+  - When a cog is stopped, the panel is cleared, to visually differentiate when a cog is running.
+  - When PASM code is shown, added the option to show value of operation as hexadecimal or decimal base, like SPIN bytecode. changes in [`InstructionDisassembler.cs`](Gear/EmulationCore/InstructionDisassembler.cs) and [`CogView.cs`](Gear/GUI/CogView.cs).
+- Corrected error on restore in wrong position a unpinned tab when other where selected to pinned, in [`Emulator.cs`](Gear/GUI/Emulator.cs) and [`TabManager.cs`](Gear/GUI/TabManager.cs).
+- Added header to memory panel, to show the offset to each address, in Spin Map tab [`SpinView.cs`](Gear/GUI/SpinView.cs).
+- Modified header background color of Main Memory tab, to use the same of other headers, in [`MemoryView.cs`](Gear/GUI/MemoryView.cs).
+- Code cleanup and refactoring in [`CogView.cs`](Gear/GUI/CogView.cs) and in some parts of [`Cog.cs`](Gear/EmulationCore/Cog.cs), affecting also [`InterpretedCog.cs`](Gear/EmulationCore/InterpretedCog.cs) and [`NativeCog.cs`](Gear/EmulationCore/NativeCog.cs).
+  - Refactored naming and visibility of members, parameters and local variables in classes, methods and enums.
+  - Use of data bindings to global properties, for `FreqFormat` to show clock frequency on Spin byte code.
+  - Added XML & Doxygen comments in files.
+  - Removed extra spaces at line ends.
+- Code renaming on classes and files, documenting almost all.
+  - Name changes of `SubInstruction` to `InstructionVariant`, `ParsedInstruction` to `DecodedPASMInstruction`, `SubAssignment` to `AssignmentVariant`, `ParsedMemoryOperation` to `DecodedMemoryOperation`, `ParsedAssignment` to `DecodedAssignment`, ``, affecting [`Propeller/Assembly.cs`](Gear/Propeller/Assembly.cs), [`Disassembler/Assembly.cs`](Gear/Disassembler/Assembly.cs), [`Propeller/Spin.cs`](Gear/Propeller/Spin.cs), [`Disassembler/Spin.cs`](Gear/Disassembler/Spin.cs), [`AssemblyInstructions.cs`](Gear/Propeller/AssemblyInstructions.cs), [`SpinAssignments.cs`](Gear/Propeller/SpinAssignments.cs), [`SpinInstructions.cs`](Gear/Propeller/SpinInstructions.cs), [`InstructionDisassembler.cs`](Gear/EmulationCore/InstructionDisassembler.cs).
+  - Name change of `MemoryManager` to `MemorySegment` class, also splitting old file `Propeller/MemoryManager.cs` into [`MemorySegment.cs`](Gear/Propeller/MemorySegment.cs) and [`DirectMemory.cs`](Gear/Propeller/DirectMemory.cs) to separate classes `MemorySegment` and `DirectMemory` to its own file.
+  - Name change of `DataUnpacker` to `DataDecoder` class, also changing old file `DataUnpacker.cs` to [`DataDecoder.cs`](Gear/Disassembler/DataDecoder.cs).
+- Prepared modification of Main graphics context variable for the direct painting of MemoryView and SpinView panels, like CogView does, instead to use a bitmap backbuffer, in [`MemoryView.cs`](Gear/GUI/MemoryView.cs) and [`SpinView.cs`](Gear/GUI/SpinView.cs).
+- Added documentation on [SpinBytecode](Parallax&#32;Stuff/SpinBytecodeDocs_600_260C_007F.spin) to repository, and added link to it on [`readme.md`](readme.md).
+
+
+## Release Version [22.07.01](https://github.com/davispuh/gear-emu/releases/tag/v22.07.01) Commit [195e7f5](https://github.com/davispuh/gear-emu/commit/195e7f5f026ba47fc45d92d6561b28361912164d) Update version data, Merge commit 'f2647ca' [b3b4bda](https://github.com/davispuh/gear-emu/commit/b3b4bda7c58ec3f334f97f3e0b848b5047b3ef43) & Commit [9a615fb](https://github.com/davispuh/gear-emu/commit/9a615fb9dad6453cecadbd2236b8fdb5847da62b) Code cleanup UI on SpinView.
 
 - Changed constant name `PropellerCPU.MaxRAMAddress` to `PropellerCPU.MaxMemoryAddress`, to clarify it refers to top of ROM, not RAM. Affects [`PropellerCPU.cs`](Gear/EmulationCore/PropellerCPU.cs), [`CogView.cs`](Gear/GUI/CogView.cs), [`InterpretedCog.cs`](Gear/EmulationCore/InterpretedCog.cs), [`MemoryManager.cs`](Gear/Propeller/MemoryManager.cs), [`SpinView.cs`](Gear/GUI/SpinView.cs).
 - Code cleanup and refactoring in [`SpinView.cs`](Gear/GUI/SpinView.cs) and in some parts of [`Emulator.cs`](Gear/GUI/Emulator.cs).
-  - Improved visualitation of Spin objects in map, with more details and different colors. Added three alignment modes on map: none, at Byte, or at Word, with a new tool strip selector with icons.
+  - Improved visualization of Spin objects in map, with more details and different colors. Added three alignment modes on map: none, at Byte, or at Word, with a new tool strip selector with icons.
   - Refactored naming and visibility of members, parameters and local variables in classes, methods and enums.
   - Use of data bindings to global properties, for `FreqFormat` to show clock frequency on Spin byte code.
   - Added XML & Doxygen comments in files.

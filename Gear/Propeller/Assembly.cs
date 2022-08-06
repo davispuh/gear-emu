@@ -23,7 +23,7 @@
 // ReSharper disable InconsistentNaming
 namespace Gear.Propeller
 {
-    /// <summary></summary>
+    /// <summary>PASM assembly language definitions.</summary>
     public static partial class Assembly
     {
         /// <summary>Instructions types.</summary>
@@ -31,24 +31,24 @@ namespace Gear.Propeller
         /// meaning of it.
         public enum InstructionTypeEnum : byte
         {
-            /// <summary></summary>
+            /// <summary>Normal instruction.</summary>
             Normal,
-            /// <summary></summary>
+            /// <summary>Read/Write capable.</summary>
             ReadWrite,
-            /// <summary></summary>
+            /// <summary>Require Hub access.</summary>
             Hub,
-            /// <summary></summary>
+            /// <summary>Jump type.</summary>
             Jump
         }
 
-        /// <summary>
-        /// Container for PASM registers names and Read/Write characteristics.
-        /// </summary>
+        /// <summary>Container for PASM registers names and Read/Write
+        /// characteristics.</summary>
         public class Register : Propeller.Register
         {
             /// <summary>Could be read.</summary>
             /// @version v22.05.01 - Name changed to clarify meaning of it.
             public bool CanRead  { get; }
+
             /// <summary>Could be written.</summary>
             /// @version v22.05.01 - Name changed to clarify meaning of it.
             public bool CanWrite { get; }
@@ -66,47 +66,63 @@ namespace Gear.Propeller
             }
         }
 
-        /// <summary></summary>
-        public class SubInstruction
+        /// <summary>Container for a PASM instruction variant.</summary>
+        /// @version v22.07.xx - Renamed class to be more meaningfully.
+        public class InstructionVariant
         {
-            /// <summary></summary>
+            /// <summary>Code name of instruction.</summary>
             public string Name { get; }
-            /// <summary></summary>
+
+            /// <summary>Flag if use Destination bits.</summary>
             /// @version v22.05.03 - Name changed to clarify meaning of it.
             public bool UseDestination { get; }
-            /// <summary></summary>
+
+            /// <summary>Flag if use Source bits.</summary>
             /// @version v22.05.03 - Name changed to clarify meaning of it.
             public bool UseSource { get; }
-            /// <summary></summary>
+
+            /// <summary>Flag if use WZ Effect (zero) bit.</summary>
             /// @version v22.05.03 - Name changed to clarify meaning of it.
             public bool UseWZ_Effect { get; }
-            /// <summary></summary>
+
+            /// <summary>Flag if use WC Effect (carry) bit.</summary>
             /// @version v22.05.03 - Name changed to clarify meaning of it.
             public bool UseWC_Effect { get; }
-            /// <summary></summary>
+
+            /// <summary>Flag if use WR_Effect (Destination Register
+            /// modified) bit.</summary>
             /// @version v22.05.03 - Name changed to clarify meaning of it.
             public bool UseWR_Effect { get; }
-            /// <summary></summary>
+
+            /// <summary>Flag if use Immediate Value.</summary>
             /// @version v22.05.03 - Name changed to clarify meaning of it.
             public bool UseImmediateValue { get; }
-            /// <summary></summary>
+
+            /// <summary>Text representation of coding on 32 bits.</summary>
             /// @version v22.05.03 - Added.
             public string Representation { get; }
 
             /// <summary>Default constructor.</summary>
-            /// <param name="name">PASM code name of sub instruction.</param>
-            /// <param name="useDestination"></param>
-            /// <param name="useSource"></param>
-            /// <param name="useWZ_Effect"></param>
-            /// <param name="useWC_Effect"></param>
-            /// <param name="useWR_Effect"></param>
-            /// <param name="useImmediateValue"></param>
-            /// <param name="representation"></param>
-            /// @version v22.05.03 - Parameter names changed to follow naming
-            /// conventions and clarify meaning of them.
-            public SubInstruction(string name, bool useDestination, bool useSource,
-                bool useWZ_Effect, bool useWC_Effect, bool useWR_Effect,
-                bool useImmediateValue, string representation)
+            /// <param name="name">PASM code name of instruction variant.</param>
+            /// <param name="useDestination">Flag to indicate if use
+            /// Destination bits.</param>
+            /// <param name="useSource">Flag to indicate if use Source bits.</param>
+            /// <param name="useWZ_Effect">Flag to indicate if use WZ Effect
+            /// (zero) bit.</param>
+            /// <param name="useWC_Effect">Flag to indicate if use WC Effect
+            /// (carry) bit.</param>
+            /// <param name="useWR_Effect">Flag to indicate if use WR_Effect
+            /// (Destination Register modified) bit.</param>
+            /// <param name="useImmediateValue">Flag to indicate if use
+            /// Immediate Value.</param>
+            /// <param name="representation">Text representation of coding of
+            /// this instruction variant.</param>
+            /// @version v22.07.xx - Renamed class constructor to follow class
+            /// name was changed.
+            public InstructionVariant(string name, bool useDestination,
+                bool useSource, bool useWZ_Effect, bool useWC_Effect,
+                bool useWR_Effect, bool useImmediateValue,
+                string representation)
             {
                 Name = name;
                 UseDestination = useDestination;
@@ -120,25 +136,28 @@ namespace Gear.Propeller
         }
 
         /// <summary>Container for PASM instructions and associated
-        /// sub instructions.</summary>
+        /// instructions variants.</summary>
         public class Instruction
         {
-            /// <summary></summary>
+            /// <summary>Type of instruction.</summary>
             public InstructionTypeEnum InstructionType { get; }
-            /// <summary></summary>
-            public SubInstruction[] SubInstructions { get; }
+
+            /// <summary>Array of instruction variants of this Instruction.</summary>
+            /// @version v22.07.xx - Property renamed according to the return
+            /// class name was changed to follow its class renaming.
+            public InstructionVariant[] InstructionVariants { get; }
 
             /// <summary>Default constructor.</summary>
             /// <param name="instructionType">Type of instruction.</param>
-            /// <param name="subInstructions">Array of sub instruction of this
-            /// instruction.</param>
-            /// @version v22.05.01 - Parameter names changed to follow
-            /// naming conventions.
+            /// <param name="instructionVariants">Array of instruction variants
+            /// of this instruction.</param>
+            /// @version v22.07.xx - Parameter name changed to follow its
+            /// class renaming.
             public Instruction(InstructionTypeEnum instructionType,
-                SubInstruction[] subInstructions)
+                InstructionVariant[] instructionVariants)
             {
                 InstructionType = instructionType;
-                SubInstructions = subInstructions;
+                InstructionVariants = instructionVariants;
             }
         }
 

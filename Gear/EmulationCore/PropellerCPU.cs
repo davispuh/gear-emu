@@ -76,15 +76,15 @@ namespace Gear.EmulationCore
         INPUT_HI = 1,
     }
 
-    /// @brief Class to emulate the core of %Propeller P1 chip.
-    /// @details Conceptually it comprehends the ROM, RAM (hub memory), clock , locks, hub ring,
-    /// main pin state, and references to each cog (with their own cog memory, counters, frequency
-    /// generator, program cursor).
+    /// <summary>Class to emulate the core of %Propeller P1 chip.</summary>
+    /// <remarks>Contains the ROM, RAM (hub memory), clock , locks, hub ring,
+    /// main pin state, and references to each cog (with their own cog memory,
+    /// counters, frequency generator, program cursor).</remarks>
     /// @version v22.06.01 - Added custom debugger text.
     [DefaultProperty("Name"), DebuggerDisplay("{TextForDebugger,nq}")]
     public class PropellerCPU : DirectMemory, INotifyPropertyChanged
     {
-        /// @brief Name of Constants for setting clock of the %Cpu.
+        /// <summary>Name of Constants for setting clock of the CPU.</summary>
         private static readonly string[] CLKSEL = {
             "RCFAST",   // Internal fast oscillator:    $00000001
             "RCSLOW",   // Internal slow oscillator:    $00000002
@@ -96,7 +96,7 @@ namespace Gear.EmulationCore
             "PLL16X"    // External frequency times 16: $00000400
         };
 
-        /// @brief Name of external clock constants.
+        /// <summary>Name of external clock constants.</summary>
         private static readonly string[] OSCM = {
             "XINPUT+",  // External clock/oscillator:     $00000004
             "XTAL1+",   // External low-speed crystal:    $00000008
@@ -564,14 +564,15 @@ namespace Gear.EmulationCore
 
         /// <summary>Raise the event PropertyChanged when subscribed
         /// property changes.</summary>
+        /// <remarks>Implement interface INotifyPropertyChanged.</remarks>
         /// <param name="propertyName">Name of the changed property.</param>
         /// References: <list type="bullet">
         /// <item>https://stackoverflow.com/questions/5883282/binding-property-to-control-in-winforms</item>
         /// <item>https://docs.microsoft.com/en-us/archive/msdn-magazine/2016/july/data-binding-a-better-way-to-implement-data-binding-in-net</item>
         /// <item>https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.inotifypropertychanged?view=netframework-4.7.2</item>
         /// </list>
-        /// @version v22.05.04 - Added to implement interface INotifyPropertyChanged.
-        protected virtual void OnPropertyChanged(string propertyName)
+        /// @version v22.07.xx - Changed visibility from former `protected abstract`.
+        private void OnPropertyChanged(string propertyName)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
             handler?.Invoke(this, new PropertyChangedEventArgs(propertyName));

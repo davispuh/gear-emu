@@ -20,9 +20,7 @@
  * --------------------------------------------------------------------------------
  */
 
-using System.Drawing;
 using System.Windows.Forms;
-using Gear.EmulationCore;
 
 namespace Gear.GUI
 {

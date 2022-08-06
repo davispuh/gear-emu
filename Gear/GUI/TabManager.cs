@@ -51,20 +51,25 @@ namespace Gear.GUI
             new Regex(PatternParseNameTab, RegexOptions.Compiled |
                                            RegexOptions.CultureInvariant);
 
-        /// <summary>How many tabs are contained in floating windows.</summary>
-        public int FloatingTabsQuantity { get; set; }
+        /// <summary>Counts how many tabs are contained in floating windows.</summary>
+        /// @version v22.07.xx - Changed name from former
+        /// `FloatingTabsQuantity`, to shorter name.
+        public int FloatingTabsQty { get; set; }
 
-        /// <summary>Flag to signaling when a tab is pinned in another
-        /// object and not into document tab control.</summary>
-        public bool TabPinnedExist { get; set; }
+        /// <summary>Counts how many tabs are pinned in another object and not
+        /// into document tab control.</summary>
+        /// @version v22.07.xx - Changed type and name of property from former
+        /// `TabPinnedExist`, to correct error on restore in wrong position
+        /// a unpinned tab when other where selected to pinned.
+        public int TabPinnedQty { get; set; }
 
         /// <summary>Default constructor.</summary>
         /// <param name="tabControlToManage">Tab Control to be managed.</param>
         public TabManager(TabControl tabControlToManage)
         {
             _tabControlManaged = tabControlToManage;
-            FloatingTabsQuantity = 0;
-            TabPinnedExist = false;
+            FloatingTabsQty = 0;
+            TabPinnedQty = 0;
         }
 
         /// <summary>Extract the base name of a tab text.</summary>
@@ -110,7 +115,7 @@ namespace Gear.GUI
             catch (Exception e)
             {
                 MessageBox.Show(e.Message,
-                    $"Technical Error on {e.Source}",
+                    $@"Technical Error on {e.Source}",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             return string.Empty;
@@ -134,7 +139,7 @@ namespace Gear.GUI
             catch (Exception e)
             {
                 MessageBox.Show(e.Message,
-                    $"Technical Error on {e.Source}",
+                    $@"Technical Error on {e.Source}",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -188,6 +193,8 @@ namespace Gear.GUI
         /// <param name="control"></param>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentException"></exception>
+        /// @version v22.07.xx - Corrected error on restore in wrong position
+        /// a unpinned tab when other where selected to pinned.
         public void RestoreToTabControl(Control control)
         {
             int idxFound;
@@ -197,18 +204,16 @@ namespace Gear.GUI
                 idxFound = _tabOrderedList.IndexOf(control.Text);
             else
                 throw new ArgumentException(
-                    $"Control Text '{control.Text}' do not exists in Tab Names List!",
+                    $@"Control Text '{control.Text}' do not exists in Tab Names List!",
                     nameof(control));
             TabPage newTabPage = new TabPage(control.Text);
-            //calculate the position to reinsert the tab
-            int pos = Math.Min(idxFound,
-                _tabOrderedList.Count - FloatingTabsQuantity - (TabPinnedExist ?
-                    1 :
-                    0));
-            //insert tab in saved position
-            _tabControlManaged.TabPages.Insert(pos, newTabPage);
             control.Dock = DockStyle.Fill;
             control.Parent = newTabPage;
+            //calculate the position to reinsert the tab
+            int pos = Math.Min(idxFound,
+                _tabOrderedList.Count - 1 - FloatingTabsQty - TabPinnedQty);
+            //insert tab in saved position
+            _tabControlManaged.TabPages.Insert(pos, newTabPage);
             _tabControlManaged.SelectedTab = newTabPage;
         }
 

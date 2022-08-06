@@ -259,7 +259,7 @@ namespace Gear.EmulationCore
                     return true;
             }
             byte operation = CpuHost.DirectReadByte(ProgramCursor++);
-            FrameFlag = FrameState.FrameNone;
+            FrameFlag = FrameState.None;
             // Math Operations (0xE0..0xFF)
             if (operation >= 0xE0)
                 PushStack(BaseMathOp((byte)(operation - 0xE0), true, PopStack()));
@@ -895,7 +895,7 @@ namespace Gear.EmulationCore
                 colors = _colorsValue;
                 pixels = _pixelsValue;
                 State = CogRunState.ExecInterpreter;
-                FrameFlag = FrameState.FrameHit;
+                FrameFlag = FrameState.Hit;
             }
             else
             {
@@ -903,7 +903,7 @@ namespace Gear.EmulationCore
                 // True results would depend upon Spin Interpreter operation
                 colors = 0;
                 pixels = 0;
-                FrameFlag = FrameState.FrameMiss;
+                FrameFlag = FrameState.Miss;
             }
         }
 

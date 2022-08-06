@@ -31,52 +31,54 @@ namespace Gear.EmulationCore
     /// @version v22.05.04 - Changed to HubOperation enum code.
     public enum CogRunState : byte
     {
-        /// @brief Waiting for instruction to finish executing.
+        /// <summary>Waiting for instruction to finish executing.</summary>
         StateExecute,
-        /// @brief %Cog is loading program memory.
+        /// <summary>%Cog is loading program memory.</summary>
         WaitLoadProgram,
-        /// @brief %Cog is executing an instruction, and waiting an allotted amount of cycles.
+        /// <summary>%Cog is executing an instruction, and waiting an allotted
+        /// amount of cycles.</summary>
         WaitCycles,
-        /// @brief Waits for an allotted number of cycles before changing to a new state.
+        /// <summary>Waits for an allotted number of cycles before changing to
+        /// a new state.</summary>
         WaitPreWait,
 
-        /// @brief Interpreter is booting up.
+        /// <summary>Interpreter is booting up.</summary>
         BootInterpreter,
-        /// @brief Interpreter is executing an instruction.
+        /// <summary>Interpreter is executing an instruction.</summary>
         WaitInterpreter,
-        /// @brief Interpreter is fetching instruction.
+        /// <summary>Interpreter is fetching instruction.</summary>
         ExecInterpreter,
 
-        /// @brief Waits for pins to match.
+        /// <summary>Waits for pins to match.</summary>
         WaitPinsEqual,
-        /// @brief Waits for pins to NOT match.
+        /// <summary>Waits for pins to NOT match.</summary>
         WaitPinsNotEqual,
-        /// @brief Waits for count.
+        /// <summary>Waits for count.</summary>
         WaitCount,
-        /// @brief Waits for video.
+        /// <summary>Waits for video.</summary>
         WaitVideo,
 
-        /// @brief Waiting to read byte.
+        /// <summary>Waiting to read byte.</summary>
         HubReadByte,
-        /// @brief Waiting to read word.
+        /// <summary>Waiting to read word.</summary>
         HubReadWord,
-        /// @brief Waiting to read uint.
+        /// <summary>Waiting to read uint.</summary>
         HubReadLong,
-        /// @brief Waiting to perform hub operation.
+        /// <summary>Waiting to perform hub operation.</summary>
         HubOperation
     }
 
     /// <summary>Video frame states.</summary>
     /// @pullreq{18} Enum added.
-    /// @version v22.05.03 - Changed enum codes to follow naming conventions.
+    /// @version v22.07.xx - Shorted enum names.
     public enum FrameState : byte
     {
-        /// <summary></summary>
-        FrameNone,
-        /// <summary></summary>
-        FrameHit,
-        /// <summary></summary>
-        FrameMiss
+        /// <summary>Not in a video time frame.</summary>
+        None,
+        /// <summary>In a video time frame.</summary>
+        Hit,
+        /// <summary>Left video time frame.</summary>
+        Miss
     }
 
     /// <summary>Base class for a %Cog emulator.</summary>
@@ -109,10 +111,9 @@ namespace Gear.EmulationCore
         private protected CogRunState State;
         /// <summary>Next %Cog state.</summary>
         private protected CogRunState NextState;
-        /// <summary></summary>
-        private protected uint ProgramAddress;
-        /// <summary></summary>
-        private protected uint ParamAddress;
+        /// <summary>Program cursor address.</summary>
+        /// @version v22.07.xx - Changed to private access.
+        private uint ProgramAddress;
 
         /// <summary>Reference to the PropellerCPU instance where this
         /// object belongs.</summary>
@@ -135,8 +136,8 @@ namespace Gear.EmulationCore
         public int BreakPointCogCursor { get; set; }
 
         /// @brief Number of cycles to wait for the current state.
-        /// @version v22.05.03 - Property generated from protected member.
-        public int StateCount { get; private protected set; }
+        /// @version v22.07.xx - Changed to private protected access.
+        private protected int StateCount { get; set; }
 
         /// <summary>Indicates video frame end and whether in <c>WAIT_VID</c></summary>
         /// @pullreq{18} Property added.
@@ -144,8 +145,8 @@ namespace Gear.EmulationCore
         private protected FrameState FrameFlag { get; set; }
         /// <summary>Break if frame flag is set.</summary>
         /// @pullreq{18} Property added.
-        /// @version v22.05.03 - Property generated from protected member.
-        private protected FrameState FrameBreak { get; set; }
+        /// @version v22.07.xx - Changed to private access.
+        private FrameState FrameBreak { get; set; }
 
         /// @brief Property to return complete register of <c>OUT</c> pins
         /// (<c>P63..P0</c>).
@@ -205,33 +206,33 @@ namespace Gear.EmulationCore
             _cogMemory[(int)Assembly.RegisterAddress.DIRB];
 
         /// <summary>Property to get or set %Cog memory value.</summary>
-        /// <param name="idx">Cog memory address.</param>
-        /// <returns></returns>
+        /// <param name="cogAddress">Cog memory address.</param>
+        /// <returns>Value of memory at address.</returns>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        /// @todo Check apparent error on set method, not writing to hub for special register.
-        /// @version v22.05.03 - Parameter name changed to clarify meaning of it.
-        public uint this[int idx]
+        /// @todo Check apparent error on set method, not writing to hub for special registers.
+        /// @version v22.07.xx - Changed visibility to a protected setter. Parameter name changed to be more meaningful.
+        public uint this[int cogAddress]
         {
             get
             {
-                if (idx < 0 || idx >= TotalCogMemory)
-                    throw new ArgumentOutOfRangeException(nameof(idx));
+                if (cogAddress < 0 || cogAddress >= TotalCogMemory)
+                    throw new ArgumentOutOfRangeException(nameof(cogAddress));
                 // show special registers, because their values are in
                 // variables in Cog object and not in memory array.
-                return idx >= (int)Assembly.RegisterAddress.PAR ?
-                    ReadLong((uint)idx) :
-                    _cogMemory[idx];
+                return cogAddress >= (int)Assembly.RegisterAddress.PAR ?
+                    ReadLong((uint)cogAddress) :
+                    _cogMemory[cogAddress];
             }
-
-            set
+            protected set
             {
-                if (idx < 0 || idx >= TotalCogMemory)
-                    throw new ArgumentOutOfRangeException(nameof(idx));
-                _cogMemory[idx] = value;
+                if (cogAddress < 0 || cogAddress >= TotalCogMemory)
+                    throw new ArgumentOutOfRangeException(nameof(cogAddress));
+                _cogMemory[cogAddress] = value;
             }
         }
 
         /// @brief Show a string with human readable state of a cog.
+        /// @version v22.07.xx - Corrected text for waiting video.
         public string CogStateString
         {
             get
@@ -242,7 +243,7 @@ namespace Gear.EmulationCore
                     case CogRunState.HubReadByte:
                     case CogRunState.HubReadWord:
                     case CogRunState.HubReadLong:
-                        return "Waiting for hub";
+                        return "Waiting for Hub";
                     case CogRunState.BootInterpreter:
                         return "Interpreter Boot";
                     case CogRunState.ExecInterpreter:
@@ -262,15 +263,16 @@ namespace Gear.EmulationCore
                     case CogRunState.WaitPinsNotEqual:
                         return "Waiting (PNE)";
                     case CogRunState.WaitVideo:
-                        return "Waiting (video)";
+                        return "Waiting Video";
                     default:
                         return "ERROR";
                 }
             }
         }
 
-        /// <summary></summary>
+        /// <summary>String explanation of video state.</summary>
         /// @pullreq{18} Property added.
+        /// @version v22.07.xx - Modified to new presentation format on screen.
         public string VideoFrameString
         {
             get
@@ -278,27 +280,30 @@ namespace Gear.EmulationCore
                 string hitState;
                 switch (FrameFlag)
                 {
-                    case FrameState.FrameHit:
+                    case FrameState.Hit:
                         hitState = "Hit ";
                         break;
-                    case FrameState.FrameMiss:
+                    case FrameState.Miss:
                         hitState = "Miss";
                         break;
-                    case FrameState.FrameNone:
+                    case FrameState.None:
                     default:
-                        hitState = "    ";
+                        hitState = "None";
                         break;
                 }
-                return $"{hitState} {_videoGenerator.FrameClock:D4} {_videoGenerator.PixelClock:D3}";
+                return $"{hitState}/{_videoGenerator.FrameClock:D4}/{_videoGenerator.PixelClock:D3}";
             }
         }
 
         /// <summary>Default constructor.</summary>
-        /// <param name="cpuHost">PropellerCPU instance where this object belongs.</param>
+        /// <param name="cpuHost">PropellerCPU instance where this object
+        /// belongs.</param>
         /// <param name="cogNum">Cog number from PropellerCPU.</param>
-        /// <param name="programAddress">Start of program to load from main memory.</param>
+        /// <param name="programAddress">Start of program to load from main
+        /// memory.</param>
         /// <param name="param">PARAM value given to the Cog.</param>
-        /// <param name="frequency">Frequency running the cog (the same as the propeller cpu).</param>
+        /// <param name="frequency">Frequency running the cog (the same as the
+        /// propeller cpu).</param>
         /// <param name="pllGroup"></param>
         /// @pullreq{18} Initialization of added properties.
         /// @version v22.05.03 - Parameter names changed to follow naming conventions.
@@ -308,7 +313,6 @@ namespace Gear.EmulationCore
             CogNum = cogNum;
             _cogMemory = new uint[TotalCogMemory];
             ProgramAddress = programAddress;
-            ParamAddress = param;
 
             _freqAGenerator = new FreqGenerator(cpuHost, pllGroup, true);
             _freqBGenerator = new FreqGenerator(cpuHost, pllGroup, false);
@@ -318,8 +322,8 @@ namespace Gear.EmulationCore
             _pllGroup.SetupPLL(_videoGenerator);
             ProgramCursor = 0;
             BreakPointCogCursor = -1;    // Breakpoint disabled initially
-            FrameFlag = FrameState.FrameNone;   //Added on pull request #18
-            FrameBreak = FrameState.FrameMiss;  //Added on pull request #18
+            FrameFlag = FrameState.None;   //Added on pull request #18
+            FrameBreak = FrameState.Miss;  //Added on pull request #18
             // We are in boot time load
             _cogMemory[(int)Assembly.RegisterAddress.PAR] = param;
             State = CogRunState.WaitLoadProgram;

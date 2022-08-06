@@ -23,11 +23,12 @@
 // ReSharper disable InconsistentNaming
 namespace Gear.Propeller
 {
-    /// <summary></summary>
+    /// <summary>SPIN Language definitions.</summary>
     public static partial class Spin
     {
-        /// <summary></summary>
-        public enum MemoryAction : byte
+        /// <summary>Type of SPIN memory action.</summary>
+        /// @version v22.07.xx - Renamed enum to be more meaningfully.
+        public enum MemoryActionEnum : byte
         {
             /// <summary></summary>
             UNKNOWN_0,
@@ -37,9 +38,9 @@ namespace Gear.Propeller
             UNKNOWN_2,
             /// <summary></summary>
             UNKNOWN_3,
-            /// <summary></summary>
+            /// <summary>Push a value into stack.</summary>
             PUSH,
-            /// <summary></summary>
+            /// <summary>Remove a value from stack.</summary>
             POP,
             /// <summary></summary>
             EFFECT,
@@ -47,8 +48,9 @@ namespace Gear.Propeller
             UNKNOWN_7
         }
 
-        /// <summary></summary>
-        public enum ArgumentMode : byte
+        /// <summary>Type of argument mode.</summary>
+        /// @version v22.07.xx - Renamed enum to be more meaningfully.
+        public enum ArgumentModeEnum : byte
         {
             /// <summary></summary>
             None,
@@ -92,30 +94,30 @@ namespace Gear.Propeller
         /// <summary>Possible size of an assignment.</summary>
         public enum AssignmentSize : byte
         {
-            /// <summary></summary>
+            /// <summary>Bit - 1 bit.</summary>
             Bit,
-            /// <summary></summary>
+            /// <summary>Byte - 8 bits.</summary>
             Byte,
-            /// <summary></summary>
+            /// <summary>Word - 16 bits.</summary>
             Word,
-            /// <summary></summary>
+            /// <summary>Long - 32 bits.</summary>
             Long
         }
 
-        /// <summary></summary>
+        /// <summary>Types of assignment sizes.</summary>
         public enum AssignmentSizeTypeEnum : byte
         {
-            /// <summary></summary>
+            /// <summary>Without an assignment size.</summary>
             Unspecified,
-            /// <summary></summary>
+            /// <summary>Mask assignment size.</summary>
             Mask,
-            /// <summary></summary>
+            /// <summary>Bit assignment size - 1 bit.</summary>
             Bit,
-            /// <summary></summary>
+            /// <summary>Byte assignment size - 8 bits.</summary>
             Byte,
-            /// <summary></summary>
+            /// <summary>Word assignment size - 16 bits.</summary>
             Word,
-            /// <summary></summary>
+            /// <summary>Long assignment size - 32 bits.</summary>
             Long
         }
 
@@ -130,27 +132,32 @@ namespace Gear.Propeller
             }
         }
 
-        /// <summary>Container for %Spin %SubAssignment.</summary>
-        public class SubAssignment : BasicInstruction
+        /// <summary>Container for %Spin %AssignmentVariant definitions.</summary>
+        /// @version v22.07.xx - Changed class name to be more meaningful from
+        /// former `SubAssignment`.
+        public class AssignmentVariant : BasicInstruction
         {
             /// <summary></summary>
             /// @version v22.05.02 - Name changed to clarify meaning of it.
             public bool CanPost { get; }
+
             /// <summary></summary>
-            public ArgumentMode ArgumentMode { get; }
-            /// <summary></summary>
+            public ArgumentModeEnum ArgumentMode { get; }
+
+            /// <summary>Return the type of assignment size.</summary>
             /// @version v22.05.02 - Name changed to clarify meaning of it.
             public AssignmentSizeTypeEnum AssignmentSizeType { get; }
 
             /// <summary>Default Constructor.</summary>
-            /// <param name="name">Full name of sub assignment.</param>
-            /// <param name="nameBrief">Brief name of sub assignment.</param>
+            /// <param name="name">Full name of assignment variant.</param>
+            /// <param name="nameBrief">Brief name of assignment variant.</param>
             /// <param name="postEnable"></param>
-            /// <param name="argumentMode"></param>
-            /// <param name="assignmentSizeType"></param>
-            /// @version v22.05.02 - Changed parameters names to clarify meaning of each one.
-            public SubAssignment(string name, string nameBrief, bool postEnable,
-            ArgumentMode argumentMode, AssignmentSizeTypeEnum assignmentSizeType)
+            /// <param name="argumentMode">Type of argument mode.</param>
+            /// <param name="assignmentSizeType">Type of assignment size.</param>
+            /// @version v22.07.xx - Renamed class constructor to follow class
+            /// name was changed.
+            public AssignmentVariant(string name, string nameBrief, bool postEnable,
+            ArgumentModeEnum argumentMode, AssignmentSizeTypeEnum assignmentSizeType)
             {
                 Name = name;
                 NameBrief = nameBrief;
@@ -160,26 +167,31 @@ namespace Gear.Propeller
             }
         }
 
-        /// <summary>Container to define %Spin %Assignment for variables.</summary>
+        /// <summary>Container to define %Spin %Assignment instances for
+        /// variables.</summary>
         public class Assignment
         {
             /// <summary>Type of assignment.</summary>
             /// @version v22.05.02 - Name changed to clarify meaning of it.
             public AssignmentTypeEnum AssignmentType { get; }
-            /// <summary></summary>
-            /// @version v22.05.02 - Name changed to clarify meaning of it.
-            public SubAssignment[] SubAssignmentsArray { get; }
+
+            /// <summary>Return the Assignment Variants Array associated to
+            /// this Assignment object.</summary>
+            /// @version v22.07.xx - Name changed to clarify meaning of it,
+            /// from former `SubAssignmentsArray`.
+            public AssignmentVariant[] AssignmentVariantsArray { get; }
 
             /// <summary>Default Constructor.</summary>
-            /// <param name="assignmentType"></param>
-            /// <param name="subAssignmentsArray"></param>
-            /// @version v22.05.02 - Changed parameters names to clarify
-            /// meaning of each one.
+            /// <param name="assignmentType">Assignment type.</param>
+            /// <param name="assignmentVariantsArray">Array of Assignment
+            /// Variants for this object.</param>
+            /// @version v22.07.xx - Changed parameter name following name
+            /// change of its type.
             public Assignment(AssignmentTypeEnum assignmentType,
-                SubAssignment[] subAssignmentsArray)
+                AssignmentVariant[] assignmentVariantsArray)
             {
                 AssignmentType = assignmentType;
-                SubAssignmentsArray = subAssignmentsArray;
+                AssignmentVariantsArray = assignmentVariantsArray;
             }
         }
 
@@ -196,18 +208,18 @@ namespace Gear.Propeller
             }
         }
 
-        /// <summary>Container to define %Spin instructions.</summary>
+        /// <summary>Container to define %Spin instructions instances.</summary>
         public class Instruction : BasicInstruction
         {
-            /// <summary></summary>
-            public ArgumentMode ArgumentMode { get; }
+            /// <summary>Return Argument Mode associated to this instruction.</summary>
+            public ArgumentModeEnum ArgumentMode { get; }
 
             /// <summary>Default Constructor.</summary>
             /// <param name="name">Full name of %Spin instruction.</param>
             /// <param name="nameBrief">Brief name of %Spin instruction.</param>
-            /// <param name="argumentMode"></param>
+            /// <param name="argumentMode">Type of argument mode.</param>
             public Instruction(string name, string nameBrief,
-                ArgumentMode argumentMode)
+                ArgumentModeEnum argumentMode)
             {
                 Name = name;
                 NameBrief = nameBrief;

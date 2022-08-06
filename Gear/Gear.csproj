@@ -29,7 +29,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>22.06.02.0</ApplicationVersion>
+    <ApplicationVersion>22.08.01.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>false</BootstrapperEnabled>
   </PropertyGroup>
@@ -97,7 +97,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Disassembler\DataUnpacker.cs" />
+    <Compile Include="Disassembler\DataDecoder.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="GUI\CommonUI.cs" />
     <Compile Include="GUI\DoubleBufferedPanel.cs">
@@ -116,6 +116,7 @@
     <Compile Include="PluginSupport\PluginBase.Designer.cs">
       <DependentUpon>PluginBase.cs</DependentUpon>
     </Compile>
+    <Compile Include="Propeller\DirectMemory.cs" />
     <Compile Include="Utils\BinarySizeException.cs" />
     <Compile Include="Utils\SingleInstanceException.cs" />
     <Compile Include="GUI\RememberRTBoxPosition.cs" />
@@ -141,7 +142,7 @@
     <Compile Include="EmulationCore\InstructionDisassembler.cs" />
     <Compile Include="EmulationCore\FreqGenerator.cs" />
     <Compile Include="EmulationCore\InterpretedCog.cs" />
-    <Compile Include="Propeller\MemoryManager.cs" />
+    <Compile Include="Propeller\MemorySegment.cs" />
     <Compile Include="EmulationCore\NativeCog.cs" />
     <Compile Include="EmulationCore\NativeCogInstructions.cs" />
     <Compile Include="EmulationCore\PLL.cs" />

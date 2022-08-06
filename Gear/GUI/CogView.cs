@@ -24,464 +24,665 @@
 using Gear.EmulationCore;
 using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Text;
 using System.Windows.Forms;
 
 namespace Gear.GUI
 {
     /// @brief Generic real-time cog information viewer.
-    public partial class CogView : Gear.PluginSupport.PluginBase
+    public partial class CogView : PluginSupport.PluginBase
     {
-        private readonly int HostID;
-        private readonly Font MonoFont;
-        private readonly Font MonoFontBold;
-        private Bitmap BackBuffer;
-        private readonly uint[] InterpAddress;
-        private readonly int StackMargin = 180;
-        private uint LastLine    = 0;       //!< @brief Last line in NativeCog view.
-        private uint StringX;
-        private uint StringY;
-        private Brush StringBrush;
-        private bool displayAsHexadecimal;
-        private bool useShortOpcodes;
-        private FrameState breakVideo;
+        /// <summary>States for cog screen representation.</summary>
+        private enum PresentationCogStateEnum
+        {
+            /// <summary>State not set.</summary>
+            None = 0,
+            /// <summary>Cog is not running.</summary>
+            Stopped,
+            /// <summary>Running in PASM Mode.</summary>
+            NativeRunning,
+            /// <summary>Running in Spin interpreted Mode.</summary>
+            InterpretedRunning
+        }
+
+        /// <summary></summary>
+        private const int StackMargin = 180;
+        /// <summary>Maximum displayed lines of interpreted text.</summary>
+        private const int MaxDisplayedLines = 80;
+
+        /// <summary>Cog number identifier.</summary>
+        private readonly int _hostId;
+
+        /// <summary>Mono spaced font for plain text.</summary>
+        private readonly Font _monoFont;
+        /// <summary>Bold mono spaced font for highlighted text.</summary>
+        private readonly Font _monoFontBold;
+
+        /// <summary>Backing field for Bitmap buffer to draw the memory lines.</summary>
+        private Bitmap _backBuffer;
+
+        /// <summary>Backing field for Graphic style to draw text on buffer.</summary>
+        /// @version v22.07.xx - Added.
+        private Graphics _bufferGraphics;
+
+        /// <summary>Backing field for Graphic style to draw text on
+        /// main Panel.</summary>
+        /// @version v22.07.xx - Added.
+        private Graphics _mainGraphics;
+
+        /// <summary></summary>
+        private Brush _stringBrush;
+        /// <summary></summary>
+        private uint _stringCoordinateX;
+        /// <summary></summary>
+        private uint _stringCoordinateY;
+
+        /// <summary></summary>
+        private readonly uint[] _interpreterAddresses;
+
+        /// <summary>Number of last line in NativeCog view.</summary>
+        private uint _lastLine;
+
+        /// <summary>State for buttons, related to running state and cog mode
+        /// (Interpreted/PASM).</summary>
+        /// @version v22.07.xx - Added.
+        private PresentationCogStateEnum _presentationState;
+
+        /// <summary></summary>
+        private bool _displayAsHexadecimal;
+        /// <summary></summary>
+        private bool _useShortOpCodes;
+
+        /// <summary>State of Video break point.</summary>
+        private FrameState _breakVideo;
 
         /// @brief Title of the tab window.
-        public override string Title
-        {
-            get { return "Cog " + HostID.ToString(); }
-        }
+        public override string Title => $"Cog {_hostId}";
 
         /// @brief Attribute to allow the window to be closed (default) or not (like cog windows).
-        public override bool IsClosable
-        {
-            get { return false; }
-        }
+        public override bool IsClosable => false;
 
         /// @brief Identify a plugin as user (=true) or system (=false).
-        /// @version v15.03.26 - Added.
-        public override bool IsUserPlugin
+        /// @version V15.03.26 - Added.
+        public override bool IsUserPlugin => false;
+
+        /// <summary>Referenced cog of this viewer plugin.</summary>
+        /// <returns>Reference to a cog, or null.</returns>
+        public Cog ReferencedCog => Chip?.GetCog(_hostId);
+
+        /// <summary>Bitmap buffer property to draw the memory lines.</summary>
+        /// @version v22.07.xx - Added as property to hold the relationship
+        /// with MainGraphics property.
+        private Bitmap BackBuffer
         {
-            get { return false; }
+            get => _backBuffer;
+            set
+            {
+                if (_backBuffer == value | value == null)
+                    return;
+                _backBuffer = value;
+                BufferGraphics = Graphics.FromImage(_backBuffer);
+            }
         }
 
+        /// <summary>Graphic style property to draw text and graphics
+        /// on buffer.</summary>
+        /// <remarks>Used to set the font aliasing style for text of the
+        /// control.</remarks>
+        /// @version v22.07.xx - Added.
+        private Graphics BufferGraphics
+        {
+            get => _bufferGraphics;
+            set
+            {
+                _bufferGraphics = value;
+                _bufferGraphics.SmoothingMode = SmoothingMode.HighQuality;
+                _bufferGraphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+            }
+        }
+
+        /// <summary>Graphic style property to draw text and graphics
+        /// on main Panel.</summary>
+        /// @version v22.07.xx - Added.
+        private Graphics MainGraphics
+        {
+            get => _mainGraphics ?? (_mainGraphics = assemblyPanel.CreateGraphics());
+            set => _mainGraphics = value;
+        }
+
+        /// <summary></summary>
+        /// @version v22.07.xx - Added.
+        private PresentationCogStateEnum PresentationCogState
+        {
+            get => _presentationState;
+            set
+            {
+                if (_presentationState == value)
+                    return;
+                _presentationState = value;
+                SetStateOfControls();
+            }
+        }
+
+        /// <summary>Default constructor.</summary>
+        /// <param name="hostId">Id of related cog.</param>
+        /// <param name="chip">Reference to Propeller instance.</param>
         public CogView(int hostId, PropellerCPU chip) : base (chip)
         {
-            HostID = hostId;
-
-            InterpAddress = new uint[80];   // Allow for up to 80 lines of displayed interpreted text
-
-            displayAsHexadecimal = false;
-            useShortOpcodes = true;
-
-            MonoFont = new Font(FontFamily.GenericMonospace, 10);
-            if (MonoFont == null)
-                MonoFont = this.Font;
-
-            MonoFontBold = new Font(MonoFont, FontStyle.Bold);
-
+            _hostId = hostId;
+            _monoFont = new Font(FontFamily.GenericMonospace, 10);
+            _monoFontBold = new Font(_monoFont, FontStyle.Bold);
+            _interpreterAddresses = new uint[MaxDisplayedLines];
+            _displayAsHexadecimal = false;
+            _useShortOpCodes = true;
+            _breakVideo = FrameState.None;
             InitializeComponent();
-
-            breakNone.Checked = true;
-            breakMiss.Checked = false;
-            breakAll.Checked = false;
-            breakVideo = FrameState.FrameMiss;
         }
 
-        public Cog GetViewCog()
+        /// <summary>Set the status of CogView controls according to the
+        /// current PresentationCogState.</summary>
+        /// @version v22.07.xx - Added.
+        private void SetStateOfControls()
         {
-            return Chip.GetCog(HostID);
+            switch (PresentationCogState)
+            {
+                case PresentationCogStateEnum.None:
+                    break;
+                case PresentationCogStateEnum.Stopped:
+                    //actions tool strip controls
+                    actionsToolStrip.Enabled = false;
+                    OpCodeSize.Enabled = false;
+                    //values tool strip controls
+                    cogStateLabel.Text = @"Cog is stopped";
+                    programCursorLabel.Text = @"---";
+                    toolStripLabel3.Visible = false;
+                    zeroFlagLabel.Visible = false;
+                    toolStripSeparator5.Visible = false;
+                    toolStripLabel4.Visible = false;
+                    carryFlagLabel.Visible = false;
+                    toolStripSeparator6.Visible = false;
+                    //other controls in main panel
+                    positionScroll.Enabled = false;
+                    break;
+                case PresentationCogStateEnum.NativeRunning:
+                    //actions tool strip controls
+                    actionsToolStrip.Enabled = true;
+                    OpCodeSize.Enabled = false;
+                    //values tool strip controls
+                    toolStripLabel3.Visible = true;
+                    zeroFlagLabel.Visible = true;
+                    toolStripSeparator5.Visible = true;
+                    toolStripLabel4.Visible = true;
+                    carryFlagLabel.Visible = true;
+                    toolStripSeparator6.Visible = true;
+                    //other controls in main panel
+                    positionScroll.Enabled = true;
+                    break;
+                case PresentationCogStateEnum.InterpretedRunning:
+                    //actions tool strip controls
+                    actionsToolStrip.Enabled = true;
+                    OpCodeSize.Enabled = true;
+                    //values tool strip controls
+                    toolStripLabel3.Visible = false;
+                    zeroFlagLabel.Visible = false;
+                    toolStripSeparator5.Visible = false;
+                    toolStripLabel4.Visible = false;
+                    carryFlagLabel.Visible = false;
+                    toolStripSeparator6.Visible = false;
+                    //other controls in main panel
+                    positionScroll.Enabled = true;
+                    break;
+                default:
+                {
+                    string msg = $"Value {PresentationCogState} not supported on {nameof(PresentationCogStateEnum)} enum.";
+                    throw new ArgumentOutOfRangeException(nameof(PresentationCogState), PresentationCogState, msg);
+                }
+            }
         }
 
-        private void DrawString(Graphics g, string s)
+        /// <summary></summary>
+        /// <param name="graph"></param>
+        /// <param name="text">Text to draw on control.</param>
+        private void DrawString(Graphics graph, string text)
         {
-            g.DrawString(s, MonoFont, StringBrush, StringX, StringY);
-            StringY += (uint)MonoFont.Height;
+            graph.DrawString(text, _monoFont, _stringBrush,
+                _stringCoordinateX, _stringCoordinateY);
+            _stringCoordinateY += (uint)_monoFont.Height;
         }
 
-        private void Repaint(bool tick, NativeCog host)
+        /// <summary>Display PASM decoded text for a Native %Cog</summary>
+        /// <param name="force">Flag to indicate the intention to force the
+        /// repaint.</param>
+        /// <param name="cog"></param>
+        /// @version v22.07.xx - Added the option to show decimal or
+        /// hexadecimal representation of values. Changed method name from
+        /// former `Repaint(bool, NativeCog)`.
+        private void DisplayNativeCog(bool force, NativeCog cog)
         {
-            Graphics g = Graphics.FromImage((Image)BackBuffer);
-            g.Clear(SystemColors.Control);
-            Brush brush;
-
-            OpcodeSize.Visible = false;
-            DisplayUnits.Visible = false;
-            zeroFlagLabel.Text = "Zero: " + (host.ZeroFlag ? "True" : "False");
-            carryFlagLabel.Text = "Carry: " + (host.CarryFlag ? "True" : "False");
-
-            string display;
-            uint topLine, bottomLine;
-            topLine = 5;
-            bottomLine = (uint)((ClientRectangle.Height / MonoFont.Height) - 5);
+            const uint topLine = 5;
+            BufferGraphics.Clear(SystemColors.Control);
+            zeroFlagLabel.Text = $@"{cog.ZeroFlag}";
+            carryFlagLabel.Text = $@"{cog.CarryFlag}";
+            uint bottomLine = (uint)(ClientRectangle.Height / _monoFont.Height - 5);
 
             for (uint i = (uint)positionScroll.Value, y = 0, line = 1;
                 y < ClientRectangle.Height;
-                y += (uint)MonoFont.Height, i++, line++)
+                y += (uint)_monoFont.Height, i++, line++)
             {
                 if (i >= Cog.TotalCogMemory)
                     continue;
-
-                uint mem = host[(int)i];
-
+                uint memoryValue = cog[(int)i];
+                string display;
                 if (memoryViewButton.Checked)
                 {
-                    string binary = Convert.ToString((long)mem, 2);
-
-                    while (binary.Length < 32)
-                        binary = "0" + binary;
-
-                    display = string.Format("{0:X4}:  {1:X8}   {2}   {1}",
-                        i,
-                        mem,
-                        binary);
+                    string binary = Convert.ToString(memoryValue, 2);
+                    while (binary.Length < sizeof(uint) * 8)
+                        binary = $"0{binary}";
+                    display = $"${i:X3}:  {memoryValue:X8}   {binary}   {memoryValue}";
                 }
                 else
-                {
-                    display = string.Format("{0:X3}:  {2:X8}   {1}",
-                        i,
-                        InstructionDisassembler.AssemblyText(mem),
-                        mem);
-                }
-
-                if ((uint)positionScroll.Value + line - 1 == host.BreakPointCogCursor)
-                    brush = System.Drawing.Brushes.Pink;
-                else if ((!followPCButton.Checked) || (line <= topLine) || (line >= bottomLine))
+                    display = $"${i:X3}:  {memoryValue:X8}   {InstructionDisassembler.AssemblyText(memoryValue, _displayAsHexadecimal)}";
+                Brush brush;
+                if ((uint)positionScroll.Value + line - 1 == cog.BreakPointCogCursor)
+                    brush = Brushes.Pink;
+                else if (!followPCButton.Checked || line <= topLine || line >= bottomLine)
                     brush = SystemBrushes.Control;
                 else
                     brush = SystemBrushes.Window;
-                g.FillRectangle(brush, 0, y, assemblyPanel.Width, y + MonoFont.Height);
-
-
-                g.DrawString(
+                BufferGraphics.FillRectangle(brush, 0, y, assemblyPanel.Width, y + _monoFont.Height);
+                BufferGraphics.DrawString(
                     display,
-                    (host.ProgramCursor == i) ? MonoFontBold : MonoFont,
+                    cog.ProgramCursor == i ? _monoFontBold : _monoFont,
                     SystemBrushes.ControlText, 0, y);
             }
         }
 
-        private void Repaint(bool tick, InterpretedCog host)
+        /// <summary>Display values of main memory for Interpreted %Cog.</summary>
+        /// <param name="force">Flag to indicate the intention to force the
+        /// repaint.</param>
+        /// <param name="cog"></param>
+        /// @version v22.07.xx - Added from splitting of former method
+        /// `Repaint(bool, InterpretedCog)`. Corrected problem of show cog
+        /// memory contents instead of main memory values to be interpreted.
+        private void DisplayMemoryForInterpretedCog(bool force, InterpretedCog cog)
         {
-            Graphics g = Graphics.FromImage((Image)BackBuffer);
-            Brush brush;
-
-            g.Clear(SystemColors.Control);
-
-            string display;
-            uint topLine, bottomLine;
-            topLine = 5;
-            bottomLine = (uint)((ClientRectangle.Height / MonoFont.Height) - 5);
-
-            zeroFlagLabel.Text = string.Empty;
-            carryFlagLabel.Text = string.Empty;
-            OpcodeSize.Visible = true;
-            DisplayUnits.Visible = true;
-
-            if (memoryViewButton.Checked)
+            BufferGraphics.Clear(SystemColors.Control);
+            for (uint i = (uint)positionScroll.Value, y = 0;
+                 y < ClientRectangle.Height;
+                 y += (uint)_monoFont.Height, i++)
             {
-                for (uint i = (uint)positionScroll.Value, y = 0;
-                    y < ClientRectangle.Height;
-                    y += (uint)MonoFont.Height, i++)
-                {
-                    if (i > PropellerCPU.MaxMemoryAddress)
-                        continue;
-
-                    uint mem = host[(int)i];
-
-                    string binary = Convert.ToString((long)mem, 2);
-
-                    while (binary.Length < 32)
-                        binary = "0" + binary;
-
-                    display = string.Format("{0:X4}:  {1:X8}   {2}   ",
-                              i, mem, binary);
-                    if (displayAsHexadecimal)
-                        display += string.Format("{0:X8}", mem);
-                    else
-                        display += string.Format("{0}", mem);
-
-                    g.FillRectangle(SystemBrushes.Control, 0, y, assemblyPanel.Width, y + MonoFont.Height);
-
-                    g.DrawString(
-                        display,
-                        (host.ProgramCursor == i) ? MonoFontBold : MonoFont,
-                        SystemBrushes.ControlText, 0, y);
-                }
-            }
-            else
-            {
-                uint y = 0;
-
-                for (uint i = (uint)positionScroll.Value, line = 1;
-                    y < ClientRectangle.Height;
-                    y += (uint)MonoFont.Height, line++)
-                {
-                    if (i > PropellerCPU.MaxMemoryAddress)
-                        continue;
-
-                    uint start = i;
-
-                    Propeller.MemoryManager mem = new Propeller.MemoryManager(Chip, i);
-                    string inst = InstructionDisassembler.InterpreterText(mem, displayAsHexadecimal, useShortOpcodes);
-                    i = mem.Address;
-                    display = string.Format("{0:X4}: ", start);
-                    InterpAddress[line] = start;
-
-                    for (uint q = start; q < start + 4; q++)
-                    {
-                        if (q < i)
-                        {
-                            byte b = Chip.DirectReadByte(q);
-                            display += string.Format(" {0:X2}", b);
-                        }
-                        else
-                            display += "   ";
-                    }
-
-
-                    display += "  " + inst;
-
-                    if (InterpAddress[line] == host.BreakPointCogCursor)
-                        brush = System.Drawing.Brushes.Pink;
-                    else if ((!followPCButton.Checked) || (line <= topLine) || (line >= bottomLine))
-                        brush = SystemBrushes.Control;
-                    else
-                        brush = SystemBrushes.Window;
-                    g.FillRectangle(brush, 0, y, assemblyPanel.Width, y + MonoFont.Height);
-
-                    g.DrawString(
-                        display,
-                        (host.ProgramCursor == start) ? MonoFontBold : MonoFont,
-                        SystemBrushes.ControlText, 0, y);
-                }
-
-                StringBrush = SystemBrushes.ControlText;
-                StringY = 0;
-                StringX = (uint)(assemblyPanel.Width - StackMargin);
-
-                DrawString(g, string.Format("@Stk[0] = ${0:X4} {0}", host.StackFrame));
-                DrawString(g, string.Format("@Obj[0] = ${0:X4} {0}", host.ObjectFrame));
-                DrawString(g, string.Format("@Loc[0] = ${0:X4} {0}", host.LocalFrame));
-                DrawString(g, string.Format("@Var[0] = ${0:X4} {0}", host.VariableFrame));
-                g.DrawLine(Pens.Black, assemblyPanel.Width - StackMargin, StringY, assemblyPanel.Width, StringY);
-                DrawString(g, string.Format("Caller& = ${0:X4} {0}", Chip.DirectReadWord(host.LocalFrame - 8)));
-                DrawString(g, string.Format("          ${0:X4} {0}", Chip.DirectReadWord(host.LocalFrame - 6)));
-                DrawString(g, string.Format("          ${0:X4} {0}", Chip.DirectReadWord(host.LocalFrame - 4)));
-                DrawString(g, string.Format("Return& = ${0:X4}", Chip.DirectReadWord(host.LocalFrame - 2)));
-                g.DrawLine(Pens.Black, assemblyPanel.Width - StackMargin, StringY, assemblyPanel.Width, StringY);
-
-                for (uint i = host.LocalFrame; i < host.StackFrame && StringY < ClientRectangle.Height; i += 4)
-                {
-                    DrawString(g, string.Format("${0:X8}  {0}", (int)Chip.DirectReadLong(i)));
-                }
+                if (i > PropellerCPU.MaxMemoryAddress)
+                    continue;
+                byte mem = Chip.DirectReadByte(i);
+                string binary = Convert.ToString(mem, 2);
+                while (binary.Length < sizeof(byte) * 8)
+                    binary = $"0{binary}";
+                string display = $"${i:X4}:  ${mem:X2}   {binary}   " + (_displayAsHexadecimal ? $"{mem:X2}" : $"{mem,3:D}");
+                BufferGraphics.FillRectangle(SystemBrushes.Control, 0, y, assemblyPanel.Width, y + _monoFont.Height);
+                BufferGraphics.DrawString(
+                    display,
+                    cog.ProgramCursor == i ? _monoFontBold : _monoFont,
+                    SystemBrushes.ControlText, 0, y);
             }
         }
 
-        /// @brief Repaint the Cog state and data.
-        /// @param force
+        /// <summary>Display decoded text for Interpreted %Cog.</summary>
+        /// <param name="force">Flag to indicate the intention to force the
+        /// repaint.</param>
+        /// <param name="cog"></param>
+        /// @version v22.07.xx - Added from splitting of former method
+        /// `Repaint(bool, InterpretedCog)`. Changed local variable name to
+        /// clarify meaning of it.
+        private void DisplayDecodedForInterpretedCog(bool force, InterpretedCog cog)
+        {
+            const uint topLine = 5;
+            uint bottomLine = (uint)(ClientRectangle.Height / _monoFont.Height - 5);
+            uint y = 0;
+            BufferGraphics.Clear(SystemColors.Control);
+            for (uint i = (uint)positionScroll.Value, line = 1;
+                 y < ClientRectangle.Height;
+                 y += (uint)_monoFont.Height, line++)
+            {
+                if (i > PropellerCPU.MaxMemoryAddress)
+                    continue;
+                uint start = i;
+                Propeller.MemorySegment memorySegment = new Propeller.MemorySegment(Chip, i);
+                string decoded = InstructionDisassembler.InterpreterText(memorySegment, _displayAsHexadecimal, _useShortOpCodes);
+                i = memorySegment.Address;
+                string display = $"${start:X4}: ";
+                _interpreterAddresses[line] = start;
+                for (uint q = start; q < start + 4; q++)
+                {
+                    if (q < i)
+                    {
+                        byte b = Chip.DirectReadByte(q);
+                        display += $" ${b:X2}";
+                    }
+                    else
+                        display += "    ";
+                }
+                display += $"  {decoded}";
+                Brush brush;
+                if (_interpreterAddresses[line] == cog.BreakPointCogCursor)
+                    brush = Brushes.Pink;
+                else if (!followPCButton.Checked || line <= topLine || line >= bottomLine)
+                    brush = SystemBrushes.Control;
+                else
+                    brush = SystemBrushes.Window;
+                BufferGraphics.FillRectangle(brush, 0, y, assemblyPanel.Width,
+                    y + _monoFont.Height);
+                BufferGraphics.DrawString(
+                    display,
+                    cog.ProgramCursor == start ? _monoFontBold : _monoFont,
+                    SystemBrushes.ControlText, 0, y);
+            }
+            //draw object details
+            _stringBrush = SystemBrushes.ControlText;
+            _stringCoordinateY = 0;
+            _stringCoordinateX = (uint)(assemblyPanel.Width - StackMargin);
+            DrawString(BufferGraphics,
+                $"@Stk[0] = ${cog.StackFrame:X4} {cog.StackFrame}");
+            DrawString(BufferGraphics,
+                $"@Obj[0] = ${cog.ObjectFrame:X4} {cog.ObjectFrame}");
+            DrawString(BufferGraphics,
+                $"@Loc[0] = ${cog.LocalFrame:X4} {cog.LocalFrame}");
+            DrawString(BufferGraphics,
+                $"@Var[0] = ${cog.VariableFrame:X4} {cog.VariableFrame}");
+            BufferGraphics.DrawLine(Pens.Black, assemblyPanel.Width - StackMargin,
+                _stringCoordinateY, assemblyPanel.Width, _stringCoordinateY);
+            DrawString(BufferGraphics,
+                $"Caller& = ${Chip.DirectReadWord(cog.LocalFrame - 8):X4} " +
+                $"{Chip.DirectReadWord(cog.LocalFrame - 8)}");
+            DrawString(BufferGraphics,
+                $"          ${Chip.DirectReadWord(cog.LocalFrame - 6):X4} " +
+                $"{Chip.DirectReadWord(cog.LocalFrame - 6)}");
+            DrawString(BufferGraphics,
+                $"          ${Chip.DirectReadWord(cog.LocalFrame - 4):X4} " +
+                $"{Chip.DirectReadWord(cog.LocalFrame - 4)}");
+            DrawString(BufferGraphics,
+                $"Return& = ${Chip.DirectReadWord(cog.LocalFrame - 2):X4}");
+            BufferGraphics.DrawLine(Pens.Black, assemblyPanel.Width - StackMargin,
+                _stringCoordinateY, assemblyPanel.Width, _stringCoordinateY);
+            for (uint i = cog.LocalFrame;
+                 i < cog.StackFrame && _stringCoordinateY < ClientRectangle.Height;
+                 i += 4)
+                DrawString(BufferGraphics,
+                    $"${(int)Chip.DirectReadLong(i):X8}  {(int)Chip.DirectReadLong(i)}");
+        }
+
+        /// <summary>Repaint the Cog state and data.</summary>
+        /// <param name="force">Flag to indicate the intention to force the
+        /// repaint.</param>
         public override void Repaint(bool force)
         {
-            if (Chip == null)
-                return;
-
-            Cog Host = Chip.GetCog(HostID);
-
-            if (Host == null)
+            Cog cog = ReferencedCog;
+            if (cog == null)
             {
-                processorStateLabel.Text = "CPU State: Cog is stopped.";
-                programCounterLabel.Text = string.Empty;
-                zeroFlagLabel.Text = string.Empty;
-                carryFlagLabel.Text = string.Empty;
+                PresentationCogStateEnum oldValue = PresentationCogState;
+                PresentationCogState = PresentationCogStateEnum.Stopped;
+                if (oldValue != PresentationCogStateEnum.None)
+                {
+                    MainGraphics.Clear(SystemColors.Control);
+                    BufferGraphics.Clear(SystemColors.Control);
+                }
                 return;
             }
-
-            positionScroll.Minimum = 0;
-
-            if (Host is InterpretedCog)
-                positionScroll.Maximum = PropellerCPU.MaxMemoryAddress;
-            else if (Host is NativeCog)
-                positionScroll.Maximum = Cog.TotalCogMemory;
-
+            //update values
+            cogStateLabel.Text = $@"{cog.CogStateString}";
+            programCursorLabel.Text = $@"${cog.ProgramCursor:X4}";
+            frameCountLabel.Text = $@"{cog.VideoFrameString}";
+            //set position scroll
+            switch (cog)
+            {
+                case InterpretedCog _:
+                    positionScroll.Maximum = PropellerCPU.MaxMemoryAddress;
+                    break;
+                case NativeCog _:
+                    positionScroll.Maximum = Cog.TotalCogMemory;
+                    break;
+            }
             positionScroll.LargeChange = 10;
             positionScroll.SmallChange = 1;
-
             if (positionScroll.Maximum < positionScroll.Value)
                 positionScroll.Value = positionScroll.Maximum;
-
             if (followPCButton.Checked)
             {
-                uint topLine, bottomLine;
-                topLine = 5;
-                bottomLine = (uint)((ClientRectangle.Height / MonoFont.Height) - 5);
-                if (Host is NativeCog)
+                const uint topLine = 5;
+                var bottomLine = (uint)(ClientRectangle.Height / _monoFont.Height - 5);
+                if (cog is NativeCog hostNativeCog)
                 {
-                    if (Host.ProgramCursor < topLine)
+                    if (hostNativeCog.ProgramCursor < topLine)
                         positionScroll.Value = 0;
-                    else if (Host.ProgramCursor - positionScroll.Value >= bottomLine - 1)
-                        positionScroll.Value = (int)Host.ProgramCursor - (int)topLine;
-                    else if (Host.ProgramCursor - positionScroll.Value < topLine)
-                        positionScroll.Value = (int)Host.ProgramCursor - (int)topLine;
+                    else if (hostNativeCog.ProgramCursor - positionScroll.Value >= bottomLine - 1)
+                        positionScroll.Value = (int)hostNativeCog.ProgramCursor - (int)topLine;
+                    else if (hostNativeCog.ProgramCursor - positionScroll.Value < topLine)
+                        positionScroll.Value = (int)hostNativeCog.ProgramCursor - (int)topLine;
                 }
                 else
-                    positionScroll.Value = (int)Host.ProgramCursor;
+                    positionScroll.Value = (int)cog.ProgramCursor;
             }
-
-            if (Host is NativeCog cog)
-                Repaint(force, cog);
-            else if (Host is InterpretedCog _cog)
-                Repaint(force, _cog);
-
-            programCounterLabel.Text = "PC: " + string.Format("{0:X8}", Host.ProgramCursor);
-            processorStateLabel.Text = "CPU State: " + Host.CogStateString; // + Host.VideoStateString;
-            frameCountLabel.Text = "Frames: " + Host.VideoFrameString;
-            // frameCountLabel.Text = String.Format("Frames: {0}", Host.VideoFrames);
-
-            assemblyPanel.CreateGraphics().DrawImageUnscaled(BackBuffer, 0, 0);
+            //draw specific data based on cog type
+            switch (cog)
+            {
+                case NativeCog nativeCog:
+                    PresentationCogState = PresentationCogStateEnum.NativeRunning;
+                    DisplayNativeCog(force, nativeCog);
+                    break;
+                case InterpretedCog interpretedCog:
+                    PresentationCogState = PresentationCogStateEnum.InterpretedRunning;
+                    if (memoryViewButton.Checked)
+                        DisplayMemoryForInterpretedCog(force, interpretedCog);
+                    else
+                        DisplayDecodedForInterpretedCog(force, interpretedCog);
+                    break;
+            }
+            MainGraphics.DrawImageUnscaled(BackBuffer, 0, 0);
         }
 
+        /// <summary></summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Scroll event data arguments.</param>
         private void UpdateOnScroll(object sender, ScrollEventArgs e)
         {
             Repaint(false);
         }
 
-        private void AssemblyView_Paint(object sender, PaintEventArgs e)
-        {
-            assemblyPanel.CreateGraphics().DrawImageUnscaled(BackBuffer, 0, 0);
-        }
-
-        private void AsmSized(object sender, EventArgs e)
+        /// <summary></summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
+        /// @version v22.07.xx - Changed method name to clarify its meaning.
+        private void AssemblyPanel_SizeChanged(object sender, EventArgs e)
         {
             if (assemblyPanel.Width > 0 && assemblyPanel.Height > 0)
-                BackBuffer = new Bitmap(
-                    assemblyPanel.Width,
-                    assemblyPanel.Height);
+                BackBuffer = new Bitmap(assemblyPanel.Width, assemblyPanel.Height);
             else
                 BackBuffer = new Bitmap(1, 1);
+            //force MainGraphics to recalculate on next get value
+            MainGraphics = null;
             Repaint(false);
         }
 
-        private void MemoryViewButton_Click(object sender, EventArgs e)
+        /// <summary></summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Paint event data arguments.</param>
+        private void AssemblyView_Paint(object sender, PaintEventArgs e)
         {
-            Repaint(false);
+            MainGraphics.DrawImageUnscaled(BackBuffer, 0, 0);
         }
 
-        private void AssemblyPanel_MouseDown(object sender, MouseEventArgs e)
-        {
-            if ((e.Button & MouseButtons.Left) == MouseButtons.Left)
-            {
-                //Make sure it's a valid breakpoint environment
-                if (Chip == null) return;
-                Cog Host = Chip.GetCog(HostID);
-                if (Host == null) return;
-                //Find the line that was clicked on
-                int bp = (assemblyPanel.PointToClient(MousePosition).Y / MonoFont.Height);
-                //What type of cog?
-                if (Host is NativeCog) bp += positionScroll.Value;
-                else if (Host is InterpretedCog) bp = (int)InterpAddress[bp + 1];
-                //Toggle/move the breakpoint
-                if (bp == Host.BreakPointCogCursor) Host.BreakPointCogCursor = -1;
-                else Host.BreakPointCogCursor = bp;
-                //Show the user what happened
-                Repaint(false);
-            }
-        }
-
-        private void FollowPCButton_Click(object sender, EventArgs e)
-        {
-            Repaint(false);
-        }
-
-        private void HexadecimalUnits_Click(object sender, EventArgs e)
-        {
-            displayAsHexadecimal = true;
-            hexadecimalUnits.Checked = true;
-            decimalUnits.Checked = false;
-            Repaint(false);
-        }
-
-        private void DecimalUnits_Click(object sender, EventArgs e)
-        {
-            displayAsHexadecimal = false;
-            hexadecimalUnits.Checked = false;
-            decimalUnits.Checked = true;
-            Repaint(false);
-        }
-
-        private void LongOpcodes_Click(object sender, EventArgs e)
-        {
-            useShortOpcodes = false;
-            longOpcodes.Checked = true;
-            shortOpcodes.Checked = false;
-            Repaint(false);
-        }
-
-        private void ShortOpcodes_Click(object sender, EventArgs e)
-        {
-            useShortOpcodes = true;
-            longOpcodes.Checked = false;
-            shortOpcodes.Checked = true;
-            Repaint(false);
-        }
-
+        /// <summary></summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Mouse event data arguments.</param>
         private void AssemblyPanel_MouseClick(object sender, MouseEventArgs e)
         {
             positionScroll.Focus();
         }
 
-        private void AssemblyPanel_MouseHover(object sender, EventArgs e)
-        {
-
-        }
-
+        /// <summary></summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Mouse event data arguments.</param>
         private void AssemblyPanel_MouseMove(object sender, MouseEventArgs e)
         {
-            uint line;
-            uint mem;
-            if (!(Chip.GetCog(HostID) is NativeCog))
+            if (!(ReferencedCog is NativeCog nativeCog))
                 return;
-            NativeCog host = (NativeCog)Chip.GetCog(HostID);
-            line = (uint)positionScroll.Value + (uint)(e.Y / MonoFont.Height);
+            uint line = (uint)positionScroll.Value + (uint)(e.Y / _monoFont.Height);
             if (line >= Cog.TotalCogMemory)
                 return;
-
             //Update tooltip only if line has change to prevent flickering
-            if (line != LastLine)
-            {
-                mem = host.ReadLong(line);
-                toolTip1.SetToolTip(assemblyPanel, string.Format(
-                    "${0:x3}= ${1:x8}, {1}\n${2:x3}= ${3:x8}, {3}",
-                    mem >> 9 & 0x1ff, host.ReadLong(mem >> 9 & 0x1ff),
-                    mem      & 0x1ff, host.ReadLong(mem      & 0x1ff))
-                );
-                LastLine = line;
-            }
+            if (line == _lastLine)
+                return;
+            var mem = nativeCog.ReadLong(line);
+            toolTip1.SetToolTip(assemblyPanel,
+                $"${mem >> 9 & Cog.MaskCogMemory:x3}= " +
+                $"${nativeCog.ReadLong(mem >> 9 & Cog.MaskCogMemory):x8}, " +
+                $"{nativeCog.ReadLong(mem >> 9 & Cog.MaskCogMemory)}\n" +
+                $"${mem & Cog.MaskCogMemory:x3}= " +
+                $"${nativeCog.ReadLong(mem & Cog.MaskCogMemory):x8}, " +
+                $"{nativeCog.ReadLong(mem & Cog.MaskCogMemory)}"
+            );
+            _lastLine = line;
         }
 
-        public void VideoBreak_Click(object sender, EventArgs e)
+        /// <summary></summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Mouse event data arguments.</param>
+        private void AssemblyPanel_MouseDown(object sender, MouseEventArgs e)
         {
+            if ((e.Button & MouseButtons.Left) != MouseButtons.Left)
+                return;
+            //Make sure it's a valid breakpoint environment
+            Cog cog = ReferencedCog;
+            if (cog == null)
+                return;
+            //Find the line that was clicked on
+            int lineNumber = assemblyPanel.PointToClient(MousePosition).Y / _monoFont.Height;
+            switch (cog)
+            {
+                //What type of cog?
+                case NativeCog _:
+                    lineNumber += positionScroll.Value;
+                    break;
+                case InterpretedCog _:
+                    lineNumber = (int)_interpreterAddresses[lineNumber + 1];
+                    break;
+            }
+            //Toggle/move the breakpoint
+            if (lineNumber == cog.BreakPointCogCursor)
+                cog.BreakPointCogCursor = -1;
+            else
+                cog.BreakPointCogCursor = lineNumber;
+            //Show the user what happened
+            Repaint(false);
+        }
+
+        /// <summary> </summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
+        private void MemoryViewButton_Click(object sender, EventArgs e)
+        {
+            Repaint(false);
+        }
+
+        /// <summary></summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
+        private void FollowPCButton_Click(object sender, EventArgs e)
+        {
+            Repaint(false);
+        }
+
+        /// <summary></summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
+        private void HexadecimalUnits_Click(object sender, EventArgs e)
+        {
+            if (!displayUnitsBtn.Enabled)
+                return;
+            _displayAsHexadecimal = true;
+            hexadecimalUnits.Checked = true;
+            decimalUnits.Checked = false;
+            displayUnitsBtn.Text = @"Units: Hex";
+            Repaint(false);
+        }
+
+        /// <summary></summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
+        private void DecimalUnits_Click(object sender, EventArgs e)
+        {
+            if (!displayUnitsBtn.Enabled)
+                return;
+            _displayAsHexadecimal = false;
+            hexadecimalUnits.Checked = false;
+            decimalUnits.Checked = true;
+            displayUnitsBtn.Text = @"Units: Dec";
+            Repaint(false);
+        }
+
+        /// <summary></summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
+        private void LongOpCodes_Click(object sender, EventArgs e)
+        {
+            if (!OpCodeSize.Enabled)
+                return;
+            _useShortOpCodes = false;
+            longOpcodes.Checked = true;
+            shortOpcodes.Checked = false;
+            OpCodeSize.Text = @"Opcodes: Long";
+            Repaint(false);
+        }
+
+        /// <summary></summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
+        private void ShortOpCodes_Click(object sender, EventArgs e)
+        {
+            if (!OpCodeSize.Enabled)
+                return;
+            _useShortOpCodes = true;
+            longOpcodes.Checked = false;
+            shortOpcodes.Checked = true;
+            OpCodeSize.Text = @"Opcodes: Short";
+            Repaint(false);
+        }
+
+        /// <summary></summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
+        /// @version v22.07.xx - Corrected inconsistency when breakAll is
+        /// selected, but breakNone was marked. Removed exception thrown,
+        /// because a null sender object is really permitted.
+        private void VideoBreak_Click(object sender, EventArgs e)
+        {
+            if (sender == null)
+                return;
             if (sender == breakNone)
             {
                 breakNone.Checked = true;
                 breakMiss.Checked = false;
                 breakAll.Checked = false;
-                breakVideo = FrameState.FrameMiss;
+                _breakVideo = FrameState.Miss;
+                FrameBreakMode.Text = @"Video Break: None";
             }
             if (sender == breakMiss)
             {
                 breakNone.Checked = false;
                 breakMiss.Checked = true;
                 breakAll.Checked = false;
-                breakVideo = FrameState.FrameMiss;
+                _breakVideo = FrameState.Miss;
+                FrameBreakMode.Text = @"Video Break: Miss";
             }
             if (sender == breakAll)
             {
-                breakNone.Checked = true;
+                breakNone.Checked = false;
                 breakMiss.Checked = false;
-                breakAll.Checked = false;
-                breakVideo = FrameState.FrameNone;
+                breakAll.Checked = true;
+                _breakVideo = FrameState.None;
+                FrameBreakMode.Text = @"Video Break: End";
             }
-            Cog cog = Chip.GetCog(HostID);
-            cog.SetVideoBreak(breakVideo);
+            ReferencedCog?.SetVideoBreak(_breakVideo);
         }
-
     }
 }

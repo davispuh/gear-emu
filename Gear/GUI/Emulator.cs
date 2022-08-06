@@ -573,10 +573,10 @@ namespace Gear.GUI
             floatedWindow.Text = $"{selectedTab.Text}: {LastBinary}";
             floatedWindow.Show();
             _floatControls.Add(floatedWindow);
-            _docsManager.FloatingTabsQuantity = _floatControls.Count;
+            _docsManager.FloatingTabsQty = _floatControls.Count;
         }
 
-        /// @brief Unfloat the control, opening in a new tab.
+        /// @brief Un-float the control, opening in a new tab.
         /// @param control Control object to move.
         /// @throws ArgumentNullException
         /// @version v22.06.01 - Changed method name from `Unfloat` and
@@ -591,13 +591,14 @@ namespace Gear.GUI
             //tab changing housekeeping for plugin close button
             DocumentsTab_Click(this, EventArgs.Empty);
             _floatControls.Remove(lastParent);
-            _docsManager.FloatingTabsQuantity = _floatControls.Count;
+            _docsManager.FloatingTabsQty = _floatControls.Count;
         }
 
         /// @brief Send the active tab to pin panel.
         /// @param sender Reference to the object where this event was called.
         /// @param e Class with the event details.
-        /// @version v22.06.01 - Refactored to maintain tabs ordered.
+        /// @version v22.07.xx - Corrected error on restore in wrong position
+        /// a unpinned tab when other where selected to pinned.
         private void PinActiveTab_Click(object sender, EventArgs e)
         {
             Control oldPinnedControl = pinnedPanel.GetNextControl(pinnedPanel, true);
@@ -618,12 +619,13 @@ namespace Gear.GUI
             newPinControl.Parent = pinnedPanel;
             newPinControl.Dock = DockStyle.Fill;
             newPinControl.Text = selectedTab.Text;
-            _docsManager.TabPinnedExist = true;
+            _docsManager.TabPinnedQty++;
             //restore old pinned control to tab pages, if any
             if (oldPinnedControl == null)
                 return;
             //reinsert tab in saved position
             _docsManager.RestoreToTabControl(oldPinnedControl);
+            _docsManager.TabPinnedQty--;
             //tab changing housekeeping for plugin close button
             DocumentsTab_Click(this, EventArgs.Empty);
         }
@@ -643,7 +645,7 @@ namespace Gear.GUI
             DocumentsTab_Click(this, EventArgs.Empty);
             if (!pinnedSplitter.IsCollapsed)
                 pinnedSplitter.ToggleState();
-            _docsManager.TabPinnedExist = false;
+            _docsManager.TabPinnedQty--;
         }
 
         /// @brief Event to run the emulator freely.
@@ -682,8 +684,8 @@ namespace Gear.GUI
         /// @details Only makes sense to run a step  if a cog is selected.
         /// @param sender Reference to the object where this event was called.
         /// @param e Class with the event details.
-        /// @version v22.06.01 - Refactored to improve detection.
-        /// @todo Review visibility of step button when not a CogView is active
+        /// @version v22.07.xx - Using new property on CogView to simplify logic.
+        /// @todo Review visibility of step button when a CogView is not active
         private void StepInstruction_Click(object sender, EventArgs e)
         {
             Control control = documentsTab.SelectedTab?.GetNextControl(documentsTab.SelectedTab, true);
@@ -691,10 +693,9 @@ namespace Gear.GUI
             {
                 case null:
                     return;
-                case CogView view:
+                case CogView cogViewer:
                 {
-                    Cog cog = view.GetViewCog();
-                    cog?.StepInstruction();
+                    cogViewer.ReferencedCog?.StepInstruction();
                     break;
                 }
             }
@@ -800,14 +801,14 @@ namespace Gear.GUI
             pluginAssociated.Dispose();
         }
 
-        /// @brief Refresh tab page.
-        /// @details Enable close plugin button based on if active tab is
+        /// <summary>Refresh tab page.</summary>
+        /// <remarks>Enable close plugin button based on if active tab is
         /// subclass of Gear.PluginSupport.PluginBase and if that class permit
         /// close the window. Typically the user plugins enabled it; but the
-        /// cog window, main memory, logic probe, etc, don't allow to close.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
-        /// @version v22.06.01 - Refactored to improve logic.
+        /// cog window, main memory, logic probe, etc, don't allow to close.</remarks>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
+        /// @version v22.07.xx - Removed additional refreshing of selected tab.
         private void DocumentsTab_Click(object sender, EventArgs e)
         {
             TabPage selectedTab = documentsTab.SelectedTab;
@@ -821,7 +822,6 @@ namespace Gear.GUI
                 }
                 else
                     closeButton.Enabled = false;
-            selectedTab.Invalidate();
         }
 
         /// @brief Process key press to manage the run state of emulator.

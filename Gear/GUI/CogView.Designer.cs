@@ -39,9 +39,9 @@ namespace Gear.GUI
             {
                 components.Dispose();
             }
-            this.MonoFont.Dispose();
-            this.MonoFontBold.Dispose();
-            this.BackBuffer.Dispose();
+            this._monoFont.Dispose();
+            this._monoFontBold.Dispose();
+            this._backBuffer.Dispose();
 
             base.Dispose(disposing);
         }
@@ -55,114 +55,87 @@ namespace Gear.GUI
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
-            System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-            System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-            System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CogView));
             this.assemblyPanel = new System.Windows.Forms.Panel();
             this.positionScroll = new System.Windows.Forms.VScrollBar();
-            this.toolStrip = new System.Windows.Forms.ToolStrip();
+            this.actionsToolStrip = new System.Windows.Forms.ToolStrip();
             this.memoryViewButton = new System.Windows.Forms.ToolStripButton();
             this.followPCButton = new System.Windows.Forms.ToolStripButton();
-            this.programCounterLabel = new System.Windows.Forms.ToolStripLabel();
-            this.zeroFlagLabel = new System.Windows.Forms.ToolStripLabel();
-            this.carryFlagLabel = new System.Windows.Forms.ToolStripLabel();
-            this.processorStateLabel = new System.Windows.Forms.ToolStripLabel();
-            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
-            this.frameCountLabel = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
-            this.DisplayUnits = new System.Windows.Forms.ToolStripDropDownButton();
+            this.displayUnitsBtn = new System.Windows.Forms.ToolStripDropDownButton();
             this.decimalUnits = new System.Windows.Forms.ToolStripMenuItem();
             this.hexadecimalUnits = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
-            this.OpcodeSize = new System.Windows.Forms.ToolStripDropDownButton();
+            this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
+            this.OpCodeSize = new System.Windows.Forms.ToolStripDropDownButton();
             this.longOpcodes = new System.Windows.Forms.ToolStripMenuItem();
             this.shortOpcodes = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
             this.FrameBreakMode = new System.Windows.Forms.ToolStripDropDownButton();
-            this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
             this.breakNone = new System.Windows.Forms.ToolStripMenuItem();
             this.breakMiss = new System.Windows.Forms.ToolStripMenuItem();
             this.breakAll = new System.Windows.Forms.ToolStripMenuItem();
-            toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-            toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStrip.SuspendLayout();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.valuesToolStrip = new System.Windows.Forms.ToolStrip();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
+            this.cogStateLabel = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
+            this.programCursorLabel = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripLabel5 = new System.Windows.Forms.ToolStripLabel();
+            this.frameCountLabel = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripLabel3 = new System.Windows.Forms.ToolStripLabel();
+            this.zeroFlagLabel = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripLabel4 = new System.Windows.Forms.ToolStripLabel();
+            this.carryFlagLabel = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+            this.actionsToolStrip.SuspendLayout();
+            this.valuesToolStrip.SuspendLayout();
             this.SuspendLayout();
-            //
-            // toolStripSeparator4
-            //
-            toolStripSeparator4.Name = "toolStripSeparator4";
-            toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
-            //
-            // toolStripSeparator1
-            //
-            toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-            //
-            // toolStripSeparator2
-            //
-            toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
-            //
-            // toolStripSeparator3
-            //
-            toolStripSeparator3.Name = "toolStripSeparator3";
-            toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
             //
             // assemblyPanel
             //
             this.assemblyPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.assemblyPanel.Location = new System.Drawing.Point(0, 25);
+            this.assemblyPanel.Location = new System.Drawing.Point(0, 50);
             this.assemblyPanel.Name = "assemblyPanel";
-            this.assemblyPanel.Size = new System.Drawing.Size(548, 421);
+            this.assemblyPanel.Size = new System.Drawing.Size(548, 396);
             this.assemblyPanel.TabIndex = 1;
-            this.assemblyPanel.SizeChanged += new System.EventHandler(this.AsmSized);
+            this.assemblyPanel.SizeChanged += new System.EventHandler(this.AssemblyPanel_SizeChanged);
             this.assemblyPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.AssemblyView_Paint);
             this.assemblyPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.AssemblyPanel_MouseClick);
             this.assemblyPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.AssemblyPanel_MouseDown);
-            this.assemblyPanel.MouseHover += new System.EventHandler(this.AssemblyPanel_MouseHover);
             this.assemblyPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.AssemblyPanel_MouseMove);
             //
             // positionScroll
             //
             this.positionScroll.Dock = System.Windows.Forms.DockStyle.Right;
             this.positionScroll.LargeChange = 16;
-            this.positionScroll.Location = new System.Drawing.Point(548, 25);
+            this.positionScroll.Location = new System.Drawing.Point(548, 50);
             this.positionScroll.Name = "positionScroll";
-            this.positionScroll.Size = new System.Drawing.Size(17, 421);
+            this.positionScroll.Size = new System.Drawing.Size(17, 396);
             this.positionScroll.TabIndex = 2;
             this.positionScroll.TabStop = true;
             this.positionScroll.Scroll += new System.Windows.Forms.ScrollEventHandler(this.UpdateOnScroll);
             //
-            // toolStrip
+            // actionsToolStrip
             //
-            this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.actionsToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.memoryViewButton,
             this.followPCButton,
-            toolStripSeparator4,
-            this.programCounterLabel,
-            toolStripSeparator1,
-            this.zeroFlagLabel,
-            toolStripSeparator2,
-            this.carryFlagLabel,
-            toolStripSeparator3,
-            this.processorStateLabel,
-            this.toolStripSeparator5,
-            this.frameCountLabel,
             this.toolStripSeparator7,
-            this.DisplayUnits,
-            this.toolStripSeparator6,
-            this.OpcodeSize,
+            this.displayUnitsBtn,
             this.toolStripSeparator8,
+            this.OpCodeSize,
+            this.toolStripSeparator9,
             this.FrameBreakMode});
-            this.toolStrip.Location = new System.Drawing.Point(0, 0);
-            this.toolStrip.Name = "toolStrip";
-            this.toolStrip.Size = new System.Drawing.Size(565, 25);
-            this.toolStrip.TabIndex = 0;
-            this.toolStrip.Text = "toolStrip1";
+            this.actionsToolStrip.Location = new System.Drawing.Point(0, 0);
+            this.actionsToolStrip.Name = "actionsToolStrip";
+            this.actionsToolStrip.Size = new System.Drawing.Size(565, 25);
+            this.actionsToolStrip.TabIndex = 0;
+            this.actionsToolStrip.Text = "Actions";
             //
             // memoryViewButton
             //
@@ -188,60 +161,21 @@ namespace Gear.GUI
             this.followPCButton.Text = "Follow PC";
             this.followPCButton.Click += new System.EventHandler(this.FollowPCButton_Click);
             //
-            // programCounterLabel
-            //
-            this.programCounterLabel.Name = "programCounterLabel";
-            this.programCounterLabel.Size = new System.Drawing.Size(22, 22);
-            this.programCounterLabel.Text = "---";
-            //
-            // zeroFlagLabel
-            //
-            this.zeroFlagLabel.Name = "zeroFlagLabel";
-            this.zeroFlagLabel.Size = new System.Drawing.Size(22, 22);
-            this.zeroFlagLabel.Text = "---";
-            //
-            // carryFlagLabel
-            //
-            this.carryFlagLabel.Name = "carryFlagLabel";
-            this.carryFlagLabel.Size = new System.Drawing.Size(22, 22);
-            this.carryFlagLabel.Text = "---";
-            //
-            // processorStateLabel
-            //
-            this.processorStateLabel.Name = "processorStateLabel";
-            this.processorStateLabel.Size = new System.Drawing.Size(22, 22);
-            this.processorStateLabel.Text = "---";
-            //
-            // toolStripSeparator5
-            //
-            this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(6, 25);
-            //
-            // frameCountLabel
-            //
-            this.frameCountLabel.AutoToolTip = true;
-            this.frameCountLabel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.frameCountLabel.Name = "frameCountLabel";
-            this.frameCountLabel.Size = new System.Drawing.Size(22, 22);
-            this.frameCountLabel.Text = "---";
-            this.frameCountLabel.ToolTipText = "Number of Video Frames";
-            //
             // toolStripSeparator7
             //
             this.toolStripSeparator7.Name = "toolStripSeparator7";
             this.toolStripSeparator7.Size = new System.Drawing.Size(6, 25);
             //
-            // DisplayUnits
+            // displayUnitsBtn
             //
-            this.DisplayUnits.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.DisplayUnits.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.displayUnitsBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.displayUnitsBtn.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.decimalUnits,
             this.hexadecimalUnits});
-            this.DisplayUnits.Image = ((System.Drawing.Image)(resources.GetObject("DisplayUnits.Image")));
-            this.DisplayUnits.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.DisplayUnits.Name = "DisplayUnits";
-            this.DisplayUnits.Size = new System.Drawing.Size(47, 22);
-            this.DisplayUnits.Text = "Units";
+            this.displayUnitsBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.displayUnitsBtn.Name = "displayUnitsBtn";
+            this.displayUnitsBtn.Size = new System.Drawing.Size(73, 22);
+            this.displayUnitsBtn.Text = "Units: Dec";
             //
             // decimalUnits
             //
@@ -259,29 +193,30 @@ namespace Gear.GUI
             this.hexadecimalUnits.Text = "Hexadecimal";
             this.hexadecimalUnits.Click += new System.EventHandler(this.HexadecimalUnits_Click);
             //
-            // toolStripSeparator6
+            // toolStripSeparator8
             //
-            this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator8.Name = "toolStripSeparator8";
+            this.toolStripSeparator8.Size = new System.Drawing.Size(6, 25);
             //
-            // OpcodeSize
+            // OpCodeSize
             //
-            this.OpcodeSize.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.OpcodeSize.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.OpCodeSize.AutoSize = false;
+            this.OpCodeSize.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.OpCodeSize.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.longOpcodes,
             this.shortOpcodes});
-            this.OpcodeSize.Image = ((System.Drawing.Image)(resources.GetObject("OpcodeSize.Image")));
-            this.OpcodeSize.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.OpcodeSize.Name = "OpcodeSize";
-            this.OpcodeSize.Size = new System.Drawing.Size(67, 22);
-            this.OpcodeSize.Text = "Opcodes";
+            this.OpCodeSize.Image = ((System.Drawing.Image)(resources.GetObject("OpCodeSize.Image")));
+            this.OpCodeSize.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.OpCodeSize.Name = "OpCodeSize";
+            this.OpCodeSize.Size = new System.Drawing.Size(101, 22);
+            this.OpCodeSize.Text = "Opcodes: Short";
             //
             // longOpcodes
             //
             this.longOpcodes.Name = "longOpcodes";
             this.longOpcodes.Size = new System.Drawing.Size(152, 22);
             this.longOpcodes.Text = "Long Opcodes";
-            this.longOpcodes.Click += new System.EventHandler(this.LongOpcodes_Click);
+            this.longOpcodes.Click += new System.EventHandler(this.LongOpCodes_Click);
             //
             // shortOpcodes
             //
@@ -290,7 +225,12 @@ namespace Gear.GUI
             this.shortOpcodes.Name = "shortOpcodes";
             this.shortOpcodes.Size = new System.Drawing.Size(152, 22);
             this.shortOpcodes.Text = "Short Opcodes";
-            this.shortOpcodes.Click += new System.EventHandler(this.ShortOpcodes_Click);
+            this.shortOpcodes.Click += new System.EventHandler(this.ShortOpCodes_Click);
+            //
+            // toolStripSeparator9
+            //
+            this.toolStripSeparator9.Name = "toolStripSeparator9";
+            this.toolStripSeparator9.Size = new System.Drawing.Size(6, 25);
             //
             // FrameBreakMode
             //
@@ -302,19 +242,15 @@ namespace Gear.GUI
             this.FrameBreakMode.Image = ((System.Drawing.Image)(resources.GetObject("FrameBreakMode.Image")));
             this.FrameBreakMode.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.FrameBreakMode.Name = "FrameBreakMode";
-            this.FrameBreakMode.Size = new System.Drawing.Size(82, 22);
-            this.FrameBreakMode.Text = "Video Break";
+            this.FrameBreakMode.Size = new System.Drawing.Size(117, 22);
+            this.FrameBreakMode.Text = "Video Break: None";
             this.FrameBreakMode.TextAlign = System.Drawing.ContentAlignment.TopLeft;
             this.FrameBreakMode.ToolTipText = "Enable break on end of video frame";
-            //
-            // toolStripSeparator8
-            //
-            this.toolStripSeparator8.Name = "toolStripSeparator8";
-            this.toolStripSeparator8.Size = new System.Drawing.Size(6, 25);
             //
             // breakNone
             //
             this.breakNone.AutoToolTip = true;
+            this.breakNone.Checked = true;
             this.breakNone.CheckOnClick = true;
             this.breakNone.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.breakNone.Name = "breakNone";
@@ -325,6 +261,7 @@ namespace Gear.GUI
             //
             // breakMiss
             //
+            this.breakMiss.AutoToolTip = true;
             this.breakMiss.CheckOnClick = true;
             this.breakMiss.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.breakMiss.Name = "breakMiss";
@@ -346,17 +283,169 @@ namespace Gear.GUI
             this.breakAll.ToolTipText = "Break on end of video frame";
             this.breakAll.Click += new System.EventHandler(this.VideoBreak_Click);
             //
+            // valuesToolStrip
+            //
+            this.valuesToolStrip.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.valuesToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.valuesToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripSeparator1,
+            this.toolStripLabel1,
+            this.cogStateLabel,
+            this.toolStripSeparator2,
+            this.toolStripLabel2,
+            this.programCursorLabel,
+            this.toolStripSeparator3,
+            this.toolStripLabel5,
+            this.frameCountLabel,
+            this.toolStripSeparator4,
+            this.toolStripLabel3,
+            this.zeroFlagLabel,
+            this.toolStripSeparator5,
+            this.toolStripLabel4,
+            this.carryFlagLabel,
+            this.toolStripSeparator6});
+            this.valuesToolStrip.Location = new System.Drawing.Point(0, 25);
+            this.valuesToolStrip.Name = "valuesToolStrip";
+            this.valuesToolStrip.Size = new System.Drawing.Size(565, 25);
+            this.valuesToolStrip.TabIndex = 3;
+            this.valuesToolStrip.Text = "toolStrip1";
+            //
+            // toolStripSeparator1
+            //
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            //
+            // toolStripLabel1
+            //
+            this.toolStripLabel1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripLabel1.Name = "toolStripLabel1";
+            this.toolStripLabel1.Size = new System.Drawing.Size(61, 22);
+            this.toolStripLabel1.Text = "Cog State:";
+            //
+            // cogStateLabel
+            //
+            this.cogStateLabel.AutoSize = false;
+            this.cogStateLabel.AutoToolTip = true;
+            this.cogStateLabel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.cogStateLabel.Name = "cogStateLabel";
+            this.cogStateLabel.Size = new System.Drawing.Size(122, 22);
+            this.cogStateLabel.Text = "Interpreter Processing";
+            this.cogStateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.cogStateLabel.ToolTipText = "Cog state.";
+            //
+            // toolStripSeparator2
+            //
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            //
+            // toolStripLabel2
+            //
+            this.toolStripLabel2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripLabel2.Name = "toolStripLabel2";
+            this.toolStripLabel2.Size = new System.Drawing.Size(56, 22);
+            this.toolStripLabel2.Text = "Exec Pos:";
+            //
+            // programCursorLabel
+            //
+            this.programCursorLabel.AutoSize = false;
+            this.programCursorLabel.AutoToolTip = true;
+            this.programCursorLabel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.programCursorLabel.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.programCursorLabel.Name = "programCursorLabel";
+            this.programCursorLabel.Size = new System.Drawing.Size(42, 22);
+            this.programCursorLabel.Text = "$0000";
+            this.programCursorLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.programCursorLabel.ToolTipText = "Program cursor: line number at execution.";
+            //
+            // toolStripSeparator3
+            //
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+            //
+            // toolStripLabel5
+            //
+            this.toolStripLabel5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripLabel5.Name = "toolStripLabel5";
+            this.toolStripLabel5.Size = new System.Drawing.Size(76, 22);
+            this.toolStripLabel5.Text = "Video Frame:";
+            //
+            // frameCountLabel
+            //
+            this.frameCountLabel.AutoSize = false;
+            this.frameCountLabel.AutoToolTip = true;
+            this.frameCountLabel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.frameCountLabel.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.frameCountLabel.Name = "frameCountLabel";
+            this.frameCountLabel.Size = new System.Drawing.Size(98, 22);
+            this.frameCountLabel.Text = "None/0000/000";
+            this.frameCountLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.frameCountLabel.ToolTipText = "State / Number of Video Frames / Clock number";
+            //
+            // toolStripSeparator4
+            //
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
+            //
+            // toolStripLabel3
+            //
+            this.toolStripLabel3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripLabel3.Name = "toolStripLabel3";
+            this.toolStripLabel3.Size = new System.Drawing.Size(34, 22);
+            this.toolStripLabel3.Text = "Zero:";
+            //
+            // zeroFlagLabel
+            //
+            this.zeroFlagLabel.AutoSize = false;
+            this.zeroFlagLabel.AutoToolTip = true;
+            this.zeroFlagLabel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.zeroFlagLabel.Name = "zeroFlagLabel";
+            this.zeroFlagLabel.Size = new System.Drawing.Size(33, 22);
+            this.zeroFlagLabel.Text = "False";
+            this.zeroFlagLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.zeroFlagLabel.ToolTipText = "Zero flag register value.";
+            //
+            // toolStripSeparator5
+            //
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(6, 25);
+            //
+            // toolStripLabel4
+            //
+            this.toolStripLabel4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripLabel4.Name = "toolStripLabel4";
+            this.toolStripLabel4.Size = new System.Drawing.Size(38, 15);
+            this.toolStripLabel4.Text = "Carry:";
+            //
+            // carryFlagLabel
+            //
+            this.carryFlagLabel.AutoSize = false;
+            this.carryFlagLabel.AutoToolTip = true;
+            this.carryFlagLabel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.carryFlagLabel.Name = "carryFlagLabel";
+            this.carryFlagLabel.Size = new System.Drawing.Size(33, 22);
+            this.carryFlagLabel.Text = "False";
+            this.carryFlagLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.carryFlagLabel.ToolTipText = "Carry flag register value.";
+            //
+            // toolStripSeparator6
+            //
+            this.toolStripSeparator6.Name = "toolStripSeparator6";
+            this.toolStripSeparator6.Size = new System.Drawing.Size(6, 25);
+            //
             // CogView
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.assemblyPanel);
             this.Controls.Add(this.positionScroll);
-            this.Controls.Add(this.toolStrip);
+            this.Controls.Add(this.valuesToolStrip);
+            this.Controls.Add(this.actionsToolStrip);
             this.Name = "CogView";
             this.Size = new System.Drawing.Size(565, 446);
-            this.toolStrip.ResumeLayout(false);
-            this.toolStrip.PerformLayout();
+            this.actionsToolStrip.ResumeLayout(false);
+            this.actionsToolStrip.PerformLayout();
+            this.valuesToolStrip.ResumeLayout(false);
+            this.valuesToolStrip.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -366,28 +455,39 @@ namespace Gear.GUI
 
         private System.Windows.Forms.Panel assemblyPanel;
         private System.Windows.Forms.VScrollBar positionScroll;
-        private System.Windows.Forms.ToolStrip toolStrip;
-        private System.Windows.Forms.ToolStripLabel programCounterLabel;
-        private System.Windows.Forms.ToolStripLabel zeroFlagLabel;
-        private System.Windows.Forms.ToolStripLabel carryFlagLabel;
-        private System.Windows.Forms.ToolStripLabel processorStateLabel;
+        private System.Windows.Forms.ToolStrip actionsToolStrip;
         private System.Windows.Forms.ToolStripButton memoryViewButton;
         private System.Windows.Forms.ToolStripButton followPCButton;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
-        private System.Windows.Forms.ToolStripDropDownButton DisplayUnits;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
+        private System.Windows.Forms.ToolStripDropDownButton displayUnitsBtn;
         private System.Windows.Forms.ToolStripMenuItem decimalUnits;
         private System.Windows.Forms.ToolStripMenuItem hexadecimalUnits;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
-        private System.Windows.Forms.ToolStripDropDownButton OpcodeSize;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
+        private System.Windows.Forms.ToolStripDropDownButton OpCodeSize;
         private System.Windows.Forms.ToolStripMenuItem longOpcodes;
         private System.Windows.Forms.ToolStripMenuItem shortOpcodes;
         private System.Windows.Forms.ToolTip toolTip1;
-        private System.Windows.Forms.ToolStripLabel frameCountLabel;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
         private System.Windows.Forms.ToolStripDropDownButton FrameBreakMode;
         private System.Windows.Forms.ToolStripMenuItem breakNone;
         private System.Windows.Forms.ToolStripMenuItem breakMiss;
         private System.Windows.Forms.ToolStripMenuItem breakAll;
+        private System.Windows.Forms.ToolStrip valuesToolStrip;
+        private System.Windows.Forms.ToolStripLabel programCursorLabel;
+        private System.Windows.Forms.ToolStripLabel zeroFlagLabel;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
+        private System.Windows.Forms.ToolStripLabel cogStateLabel;
+        private System.Windows.Forms.ToolStripLabel toolStripLabel1;
+        private System.Windows.Forms.ToolStripLabel toolStripLabel2;
+        private System.Windows.Forms.ToolStripLabel toolStripLabel3;
+        private System.Windows.Forms.ToolStripLabel toolStripLabel4;
+        private System.Windows.Forms.ToolStripLabel toolStripLabel5;
+        private System.Windows.Forms.ToolStripLabel frameCountLabel;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+        private System.Windows.Forms.ToolStripLabel carryFlagLabel;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
     }
 }

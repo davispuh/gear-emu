@@ -21,6 +21,8 @@
  * --------------------------------------------------------------------------------
  */
 
+#undef USE_MAINGRAPHICS
+
 using Gear.EmulationCore;
 using System;
 using System.Drawing;
@@ -32,21 +34,27 @@ namespace Gear.GUI
     /// @brief Main memory viewer.
     public partial class MemoryView : PluginSupport.PluginBase
     {
-        /// <summary>Bitmap buffer to draw the memory lines.</summary>
+        /// <summary>Backing field for Bitmap buffer to draw the memory lines.</summary>
         /// @version v22.06.02 - Name changed to follow naming conventions.
         private Bitmap _backBuffer;
 
-        /// <summary>Graphic style to draw text.</summary>
-        /// @version v22.06.02 - Added.
+        /// <summary>Backing field for Graphic style to draw text on buffer.</summary>
+        /// @version v22.07.xx - Changed name to differentiate from Main panel.
+        private Graphics _bufferGraphics;
+
+#if USE_MAINGRAPHICS
+        /// <summary>Backing field for Graphic style to draw text on
+        /// main Panel.</summary>
+        /// @version v22.07.xx - Added.
         private Graphics _mainGraphics;
+#endif
 
         /// <summary>Pen style to draw lines.</summary>
         /// @version v22.06.02 - Added.
         private readonly Pen _defaultPen;
 
         /// <summary>Bitmap buffer property to draw the memory lines.</summary>
-        /// @version v22.06.02 - Added as property to hold the relationship
-        /// with MainGraphics property.
+        /// @version v22.07.xx - Using new name of BufferGraphics.
         private Bitmap BackBuffer
         {
             get => _backBuffer;
@@ -55,22 +63,33 @@ namespace Gear.GUI
                 if (_backBuffer == value | value == null)
                     return;
                 _backBuffer = value;
-                MainGraphics = Graphics.FromImage(_backBuffer);
+                BufferGraphics = Graphics.FromImage(_backBuffer);
             }
         }
 
-        /// <summary>Graphic style property to draw text.</summary>
-        /// @version v22.06.02 - Added as property to set the font
-        /// aliasing style for text of the control.
-        private Graphics MainGraphics
+        /// <summary>Graphic style property to draw graphics
+        /// on buffer.</summary>
+        /// @version v22.07.xx - Changed name to differentiate from Main panel.
+        private Graphics BufferGraphics
         {
-            get => _mainGraphics;
+            get => _bufferGraphics;
             set
             {
-                _mainGraphics = value;
-                _mainGraphics.SmoothingMode = SmoothingMode.HighQuality;
+                _bufferGraphics = value;
+                _bufferGraphics.SmoothingMode = SmoothingMode.HighQuality;
             }
         }
+
+#if USE_MAINGRAPHICS
+        /// <summary>Graphic style property to draw text and graphics
+        /// on main Panel.</summary>
+        /// @version v22.07.xx - Added.
+        private Graphics MainGraphics
+        {
+            get => _mainGraphics ?? (_mainGraphics = memoryPanel.CreateGraphics());
+            set => _mainGraphics = value;
+        }
+#endif
 
         /// <summary>Title of the tab window.</summary>
         public override string Title => "Main Memory";
@@ -97,23 +116,24 @@ namespace Gear.GUI
         public override void PresentChip() { }
 
         /// <summary>Event to repaint the plugin screen (if used).</summary>
-        /// <param name="force">Flag to indicate the intention to force the repaint.</param>
-        /// @version v22.06.01 - Modified to minimize the rectangle paints,
-        /// changed local variable names to clarify their meaning and to use
-        /// constant `PropellerCPU.TotalMemory`. Added header to clarify the
-        /// meaning of each column.
+        /// <param name="force">Flag to indicate the intention to force the
+        /// repaint.</param>
+        /// @version v22.07.xx - Modified header background color. Using new
+        /// name of BufferGraphics.
         public override void Repaint(bool force)
         {
             if (Chip == null)
                 return;
             byte[] valueAsByte = new byte[4];
             //clear all panel
-            MainGraphics.FillRectangle(SystemBrushes.Control, 0, 0,
+            BufferGraphics.FillRectangle(SystemBrushes.Control, 0, 0,
                 memoryPanel.Width, memoryPanel.Height);
             //draw the header
-            MainGraphics.DrawLine(_defaultPen, 0, Font.Height + 1,
+            BufferGraphics.FillRectangle(SystemBrushes.ControlLight, 0, 0,
+                memoryPanel.Width, Font.Height);
+            BufferGraphics.DrawLine(_defaultPen, 0, Font.Height + 1,
                 memoryPanel.Width, Font.Height + 1);
-            MainGraphics.DrawString(
+            BufferGraphics.DrawString(
                 "Address     :   +0  +1  +2  +3  :\t WORD0\t WORD1 :\tSWORD0\tSWORD1\t:\tSIGNED LONG",
                 Font, SystemBrushes.ControlText, 0, 0);
             //draw all other lines
@@ -126,14 +146,18 @@ namespace Gear.GUI
                 ushort valueAsUnsignedWord1 = (ushort)(valueAsByte[0] | (valueAsByte[1] << 8));
                 ushort valueAsUnsignedWord2 = (ushort)(valueAsByte[2] | (valueAsByte[3] << 8));
                 int valueAsSignedLong = valueAsUnsignedWord1 | (valueAsUnsignedWord2 << 16);
-                MainGraphics.DrawString(
-                    $"${idx:X4} {idx,5:D} :  ${valueAsByte[0]:X2} ${valueAsByte[1]:X2} ${valueAsByte[2]:X2} ${valueAsByte[3]:X2}  :" +
+                BufferGraphics.DrawString(
+                    $"${idx:X4}/{idx,5:D} :  ${valueAsByte[0]:X2} ${valueAsByte[1]:X2} ${valueAsByte[2]:X2} ${valueAsByte[3]:X2}  :" +
                     $"\t{valueAsUnsignedWord1,6}\t{valueAsUnsignedWord2,6} :\t" +
                     $"{(short)valueAsUnsignedWord1,6}\t{(short)valueAsUnsignedWord2,6} :\t" +
-                    $"{valueAsSignedLong,11:d}",
+                    $"{valueAsSignedLong,11:D}",
                     Font, SystemBrushes.ControlText, 0, linePosition);
             }
+#if USE_MAINGRAPHICS
+            MainGraphics.DrawImageUnscaled(BackBuffer, 0, 0);
+#else
             memoryPanel.CreateGraphics().DrawImageUnscaled(BackBuffer, 0, 0);
+#endif
         }
 
         /// <summary>Event handler to paint memory panel.</summary>
@@ -142,7 +166,11 @@ namespace Gear.GUI
         /// @version v22.06.01 - Method name changed to clarify its meaning.
         private void MemoryPanel_Paint(object sender, PaintEventArgs e)
         {
+#if USE_MAINGRAPHICS
+            MainGraphics.DrawImageUnscaled(BackBuffer, 0, 0);
+#else
             e.Graphics.DrawImageUnscaled(BackBuffer, 0, 0);
+#endif
         }
 
         /// <summary>Event Handler on size changed of Memory panel.</summary>
@@ -158,6 +186,10 @@ namespace Gear.GUI
                 BackBuffer = new Bitmap(memoryPanel.Width, memoryPanel.Height);
             else
                 BackBuffer = new Bitmap(1, 1);
+#if USE_MAINGRAPHICS
+            //force MainGraphics to recalculate on next get value
+            MainGraphics = null;
+#endif
             Repaint(false);
         }
 

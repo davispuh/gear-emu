@@ -241,7 +241,7 @@ namespace Gear.EmulationCore
             }
 
             ProgramCursor = (ProgramCursor + 1) & MaskCogMemory;
-            FrameFlag = FrameState.FrameNone;
+            FrameFlag = FrameState.None;
             InstructionCode = (Assembly.InstructionCodes)(Operation & 0xFC000000);
             ConditionCode = (Assembly.ConditionCodes)((Operation & 0x003C0000) >> 18);
             WriteZero = (Operation & 0x02000000) != 0;
@@ -613,12 +613,12 @@ namespace Gear.EmulationCore
             {
                 State = CogRunState.WaitCycles;
                 StateCount = 3; // Minimum of 7 clocks in total
-                FrameFlag = FrameState.FrameHit;
+                FrameFlag = FrameState.Hit;
             }
             else
             {
                 // Frame counter ran out while not in WAIT_VID
-                FrameFlag = FrameState.FrameMiss;
+                FrameFlag = FrameState.Miss;
             }
         }
 
