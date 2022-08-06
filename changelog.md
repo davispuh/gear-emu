@@ -1,6 +1,6 @@
 # Change Log
 
-## Commit  Code cleanup UI on CogView.
+## Release Version [22.08.01](https://github.com/davispuh/gear-emu/releases/tag/v22.08.01) Commit [27093c2](27093c2e2c820a221bc8e7e7bc0725b8c1ccec8a) Merge commit '195e7f5' new version v22.08.01, Commit [2fdeb0a](https://github.com/davispuh/gear-emu/commit/2fdeb0a92fbca6f2ef6a63d2b57f41c9e47be276) Code cleanup UI on CogView.
 
 - Changed in Cog View UI:
   - Separated and ordered in two different toolstips: buttons to perform actions, and labels to show information.
@@ -15,7 +15,7 @@
   - Added XML & Doxygen comments in files.
   - Removed extra spaces at line ends.
 - Code renaming on classes and files, documenting almost all.
-  - Name changes of `SubInstruction` to `InstructionVariant`, `ParsedInstruction` to `DecodedPASMInstruction`, `SubAssignment` to `AssignmentVariant`, `ParsedMemoryOperation` to `DecodedMemoryOperation`, `ParsedAssignment` to `DecodedAssignment`, ``, affecting [`Propeller/Assembly.cs`](Gear/Propeller/Assembly.cs), [`Disassembler/Assembly.cs`](Gear/Disassembler/Assembly.cs), [`Propeller/Spin.cs`](Gear/Propeller/Spin.cs), [`Disassembler/Spin.cs`](Gear/Disassembler/Spin.cs), [`AssemblyInstructions.cs`](Gear/Propeller/AssemblyInstructions.cs), [`SpinAssignments.cs`](Gear/Propeller/SpinAssignments.cs), [`SpinInstructions.cs`](Gear/Propeller/SpinInstructions.cs), [`InstructionDisassembler.cs`](Gear/EmulationCore/InstructionDisassembler.cs).
+  - Name changes of `SubInstruction` to `InstructionVariant`, `ParsedInstruction` to `DecodedPASMInstruction`, `SubAssignment` to `AssignmentVariant`, `ParsedMemoryOperation` to `DecodedMemoryOperation`, `ParsedAssignment` to `DecodedAssignment`, affecting [`Propeller/Assembly.cs`](Gear/Propeller/Assembly.cs), [`Disassembler/Assembly.cs`](Gear/Disassembler/Assembly.cs), [`Propeller/Spin.cs`](Gear/Propeller/Spin.cs), [`Disassembler/Spin.cs`](Gear/Disassembler/Spin.cs), [`AssemblyInstructions.cs`](Gear/Propeller/AssemblyInstructions.cs), [`SpinAssignments.cs`](Gear/Propeller/SpinAssignments.cs), [`SpinInstructions.cs`](Gear/Propeller/SpinInstructions.cs), [`InstructionDisassembler.cs`](Gear/EmulationCore/InstructionDisassembler.cs).
   - Name change of `MemoryManager` to `MemorySegment` class, also splitting old file `Propeller/MemoryManager.cs` into [`MemorySegment.cs`](Gear/Propeller/MemorySegment.cs) and [`DirectMemory.cs`](Gear/Propeller/DirectMemory.cs) to separate classes `MemorySegment` and `DirectMemory` to its own file.
   - Name change of `DataUnpacker` to `DataDecoder` class, also changing old file `DataUnpacker.cs` to [`DataDecoder.cs`](Gear/Disassembler/DataDecoder.cs).
 - Prepared modification of Main graphics context variable for the direct painting of MemoryView and SpinView panels, like CogView does, instead to use a bitmap backbuffer, in [`MemoryView.cs`](Gear/GUI/MemoryView.cs) and [`SpinView.cs`](Gear/GUI/SpinView.cs).

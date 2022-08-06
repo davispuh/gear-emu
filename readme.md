@@ -53,7 +53,7 @@ See [Plugins notes](plug-ins/Plugins_notes.md) for brief explanation of each one
 ## Copyright 2007-2022 - Gear Developers
 
 ### Released under the Lesser GNU Public Licence (LGPL).
-*See [Licence.txt](Licence.txt) for details.*
+*See [Licence](licence.txt) for details.*
 
 ### Current Developers:
 - @github/gatuno1 - Antonio Sanhueza
