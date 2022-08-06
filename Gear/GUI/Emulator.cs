@@ -597,7 +597,7 @@ namespace Gear.GUI
         /// @brief Send the active tab to pin panel.
         /// @param sender Reference to the object where this event was called.
         /// @param e Class with the event details.
-        /// @version v22.07.xx - Corrected error on restore in wrong position
+        /// @version v22.08.01 - Corrected error on restore in wrong position
         /// a unpinned tab when other where selected to pinned.
         private void PinActiveTab_Click(object sender, EventArgs e)
         {
@@ -684,7 +684,7 @@ namespace Gear.GUI
         /// @details Only makes sense to run a step  if a cog is selected.
         /// @param sender Reference to the object where this event was called.
         /// @param e Class with the event details.
-        /// @version v22.07.xx - Using new property on CogView to simplify logic.
+        /// @version v22.08.01 - Using new property on CogView to simplify logic.
         /// @todo Review visibility of step button when a CogView is not active
         private void StepInstruction_Click(object sender, EventArgs e)
         {
@@ -808,7 +808,7 @@ namespace Gear.GUI
         /// cog window, main memory, logic probe, etc, don't allow to close.</remarks>
         /// <param name="sender">Reference to object where event was raised.</param>
         /// <param name="e">Event data arguments.</param>
-        /// @version v22.07.xx - Removed additional refreshing of selected tab.
+        /// @version v22.08.01 - Removed additional refreshing of selected tab.
         private void DocumentsTab_Click(object sender, EventArgs e)
         {
             TabPage selectedTab = documentsTab.SelectedTab;

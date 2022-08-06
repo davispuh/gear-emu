@@ -67,7 +67,7 @@ namespace Gear.Propeller
         }
 
         /// <summary>Container for a PASM instruction variant.</summary>
-        /// @version v22.07.xx - Renamed class to be more meaningfully.
+        /// @version v22.08.01 - Renamed class to be more meaningfully.
         public class InstructionVariant
         {
             /// <summary>Code name of instruction.</summary>
@@ -117,7 +117,7 @@ namespace Gear.Propeller
             /// Immediate Value.</param>
             /// <param name="representation">Text representation of coding of
             /// this instruction variant.</param>
-            /// @version v22.07.xx - Renamed class constructor to follow class
+            /// @version v22.08.01 - Renamed class constructor to follow class
             /// name was changed.
             public InstructionVariant(string name, bool useDestination,
                 bool useSource, bool useWZ_Effect, bool useWC_Effect,
@@ -143,7 +143,7 @@ namespace Gear.Propeller
             public InstructionTypeEnum InstructionType { get; }
 
             /// <summary>Array of instruction variants of this Instruction.</summary>
-            /// @version v22.07.xx - Property renamed according to the return
+            /// @version v22.08.01 - Property renamed according to the return
             /// class name was changed to follow its class renaming.
             public InstructionVariant[] InstructionVariants { get; }
 
@@ -151,7 +151,7 @@ namespace Gear.Propeller
             /// <param name="instructionType">Type of instruction.</param>
             /// <param name="instructionVariants">Array of instruction variants
             /// of this instruction.</param>
-            /// @version v22.07.xx - Parameter name changed to follow its
+            /// @version v22.08.01 - Parameter name changed to follow its
             /// class renaming.
             public Instruction(InstructionTypeEnum instructionType,
                 InstructionVariant[] instructionVariants)

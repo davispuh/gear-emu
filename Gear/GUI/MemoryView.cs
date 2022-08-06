@@ -39,13 +39,13 @@ namespace Gear.GUI
         private Bitmap _backBuffer;
 
         /// <summary>Backing field for Graphic style to draw text on buffer.</summary>
-        /// @version v22.07.xx - Changed name to differentiate from Main panel.
+        /// @version v22.08.01 - Changed name to differentiate from Main panel.
         private Graphics _bufferGraphics;
 
 #if USE_MAINGRAPHICS
         /// <summary>Backing field for Graphic style to draw text on
         /// main Panel.</summary>
-        /// @version v22.07.xx - Added.
+        /// @version v22.08.01 - Added.
         private Graphics _mainGraphics;
 #endif
 
@@ -54,7 +54,7 @@ namespace Gear.GUI
         private readonly Pen _defaultPen;
 
         /// <summary>Bitmap buffer property to draw the memory lines.</summary>
-        /// @version v22.07.xx - Using new name of BufferGraphics.
+        /// @version v22.08.01 - Using new name of BufferGraphics.
         private Bitmap BackBuffer
         {
             get => _backBuffer;
@@ -69,7 +69,7 @@ namespace Gear.GUI
 
         /// <summary>Graphic style property to draw graphics
         /// on buffer.</summary>
-        /// @version v22.07.xx - Changed name to differentiate from Main panel.
+        /// @version v22.08.01 - Changed name to differentiate from Main panel.
         private Graphics BufferGraphics
         {
             get => _bufferGraphics;
@@ -83,7 +83,7 @@ namespace Gear.GUI
 #if USE_MAINGRAPHICS
         /// <summary>Graphic style property to draw text and graphics
         /// on main Panel.</summary>
-        /// @version v22.07.xx - Added.
+        /// @version v22.08.01 - Added.
         private Graphics MainGraphics
         {
             get => _mainGraphics ?? (_mainGraphics = memoryPanel.CreateGraphics());
@@ -118,7 +118,7 @@ namespace Gear.GUI
         /// <summary>Event to repaint the plugin screen (if used).</summary>
         /// <param name="force">Flag to indicate the intention to force the
         /// repaint.</param>
-        /// @version v22.07.xx - Modified header background color. Using new
+        /// @version v22.08.01 - Modified header background color. Using new
         /// name of BufferGraphics.
         public override void Repaint(bool force)
         {

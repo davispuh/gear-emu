@@ -35,7 +35,7 @@ namespace Gear.EmulationCore
         /// <param name="displayAsHexadecimal">Flag to show value for operation
         /// as hexadecimal or decimal base.</param>
         /// <returns>Translated text from decoded PASM OpCodes.</returns>
-        /// @version v22.07.xx - Added parameter `displayAsHexadecimal` to
+        /// @version v22.08.01 - Added parameter `displayAsHexadecimal` to
         /// show decimal or hexadecimal representation of values. Changed name
         /// of local variable to be more meaningfully.
         public static string AssemblyText(uint memoryValue, bool displayAsHexadecimal)
@@ -77,7 +77,7 @@ namespace Gear.EmulationCore
         /// <param name="useShortOpCodes">Flag to use short or long Code texts.</param>
         /// <returns></returns>
         /// <exception cref="InvalidEnumArgumentException"></exception>
-        /// @version v22.07.xx - Changed name of parameter `memorySegment` to be
+        /// @version v22.08.01 - Changed name of parameter `memorySegment` to be
         /// more meaningfully.  Changed name of local variable to be more
         /// meaningfully.
         private static string GetUsingCode(Propeller.MemorySegment memorySegment,
@@ -114,7 +114,7 @@ namespace Gear.EmulationCore
         /// memory segment.</param>
         /// <param name="useShortOpCodes">Flag to use short or long code texts.</param>
         /// <returns></returns>
-        /// @version v22.07.xx - Changed name of parameter `memorySegment` to be
+        /// @version v22.08.01 - Changed name of parameter `memorySegment` to be
         /// more meaningfully. Visibility changed to private.
         private static string GetMemoryOp(Propeller.MemorySegment memorySegment,
             bool useShortOpCodes)
@@ -143,7 +143,7 @@ namespace Gear.EmulationCore
         /// <param name="useShortOpCodes">Flag to use short or long Code texts.</param>
         /// <returns>Translated text from SPIN bytecode.</returns>
         /// <exception cref="InvalidEnumArgumentException"></exception>
-        /// @version v22.07.xx - Changed name of parameter `memorySegment` to be
+        /// @version v22.08.01 - Changed name of parameter `memorySegment` to be
         /// more meaningfully.
         public static string InterpreterText(Propeller.MemorySegment memorySegment,
             bool displayAsHexadecimal, bool useShortOpCodes)

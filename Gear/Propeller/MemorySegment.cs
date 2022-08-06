@@ -24,20 +24,20 @@ namespace Gear.Propeller
 {
     /// <summary>Management class for a memory segment with address
     /// auto advance.</summary>
-    /// @version v22.07.xx - Changed class name to clarify meaning of it from former `MemoryManager`, moving to its own file.
+    /// @version v22.08.01 - Changed class name to clarify meaning of it from former `MemoryManager`, moving to its own file.
     public class MemorySegment
     {
         /// <summary>Reference to main memory.</summary>
         private readonly DirectMemory _memory;
 
         /// <summary>Address pointer property.</summary>
-        /// @version v22.07.xx - Changed visibility to a private setter.
+        /// @version v22.08.01 - Changed visibility to a private setter.
         public uint Address { get; private set; }
 
         /// <summary>Default constructor.</summary>
         /// <param name="memory">Memory segment to manage.</param>
         /// <param name="address">Starting address.</param>
-        /// @version v22.07.xx - Renamed class constructor to follow class
+        /// @version v22.08.01 - Renamed class constructor to follow class
         /// name was changed.
         public MemorySegment(DirectMemory memory, uint address)
         {

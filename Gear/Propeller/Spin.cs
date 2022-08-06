@@ -27,7 +27,7 @@ namespace Gear.Propeller
     public static partial class Spin
     {
         /// <summary>Type of SPIN memory action.</summary>
-        /// @version v22.07.xx - Renamed enum to be more meaningfully.
+        /// @version v22.08.01 - Renamed enum to be more meaningfully.
         public enum MemoryActionEnum : byte
         {
             /// <summary></summary>
@@ -49,7 +49,7 @@ namespace Gear.Propeller
         }
 
         /// <summary>Type of argument mode.</summary>
-        /// @version v22.07.xx - Renamed enum to be more meaningfully.
+        /// @version v22.08.01 - Renamed enum to be more meaningfully.
         public enum ArgumentModeEnum : byte
         {
             /// <summary></summary>
@@ -133,7 +133,7 @@ namespace Gear.Propeller
         }
 
         /// <summary>Container for %Spin %AssignmentVariant definitions.</summary>
-        /// @version v22.07.xx - Changed class name to be more meaningful from
+        /// @version v22.08.01 - Changed class name to be more meaningful from
         /// former `SubAssignment`.
         public class AssignmentVariant : BasicInstruction
         {
@@ -154,7 +154,7 @@ namespace Gear.Propeller
             /// <param name="postEnable"></param>
             /// <param name="argumentMode">Type of argument mode.</param>
             /// <param name="assignmentSizeType">Type of assignment size.</param>
-            /// @version v22.07.xx - Renamed class constructor to follow class
+            /// @version v22.08.01 - Renamed class constructor to follow class
             /// name was changed.
             public AssignmentVariant(string name, string nameBrief, bool postEnable,
             ArgumentModeEnum argumentMode, AssignmentSizeTypeEnum assignmentSizeType)
@@ -177,7 +177,7 @@ namespace Gear.Propeller
 
             /// <summary>Return the Assignment Variants Array associated to
             /// this Assignment object.</summary>
-            /// @version v22.07.xx - Name changed to clarify meaning of it,
+            /// @version v22.08.01 - Name changed to clarify meaning of it,
             /// from former `SubAssignmentsArray`.
             public AssignmentVariant[] AssignmentVariantsArray { get; }
 
@@ -185,7 +185,7 @@ namespace Gear.Propeller
             /// <param name="assignmentType">Assignment type.</param>
             /// <param name="assignmentVariantsArray">Array of Assignment
             /// Variants for this object.</param>
-            /// @version v22.07.xx - Changed parameter name following name
+            /// @version v22.08.01 - Changed parameter name following name
             /// change of its type.
             public Assignment(AssignmentTypeEnum assignmentType,
                 AssignmentVariant[] assignmentVariantsArray)

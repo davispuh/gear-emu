@@ -52,13 +52,13 @@ namespace Gear.GUI
                                            RegexOptions.CultureInvariant);
 
         /// <summary>Counts how many tabs are contained in floating windows.</summary>
-        /// @version v22.07.xx - Changed name from former
+        /// @version v22.08.01 - Changed name from former
         /// `FloatingTabsQuantity`, to shorter name.
         public int FloatingTabsQty { get; set; }
 
         /// <summary>Counts how many tabs are pinned in another object and not
         /// into document tab control.</summary>
-        /// @version v22.07.xx - Changed type and name of property from former
+        /// @version v22.08.01 - Changed type and name of property from former
         /// `TabPinnedExist`, to correct error on restore in wrong position
         /// a unpinned tab when other where selected to pinned.
         public int TabPinnedQty { get; set; }
@@ -193,7 +193,7 @@ namespace Gear.GUI
         /// <param name="control"></param>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentException"></exception>
-        /// @version v22.07.xx - Corrected error on restore in wrong position
+        /// @version v22.08.01 - Corrected error on restore in wrong position
         /// a unpinned tab when other where selected to pinned.
         public void RestoreToTabControl(Control control)
         {

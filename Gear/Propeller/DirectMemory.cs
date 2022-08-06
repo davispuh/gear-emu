@@ -25,7 +25,7 @@ using Gear.EmulationCore;
 namespace Gear.Propeller
 {
     /// <summary>Implements memory for Hub main RAM of a PropellerCPU.</summary>
-    /// @version v22.07.xx - Moved class to its own file.
+    /// @version v22.08.01 - Moved class to its own file.
     public class DirectMemory
     {
         /// <summary>Array for memory contents.</summary>
@@ -34,7 +34,7 @@ namespace Gear.Propeller
         /// <summary>Property to get or set main memory byte value.</summary>
         /// <param name="address">Main memory address.</param>
         /// <returns>Value of memory at address.</returns>
-        /// @version v22.07.xx - Parameter name changed to be more meaningful.
+        /// @version v22.08.01 - Parameter name changed to be more meaningful.
         public byte this[int address] =>
             address >= Memory.Length ?
                 (byte)0x55 :

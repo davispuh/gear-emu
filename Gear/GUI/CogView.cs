@@ -63,12 +63,12 @@ namespace Gear.GUI
         private Bitmap _backBuffer;
 
         /// <summary>Backing field for Graphic style to draw text on buffer.</summary>
-        /// @version v22.07.xx - Added.
+        /// @version v22.08.01 - Added.
         private Graphics _bufferGraphics;
 
         /// <summary>Backing field for Graphic style to draw text on
         /// main Panel.</summary>
-        /// @version v22.07.xx - Added.
+        /// @version v22.08.01 - Added.
         private Graphics _mainGraphics;
 
         /// <summary></summary>
@@ -86,7 +86,7 @@ namespace Gear.GUI
 
         /// <summary>State for buttons, related to running state and cog mode
         /// (Interpreted/PASM).</summary>
-        /// @version v22.07.xx - Added.
+        /// @version v22.08.01 - Added.
         private PresentationCogStateEnum _presentationState;
 
         /// <summary></summary>
@@ -112,7 +112,7 @@ namespace Gear.GUI
         public Cog ReferencedCog => Chip?.GetCog(_hostId);
 
         /// <summary>Bitmap buffer property to draw the memory lines.</summary>
-        /// @version v22.07.xx - Added as property to hold the relationship
+        /// @version v22.08.01 - Added as property to hold the relationship
         /// with MainGraphics property.
         private Bitmap BackBuffer
         {
@@ -130,7 +130,7 @@ namespace Gear.GUI
         /// on buffer.</summary>
         /// <remarks>Used to set the font aliasing style for text of the
         /// control.</remarks>
-        /// @version v22.07.xx - Added.
+        /// @version v22.08.01 - Added.
         private Graphics BufferGraphics
         {
             get => _bufferGraphics;
@@ -144,7 +144,7 @@ namespace Gear.GUI
 
         /// <summary>Graphic style property to draw text and graphics
         /// on main Panel.</summary>
-        /// @version v22.07.xx - Added.
+        /// @version v22.08.01 - Added.
         private Graphics MainGraphics
         {
             get => _mainGraphics ?? (_mainGraphics = assemblyPanel.CreateGraphics());
@@ -152,7 +152,7 @@ namespace Gear.GUI
         }
 
         /// <summary></summary>
-        /// @version v22.07.xx - Added.
+        /// @version v22.08.01 - Added.
         private PresentationCogStateEnum PresentationCogState
         {
             get => _presentationState;
@@ -182,7 +182,7 @@ namespace Gear.GUI
 
         /// <summary>Set the status of CogView controls according to the
         /// current PresentationCogState.</summary>
-        /// @version v22.07.xx - Added.
+        /// @version v22.08.01 - Added.
         private void SetStateOfControls()
         {
             switch (PresentationCogState)
@@ -255,7 +255,7 @@ namespace Gear.GUI
         /// <param name="force">Flag to indicate the intention to force the
         /// repaint.</param>
         /// <param name="cog"></param>
-        /// @version v22.07.xx - Added the option to show decimal or
+        /// @version v22.08.01 - Added the option to show decimal or
         /// hexadecimal representation of values. Changed method name from
         /// former `Repaint(bool, NativeCog)`.
         private void DisplayNativeCog(bool force, NativeCog cog)
@@ -302,7 +302,7 @@ namespace Gear.GUI
         /// <param name="force">Flag to indicate the intention to force the
         /// repaint.</param>
         /// <param name="cog"></param>
-        /// @version v22.07.xx - Added from splitting of former method
+        /// @version v22.08.01 - Added from splitting of former method
         /// `Repaint(bool, InterpretedCog)`. Corrected problem of show cog
         /// memory contents instead of main memory values to be interpreted.
         private void DisplayMemoryForInterpretedCog(bool force, InterpretedCog cog)
@@ -331,7 +331,7 @@ namespace Gear.GUI
         /// <param name="force">Flag to indicate the intention to force the
         /// repaint.</param>
         /// <param name="cog"></param>
-        /// @version v22.07.xx - Added from splitting of former method
+        /// @version v22.08.01 - Added from splitting of former method
         /// `Repaint(bool, InterpretedCog)`. Changed local variable name to
         /// clarify meaning of it.
         private void DisplayDecodedForInterpretedCog(bool force, InterpretedCog cog)
@@ -491,7 +491,7 @@ namespace Gear.GUI
         /// <summary></summary>
         /// <param name="sender">Reference to object where event was raised.</param>
         /// <param name="e">Event data arguments.</param>
-        /// @version v22.07.xx - Changed method name to clarify its meaning.
+        /// @version v22.08.01 - Changed method name to clarify its meaning.
         private void AssemblyPanel_SizeChanged(object sender, EventArgs e)
         {
             if (assemblyPanel.Width > 0 && assemblyPanel.Height > 0)
@@ -651,7 +651,7 @@ namespace Gear.GUI
         /// <summary></summary>
         /// <param name="sender">Reference to object where event was raised.</param>
         /// <param name="e">Event data arguments.</param>
-        /// @version v22.07.xx - Corrected inconsistency when breakAll is
+        /// @version v22.08.01 - Corrected inconsistency when breakAll is
         /// selected, but breakNone was marked. Removed exception thrown,
         /// because a null sender object is really permitted.
         private void VideoBreak_Click(object sender, EventArgs e)

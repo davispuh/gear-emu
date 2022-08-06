@@ -70,7 +70,7 @@ namespace Gear.EmulationCore
 
     /// <summary>Video frame states.</summary>
     /// @pullreq{18} Enum added.
-    /// @version v22.07.xx - Shorted enum names.
+    /// @version v22.08.01 - Shorted enum names.
     public enum FrameState : byte
     {
         /// <summary>Not in a video time frame.</summary>
@@ -112,7 +112,7 @@ namespace Gear.EmulationCore
         /// <summary>Next %Cog state.</summary>
         private protected CogRunState NextState;
         /// <summary>Program cursor address.</summary>
-        /// @version v22.07.xx - Changed to private access.
+        /// @version v22.08.01 - Changed to private access.
         private uint ProgramAddress;
 
         /// <summary>Reference to the PropellerCPU instance where this
@@ -136,7 +136,7 @@ namespace Gear.EmulationCore
         public int BreakPointCogCursor { get; set; }
 
         /// @brief Number of cycles to wait for the current state.
-        /// @version v22.07.xx - Changed to private protected access.
+        /// @version v22.08.01 - Changed to private protected access.
         private protected int StateCount { get; set; }
 
         /// <summary>Indicates video frame end and whether in <c>WAIT_VID</c></summary>
@@ -145,7 +145,7 @@ namespace Gear.EmulationCore
         private protected FrameState FrameFlag { get; set; }
         /// <summary>Break if frame flag is set.</summary>
         /// @pullreq{18} Property added.
-        /// @version v22.07.xx - Changed to private access.
+        /// @version v22.08.01 - Changed to private access.
         private FrameState FrameBreak { get; set; }
 
         /// @brief Property to return complete register of <c>OUT</c> pins
@@ -210,7 +210,7 @@ namespace Gear.EmulationCore
         /// <returns>Value of memory at address.</returns>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         /// @todo Check apparent error on set method, not writing to hub for special registers.
-        /// @version v22.07.xx - Changed visibility to a protected setter. Parameter name changed to be more meaningful.
+        /// @version v22.08.01 - Changed visibility to a protected setter. Parameter name changed to be more meaningful.
         public uint this[int cogAddress]
         {
             get
@@ -232,7 +232,7 @@ namespace Gear.EmulationCore
         }
 
         /// @brief Show a string with human readable state of a cog.
-        /// @version v22.07.xx - Corrected text for waiting video.
+        /// @version v22.08.01 - Corrected text for waiting video.
         public string CogStateString
         {
             get
@@ -272,7 +272,7 @@ namespace Gear.EmulationCore
 
         /// <summary>String explanation of video state.</summary>
         /// @pullreq{18} Property added.
-        /// @version v22.07.xx - Modified to new presentation format on screen.
+        /// @version v22.08.01 - Modified to new presentation format on screen.
         public string VideoFrameString
         {
             get

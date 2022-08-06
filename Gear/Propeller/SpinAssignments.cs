@@ -27,7 +27,7 @@ namespace Gear.Propeller
     partial class Spin
     {
         /// <summary>Declaration of P1 %Spin %Assignments for variables.</summary>
-        /// @version v22.07.xx - Changed class name for assignment variants,
+        /// @version v22.08.01 - Changed class name for assignment variants,
         /// formerly `SubAssignment`.
         public static readonly ReadOnlyCollection<Assignment> Assignments =
             new ReadOnlyCollection<Assignment>(new[]

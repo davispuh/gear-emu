@@ -571,7 +571,7 @@ namespace Gear.EmulationCore
         /// <item>https://docs.microsoft.com/en-us/archive/msdn-magazine/2016/july/data-binding-a-better-way-to-implement-data-binding-in-net</item>
         /// <item>https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.inotifypropertychanged?view=netframework-4.7.2</item>
         /// </list>
-        /// @version v22.07.xx - Changed visibility from former `protected abstract`.
+        /// @version v22.08.01 - Changed visibility from former `protected abstract`.
         private void OnPropertyChanged(string propertyName)
         {
             PropertyChangedEventHandler handler = PropertyChanged;

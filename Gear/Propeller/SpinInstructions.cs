@@ -28,7 +28,7 @@ namespace Gear.Propeller
     partial class Spin
     {
         /// <summary>Declaration of P1 %Spin %Instructions.</summary>
-        /// @version v22.07.xx - Changed enum name for Argument Mode, formerly
+        /// @version v22.08.01 - Changed enum name for Argument Mode, formerly
         /// `ArgumentMode`.
         public static readonly ReadOnlyCollection<Instruction> Instructions =
             new ReadOnlyCollection<Instruction>(new[]

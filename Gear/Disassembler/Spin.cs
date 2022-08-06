@@ -31,7 +31,7 @@ namespace Gear.Disassembler
     public static class Spin
     {
         /// <summary>Decode SPIN Memory operation.</summary>
-        /// @version v22.07.xx - Renamed class to be more meaningfully.
+        /// @version v22.08.01 - Renamed class to be more meaningfully.
         public class DecodedMemoryOperation
         {
             /// <summary>Return the code of memory operation.</summary>
@@ -67,7 +67,7 @@ namespace Gear.Disassembler
 
             /// <summary>Default Constructor.</summary>
             /// <param name="opCode">Coded value of memory operation.</param>
-            /// @version v22.07.xx - Renamed class constructor to follow class
+            /// @version v22.08.01 - Renamed class constructor to follow class
             /// name change.
             public DecodedMemoryOperation(byte opCode)
             {
@@ -85,7 +85,7 @@ namespace Gear.Disassembler
         /// <returns>Assignment variant.</returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidEnumArgumentException"></exception>
-        /// @version v22.07.xx - Renamed method according to returned
+        /// @version v22.08.01 - Renamed method according to returned
         /// class name that changes.
         public static Propeller.Spin.AssignmentVariant GetAssignmentVariant(
             Propeller.Spin.Assignment sourceAssignment, DecodedAssignment decodedAssignment)
@@ -161,13 +161,13 @@ namespace Gear.Disassembler
             public Propeller.Spin.MathInstruction MathAssignment { get; }
 
             /// <summary>Source assignment variant related to this Assignment.</summary>
-            /// @version v22.07.xx - Renamed property according to returned
+            /// @version v22.08.01 - Renamed property according to returned
             /// class name was changed.
             private Propeller.Spin.AssignmentVariant _sourceAssignmentVariant;
 
             /// <summary>Default Constructor.</summary>
             /// <param name="operationToDecode">Coded value of this Assignment.</param>
-            /// @version v22.07.xx - Renamed class constructor to follow class
+            /// @version v22.08.01 - Renamed class constructor to follow class
             /// name change. Parameter name changed to be more meaningful.
             public DecodedAssignment(byte operationToDecode)
             {
@@ -192,7 +192,7 @@ namespace Gear.Disassembler
             /// Assignment, if any.</summary>
             /// <returns>Appropriate Assignment Variant or null if it does not
             /// exist.</returns>
-            /// @version v22.07.xx - Renamed method according to returned
+            /// @version v22.08.01 - Renamed method according to returned
             /// class name was changed.
             public Propeller.Spin.AssignmentVariant GetAssignmentVariant() =>
                 Math ?

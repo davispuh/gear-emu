@@ -129,7 +129,7 @@ namespace Gear.GUI
 #if USE_MAINGRAPHICS
         /// <summary>Backing field for Graphic style to draw text on
         /// main Panel.</summary>
-        /// @version v22.07.xx - Added.
+        /// @version v22.08.01 - Added.
         private Graphics _mainGraphics;
 #endif
 
@@ -195,7 +195,7 @@ namespace Gear.GUI
 #if USE_MAINGRAPHICS
         /// <summary>Graphic style property to draw text and graphics
         /// on main Panel.</summary>
-        /// @version v22.07.xx - Added.
+        /// @version v22.08.01 - Added.
         private Graphics MainGraphics
         {
             get => _mainGraphics ?? (_mainGraphics = memoryView.CreateGraphics());
@@ -663,7 +663,7 @@ namespace Gear.GUI
         /// <summary>Event to repaint the plugin screen (if used).</summary>
         /// <param name="force">Flag to indicate the intention to force the
         /// repaint.</param>
-        /// @version v22.07.xx - Modified to add offset header. Corrected
+        /// @version v22.08.01 - Modified to add offset header. Corrected
         /// to consider margin between object tree view and memory view.
         public override void Repaint(bool force)
         {

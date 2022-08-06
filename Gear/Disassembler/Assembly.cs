@@ -37,7 +37,7 @@ namespace Gear.Disassembler
         /// <returns>Instruction variant.</returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidEnumArgumentException"></exception>
-        /// @version v22.07.xx - Method renamed to be more meaningful and
+        /// @version v22.08.01 - Method renamed to be more meaningful and
         /// Parameter name changed to follow its class renaming. Changed
         /// visibility from `public`.
         private static Propeller.Assembly.InstructionVariant GetInstructionVariant(
@@ -75,7 +75,7 @@ namespace Gear.Disassembler
         }
 
         /// <summary>Decode an PASM instruction.</summary>
-        /// @version v22.07.xx - Renamed class to be more meaningfully.
+        /// @version v22.08.01 - Renamed class to be more meaningfully.
         public class DecodedPASMInstruction
         {
             /// <summary></summary>
@@ -89,7 +89,7 @@ namespace Gear.Disassembler
 
             /// <summary>Source instruction variant associated to this
             /// Instruction.</summary>
-            /// @version v22.07.xx - Renamed member according to returned class
+            /// @version v22.08.01 - Renamed member according to returned class
             /// name was changed.
             private Propeller.Assembly.InstructionVariant _sourceInstructionVariant;
 
@@ -127,7 +127,7 @@ namespace Gear.Disassembler
 
             /// <summary>Default constructor.</summary>
             /// <param name="operationToDecode">Memory value to decode.</param>
-            /// @version v22.07.xx - Renamed class constructor to follow class
+            /// @version v22.08.01 - Renamed class constructor to follow class
             /// name was changed. Parameter name changed to be more meaningful.
             public DecodedPASMInstruction(uint operationToDecode)
             {
@@ -143,7 +143,7 @@ namespace Gear.Disassembler
 
             /// <summary>Get the instruction variant of this instruction.</summary>
             /// <returns>Instruction variant.</returns>
-            /// @version v22.07.xx - Renamed method according to returned
+            /// @version v22.08.01 - Renamed method according to returned
             /// class name was changed.
             public Propeller.Assembly.InstructionVariant GetInstructionVariant() =>
                 _sourceInstructionVariant ??
@@ -151,7 +151,7 @@ namespace Gear.Disassembler
 
             /// <summary>Evaluate the WriteZero condition of this instruction.</summary>
             /// <returns>True if value is 0, else false.</returns>
-            /// @version v22.07.xx - Changed method invocation of former
+            /// @version v22.08.01 - Changed method invocation of former
             /// `GetSubInstruction()` according to new name of it.
             public bool WriteZero() =>
                 (ZCRI & WriteZeroFlag) == WriteZeroFlag &&
@@ -159,7 +159,7 @@ namespace Gear.Disassembler
 
             /// <summary>Evaluate the WriteCarry condition of this instruction.</summary>
             /// <returns>True if Carry bit is set, else false.</returns>
-            /// @version v22.07.xx - Changed method invocation of former
+            /// @version v22.08.01 - Changed method invocation of former
             /// `GetSubInstruction()` according to new name of it.
             public bool WriteCarry() =>
                 (ZCRI & WriteCarryFlag) == WriteCarryFlag &&
@@ -168,7 +168,7 @@ namespace Gear.Disassembler
             /// <summary>Evaluate the WriteResult condition of this
             /// instruction.</summary>
             /// <returns>True if Destination Register was modified, else false.</returns>
-            /// @version v22.07.xx - Changed method invocation of former
+            /// @version v22.08.01 - Changed method invocation of former
             /// `GetSubInstruction()` according to new name of it.
             public bool WriteResult() =>
                 (ZCRI & WriteResultFlag) == WriteResultFlag &&
@@ -176,7 +176,7 @@ namespace Gear.Disassembler
 
             /// <summary>Evaluate the NoResult condition of this instruction.</summary>
             /// <returns>True if Destination Register not modified, else false.</returns>
-            /// @version v22.07.xx - Changed method invocation of former
+            /// @version v22.08.01 - Changed method invocation of former
             /// `GetSubInstruction()` according to new name of it.
             public bool NoResult() =>
                 (ZCRI & WriteResultFlag) == 0 &&

@@ -26,7 +26,7 @@ using System;
 namespace Gear.Disassembler
 {
     /// <summary>Methods to decoder SPIN Data from main memory.</summary>
-    /// @version v22.07.xx - Changed class name from former `DataUnpacker`.
+    /// @version v22.08.01 - Changed class name from former `DataUnpacker`.
     public static class DataDecoder
     {
         /// <summary></summary>
@@ -34,7 +34,7 @@ namespace Gear.Disassembler
         /// memory segment.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        /// @version v22.07.xx - Changed parameter name to clarify meaning of it.
+        /// @version v22.08.01 - Changed parameter name to clarify meaning of it.
         public static int GetSignedOffset(MemorySegment memorySegment)
         {
             if (memorySegment == null)
@@ -59,7 +59,7 @@ namespace Gear.Disassembler
         /// memory segment.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        /// @version v22.07.xx - Changed parameter name to clarify meaning of it.
+        /// @version v22.08.01 - Changed parameter name to clarify meaning of it.
         public static short GetSignedPackedOffset(MemorySegment memorySegment)
         {
             if (memorySegment == null)
@@ -77,7 +77,7 @@ namespace Gear.Disassembler
         /// memory segment.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        /// @version v22.07.xx - Changed parameter name to clarify meaning of it.
+        /// @version v22.08.01 - Changed parameter name to clarify meaning of it.
         /// @todo [Legacy] COMPLAIN if (op >= 0x80)
         public static uint GetPackedLiteral(MemorySegment memorySegment)
         {
@@ -100,7 +100,7 @@ namespace Gear.Disassembler
         /// memory segment.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        /// @version v22.07.xx - Changed parameter name to clarify meaning of it.
+        /// @version v22.08.01 - Changed parameter name to clarify meaning of it.
         public static int GetPackedOffset(MemorySegment memorySegment)
         {
             if (memorySegment == null)
@@ -118,7 +118,7 @@ namespace Gear.Disassembler
         /// <param name="count"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        /// @version v22.07.xx - Changed parameter name to clarify meaning of
+        /// @version v22.08.01 - Changed parameter name to clarify meaning of
         /// it. Changed visibility to `private`.
         private static int GetLiteral(MemorySegment memorySegment, int count)
         {
@@ -137,7 +137,7 @@ namespace Gear.Disassembler
         /// <param name="memorySegment">SPIN bytecode value(s), contained in a
         /// memory segment.</param>
         /// <returns></returns>
-        /// @version v22.07.xx - Changed parameter name to clarify meaning of it.
+        /// @version v22.08.01 - Changed parameter name to clarify meaning of it.
         public static int GetWordLiteral(MemorySegment memorySegment) =>
             GetLiteral(memorySegment, 2);
 
@@ -145,7 +145,7 @@ namespace Gear.Disassembler
         /// <param name="memorySegment">SPIN bytecode value(s), contained in a
         /// memory segment.</param>
         /// <returns></returns>
-        /// @version v22.07.xx - Changed parameter name to clarify meaning of it.
+        /// @version v22.08.01 - Changed parameter name to clarify meaning of it.
         public static int GetNearLongLiteral(MemorySegment memorySegment) =>
             GetLiteral(memorySegment, 3);
 
@@ -153,7 +153,7 @@ namespace Gear.Disassembler
         /// <param name="memorySegment">SPIN bytecode value(s), contained in a
         /// memory segment.</param>
         /// <returns></returns>
-        /// @version v22.07.xx - Changed parameter name to clarify meaning of it.
+        /// @version v22.08.01 - Changed parameter name to clarify meaning of it.
         public static int GetLongLiteral(MemorySegment memorySegment) =>
             GetLiteral(memorySegment, 4);
     }

@@ -100,7 +100,7 @@ namespace Gear.Propeller
 
         /// <summary>Declaration of P1 PASM %Instructions, with its
         /// instructions variants.</summary>
-        /// @version v22.07.xx - Changed class name for instruction variants,
+        /// @version v22.08.01 - Changed class name for instruction variants,
         /// formerly `SubInstructions`.
         public static readonly ReadOnlyCollection<Instruction> Instructions =
             new ReadOnlyCollection<Instruction>(new[]
