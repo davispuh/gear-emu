@@ -35,17 +35,19 @@ namespace Gear.GUI
     /// @version v15.03.26 - Added.
     public partial class AppPropertiesEditor : Form
     {
-        /// @brief How many instances are created?
+        /// <summary>How many instances are created?</summary>
         /// @version v20.10.01 - Added.
         private static int _instanceNumber = 0;
 
-        /// @brief Default constructor.
-        /// @throws SingleInstanceException If an intent to open a new instance
-        ///  of the same class.
+        /// <summary>Default constructor.</summary>
+        /// <summary>References:
+        ///   - PropertyGrid Control tutorial - https://msdn.microsoft.com/en-us/library/aa302326.aspx
+        /// also in https://msdn.microsoft.com/en-us/library/aa302334.aspx
+        /// and https://www.codeproject.com/Articles/22717/Using-PropertyGrid
+        /// </summary>
+        /// <exception cref="SingleInstanceException">If an intent to open a
+        /// new instance of the same class.</exception>
         /// @version v20.10.01 - Manage only one instance of AppPropertiesEditor.
-        // PropertyGrid Control tutorial - https://msdn.microsoft.com/en-us/library/aa302326.aspx
-        // also in https://msdn.microsoft.com/en-us/library/aa302334.aspx
-        // and https://www.codeproject.com/Articles/22717/Using-PropertyGrid
         public AppPropertiesEditor()
         {
             if (_instanceNumber > 0)

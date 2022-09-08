@@ -85,7 +85,7 @@ namespace Gear.EmulationCore
     /// <summary>Base class for a %Cog emulator.</summary>
     public abstract class Cog
     {
-        /// <summary>Total %Cog memory implemented on P1 Chip.</summary>
+        /// <summary>Total cog memory implemented on P1 Chip.</summary>
         public const int TotalCogMemory = 0x200;  // 512 longs of memory
         /// <summary>Mask to assure fit on cog memory.</summary>
         /// @version v22.05.03 - Added.
@@ -463,13 +463,15 @@ namespace Gear.EmulationCore
                     FrameFlag <= FrameBreak);
         }
 
-        /// <summary>Read cog RAM at specified value.</summary>
+        /// <summary>Read a long from cog RAM at specified value.</summary>
         /// <param name="address">Address to Read.</param>
-        /// <returns></returns>
+        /// <returns>Long value.</returns>
+        /// @version v22.09.01 - Modified to use mask in a single place.
         public uint ReadLong(uint address)
         {
+            address &= MaskCogMemory;
             // values using Assembly.RegisterAddress enum, instead of direct hex values
-            switch ((Assembly.RegisterAddress)(address & MaskCogMemory))
+            switch ((Assembly.RegisterAddress)address)
             {
                 case Assembly.RegisterAddress.CNT:
                     return CpuHost.Counter;
@@ -494,7 +496,7 @@ namespace Gear.EmulationCore
                 case Assembly.RegisterAddress.VSCL:
                     return _videoGenerator.RegisterSCL;
                 default:
-                    return _cogMemory[address & MaskCogMemory];
+                    return _cogMemory[address];
             }
         }
 

@@ -253,7 +253,7 @@ namespace Gear.EmulationCore
                     return true;
                 }
                 case CogRunState.WaitVideo:
-                    // Logic Changed by pull request #18: GetVideoData() now clears VAIT_VID state
+                    // Logic Changed by pull request #18: GetVideoData() now clears WAIT_VID state
                     return true;
                 // Non-execute states are ignored
                 default:
@@ -296,7 +296,7 @@ namespace Gear.EmulationCore
                         break;
                     case 0x04: // UNCONDITIONAL RELATIVE BRANCH
                     {
-                        uint branch = (uint)ReadPackedSignedWord();
+                        uint branch = ReadPackedSignedWord();
                         ProgramCursor += branch;
                     }
                         break;
@@ -503,7 +503,7 @@ namespace Gear.EmulationCore
                         break;
                     case 0x14:  // Quit
                         // TODO: RAISE AN EXCEPTION HERE!
-                        System.Windows.Forms.MessageBox.Show("Executed undefined OpCode $14");
+                        System.Windows.Forms.MessageBox.Show(@"Executed undefined OpCode $14");
                         break;
                     case 0x15:  // Mark Interpreted
                         _interpreterFlag = true;
@@ -742,7 +742,7 @@ namespace Gear.EmulationCore
                         break;
                     case 0x3C:  // UNDEFINED
                         // TODO: ALERT ON BAD OP
-                        System.Windows.Forms.MessageBox.Show("Executed undefined OpCode $3C");
+                        System.Windows.Forms.MessageBox.Show(@"Executed undefined OpCode $3C");
                         break;
                     case 0x3D:  // Cog Indexed Memory Op
                     {
@@ -1975,7 +1975,7 @@ namespace Gear.EmulationCore
                 else
                 {
                     //TODO Raise exception here
-                    System.Windows.Forms.MessageBox.Show($"Unkown OpCode {operation}");
+                    System.Windows.Forms.MessageBox.Show($@"Unknown OpCode {operation}");
                     stored = result = 0;
                 }
             }

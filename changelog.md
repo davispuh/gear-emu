@@ -1,7 +1,15 @@
 # Change Log
 
-## Commit  Reset image on TV & VGA Plugins 2nd part.
+## Commit  Minor changes previous to CogView optimizations.
+- Some name changing on methods and local variables on [`InstructionDisassembler.cs`](Gear/EmulationCore/InstructionDisassembler.cs) and [`Emulator.cs`](Gear/GUI/Emulator.cs).
+- Changed some potential localized strings to inmutables on [`AboutGear.cs`](Gear/GUI/AboutGear.cs), [`InstructionDisassembler.cs`](Gear/EmulationCore/InstructionDisassembler.cs), [`InterpretedCog.cs`](Gear/EmulationCore/InterpretedCog.cs).
+- Added custom debugger text for `Gear.Propeller.DirectMemory` and `Gear.GUI.CogView` classes.
+- Minor changes on documentation.
+
+
+## Commit [eea6143](https://github.com/davispuh/gear-emu/commit/eea614356ee6e2351758d5efae1e10bde5cf431a) Reset image on TV & VGA Plugins 2nd part.
 - Corrected plugin files added.
+
 
 ## Commit [0e2e5b2](https://github.com/davispuh/gear-emu/commit/0e2e5b206130e6a55882269bedccd8657dc2a773) Reset image on TV & VGA Plugins.
 
@@ -11,7 +19,7 @@
 - Added Parallax Propeller as vector images: `.svg` files.
 
 
-## Release Version [22.08.01](https://github.com/davispuh/gear-emu/releases/tag/v22.08.01) Commit [27093c2](27093c2e2c820a221bc8e7e7bc0725b8c1ccec8a) Merge commit '195e7f5' new version v22.08.01, Commit [2fdeb0a](https://github.com/davispuh/gear-emu/commit/2fdeb0a92fbca6f2ef6a63d2b57f41c9e47be276) Code cleanup UI on CogView.
+## Release Version [22.08.01](https://github.com/davispuh/gear-emu/releases/tag/v22.08.01) Commit [9648f0f](9648f0f935cd94dd8d08c084d61eb1bc191d5406) Release v22.08.01, Commit [27093c2](27093c2e2c820a221bc8e7e7bc0725b8c1ccec8a) Merge commit '195e7f5' new version v22.08.01, Commit [2fdeb0a](https://github.com/davispuh/gear-emu/commit/2fdeb0a92fbca6f2ef6a63d2b57f41c9e47be276) Code cleanup UI on CogView.
 
 - Changed in Cog View UI:
   - Separated and ordered in two different toolstips: buttons to perform actions, and labels to show information.

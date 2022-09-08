@@ -397,7 +397,9 @@ namespace Gear.GUI
         /// @version v22.07.01 - Added.
         private void SetMenuStatesOfAlignmentBtn(AlignmentEnum oldByteAlignment)
         {
-            if (freeAlignmentMenuItem == null || fixedByteAlignmentMenuItem == null || fixedWordAlignmentMenuItem == null)
+            if (freeAlignmentMenuItem == null ||
+                fixedByteAlignmentMenuItem == null ||
+                fixedWordAlignmentMenuItem == null)
                 return;
             //update for old value
             SetItemMenuState(oldByteAlignment, false);
@@ -483,7 +485,7 @@ namespace Gear.GUI
 
         /// @brief Format a frequency value to string, considering the value
         /// of FreqFormatValue.
-        /// @param val Value to format to string.
+        /// @param value Value to format to string.
         /// @returns The text formatted.
         /// @version v22.07.01 - Modified parameter name.
         private string FreqFormatText(uint value)

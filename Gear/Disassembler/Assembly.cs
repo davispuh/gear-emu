@@ -20,6 +20,7 @@
  * --------------------------------------------------------------------------------
  */
 
+using Gear.EmulationCore;
 using System;
 using System.ComponentModel;
 
@@ -128,16 +129,15 @@ namespace Gear.Disassembler
 
             /// <summary>Default constructor.</summary>
             /// <param name="operationToDecode">Memory value to decode.</param>
-            /// @version v22.08.01 - Renamed class constructor to follow class
-            /// name was changed. Parameter name changed to be more meaningful.
+            /// @version v22.09.01 - Modified to use mask constant.
             public DecodedPASMInstruction(uint operationToDecode)
             {
                 OpCode = operationToDecode;
                 INSTR  = (byte  )((operationToDecode >> 26) & 0x03F);  // (bits 31:26)
                 ZCRI   = (byte  )((operationToDecode >> 22) & 0x00F);  // (bits 25:22)
                 CON    = (byte  )((operationToDecode >> 18) & 0x00F);  // (bits 21:18)
-                DEST   = (ushort)((operationToDecode >>  9) & 0x1FF);  // (bits 17:09)
-                SRC    = (ushort)( operationToDecode        & 0x1FF);  // (bits 08:00)
+                DEST   = (ushort)((operationToDecode >>  9) & Cog.MaskCogMemory);  // (bits 17:09)
+                SRC    = (ushort)( operationToDecode        & Cog.MaskCogMemory);  // (bits 08:00)
                 SourceInstruction = Propeller.Assembly.Instructions[INSTR];
                 _sourceInstructionVariant = null;
             }

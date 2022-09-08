@@ -92,7 +92,7 @@ namespace Gear.GUI
         /// <summary>Returns a summary text of this class, to be used in debugger view.</summary>
         /// @version v22.06.01 - Added to provide debugging info.
         private string TextForDebugger =>
-            $"{{{GetType().FullName}, Binary: {_binaryNameOnly}, Id:" +
+            $"{{{GetType().FullName}, Binary: {_binaryNameOnly}, Inst:" +
             $" {(_cpuHost == null ? "[none yet]" : _cpuHost.InstanceNumber.ToString("D2"))} }}";
 
         /// @brief Text of the base %Form.
@@ -119,10 +119,14 @@ namespace Gear.GUI
             Text = LastBinary;
             // Create default layout
             for (int i = 0; i < PropellerCPU.TotalCogs; i++)
-                AttachPlugin(new CogView(i, _cpuHost), TabManager.NumericZeroBased);
-            AttachPlugin(new MemoryView(_cpuHost), TabManager.OnlyRepetitionNumberedFromOne);
-            AttachPlugin(new SpinView(_cpuHost), TabManager.OnlyRepetitionNumberedFromOne);
-            AttachPlugin(new LogicProbe.LogicView(_cpuHost), TabManager.OnlyRepetitionNumberedFromOne);
+                AttachPlugin(new CogView(i, _cpuHost),
+                    TabManager.NumericZeroBased);
+            AttachPlugin(new MemoryView(_cpuHost),
+                TabManager.OnlyRepetitionNumberedFromOne);
+            AttachPlugin(new SpinView(_cpuHost),
+                TabManager.OnlyRepetitionNumberedFromOne);
+            AttachPlugin(new LogicProbe.LogicView(_cpuHost),
+                TabManager.OnlyRepetitionNumberedFromOne);
             documentsTab.SelectedIndex = 0;
             // TODO REMOVE TEMPORARY RUN FUNCTION
             _runTimer = new Timer
@@ -195,8 +199,8 @@ namespace Gear.GUI
 
         /// <summary>Update attribute use animation of each
         /// CollapsibleSplitter used in this form.</summary>
-        /// @version v22.06.01 - Added.
-        public void UpdateUseAnimation()
+        /// @version v22.09.01 - Changed visibility from `public`.
+        private void UpdateUseAnimation()
         {
             hubViewSplitter.UseAnimations = Properties.Settings.Default.UseAnimations;
             pinnedSplitter.UseAnimations = Properties.Settings.Default.UseAnimations;
@@ -514,22 +518,25 @@ namespace Gear.GUI
 
         /// @brief Repaint the Views, including float windows.
         /// @param force If TRUE, force a full redraw on components allow that.
-        /// @version v22.06.01 - Corrected error on float windows not were
-        /// updated and added parameter to specify full redraw.
-        /// @todo Parallelism [complex:medium, cycles:typ1] point in loop of list of _floatControls
+        /// @version v22.09.01 - Using a new local variable for active control.
+        /// @todo Parallelism [complex:high, cycles:typ1] point in loop of list of _floatControls
         private void RepaintViews(bool force)
         {
-            foreach (Control floatControl in _floatControls)  // TODO Parallelism [complex:medium, cycles:typ1] point in loop _floatControls
+            foreach (Control floatControl in _floatControls)  // TODO Parallelism [complex:high, cycles:typ1] point in loop _floatControls
                 foreach (Control control in floatControl.Controls)
                     if (control is PluginBase pluginControl)
                         pluginControl.Repaint(force);
                     else
                         control.Refresh();
+            //redraw the pinned control
             Control pinnedControl = pinnedPanel.GetNextControl(pinnedPanel, true);
             ((PluginBase)pinnedControl)?.Repaint(force);
+            //redraw active tab control
+            Control activeTabControl;
             if (documentsTab.SelectedTab != null &&
-                (pinnedControl = documentsTab.SelectedTab.GetNextControl(documentsTab.SelectedTab, true)) != null)
-                ((PluginBase)pinnedControl).Repaint(force);
+                (activeTabControl = documentsTab.SelectedTab.GetNextControl(documentsTab.SelectedTab, true)) != null)
+                ((PluginBase)activeTabControl).Repaint(force);
+            //update hub view
             hubView.DataChanged(force);
         }
 

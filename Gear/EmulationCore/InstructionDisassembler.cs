@@ -3,7 +3,7 @@
  * Copyright 2007-2022 - Gear Developers
  * --------------------------------------------------------------------------------
  * InstructionDisassembler.cs
- * Provides a method for creating the string equivalent of a propeller operation
+ * Provides methods to decode and create equivalent text of a PASM operation
  * --------------------------------------------------------------------------------
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,11 +22,12 @@
  */
 
 using Gear.Disassembler;
+using System;
 using System.ComponentModel;
 
 namespace Gear.EmulationCore
 {
-    /// @brief Provides a method for creating a decoded text for a
+    /// @brief Provides methods to decode and create equivalent text of a
     /// PASM operation.
     public static class InstructionDisassembler
     {
@@ -55,12 +56,10 @@ namespace Gear.EmulationCore
                 if (actualInstructionVariant.UseSource)
                     srcString = instruction.SRC >= Propeller.Assembly.RegisterBaseAddress ?
                         $"{(instruction.ImmediateValue() ? "#" : string.Empty)}{Propeller.Assembly.Registers[instruction.SRC - Propeller.Assembly.RegisterBaseAddress].Name}" :
-                        //$"{(instruction.ImmediateValue() ? "#" : string.Empty)}${instruction.SRC:X3}";
                         $"{(instruction.ImmediateValue() ? "#" : string.Empty)}" + string.Format(formatForValue, instruction.SRC);
                 if (actualInstructionVariant.UseDestination)
                     destString = instruction.DEST >= Propeller.Assembly.RegisterBaseAddress ?
                         $"{Propeller.Assembly.Registers[instruction.DEST - Propeller.Assembly.RegisterBaseAddress].Name}" :
-                        //$"${instruction.DEST:X3}";
                         string.Format(formatForValue, instruction.DEST);
                 text =
                     $"{Propeller.Assembly.Conditions[instruction.CON].Inst1} {actualInstructionVariant.Name} {destString}{(actualInstructionVariant.UseSource && actualInstructionVariant.UseDestination ? ", " : string.Empty)}{srcString}";
@@ -71,16 +70,17 @@ namespace Gear.EmulationCore
             return text;
         }
 
-        /// <summary></summary>
+        /// <summary>Get effects of a SPIN instruction, reading from main
+        /// memory, decoding it to a text.</summary>
         /// <param name="memorySegment">SPIN bytecode value(s), contained in a
         /// memory range.</param>
         /// <param name="useShortOpCodes">Flag to use short or long Code texts.</param>
-        /// <returns></returns>
+        /// <returns>Decoded text of effects of the instruction.</returns>
         /// <exception cref="InvalidEnumArgumentException"></exception>
-        /// @version v22.08.01 - Changed name of parameter `memorySegment` to be
-        /// more meaningfully.  Changed name of local variable to be more
-        /// meaningfully.
-        private static string GetUsingCode(Propeller.MemorySegment memorySegment,
+        /// @warning Changes on flow or reading sequence on this method should
+        /// affect accordingly the method AdvanceReadingEffect().
+        /// @version v22.09.01 - Changed method name to be more meaningfully.
+        private static string GetEffectsOp(Propeller.MemorySegment memorySegment,
             bool useShortOpCodes)
         {
             Spin.DecodedAssignment decodedAssignment =
@@ -109,11 +109,14 @@ namespace Gear.EmulationCore
             return effect;
         }
 
-        /// <summary></summary>
+        /// <summary>Get stack and memory options of a SPIN instruction,
+        /// reading from main memory, decoding it to a text.</summary>
         /// <param name="memorySegment">SPIN bytecode value(s), contained in a
         /// memory segment.</param>
         /// <param name="useShortOpCodes">Flag to use short or long code texts.</param>
         /// <returns></returns>
+        /// @warning Changes on flow or reading sequence on this method should
+        /// affect accordingly the method AdvanceMemoryOp().
         /// @version v22.08.01 - Changed name of parameter `memorySegment` to be
         /// more meaningfully. Visibility changed to private.
         private static string GetMemoryOp(Propeller.MemorySegment memorySegment,
@@ -129,7 +132,7 @@ namespace Gear.EmulationCore
                 case Propeller.Spin.MemoryActionEnum.POP:
                     return $"POP {name}";
                 case Propeller.Spin.MemoryActionEnum.EFFECT:
-                    return $"USING {name} {GetUsingCode(memorySegment, useShortOpCodes)}";
+                    return $"USING {name} {GetEffectsOp(memorySegment, useShortOpCodes)}";
                 default:
                     return $"UNKNOWN_{operation.Action} {name}";
             }
@@ -143,6 +146,8 @@ namespace Gear.EmulationCore
         /// <param name="useShortOpCodes">Flag to use short or long Code texts.</param>
         /// <returns>Translated text from SPIN bytecode.</returns>
         /// <exception cref="InvalidEnumArgumentException"></exception>
+        /// @warning Changes on flow or reading sequence on this method should
+        /// affect accordingly the method InterpretedInstructionLength().
         /// @version v22.08.01 - Changed name of parameter `memorySegment` to be
         /// more meaningfully.
         public static string InterpreterText(Propeller.MemorySegment memorySegment,
@@ -163,9 +168,9 @@ namespace Gear.EmulationCore
                 case Propeller.Spin.ArgumentModeEnum.UnsignedOffset:
                     return string.Format(format, name, DataDecoder.GetPackedOffset(memorySegment));
                 case Propeller.Spin.ArgumentModeEnum.UnsignedEffectedOffset:
-                    return $"{name} {DataDecoder.GetPackedOffset(memorySegment)} {GetUsingCode(memorySegment, useShortOpCodes)}";
+                    return $"{name} {DataDecoder.GetPackedOffset(memorySegment)} {GetEffectsOp(memorySegment, useShortOpCodes)}";
                 case Propeller.Spin.ArgumentModeEnum.Effect:
-                    return string.Format(format, name, GetUsingCode(memorySegment, useShortOpCodes));
+                    return string.Format(format, name, GetEffectsOp(memorySegment, useShortOpCodes));
                 case Propeller.Spin.ArgumentModeEnum.SignedOffset:
                     return string.Format(format, name, DataDecoder.GetSignedOffset(memorySegment));
                 case Propeller.Spin.ArgumentModeEnum.PackedLiteral:

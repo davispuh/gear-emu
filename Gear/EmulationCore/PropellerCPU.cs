@@ -106,28 +106,29 @@ namespace Gear.EmulationCore
         };
 
         //Constants declarations of P1 Chip
-        /// @brief Number of Cogs implemented in emulator for P1 Chip.
+        /// <summary>Number of Cogs implemented in emulator for P1 Chip.</summary>
         /// @version v22.05.04 - Name changed to follow naming conventions.
         public const int TotalCogs = 8;
-        /// @brief Number of locks availability in P1 Chip.
+        /// <summary>Number of locks availability in P1 Chip.</summary>
         /// @version v22.05.04 - Name changed to follow naming conventions.
         public const int TotalLocks = 8;
-        /// @brief Number of pins of P1 Chip.
+        /// <summary>Number of pins of P1 Chip.</summary>
         /// @version v22.05.04 - Name changed to follow naming conventions.
         public const int TotalPins = 64;
-        /// @brief Number of physical pins of P1 Chip.
+        /// <summary>Number of physical pins of P1 Chip.</summary>
         /// @version v22.06.01 - Added.
         public const int PhysicalPins = 32;
-        /// @brief Pin mask for all the 64 pins of P1 Chip.
-        /// @version v22.05.04 - Name changed to follow naming conventions.
-        public const ulong PinFullMask = 0xFFFFFFFFFFFFFFFF;
-        /// @brief Total Main memory implemented on P1 Chip (Hub RAM + ROM).
+        /// <summary>Pin mask for all the 64 pins of P1 Chip.</summary>
+        /// @version v22.09.01 - Changed visibility from `public`.
+        private const ulong PinFullMask = 0xFFFFFFFFFFFFFFFF;
+        /// <summary>Total Main memory implemented on P1 Chip (Hub RAM + ROM).</summary>
         /// @version v22.05.04 - Name changed to follow naming conventions.
         public const int TotalMemory = 0x10000;
-        /// @brief Total RAM Hub memory implemented on P1 Chip.
+        /// <summary>Total RAM Hub memory implemented on P1 Chip.</summary>
         /// @version v22.05.04 - Name changed to follow naming conventions.
         public const int TotalRAM = 0x8000;
-        /// @brief Maximum Memory address implemented on P1 Chip (top of ROM).
+        /// <summary>Maximum Memory address implemented on P1 Chip (top of
+        /// ROM).</summary>
         /// @version v22.07.01 - Name changed to clarify the meaning of it.
         public const int MaxMemoryAddress = 0xFFFF;
 

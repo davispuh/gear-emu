@@ -20,12 +20,14 @@
  * --------------------------------------------------------------------------------
  */
 
+using System.Diagnostics;
 using Gear.EmulationCore;
 
 namespace Gear.Propeller
 {
     /// <summary>Implements memory for Hub main RAM of a PropellerCPU.</summary>
-    /// @version v22.08.01 - Moved class to its own file.
+    /// @version v22.09.01 - Added custom debugger text.
+    [DebuggerDisplay("{TextForDebugger,nq}")]
     public class DirectMemory
     {
         /// <summary>Array for memory contents.</summary>
@@ -39,6 +41,12 @@ namespace Gear.Propeller
             address >= Memory.Length ?
                 (byte)0x55 :
                 Memory[address];
+
+        /// <summary>Returns a summary text of this class, to be used in
+        /// debugger view.</summary>
+        /// @version v22.09.01 - Added.
+        private string TextForDebugger =>
+            $"{{{GetType().FullName}, Length: {(Memory == null ? "[Not initialized]" : Memory.Length.ToString("D"))}}}";
 
         /// <summary>Read a byte (8 bits) from main memory.</summary>
         /// <param name="address">Main memory address.</param>

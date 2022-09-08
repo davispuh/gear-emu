@@ -24,8 +24,6 @@
 using System.Reflection;
 using System.Windows.Forms;
 
-// ReSharper disable LocalizableElement
-
 namespace Gear.GUI
 {
     /// @brief About form for %Gear %Emulator.
@@ -51,11 +49,11 @@ namespace Gear.GUI
             //  Change assembly information settings for your application through either:
             //  - Project->Properties->Application->Assembly Information
             //  - AssemblyInfo.cs
-            Text = $"About {AssemblyTitle}";
+            Text = $@"About {AssemblyTitle}";
             labelProductName.Text = AssemblyProduct;
-            labelVersion.Text = $"Version: {AssemblyVersion}";
+            labelVersion.Text = $@"Version: {AssemblyVersion}";
             labelCopyright.Text = AssemblyCopyright;
-            labelCompanyName.Text = $"Project: {AssemblyCompany}";
+            labelCompanyName.Text = $@"Project: {AssemblyCompany}";
             textBoxDescription.Text = AssemblyDescription;
         }
 

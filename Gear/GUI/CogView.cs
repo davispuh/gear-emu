@@ -23,6 +23,8 @@
 
 using Gear.EmulationCore;
 using System;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
@@ -32,7 +34,9 @@ using System.Windows.Forms;
 
 namespace Gear.GUI
 {
-    /// @brief Generic real-time cog information viewer.
+    /// <summary>Generic real-time cog information viewer.</summary>
+    /// @version v22.09.01 - Added custom debugger text.
+    [DefaultProperty("Name"), DebuggerDisplay("{TextForDebugger,nq}")]
     public partial class CogView : PluginSupport.PluginBase
     {
         /// <summary>States for cog screen representation.</summary>
@@ -166,6 +170,12 @@ namespace Gear.GUI
                 SetStateOfControls();
             }
         }
+
+        /// <summary>Returns a summary text of this class, to be used in
+        /// debugger view.</summary>
+        /// @version v22.09.01 - Added.
+        private string TextForDebugger =>
+            $"{{{GetType().FullName}, Cog: {_hostId:D}, Mode: {_presentationState}}}";
 
         /// <summary>Default constructor.</summary>
         /// <param name="hostId">Id of related cog.</param>
