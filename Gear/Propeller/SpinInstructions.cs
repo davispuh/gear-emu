@@ -23,6 +23,7 @@
 using System.Collections.ObjectModel;
 
 // ReSharper disable StringLiteralTypo
+
 namespace Gear.Propeller
 {
     partial class Spin

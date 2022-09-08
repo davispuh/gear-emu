@@ -26,6 +26,7 @@ using Gear.Propeller;
 // ReSharper disable CommentTypo
 // ReSharper disable IdentifierTypo
 // ReSharper disable InconsistentNaming
+
 namespace Gear.EmulationCore
 {
     /// @brief Counter modes of operation.

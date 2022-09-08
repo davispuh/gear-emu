@@ -34,6 +34,7 @@ using System.Windows.Forms;
 // ReSharper disable StringLiteralTypo
 // ReSharper disable InvalidXmlDocComment
 // ReSharper disable InconsistentNaming
+
 /// @brief Core of the emulation for %Propeller (model objects).
 namespace Gear.EmulationCore
 {

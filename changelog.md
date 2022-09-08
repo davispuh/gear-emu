@@ -1,5 +1,12 @@
 # Change Log
 
+## Commit  Reset image on TV & VGA Plugins.
+
+- Added OnReset() methods on Television and vgamonitor plugins: now the screen is cleaned when the user reset the emulator.
+- Corrected resources files to be validated against XSD schema: using the correct `http:` prefix, to be correctly validated on VS Studio 2019. Apllied to all `*.resx` files.
+- Fixed format of resharper commentaries.
+- Added Parallax Propeller as vector images: `.svg` files.
+
 ## Release Version [22.08.01](https://github.com/davispuh/gear-emu/releases/tag/v22.08.01) Commit [27093c2](27093c2e2c820a221bc8e7e7bc0725b8c1ccec8a) Merge commit '195e7f5' new version v22.08.01, Commit [2fdeb0a](https://github.com/davispuh/gear-emu/commit/2fdeb0a92fbca6f2ef6a63d2b57f41c9e47be276) Code cleanup UI on CogView.
 
 - Changed in Cog View UI:

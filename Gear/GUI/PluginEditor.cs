@@ -37,6 +37,7 @@ using System.Xml.Schema;
 // ReSharper disable InconsistentNaming
 // ReSharper disable LocalizableElement
 // ReSharper disable StringLiteralTypo
+
 namespace Gear.GUI
 {
     /// @brief %Form to edit or create GEAR plugins.

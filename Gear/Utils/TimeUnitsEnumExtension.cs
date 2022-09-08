@@ -29,6 +29,7 @@ using System.Reflection;
 
 // ReSharper disable CommentTypo
 // ReSharper disable InconsistentNaming
+
 namespace Gear.Utils
 {
     /// @brief Managed Time units enumeration expansion.

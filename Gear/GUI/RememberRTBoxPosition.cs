@@ -26,6 +26,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 // ReSharper disable InconsistentNaming
+
 namespace Gear.GUI
 {
     /// @brief Remember and restore displayed position and insert

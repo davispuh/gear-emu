@@ -22,6 +22,7 @@
  */
 
 // ReSharper disable InconsistentNaming
+
 namespace Gear.EmulationCore
 {
     /// @brief Video mode Field.

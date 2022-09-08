@@ -25,6 +25,7 @@ using System.Reflection;
 using System.Windows.Forms;
 
 // ReSharper disable LocalizableElement
+
 namespace Gear.GUI
 {
     /// @brief About form for %Gear %Emulator.

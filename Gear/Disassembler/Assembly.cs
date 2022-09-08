@@ -25,6 +25,7 @@ using System.ComponentModel;
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
+
 /// <summary>%Disassembler Utilities.</summary>
 namespace Gear.Disassembler
 {

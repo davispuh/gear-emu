@@ -28,6 +28,8 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Windows.Forms;
 
+// ReSharper disable FieldCanBeMadeReadOnly.Local
+
 namespace Gear.GUI
 {
     /// @brief Generic real-time cog information viewer.

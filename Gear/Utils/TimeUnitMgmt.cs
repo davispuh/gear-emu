@@ -29,6 +29,7 @@ using System.Windows.Forms;
 
 // ReSharper disable UnusedMemberInSuper.Global
 // ReSharper disable IdentifierTypo
+
 namespace Gear.Utils
 {
 

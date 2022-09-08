@@ -21,6 +21,7 @@
  */
 
 // ReSharper disable InconsistentNaming
+
 namespace Gear.Propeller
 {
     /// <summary>PASM assembly language definitions.</summary>

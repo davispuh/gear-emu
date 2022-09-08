@@ -36,6 +36,7 @@ using System.Windows.Forms;
 using System.Xml;
 
 // ReSharper disable LocalizableElement
+
 namespace Gear.GUI
 {
     /// @brief View class for PropellerCPU emulator instance.

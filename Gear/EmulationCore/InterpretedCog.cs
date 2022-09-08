@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 
 // ReSharper disable InvalidXmlDocComment
+
 namespace Gear.EmulationCore
 {
     /// @brief Derived class from Cog, to emulate running SPIN code.

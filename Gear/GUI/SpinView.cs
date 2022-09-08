@@ -35,6 +35,8 @@ using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 
+// ReSharper disable FieldCanBeMadeReadOnly.Local
+
 namespace Gear.GUI
 {
     /// @brief Spin object viewer.

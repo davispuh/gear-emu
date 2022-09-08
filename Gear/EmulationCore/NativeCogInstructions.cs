@@ -23,6 +23,7 @@
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
+
 namespace Gear.EmulationCore
 {
     partial class NativeCog

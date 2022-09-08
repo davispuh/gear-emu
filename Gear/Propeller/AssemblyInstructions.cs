@@ -25,6 +25,7 @@ using System.Collections.ObjectModel;
 // ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
 // ReSharper disable StringLiteralTypo
+
 namespace Gear.Propeller
 {
     public partial class Assembly

@@ -23,6 +23,7 @@
 using System.Globalization;
 
 // ReSharper disable InvalidXmlDocComment
+
 /// @brief Utilities classes.
 /// @version v20.09.01 - Added.
 namespace Gear.Utils

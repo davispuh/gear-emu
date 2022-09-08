@@ -29,6 +29,8 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
+// ReSharper disable FieldCanBeMadeReadOnly.Local
+
 namespace Gear.GUI
 {
     /// @brief Main memory viewer.

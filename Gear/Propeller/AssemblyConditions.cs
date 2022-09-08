@@ -23,6 +23,7 @@
 using System.Collections.ObjectModel;
 
 // ReSharper disable InconsistentNaming
+
 namespace Gear.Propeller
 {
     public partial class Assembly

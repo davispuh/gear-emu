@@ -25,6 +25,7 @@ using System;
 using System.ComponentModel;
 
 // ReSharper disable InconsistentNaming
+
 namespace Gear.Disassembler
 {
     /// <summary>SPIN Interpreter Decoder Utilities.</summary>

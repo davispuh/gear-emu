@@ -26,6 +26,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 // ReSharper disable CommentTypo
+
 namespace Gear.GUI
 {
     /// @brief ToolStripCombobox specialization for time unit management.

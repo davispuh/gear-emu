@@ -33,7 +33,6 @@ using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 
-// ReSharper disable LocalizableElement
 namespace Gear.GUI
 {
     /// @brief %GUI Control to show Hub status

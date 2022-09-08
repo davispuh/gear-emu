@@ -27,6 +27,7 @@ using System.Collections.ObjectModel;
 // ReSharper disable CommentTypo
 // ReSharper disable StringLiteralTypo
 // ReSharper disable InconsistentNaming
+
 namespace Gear.Propeller
 {
     /// @brief Registers of a Propeller Cog.

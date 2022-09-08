@@ -25,6 +25,7 @@
 using System.Collections.Generic;
 
 // ReSharper disable InconsistentNaming
+
 namespace Gear.EmulationCore
 {
     /// @brief Provides PLLA and PLLB to a Cog, as well as forwards internal

@@ -25,6 +25,7 @@ using System;
 using Gear.Propeller;
 
 // ReSharper disable InconsistentNaming
+
 namespace Gear.EmulationCore
 {
     /// <summary>States of a %Cog.</summary>
