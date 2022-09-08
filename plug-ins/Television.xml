@@ -65,6 +65,12 @@ class Television : PluginBase
 		e.Graphics.DrawImage(Picture, 0, 0);
 	}
 
+	public override void OnReset()
+	{
+		Graphics graph = Graphics.FromImage(Picture);
+		graph.Clear(Color.Black);
+	}
+
 	//To repaint the plugin screen.
 	public override void Repaint(bool force)
 	{

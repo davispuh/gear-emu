@@ -129,6 +129,12 @@ class VGAMonitor : PluginBase
 	{
 		e.Graphics.DrawImage(Screen, 0, 0);
 	}
+
+	public override void OnReset()
+	{
+		Graphics graph = Graphics.FromImage(Screen);
+		graph.Clear(Color.Black);
+	}
 }
 ]]></code>
 </plugin>
