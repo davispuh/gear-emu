@@ -190,5 +190,20 @@ namespace Gear.Properties {
                 this["UseAnimations"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [CategoryAttribute("Propeller Emulator")]
+        [DescriptionAttribute("Decoded program values are shown as hexadecimals in Cog View.")]
+        [DisplayNameAttribute("Values shown as hexadecimals")]
+        public bool ValuesShownAsHex {
+            get {
+                return ((bool)(this["ValuesShownAsHex"]));
+            }
+            set {
+                this["ValuesShownAsHex"] = value;
+            }
+        }
     }
 }

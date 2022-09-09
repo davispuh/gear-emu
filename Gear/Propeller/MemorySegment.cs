@@ -45,6 +45,30 @@ namespace Gear.Propeller
             Address = address;
         }
 
+        /// <summary>Advance the address like was reading a byte from the
+        /// segment.</summary>
+        /// @version v22.09.01 - Added.
+        public void AdvanceByte()
+        {
+            Address++;
+        }
+
+        /// <summary>Advance the address like was reading a word from the
+        /// segment.</summary>
+        /// @version v22.09.01 - Added.
+        public void AdvanceWord()
+        {
+            Address += 2;
+        }
+
+        /// <summary>Advance the address like was reading a long from the
+        /// segment.</summary>
+        /// @version v22.09.01 - Added.
+        public void AdvanceLong()
+        {
+            Address += 4;
+        }
+
         /// <summary>Read a byte (8 bits) from managed segment memory, with
         /// auto advance address.</summary>
         /// <returns>Value of memory at address as Byte.</returns>

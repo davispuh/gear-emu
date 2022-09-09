@@ -32,6 +32,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
 
@@ -516,18 +517,34 @@ namespace Gear.GUI
             base.OnClosed(e);
         }
 
-        /// @brief Repaint the Views, including float windows.
-        /// @param force If TRUE, force a full redraw on components allow that.
+        /// <summary>Repaint the Views, including float windows.</summary>
+        /// <param name="force">If TRUE, force a full redraw on components
+        /// allow that.</param>
         /// @version v22.09.01 - Using a new local variable for active control.
+        /// Preparation to enable parallel drawing of float windows.
         /// @todo Parallelism [complex:high, cycles:typ1] point in loop of list of _floatControls
         private void RepaintViews(bool force)
         {
+            //redraw float controls
+#if true
             foreach (Control floatControl in _floatControls)  // TODO Parallelism [complex:high, cycles:typ1] point in loop _floatControls
                 foreach (Control control in floatControl.Controls)
                     if (control is PluginBase pluginControl)
                         pluginControl.Repaint(force);
                     else
                         control.Refresh();
+#else
+            Parallel.ForEach(_floatControls,
+                floatControl =>
+                {
+                    foreach (Control control in floatControl.Controls)
+                        if (control is PluginBase pluginControl)
+                            pluginControl.Repaint(force);
+                        else
+                            control.Refresh();
+                }
+                );
+#endif
             //redraw the pinned control
             Control pinnedControl = pinnedPanel.GetNextControl(pinnedPanel, true);
             ((PluginBase)pinnedControl)?.Repaint(force);

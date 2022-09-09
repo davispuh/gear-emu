@@ -1,6 +1,22 @@
 # Change Log
 
-## Commit  Minor changes previous to CogView optimizations.
+## Commit  CogView, SpinView and MemoryView optimizations.
+
+- Refactored code to improve performance, using double buffering on CogView, SpinView and MemoryView.
+  - Refactored drawing logic to be time efficient.
+- Changes on [`CogView.cs`](Gear/GUI/CogView.cs):
+  - In SPIN interpreted mode, now up to five memory values are showed, conforming an encoded instruction. The show memory button now shows the binary representation of each instruction, using the same length of bytes of the instruction.
+  - When cog is running in PASM native mode, the hovering message now explains more, giving details if origin or destination fields are used by the instruction, if them are using a inmmediate value, or a pointer to a memory and its value.
+  - When following program cursor, the panel is completely white, else grey. This simplification allowed to accelerate of drawing, by removing variables and operations.
+  - The spin interpreted details are drawn like a separated panel. The stack now have a header, showing its length, and have a level number.
+  - The default start value of display decoded program values as hexadecimal, now is a program setting.
+- Using Parallel proccesing to improve performance:
+  - Initially fill the array of color brushes used to paint each byte of SPIN map (32KB), using Parallel.ForEach with automatic partitioner. Also, generate icons for each type of node of tree view in a separate thread. Both changed in [`SpinView.cs`](Gear/GUI/SpinView.cs).
+- Added methods to determine the length of SPIN instruction, advancing the memory accordlingly on [`InstructionDisassembler.cs`](Gear/EmulationCore/InstructionDisassembler.cs) and [`MemorySegment.cs`](Gear/Propeller/MemorySegment.cs). Also added methods to get binary text representation of PASM instruction.
+- Corrected reset values on TV & VGA Plugins.
+
+
+## Commit [1a8a849](1a8a849566821726fc4823ad1106560573dd2a03) Minor changes previous to CogView optimizations.
 - Some name changing on methods and local variables on [`InstructionDisassembler.cs`](Gear/EmulationCore/InstructionDisassembler.cs) and [`Emulator.cs`](Gear/GUI/Emulator.cs).
 - Changed some potential localized strings to inmutables on [`AboutGear.cs`](Gear/GUI/AboutGear.cs), [`InstructionDisassembler.cs`](Gear/EmulationCore/InstructionDisassembler.cs), [`InterpretedCog.cs`](Gear/EmulationCore/InterpretedCog.cs).
 - Added custom debugger text for `Gear.Propeller.DirectMemory` and `Gear.GUI.CogView` classes.

@@ -111,5 +111,9 @@ namespace Gear.Properties
         /// @property UseAnimations
         /// @brief Use animations on splitters.
         /// @version v22.06.01 - Added as a User property of the program.
+
+        /// @property ValuesShownAsHex
+        /// @brief Values shown as hexadecimals as default initial setting on Cog View.
+        /// @version v22.09.01 - Added as a User property of the program.
     }
 }

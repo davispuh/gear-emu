@@ -41,7 +41,6 @@ namespace Gear.GUI
             }
             this._monoFont.Dispose();
             this._monoFontBold.Dispose();
-            this._backBuffer.Dispose();
 
             base.Dispose(disposing);
         }
@@ -56,7 +55,7 @@ namespace Gear.GUI
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CogView));
-            this.assemblyPanel = new System.Windows.Forms.Panel();
+            this.decodedPanel = new System.Windows.Forms.Panel();
             this.positionScroll = new System.Windows.Forms.VScrollBar();
             this.actionsToolStrip = new System.Windows.Forms.ToolStrip();
             this.memoryViewButton = new System.Windows.Forms.ToolStripButton();
@@ -70,7 +69,7 @@ namespace Gear.GUI
             this.longOpcodes = new System.Windows.Forms.ToolStripMenuItem();
             this.shortOpcodes = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
-            this.FrameBreakMode = new System.Windows.Forms.ToolStripDropDownButton();
+            this.frameBreakMode = new System.Windows.Forms.ToolStripDropDownButton();
             this.breakNone = new System.Windows.Forms.ToolStripMenuItem();
             this.breakMiss = new System.Windows.Forms.ToolStripMenuItem();
             this.breakAll = new System.Windows.Forms.ToolStripMenuItem();
@@ -96,29 +95,30 @@ namespace Gear.GUI
             this.valuesToolStrip.SuspendLayout();
             this.SuspendLayout();
             //
-            // assemblyPanel
+            // decodedPanel
             //
-            this.assemblyPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.assemblyPanel.Location = new System.Drawing.Point(0, 50);
-            this.assemblyPanel.Name = "assemblyPanel";
-            this.assemblyPanel.Size = new System.Drawing.Size(548, 396);
-            this.assemblyPanel.TabIndex = 1;
-            this.assemblyPanel.SizeChanged += new System.EventHandler(this.AssemblyPanel_SizeChanged);
-            this.assemblyPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.AssemblyView_Paint);
-            this.assemblyPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.AssemblyPanel_MouseClick);
-            this.assemblyPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.AssemblyPanel_MouseDown);
-            this.assemblyPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.AssemblyPanel_MouseMove);
+            this.decodedPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.decodedPanel.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.decodedPanel.Location = new System.Drawing.Point(0, 50);
+            this.decodedPanel.Name = "decodedPanel";
+            this.decodedPanel.Size = new System.Drawing.Size(548, 396);
+            this.decodedPanel.TabIndex = 1;
+            this.decodedPanel.SizeChanged += new System.EventHandler(this.DecodedPanel_SizeChanged);
+            this.decodedPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.DecodedPanel_Paint);
+            this.decodedPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.DecodedPanel_MouseClick);
+            this.decodedPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.DecodedPanel_MouseDown);
+            this.decodedPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.DecodedPanel_MouseMove);
             //
             // positionScroll
             //
             this.positionScroll.Dock = System.Windows.Forms.DockStyle.Right;
-            this.positionScroll.LargeChange = 16;
             this.positionScroll.Location = new System.Drawing.Point(548, 50);
             this.positionScroll.Name = "positionScroll";
             this.positionScroll.Size = new System.Drawing.Size(17, 396);
+            this.positionScroll.SmallChange = 1;
             this.positionScroll.TabIndex = 2;
             this.positionScroll.TabStop = true;
-            this.positionScroll.Scroll += new System.Windows.Forms.ScrollEventHandler(this.UpdateOnScroll);
+            this.positionScroll.Scroll += new System.Windows.Forms.ScrollEventHandler(this.PositionScroll_Scroll);
             //
             // actionsToolStrip
             //
@@ -130,7 +130,7 @@ namespace Gear.GUI
             this.toolStripSeparator8,
             this.OpCodeSize,
             this.toolStripSeparator9,
-            this.FrameBreakMode});
+            this.frameBreakMode});
             this.actionsToolStrip.Location = new System.Drawing.Point(0, 0);
             this.actionsToolStrip.Name = "actionsToolStrip";
             this.actionsToolStrip.Size = new System.Drawing.Size(565, 25);
@@ -179,8 +179,6 @@ namespace Gear.GUI
             //
             // decimalUnits
             //
-            this.decimalUnits.Checked = true;
-            this.decimalUnits.CheckState = System.Windows.Forms.CheckState.Checked;
             this.decimalUnits.Name = "decimalUnits";
             this.decimalUnits.Size = new System.Drawing.Size(143, 22);
             this.decimalUnits.Text = "Decimal";
@@ -232,20 +230,19 @@ namespace Gear.GUI
             this.toolStripSeparator9.Name = "toolStripSeparator9";
             this.toolStripSeparator9.Size = new System.Drawing.Size(6, 25);
             //
-            // FrameBreakMode
+            // frameBreakMode
             //
-            this.FrameBreakMode.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.FrameBreakMode.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.frameBreakMode.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.frameBreakMode.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.breakNone,
             this.breakMiss,
             this.breakAll});
-            this.FrameBreakMode.Image = ((System.Drawing.Image)(resources.GetObject("FrameBreakMode.Image")));
-            this.FrameBreakMode.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.FrameBreakMode.Name = "FrameBreakMode";
-            this.FrameBreakMode.Size = new System.Drawing.Size(117, 22);
-            this.FrameBreakMode.Text = "Video Break: None";
-            this.FrameBreakMode.TextAlign = System.Drawing.ContentAlignment.TopLeft;
-            this.FrameBreakMode.ToolTipText = "Enable break on end of video frame";
+            this.frameBreakMode.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.frameBreakMode.Name = "frameBreakMode";
+            this.frameBreakMode.Size = new System.Drawing.Size(117, 22);
+            this.frameBreakMode.Text = "Video Break: None";
+            this.frameBreakMode.TextAlign = System.Drawing.ContentAlignment.TopLeft;
+            this.frameBreakMode.ToolTipText = "Enable break on end of video frame";
             //
             // breakNone
             //
@@ -254,7 +251,7 @@ namespace Gear.GUI
             this.breakNone.CheckOnClick = true;
             this.breakNone.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.breakNone.Name = "breakNone";
-            this.breakNone.Size = new System.Drawing.Size(180, 22);
+            this.breakNone.Size = new System.Drawing.Size(134, 22);
             this.breakNone.Text = "None";
             this.breakNone.TextAlign = System.Drawing.ContentAlignment.TopLeft;
             this.breakNone.Click += new System.EventHandler(this.VideoBreak_Click);
@@ -265,7 +262,7 @@ namespace Gear.GUI
             this.breakMiss.CheckOnClick = true;
             this.breakMiss.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.breakMiss.Name = "breakMiss";
-            this.breakMiss.Size = new System.Drawing.Size(180, 22);
+            this.breakMiss.Size = new System.Drawing.Size(134, 22);
             this.breakMiss.Text = "Frame Miss";
             this.breakMiss.TextAlign = System.Drawing.ContentAlignment.TopLeft;
             this.breakMiss.ToolTipText = "Break if frame end misses WAIT_VID";
@@ -277,11 +274,16 @@ namespace Gear.GUI
             this.breakAll.CheckOnClick = true;
             this.breakAll.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.breakAll.Name = "breakAll";
-            this.breakAll.Size = new System.Drawing.Size(180, 22);
+            this.breakAll.Size = new System.Drawing.Size(134, 22);
             this.breakAll.Text = "Frame End";
             this.breakAll.TextAlign = System.Drawing.ContentAlignment.TopLeft;
             this.breakAll.ToolTipText = "Break on end of video frame";
             this.breakAll.Click += new System.EventHandler(this.VideoBreak_Click);
+            //
+            // toolTip1
+            //
+            this.toolTip1.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
+            this.toolTip1.ToolTipTitle = "PASM Source and Destination Values/Registers";
             //
             // valuesToolStrip
             //
@@ -436,7 +438,7 @@ namespace Gear.GUI
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.assemblyPanel);
+            this.Controls.Add(this.decodedPanel);
             this.Controls.Add(this.positionScroll);
             this.Controls.Add(this.valuesToolStrip);
             this.Controls.Add(this.actionsToolStrip);
@@ -453,7 +455,7 @@ namespace Gear.GUI
 
         #endregion
 
-        private System.Windows.Forms.Panel assemblyPanel;
+        private System.Windows.Forms.Panel decodedPanel;
         private System.Windows.Forms.VScrollBar positionScroll;
         private System.Windows.Forms.ToolStrip actionsToolStrip;
         private System.Windows.Forms.ToolStripButton memoryViewButton;
@@ -467,7 +469,7 @@ namespace Gear.GUI
         private System.Windows.Forms.ToolStripMenuItem longOpcodes;
         private System.Windows.Forms.ToolStripMenuItem shortOpcodes;
         private System.Windows.Forms.ToolTip toolTip1;
-        private System.Windows.Forms.ToolStripDropDownButton FrameBreakMode;
+        private System.Windows.Forms.ToolStripDropDownButton frameBreakMode;
         private System.Windows.Forms.ToolStripMenuItem breakNone;
         private System.Windows.Forms.ToolStripMenuItem breakMiss;
         private System.Windows.Forms.ToolStripMenuItem breakAll;

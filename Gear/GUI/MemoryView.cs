@@ -21,77 +21,36 @@
  * --------------------------------------------------------------------------------
  */
 
-#undef USE_MAINGRAPHICS
-
 using Gear.EmulationCore;
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Text;
 using System.Windows.Forms;
-
-// ReSharper disable FieldCanBeMadeReadOnly.Local
 
 namespace Gear.GUI
 {
     /// @brief Main memory viewer.
     public partial class MemoryView : PluginSupport.PluginBase
     {
-        /// <summary>Backing field for Bitmap buffer to draw the memory lines.</summary>
-        /// @version v22.06.02 - Name changed to follow naming conventions.
-        private Bitmap _backBuffer;
-
-        /// <summary>Backing field for Graphic style to draw text on buffer.</summary>
-        /// @version v22.08.01 - Changed name to differentiate from Main panel.
-        private Graphics _bufferGraphics;
-
-#if USE_MAINGRAPHICS
-        /// <summary>Backing field for Graphic style to draw text on
-        /// main Panel.</summary>
-        /// @version v22.08.01 - Added.
-        private Graphics _mainGraphics;
-#endif
+        /// <summary></summary>
+        /// @version v22.09.01 - Added
+        private readonly BufferedGraphicsContext _bufferedGraphicsContext =
+            new BufferedGraphicsContext();
 
         /// <summary>Pen style to draw lines.</summary>
         /// @version v22.06.02 - Added.
         private readonly Pen _defaultPen;
 
-        /// <summary>Bitmap buffer property to draw the memory lines.</summary>
-        /// @version v22.08.01 - Using new name of BufferGraphics.
-        private Bitmap BackBuffer
-        {
-            get => _backBuffer;
-            set
-            {
-                if (_backBuffer == value | value == null)
-                    return;
-                _backBuffer = value;
-                BufferGraphics = Graphics.FromImage(_backBuffer);
-            }
-        }
+        /// <summary>Double buffer property to draw on it.</summary>
+        /// @version v22.09.01 - Modified to use double buffering in a
+        /// independent of other controls.
+        private BufferedGraphics BackBuffer { get; set; }
 
-        /// <summary>Graphic style property to draw graphics
-        /// on buffer.</summary>
-        /// @version v22.08.01 - Changed name to differentiate from Main panel.
-        private Graphics BufferGraphics
-        {
-            get => _bufferGraphics;
-            set
-            {
-                _bufferGraphics = value;
-                _bufferGraphics.SmoothingMode = SmoothingMode.HighQuality;
-            }
-        }
-
-#if USE_MAINGRAPHICS
         /// <summary>Graphic style property to draw text and graphics
-        /// on main Panel.</summary>
-        /// @version v22.08.01 - Added.
-        private Graphics MainGraphics
-        {
-            get => _mainGraphics ?? (_mainGraphics = memoryPanel.CreateGraphics());
-            set => _mainGraphics = value;
-        }
-#endif
+        /// on buffer.</summary>
+        /// @version v22.09.01 - Modified to use implicit value.
+        private Graphics BufferGraphics { get; set; }
 
         /// <summary>Title of the tab window.</summary>
         public override string Title => "Main Memory";
@@ -112,10 +71,28 @@ namespace Gear.GUI
         {
             _defaultPen = new Pen(Color.Black, 1);
             InitializeComponent();
+            ResetBufferGraphics();
         }
 
         /// <summary>Register the events to be notified to this plugin.</summary>
         public override void PresentChip() { }
+
+        /// <summary>Assign double buffering and graphic style to decoded
+        /// panel.</summary>
+        /// <remarks>Used to set the font aliasing style for text of the
+        /// control.</remarks>
+        /// @version v22.09.01 - Added as method from former setter of
+        /// BackBuffer property.
+        private void ResetBufferGraphics()
+        {
+            BackBuffer = _bufferedGraphicsContext.Allocate(
+                memoryPanel.CreateGraphics(),
+                memoryPanel.DisplayRectangle);
+            BufferGraphics = BackBuffer.Graphics;
+            BufferGraphics.SmoothingMode = SmoothingMode.HighQuality;
+            BufferGraphics.TextRenderingHint =
+                TextRenderingHint.ClearTypeGridFit;
+        }
 
         /// <summary>Event to repaint the plugin screen (if used).</summary>
         /// <param name="force">Flag to indicate the intention to force the
@@ -128,8 +105,7 @@ namespace Gear.GUI
                 return;
             byte[] valueAsByte = new byte[4];
             //clear all panel
-            BufferGraphics.FillRectangle(SystemBrushes.Control, 0, 0,
-                memoryPanel.Width, memoryPanel.Height);
+            BufferGraphics.Clear(SystemColors.Control);
             //draw the header
             BufferGraphics.FillRectangle(SystemBrushes.ControlLight, 0, 0,
                 memoryPanel.Width, Font.Height);
@@ -155,11 +131,7 @@ namespace Gear.GUI
                     $"{valueAsSignedLong,11:D}",
                     Font, SystemBrushes.ControlText, 0, linePosition);
             }
-#if USE_MAINGRAPHICS
-            MainGraphics.DrawImageUnscaled(BackBuffer, 0, 0);
-#else
-            memoryPanel.CreateGraphics().DrawImageUnscaled(BackBuffer, 0, 0);
-#endif
+            BackBuffer.Render();
         }
 
         /// <summary>Event handler to paint memory panel.</summary>
@@ -168,11 +140,7 @@ namespace Gear.GUI
         /// @version v22.06.01 - Method name changed to clarify its meaning.
         private void MemoryPanel_Paint(object sender, PaintEventArgs e)
         {
-#if USE_MAINGRAPHICS
-            MainGraphics.DrawImageUnscaled(BackBuffer, 0, 0);
-#else
-            e.Graphics.DrawImageUnscaled(BackBuffer, 0, 0);
-#endif
+            Repaint(false);
         }
 
         /// <summary>Event Handler on size changed of Memory panel.</summary>
@@ -185,14 +153,8 @@ namespace Gear.GUI
             positionScrollBar.Maximum = PropellerCPU.TotalMemory - memoryPanel.Height / Font.Height;
 
             if (memoryPanel.Width > 0 && memoryPanel.Height > 0)
-                BackBuffer = new Bitmap(memoryPanel.Width, memoryPanel.Height);
-            else
-                BackBuffer = new Bitmap(1, 1);
-#if USE_MAINGRAPHICS
-            //force MainGraphics to recalculate on next get value
-            MainGraphics = null;
-#endif
-            Repaint(false);
+                ResetBufferGraphics();
+            memoryPanel.Invalidate(true);
         }
 
         /// <summary>Event Handler on position changed of scroll bar.</summary>

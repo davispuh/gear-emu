@@ -134,6 +134,9 @@ class VGAMonitor : PluginBase
 	{
 		Graphics graph = Graphics.FromImage(Screen);
 		graph.Clear(Color.Black);
+		ScanLine = 0;
+		Pixel = 0;
+		Minimum = 1;
 	}
 }
 ]]></code>

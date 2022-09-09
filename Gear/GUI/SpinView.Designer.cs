@@ -40,7 +40,6 @@ namespace Gear.GUI
             if (disposing && (components != null))
             {
                 _monoSpace.Dispose();
-                BackBuffer.Dispose();
                 components.Dispose();
             }
             base.Dispose(disposing);
@@ -54,7 +53,7 @@ namespace Gear.GUI
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SpinView));
             this.objectTreeView = new System.Windows.Forms.TreeView();
             this.imageListForTreeView = new System.Windows.Forms.ImageList(this.components);
-            this.memoryView = new Gear.GUI.DoubleBufferedPanel();
+            this.memoryView = new System.Windows.Forms.Panel();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.analyzeButton = new System.Windows.Forms.ToolStripButton();
             this.alignmentSplitButton = new System.Windows.Forms.ToolStripDropDownButton();
@@ -202,7 +201,7 @@ namespace Gear.GUI
         #endregion
 
         private System.Windows.Forms.TreeView objectTreeView;
-        private Gear.GUI.DoubleBufferedPanel memoryView;
+        private System.Windows.Forms.Panel memoryView;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton analyzeButton;
         // @version v22.07.01 - Name changed.

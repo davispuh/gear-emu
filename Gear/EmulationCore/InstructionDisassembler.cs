@@ -70,6 +70,81 @@ namespace Gear.EmulationCore
             return text;
         }
 
+        /// <summary>Transform form various numeric types to binary
+        /// representation.</summary>
+        /// <typeparam name="T">Numeric type.</typeparam>
+        /// <param name="value">Value to transform.</param>
+        /// <returns>String representation of number.</returns>
+        /// @version v22.09.01 - Added.
+        public static string NumberToBinary<T>(T value)
+        {
+            int requiredSize;
+            string binaryText;
+            switch (value)
+            {
+                case uint longValue:
+                    requiredSize = 32;
+                    binaryText = Convert.ToString(longValue, 2);
+                    break;
+                case int signedLongValue:
+                    requiredSize = 32;
+                    binaryText = Convert.ToString(signedLongValue, 2);
+                    break;
+                case ushort wordValue:
+                    requiredSize = 16;
+                    binaryText = Convert.ToString(wordValue, 2);
+                    break;
+                case short signedWordValue:
+                    requiredSize = 16;
+                    binaryText = Convert.ToString(signedWordValue, 2);
+                    break;
+                case byte byteValue:
+                    requiredSize = 8;
+                    binaryText = Convert.ToString(byteValue, 2);
+                    break;
+                case sbyte signedByteValue:
+                    requiredSize = 8;
+                    binaryText = Convert.ToString(signedByteValue, 2);
+                    break;
+                default:
+                    requiredSize = 0;
+                    binaryText = string.Empty;
+                    break;
+            }
+            //fill with 0 up to requiredSize bits width
+            int fillCharsQty = requiredSize - binaryText.Length;
+            if (fillCharsQty > 0)
+                binaryText = new string('0', fillCharsQty) + binaryText;
+            return binaryText;
+        }
+
+        /// <summary>Print binary representation of a PASM Instruction.</summary>
+        /// <param name="memoryValue">Memory location to decode.</param>
+        /// <returns>Binary representation.</returns>
+        /// @version v22.09.01 - Added.
+        public static string BinaryRepresentationText(uint memoryValue)
+        {
+            const int maxSize = sizeof(uint) * 8;
+            //transform to binary base
+            string binaryText = NumberToBinary(memoryValue);
+            //get symbolic representation of instruction variant
+            string representation =
+                new Assembly.DecodedPASMInstruction(memoryValue)
+                    .GetInstructionVariant().Representation;
+            //
+            string text = string.Empty;
+            for (int i = 0, j = 0; i < maxSize; i++, j++)
+            {
+                if (representation[j] == ' ')
+                {
+                    text += " ";
+                    j++;
+                }
+                text += binaryText[i];
+            }
+            return $"{text} | {representation}";
+        }
+
         /// <summary>Get effects of a SPIN instruction, reading from main
         /// memory, decoding it to a text.</summary>
         /// <param name="memorySegment">SPIN bytecode value(s), contained in a
@@ -191,6 +266,98 @@ namespace Gear.EmulationCore
                     throw new InvalidEnumArgumentException(
                         $@"Unknown Spin Argument Mode: {instruction.ArgumentMode}");
             }
+        }
+
+        /// <summary>Advance memory position reading effects of a SPIN
+        /// Instruction, but without decode the text.</summary>
+        /// <remarks>Analog to method GetEffectsOp(), but only advancing the
+        /// memory position.</remarks>
+        /// <param name="memorySegment">SPIN bytecode value(s), contained in a
+        /// memory range.</param>
+        /// <exception cref="InvalidEnumArgumentException"></exception>
+        /// @version v22.09.01 - Added.
+        private static void AdvanceReadingEffect(Propeller.MemorySegment memorySegment)
+        {
+            Spin.DecodedAssignment decodedAssignment =
+                new Spin.DecodedAssignment(memorySegment.ReadByte());
+            if (decodedAssignment.Math)
+                return;
+            Propeller.Spin.AssignmentVariant assignmentVariant = decodedAssignment.GetAssignmentVariant();
+            if (assignmentVariant.ArgumentMode == Propeller.Spin.ArgumentModeEnum.SignedPackedOffset)
+                DataDecoder.GetSignedPackedOffset(memorySegment);
+        }
+
+        /// <summary>Advance memory position reading stack and memory options
+        /// of a SPIN instruction, reading from main memory, but without
+        /// returning a text.</summary>
+        /// <remarks>Analog to method GetMemoryOp(), but only advancing the
+        /// memory position.</remarks>
+        /// <param name="memorySegment">SPIN bytecode value(s), contained in a
+        /// memory segment.</param>
+        /// @version v22.09.01 - Added.
+        private static void AdvanceMemoryOp(Propeller.MemorySegment memorySegment)
+        {
+            if (new Spin.DecodedMemoryOperation(memorySegment.ReadByte()).Action ==
+                Propeller.Spin.MemoryActionEnum.EFFECT)
+                AdvanceReadingEffect(memorySegment);
+        }
+
+        /// <summary>Count how many bytes a decoded SPIN bytecode instruction
+        /// takes.</summary>
+        /// <param name="memorySegment">SPIN bytecode value(s), contained in a
+        /// memory range.</param>
+        /// <returns>Byte quantity.</returns>
+        /// @version v22.09.01 - Added.
+        public static int InterpretedInstructionLength(
+            Propeller.MemorySegment memorySegment)
+        {
+            uint startAddress = memorySegment.Address;
+            Propeller.Spin.Instruction instruction =
+                Propeller.Spin.Instructions[memorySegment.ReadByte()];
+            switch (instruction.ArgumentMode)
+            {
+                case Propeller.Spin.ArgumentModeEnum.None:
+                    break;
+                case Propeller.Spin.ArgumentModeEnum.UnsignedOffset:
+                    DataDecoder.GetPackedOffset(memorySegment);
+                    break;
+                case Propeller.Spin.ArgumentModeEnum.UnsignedEffectedOffset:
+                    DataDecoder.GetPackedOffset(memorySegment);
+                    GetEffectsOp(memorySegment, true);
+                    break;
+                case Propeller.Spin.ArgumentModeEnum.Effect:
+                    GetEffectsOp(memorySegment, true);
+                    break;
+                case Propeller.Spin.ArgumentModeEnum.SignedOffset:
+                    DataDecoder.GetSignedOffset(memorySegment);
+                    break;
+                case Propeller.Spin.ArgumentModeEnum.PackedLiteral:
+                    DataDecoder.GetPackedLiteral(memorySegment);
+                    break;
+                case Propeller.Spin.ArgumentModeEnum.ByteLiteral:
+                    memorySegment.AdvanceByte();
+                    break;
+                case Propeller.Spin.ArgumentModeEnum.WordLiteral:
+                    DataDecoder.GetWordLiteral(memorySegment);
+                    break;
+                case Propeller.Spin.ArgumentModeEnum.NearLongLiteral:
+                    DataDecoder.GetNearLongLiteral(memorySegment);
+                    break;
+                case Propeller.Spin.ArgumentModeEnum.LongLiteral:
+                    DataDecoder.GetLongLiteral(memorySegment);
+                    break;
+                case Propeller.Spin.ArgumentModeEnum.ObjCallPair:
+                    memorySegment.AdvanceByte();
+                    memorySegment.AdvanceByte();
+                    break;
+                case Propeller.Spin.ArgumentModeEnum.MemoryOpCode:
+                    AdvanceMemoryOp(memorySegment);
+                    break;
+                default:
+                    throw new InvalidEnumArgumentException(
+                        $@"Unknown Spin Argument Mode: {instruction.ArgumentMode}");
+            }
+            return (int)(memorySegment.Address - startAddress);
         }
     }
 }

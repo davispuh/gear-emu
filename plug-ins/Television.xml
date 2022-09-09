@@ -69,6 +69,11 @@ class Television : PluginBase
 	{
 		Graphics graph = Graphics.FromImage(Picture);
 		graph.Clear(Color.Black);
+		LastTime = 0;
+		RasterX = RasterY = 0;
+		for (int i = 0; i < BackLog.Length; i++)
+			BackLog[i] = 0;
+		BackLogIndex = 0;
 	}
 
 	//To repaint the plugin screen.

@@ -26,6 +26,7 @@
 using Gear.EmulationCore;
 using Gear.Utils;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -33,6 +34,8 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 // ReSharper disable FieldCanBeMadeReadOnly.Local
@@ -120,20 +123,15 @@ namespace Gear.GUI
         /// @version v22.07.01 - Name changed to follow naming conventions.
         private readonly CultureInfo _currentCultureMod;
 
-        /// <summary>Bitmap buffer to draw the memory lines.</summary>
-        /// @version v22.07.01 - Name changed to follow naming conventions.
-        private Bitmap _backBuffer;
+        /// <summary>Backing field for buffer to draw the memory lines.</summary>
+        /// @version v22.09.01 - Changed to enable parallel drawing.
+        private ThreadLocal<BufferedGraphics> _backBuffer =
+            new ThreadLocal<BufferedGraphics>();
 
         /// <summary>Backing field for Graphic style to draw text on buffer.</summary>
-        /// @version v22.07.01 - Added.
-        private Graphics _bufferGraphics;
-
-#if USE_MAINGRAPHICS
-        /// <summary>Backing field for Graphic style to draw text on
-        /// main Panel.</summary>
-        /// @version v22.08.01 - Added.
-        private Graphics _mainGraphics;
-#endif
+        /// @version v22.09.01 - Changed to enable parallel drawing.
+        private ThreadLocal<Graphics> _bufferGraphics =
+            new ThreadLocal<Graphics>();
 
         /// <summary>Image for Icon on tree view for each node.</summary>
         /// @version v22.07.01 - Added.
@@ -163,18 +161,23 @@ namespace Gear.GUI
         /// <summary>Identify a plugin as user (=true) or system (=false).</summary>
         public override bool IsUserPlugin => false;
 
-        /// <summary>Bitmap buffer property to draw the hex memory values.</summary>
-        /// <remarks>Used to hold the relationship with MainGraphics property.</remarks>
-        /// @version v22.07.01 - Added.
-        private Bitmap BackBuffer
+        /// <summary>Double buffer property to draw on it.</summary>
+        /// @version v22.09.01 - Modified to implement only getter, using
+        /// double buffer in a independent way for each cog and supporting
+        /// parallel drawing.
+        private BufferedGraphics BackBuffer
         {
-            get => _backBuffer;
-            set
+            get
             {
-                if (_backBuffer == value | value == null)
-                    return;
-                _backBuffer = value;
-                BufferGraphics = Graphics.FromImage(_backBuffer);
+                if (_backBuffer.Value != null)
+                    return _backBuffer.Value;
+                if (memoryView == null)
+                    return null;
+                BufferedGraphicsContext currentContext = new BufferedGraphicsContext();
+                _backBuffer.Value = currentContext.Allocate(
+                    memoryView.CreateGraphics(),
+                    memoryView.DisplayRectangle);
+                return _backBuffer.Value;
             }
         }
 
@@ -182,28 +185,24 @@ namespace Gear.GUI
         /// on buffer.</summary>
         /// <remarks>Used to set the font aliasing style for text of the
         /// control.</remarks>
-        /// @version v22.07.01 - Added.
+        /// @version v22.09.01 - Modified to implement only getter and
+        /// supporting parallel drawing.
         private Graphics BufferGraphics
         {
-            get => _bufferGraphics;
-            set
+            get
             {
-                _bufferGraphics = value;
-                _bufferGraphics.SmoothingMode = SmoothingMode.HighQuality;
-                _bufferGraphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+                if (_bufferGraphics.Value != null)
+                    return _bufferGraphics.Value;
+                if (BackBuffer == null)
+                    return null;
+                _bufferGraphics.Value = BackBuffer.Graphics;
+                _bufferGraphics.Value.SmoothingMode =
+                    SmoothingMode.HighQuality;
+                _bufferGraphics.Value.TextRenderingHint =
+                    TextRenderingHint.ClearTypeGridFit;
+                return _bufferGraphics.Value;
             }
         }
-
-#if USE_MAINGRAPHICS
-        /// <summary>Graphic style property to draw text and graphics
-        /// on main Panel.</summary>
-        /// @version v22.08.01 - Added.
-        private Graphics MainGraphics
-        {
-            get => _mainGraphics ?? (_mainGraphics = memoryView.CreateGraphics());
-            set => _mainGraphics = value;
-        }
-#endif
 
         /// <summary>Frequency format to be displayed.</summary>
         /// <remarks>Used to establish data binding to program properties.
@@ -269,9 +268,8 @@ namespace Gear.GUI
 
         /// <summary>Default Constructor.</summary>
         /// <param name="chip">Reference to Propeller instance.</param>
-        /// @version v22.07.01 - Corrected to use PropellerCPU.TOTAL_RAM
-        /// instead of full RAM + ROM. Added data bindings of program setting
-        /// `FreqFormat` property.
+        /// @version v22.09.01 - Changed to use parallel loop to initialize
+        /// _memoryColorBrush array.
         public SpinView(PropellerCPU chip) : base(chip)
         {
             //init objects
@@ -287,12 +285,20 @@ namespace Gear.GUI
             FreqFormatValue = Properties.Settings.Default.FreqFormat;
             DataBindings.Add(new Binding("FreqFormatValue", Properties.Settings.Default,
                 "FreqFormat", false, DataSourceUpdateMode.OnPropertyChanged));
-            //fill values to format memory draw
-            for (int i = 0; i < _memoryColorBrush.Length; i++)
-                _memoryColorBrush[i] = BrushesList[NodeTypeEnum.End];
             //generate icons for each node type
-            for (NodeTypeEnum idx = NodeTypeEnum.Begin; idx < NodeTypeEnum.End; idx++)
-                imageListForTreeView.Images.AddStrip(GenerateIconForNode(idx));
+            Task.Factory.StartNew( () =>
+            {
+                for (NodeTypeEnum idx = NodeTypeEnum.Begin; idx < NodeTypeEnum.End; idx++)
+                    imageListForTreeView.Images.AddStrip(GenerateIconForNode(idx));
+            });
+            //fill values to format memory background
+            Parallel.ForEach(Partitioner.Create(0, _memoryColorBrush.Length),
+                range =>
+                {
+                    Brush newValue = BrushesList[NodeTypeEnum.End];
+                    for (int i = range.Item1; i < range.Item2; i++)
+                        _memoryColorBrush[i] = newValue;
+                });
             _colorDecodeDone = false;
         }
 
@@ -305,6 +311,16 @@ namespace Gear.GUI
             base.OnReset();
             _colorDecodeDone = false;
             Analyze();
+        }
+
+        /// <summary>Invalidate graphics underlying for double buffer of main
+        /// panel.</summary>
+        /// @version v22.09.01 - Added as method from former setter of
+        /// BackBuffer property.
+        private void ResetBufferGraphics()
+        {
+            _backBuffer.Value = null;
+            _bufferGraphics.Value = null;
         }
 
         /// <summary>Generate image for icon of tree view.</summary>
@@ -495,10 +511,11 @@ namespace Gear.GUI
 
         /// <summary>Update system frequency node, according to the format
         /// selected.</summary>
-        /// @version v22.07.01 - Added.
+        /// @version v22.09.01 - Corrected to return null if tree view object
+        /// does not exist.
         private void UpdateSystemFreq()
         {
-            TreeNode freqNode = objectTreeView.Nodes.OfType<TreeNode>()
+            TreeNode freqNode = objectTreeView?.Nodes.OfType<TreeNode>()
                 .FirstOrDefault(node => node.Tag.Equals(0));
             if (freqNode == null)
                 Analyze();
@@ -667,11 +684,11 @@ namespace Gear.GUI
         /// <summary>Event to repaint the plugin screen (if used).</summary>
         /// <param name="force">Flag to indicate the intention to force the
         /// repaint.</param>
-        /// @version v22.08.01 - Modified to add offset header. Corrected
-        /// to consider margin between object tree view and memory view.
+        /// @version v22.09.01 - Modified to avoid boxing a byte when printing
+        /// memory values.
         public override void Repaint(bool force)
         {
-            if (Chip == null || BackBuffer == null)
+            if (Chip == null)
                 return;
             const int bytesToShow = 16;
             const int mask = bytesToShow - 1;
@@ -701,17 +718,16 @@ namespace Gear.GUI
                      y < PropellerCPU.TotalRAM && x < bytesToShow;
                      x++, dx += dataSize.Width, y++)
                 {
-                    byte data = Chip.DirectReadByte((uint)y);
                     if (_memoryColorBrush[y] != null)
-                        BufferGraphics.FillRectangle(_memoryColorBrush[y], new Rectangle(dx, dy, dataSize.Width, dataSize.Height));
-                    BufferGraphics.DrawString($"{data:X2}", _monoSpace, SystemBrushes.ControlText, dx, dy);
+                        BufferGraphics.FillRectangle(_memoryColorBrush[y],
+                            new Rectangle(dx, dy, dataSize.Width,
+                                dataSize.Height));
+                    BufferGraphics.DrawString(
+                        Chip.DirectReadByte((uint)y).ToString("X2"),
+                        _monoSpace, SystemBrushes.ControlText, dx, dy);
                 }
             }
-#if USE_MAINGRAPHICS
-            MainGraphics.DrawImageUnscaled(BackBuffer, 0, 0);
-#else
-            memoryView.CreateGraphics().DrawImageUnscaled(BackBuffer, 0, 0);
-#endif
+            BackBuffer.Render();
         }
 
         /// <summary>Event handler to analyze the Spin packet code.</summary>
@@ -742,14 +758,8 @@ namespace Gear.GUI
         private void MemoryView_SizeChange(object sender, EventArgs e)
         {
             if (memoryView.Width > 0 && memoryView.Height > 0)
-                BackBuffer = new Bitmap(memoryView.Width, memoryView.Height);
-            else
-                BackBuffer = new Bitmap(1, 1);
-#if USE_MAINGRAPHICS
-            //force MainGraphics to recalculate on next get value
-            MainGraphics = null;
-#endif
-            Repaint(true);
+                ResetBufferGraphics();
+            memoryView.Invalidate(true);
         }
 
         /// <summary>Event handler to paint the memory panel.</summary>
@@ -758,13 +768,7 @@ namespace Gear.GUI
         /// @version v22.07.01 - Method name changed to clarify its meaning.
         private void MemoryView_Paint(object sender, PaintEventArgs e)
         {
-            if (BackBuffer == null)
-                BackBuffer = new Bitmap(memoryView.Width, memoryView.Height);
-#if USE_MAINGRAPHICS
-            MainGraphics.DrawImageUnscaled(BackBuffer, 0, 0);
-#else
-            e.Graphics.DrawImageUnscaled(BackBuffer, 0, 0);
-#endif
+            Repaint(false);
         }
 
         /// <summary>Event handler to manage a mouse click on memory panel.</summary>
