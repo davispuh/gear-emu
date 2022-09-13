@@ -41,6 +41,7 @@ namespace Gear.GUI
     public partial class CogView : PluginSupport.PluginBase
     {
         /// <summary>States for cog screen representation.</summary>
+        /// @version v22.08.01 - Added.
         private enum PresentationCogStateEnum
         {
             /// <summary>State not set.</summary>
@@ -51,6 +52,20 @@ namespace Gear.GUI
             NativeRunning,
             /// <summary>Running in Spin interpreted Mode.</summary>
             InterpretedRunning
+        }
+
+        /// <summary>Types of highlight of active line.</summary>
+        /// @version v22.09.01 - Added.
+        [Flags]
+        public enum HighlightedTypeEnum : byte
+        {
+            /// <summary>Only Bold on text line.</summary>
+            OnlyBold = 1,
+            /// <summary>Only Frame around text line.</summary>
+            OnlyFrame = 2,
+            /// <summary> Combination of Bold text and Frame around text
+            /// line.</summary>
+            BoldAndFrame = 3
         }
 
         /// <summary> Max number of characters for width of interpreted
@@ -72,6 +87,10 @@ namespace Gear.GUI
         /// <summary>Width on pixels of stack details for a SPIN cog.</summary>
         /// @version v22.09.01 - Added
         private readonly int _stackMargin;
+
+        /// <summary></summary>
+        /// @version v22.09.01 - Added
+        private int _decodedEffectiveWidth;
 
         /// <summary></summary>
         /// @version v22.09.01 - Added
@@ -149,6 +168,15 @@ namespace Gear.GUI
             }
         }
 
+        /// <summary>Type of highlight for program cursor line.</summary>
+        /// <remarks>In order this property could be bind with the
+        /// corresponding property setting, it must be public and must have a
+        /// setter.</remarks>
+        /// @version v22.09.01 - Added.
+        // ReSharper disable once MemberCanBePrivate.Global
+        // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
+        public HighlightedTypeEnum HighlightedType { get; set; }
+
         /// <summary>Flag to display decoded program values
         /// as Hexadecimal, or Decimal.</summary>
         /// @version v22.09.01 - Added.
@@ -173,7 +201,8 @@ namespace Gear.GUI
         /// <summary>Default constructor.</summary>
         /// <param name="hostId">Id of related cog.</param>
         /// <param name="chip">Reference to Propeller instance.</param>
-        /// @version v22.09.01 - Modified to use DisplayAsHexadecimal property.
+        /// @version v22.09.01 - Modified to use DisplayAsHexadecimal and
+        /// HighlightedType properties.
         public CogView(int hostId, PropellerCPU chip) : base (chip)
         {
             _hostId = hostId;
@@ -182,10 +211,17 @@ namespace Gear.GUI
             _lineHeight = _monoFont.Height;
             _stackMargin = TextRenderer.MeasureText(
                 new string('0', CharWidthInterpreterDetails), _monoFont).Width + 2;
+            //bonded properties
+            HighlightedType = Properties.Settings.Default.PCHighlightedType;
+            DataBindings.Add(new Binding("HighlightedType",
+                Properties.Settings.Default, "PCHighlightedType",
+                false, DataSourceUpdateMode.OnPropertyChanged));
             _useShortOpCodes = true;
             _breakVideo = FrameState.None;
             InitializeComponent();
             ResetBufferGraphics();
+            _decodedEffectiveWidth =
+                decodedPanel.ClientSize.Width - _stackMargin - 1;
             //recover default value from user properties
             bool defaultValueHex = Properties.Settings.Default.ValuesShownAsHex;
             //assure the value is changed, using different values on backing
@@ -305,7 +341,7 @@ namespace Gear.GUI
         /// <returns>Number of lines.</returns>
         /// @version v22.09.01 - Added.
         private int GetLinesOfDecodedPanel() =>
-            decodedPanel.Height / _lineHeight;
+            decodedPanel.ClientSize.Height / _lineHeight;
 
         /// <summary>Display PASM decoded text for a Native cog.</summary>
         /// <param name="force">Flag to indicate the intention to force the
@@ -353,11 +389,24 @@ namespace Gear.GUI
             //change background on breakpoint line
             if (memoryPos == cog.BreakPointCogCursor)
                 BufferGraphics.FillRectangle(Brushes.Pink, 0,
-                    line * _lineHeight, decodedPanel.Width, _lineHeight);
+                    line * _lineHeight, decodedPanel.ClientSize.Width,
+                    _lineHeight);
+            //Draw frame on line if is the same of program cursor
+            if (cog.ProgramCursor == memoryPos &&
+                (HighlightedType & HighlightedTypeEnum.OnlyFrame) ==
+                HighlightedTypeEnum.OnlyFrame)
+                BufferGraphics.DrawRectangle(Pens.Black,
+                    0, line * _lineHeight,
+                    decodedPanel.ClientSize.Width - 1,
+                    _lineHeight);
             //print text line
             BufferGraphics.DrawString(
                 textToDisplay,
-                cog.ProgramCursor == memoryPos ? _monoFontBold : _monoFont,
+                cog.ProgramCursor == memoryPos &&
+                (HighlightedType & HighlightedTypeEnum.OnlyBold) ==
+                HighlightedTypeEnum.OnlyBold ?
+                    _monoFontBold :
+                    _monoFont,
                 SystemBrushes.ControlText, 0, line * _lineHeight);
         }
 
@@ -394,6 +443,9 @@ namespace Gear.GUI
                 _interpretedLengthLines[line] =
                     (byte)InstructionDisassembler.InterpretedInstructionLength(memorySegment);
             }
+            //draw nothing if there is no effective space for decoded lines
+            if (_decodedEffectiveWidth <= 0)
+                return;
             //loop to draw lines
             for (int line = 0; line < totalLines; line++)
                 DrawInterpretedMemoryLine(cog,
@@ -431,11 +483,23 @@ namespace Gear.GUI
             //change background on breakpoint line
             if (memoryPos == cog.BreakPointCogCursor)
                 BufferGraphics.FillRectangle(Brushes.Pink, 0,
-                    line * _lineHeight, decodedPanel.Width, _lineHeight);
+                    line * _lineHeight, decodedPanel.ClientSize.Width,
+                    _lineHeight);
+            //Draw frame on line if is the same of program cursor
+            if (cog.ProgramCursor == memoryPos &&
+                (HighlightedType & HighlightedTypeEnum.OnlyFrame) ==
+                HighlightedTypeEnum.OnlyFrame)
+                BufferGraphics.DrawRectangle(Pens.Black,
+                    0, line * _lineHeight, _decodedEffectiveWidth,
+                    _lineHeight);
             //print text line
             BufferGraphics.DrawString(
                 $"${memoryPos:X4}:  {memoryText}  {binaryText}",
-                cog.ProgramCursor == memoryPos ? _monoFontBold : _monoFont,
+                cog.ProgramCursor == memoryPos &&
+                (HighlightedType & HighlightedTypeEnum.OnlyBold) ==
+                HighlightedTypeEnum.OnlyBold ?
+                    _monoFontBold :
+                    _monoFont,
                 SystemBrushes.ControlText, 0, line * _lineHeight);
         }
 
@@ -471,6 +535,9 @@ namespace Gear.GUI
                 _interpretedLengthLines[line] =
                     (byte)InstructionDisassembler.InterpretedInstructionLength(memorySegment);
             }
+            //draw nothing if there is no effective space for decoded lines
+            if (_decodedEffectiveWidth <= 0)
+                return;
             string formatForValue = DisplayAsHexadecimal ?
                 "${0:X2}" :
                 "{0,3:D}";
@@ -516,11 +583,23 @@ namespace Gear.GUI
             //change background on breakpoint line
             if (memoryPos == cog.BreakPointCogCursor)
                 BufferGraphics.FillRectangle(Brushes.Pink, 0,
-                    line * _lineHeight, decodedPanel.Width, _lineHeight);
+                    line * _lineHeight, decodedPanel.ClientSize.Width,
+                    _lineHeight);
+            //Draw frame on line if is the same of program cursor
+            if (cog.ProgramCursor == memoryPos &&
+                (HighlightedType & HighlightedTypeEnum.OnlyFrame) ==
+                HighlightedTypeEnum.OnlyFrame)
+                BufferGraphics.DrawRectangle(Pens.Black,
+                    0, line * _lineHeight, _decodedEffectiveWidth,
+                    _lineHeight);
             //print text line
             BufferGraphics.DrawString(
                 $"${memoryPos:X4}:  {memoryText}  {decodedText}",
-                cog.ProgramCursor == memoryPos ? _monoFontBold : _monoFont,
+                cog.ProgramCursor == memoryPos &&
+                (HighlightedType & HighlightedTypeEnum.OnlyBold) ==
+                HighlightedTypeEnum.OnlyBold ?
+                    _monoFontBold :
+                    _monoFont,
                 SystemBrushes.ControlText, 0, line * _lineHeight);
         }
 
@@ -532,12 +611,12 @@ namespace Gear.GUI
         {
             //fill the pane area
             BufferGraphics.FillRectangle(SystemBrushes.Control,
-                decodedPanel.Width - _stackMargin - 1, 0,
-                _stackMargin + 1, decodedPanel.Height);
+                decodedPanel.ClientSize.Width - _stackMargin - 1, 0,
+                _stackMargin + 1, decodedPanel.ClientSize.Height);
             //side separation line
             BufferGraphics.DrawLine(Pens.Black,
-                decodedPanel.Width - _stackMargin - 1, 0,
-                decodedPanel.Width - _stackMargin - 1, decodedPanel.Height);
+                decodedPanel.ClientSize.Width - _stackMargin - 1, 0,
+                decodedPanel.ClientSize.Width - _stackMargin - 1, decodedPanel.ClientSize.Height);
             Brush standardBrush = SystemBrushes.ControlText;
             int line = 0;
             uint longValue = cog.StackFrame;
@@ -554,8 +633,9 @@ namespace Gear.GUI
             DrawLineOfInterpretedDetails(text, standardBrush, line++);
             //1st separation line
             BufferGraphics.DrawLine(Pens.Black,
-                decodedPanel.Width - _stackMargin, line * _lineHeight,
-                decodedPanel.Width, line * _lineHeight);
+                decodedPanel.ClientSize.Width - _stackMargin,
+                line * _lineHeight, decodedPanel.ClientSize.Width,
+                line * _lineHeight);
             ushort wordValue = Chip.DirectReadWord(cog.LocalFrame - 8);
             text = $"Caller&  =  ${wordValue:X4}, {wordValue,5:D}";
             DrawLineOfInterpretedDetails(text, standardBrush, line++);
@@ -570,12 +650,13 @@ namespace Gear.GUI
             DrawLineOfInterpretedDetails(text, standardBrush, line++);
             //draw header of stack
             BufferGraphics.FillRectangle(SystemBrushes.ControlLight,
-                decodedPanel.Width - _stackMargin, line * _lineHeight,
-                _stackMargin, _lineHeight);
+                decodedPanel.ClientSize.Width - _stackMargin,
+                line * _lineHeight, _stackMargin, _lineHeight);
             //2nd separation line
             BufferGraphics.DrawLine(Pens.Black,
-                decodedPanel.Width - _stackMargin, line * _lineHeight,
-                decodedPanel.Width, line * _lineHeight);
+                decodedPanel.ClientSize.Width - _stackMargin,
+                line * _lineHeight, decodedPanel.ClientSize.Width,
+                line * _lineHeight);
             int stackLength = (int)(cog.StackFrame - cog.LocalFrame) / 4;
             text = $"(Len {stackLength})";
             DrawLineOfInterpretedDetails($"Stack:{new string(' ', CharWidthInterpreterDetails - 6 - text.Length)}{text}",
@@ -600,7 +681,7 @@ namespace Gear.GUI
             Brush lineBrush, int line)
         {
             BufferGraphics.DrawString(text, _monoFont, lineBrush,
-                decodedPanel.Width - _stackMargin,
+                decodedPanel.ClientSize.Width - _stackMargin,
                 line * _lineHeight);
         }
 
@@ -698,8 +779,12 @@ namespace Gear.GUI
         /// @version v22.09.01 - Changed method name to clarify its meaning.
         private void DecodedPanel_SizeChanged(object sender, EventArgs e)
         {
-            if (decodedPanel.Width > 0 && decodedPanel.Height > 0)
+            if (decodedPanel.ClientSize.Width > 0 && decodedPanel.ClientSize.Height > 0)
+            {
                 ResetBufferGraphics();
+                _decodedEffectiveWidth =
+                    decodedPanel.ClientSize.Width - _stackMargin - 1;
+            }
             decodedPanel.Invalidate(true);
         }
 
@@ -759,8 +844,7 @@ namespace Gear.GUI
                                 instruction.CON != 0x0 ?
                 $"Destin. ${instruction.DEST:x3}: Reg value = ${nativeCog.ReadLong(instruction.DEST):x3}, {nativeCog.ReadLong(instruction.DEST)}" :
                 "Destination not used by instruction.";
-                toolTip1.SetToolTip(decodedPanel,
-                $"{sourceText}\n{destString}");
+            toolTip1.SetToolTip(decodedPanel, $"{sourceText}\n{destString}");
             _oldMemoryPosHovered = memoryAddress;
         }
 

@@ -36,6 +36,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
 
+// ReSharper disable InvalidXmlDocComment
 // ReSharper disable LocalizableElement
 
 namespace Gear.GUI
@@ -948,7 +949,7 @@ namespace Gear.GUI
 /// flow case).
 /// @anchor PluginLoadingSequenceFig1
 /// @par
-/// @mscfile "Load plugin Callings-fig1.mcsgen" "Fig.1: Main sequence for a Plugin loading."
+/// @mscfile "Load plugin Callings-fig1.msc" "Fig.1: Main sequence for a Plugin loading."
 /// @par Detail for Registering OnPinChange & OnClock Methods.
 /// This is a detail of main sequence of
 /// @ref PluginLoadingSequenceFig1 "\"Fig.1: Main sequence for a Plugin loading.\"", to show
@@ -958,5 +959,5 @@ namespace Gear.GUI
 /// `OnPinChange()` derived methods.
 /// @anchor PluginLoadingSequenceFig2
 /// @par
-/// @mscfile "Load plugin Callings-fig2.mcsgen" "Fig.2: details of invocation for Plugin members."
+/// @mscfile "Load plugin Callings-fig2.msc" "Fig.2: details of invocation for Plugin members."
 ///

@@ -269,13 +269,15 @@ namespace Gear.GUI
         /// <summary>Default Constructor.</summary>
         /// <param name="chip">Reference to Propeller instance.</param>
         /// @version v22.09.01 - Changed to use parallel loop to initialize
-        /// _memoryColorBrush array.
+        /// _memoryColorBrush array and a separated task to generate icons for
+        /// nodes.
         public SpinView(PropellerCPU chip) : base(chip)
         {
             //init objects
             _currentCultureMod = (CultureInfo)CultureInfo.CurrentCulture.Clone();
             _monoSpace = new Font(FontFamily.GenericMonospace, 8);
             _memoryColorBrush = new Brush[PropellerCPU.TotalRAM];
+            // ReSharper disable once ExceptionNotDocumented
             _frameIcon = (Image)Resources.GetObject("FrameIcon");
             InitializeComponent();
             //this goes here, because it isn't accepted on Designer!
@@ -283,15 +285,17 @@ namespace Gear.GUI
             ByteAlignment = AlignmentEnum.Word;
             //bonded properties
             FreqFormatValue = Properties.Settings.Default.FreqFormat;
-            DataBindings.Add(new Binding("FreqFormatValue", Properties.Settings.Default,
-                "FreqFormat", false, DataSourceUpdateMode.OnPropertyChanged));
-            //generate icons for each node type
+            DataBindings.Add(new Binding("FreqFormatValue",
+                Properties.Settings.Default, "FreqFormat",
+                false, DataSourceUpdateMode.OnPropertyChanged));
+            //generate icons for each node type on a separated async task
             Task.Factory.StartNew( () =>
             {
                 for (NodeTypeEnum idx = NodeTypeEnum.Begin; idx < NodeTypeEnum.End; idx++)
                     imageListForTreeView.Images.AddStrip(GenerateIconForNode(idx));
             });
             //fill values to format memory background
+            // ReSharper disable once ExceptionNotDocumented
             Parallel.ForEach(Partitioner.Create(0, _memoryColorBrush.Length),
                 range =>
                 {
@@ -511,12 +515,18 @@ namespace Gear.GUI
 
         /// <summary>Update system frequency node, according to the format
         /// selected.</summary>
-        /// @version v22.09.01 - Corrected to return null if tree view object
-        /// does not exist.
+        /// @version v22.09.01 - Corrected to manage null instances or zero values.
         private void UpdateSystemFreq()
         {
+            if (objectTreeView == null || objectTreeView.Nodes.Count == 0)
+                Analyze();
             TreeNode freqNode = objectTreeView?.Nodes.OfType<TreeNode>()
-                .FirstOrDefault(node => node.Tag.Equals(0));
+                .FirstOrDefault(node =>
+                {
+                    if (node.Tag == null)
+                        return false;
+                    return node.Tag.Equals(0);
+                });
             if (freqNode == null)
                 Analyze();
             else
@@ -534,6 +544,7 @@ namespace Gear.GUI
             objectTreeView.Nodes.Clear();
             //Add nodes for spin header
             TreeNode root = objectTreeView.Nodes.Add("Spin Header");
+            //clock frequency node
             TreeNode node = root.Nodes.Add(FreqFormatText(Chip.DirectReadLong(0)));
             node.Tag = 0;
             node = root.Nodes.Add($"Clock Mode: ${Chip.DirectReadByte(0x4):X2}");

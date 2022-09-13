@@ -38,5 +38,8 @@
     <Setting Name="ValuesShownAsHex" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="PCHighlightedType" Type="Gear.GUI.CogView.HighlightedTypeEnum" Scope="User">
+      <Value Profile="(Default)">BoldAndFrame</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

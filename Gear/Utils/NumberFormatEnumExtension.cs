@@ -24,23 +24,23 @@ using System.Globalization;
 
 // ReSharper disable InvalidXmlDocComment
 
-/// @brief Utilities classes.
+/// <summary>Utilities classes.</summary>
 /// @version v20.09.01 - Added.
 namespace Gear.Utils
 {
-    /// @brief Available Number Formats.
+    /// <summary>Available Number Formats.</summary>
     /// @version v20.09.01 - Added.
     public enum NumberFormatEnum : byte
     {
-        /// @brief No format (old default).
+        /// <summary>No format (old default).</summary>
         None = 0,
-        /// @brief Format given from system default.
+        /// <summary>Format given from system default.</summary>
         SystemDefault,
-        /// @brief Using '_' as separator.
+        /// <summary>Using '_' as separator.</summary>
         ParallaxSpin
     }
 
-    /// @brief Provides number separators formats for clock and counters.
+    /// <summary>Provides number separators formats for clock and counters.</summary>
     /// @version v20.09.01 - Added.
     public static class NumberFormatEnumExtension
     {

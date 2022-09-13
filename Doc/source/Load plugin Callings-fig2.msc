@@ -33,9 +33,9 @@ B => C;
 C => D;
 D => E [label="Add plugin reference."];
 E rbox E [label="Plugin reference added to general list of pin handlers of the CPU."];
-D <= E;
-C <= D;
-B <= C;
+D << E;
+C << D;
+B << C;
 
 #phase separation
 --- [label="Optional calling, defined by the contents of PresentChip() method.", linecolor="indigo", textcolor="indigo"];
@@ -51,16 +51,16 @@ B => C;
 C => D;
 D => E [label="Add plugin reference."];
 E rbox E [label="Plugin reference added to general list of tick handlers of the CPU."];
-D <= E;
-C <= D;
-B <= C;
+D << E;
+C << D;
+B << C;
 
 #phase separation
 --- [label="Optional calling, defined by the contents of PresentChip() method.", linecolor="indigo", textcolor="indigo"];
 
 #Transicions phase
 B rbox B [label="Other possible initialization here, by choice of plugin programmer."];
-A <= B;
+A << B;
 
 #phase separation
 --- [label="", linecolor="indigo", textcolor="indigo"];

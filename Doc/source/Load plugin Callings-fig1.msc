@@ -19,13 +19,13 @@ C box C [label="PluginBase plugin =", url="\ref Gear.PluginSupport.ModuleCompile
 D box D [label="ModuleCompiler.\nLoadModule()", url="\ref Gear.PluginSupport.ModuleCompiler.LoadModule", textbgcolor="#DCE2EF"];
 
 #Transicions Phase
-A => B; 
+A => B;
 B rbox B [label="Read XML file:\nextract code & refs"];
 B => C;
 C => D [label="Assign pointer to\nPluginBase."];
 D rbox D [label="Try to compile a\nnew instance."];
 C << D [label="Pointer to new\nPluginBase (or NULL)."];
-B <= C;
+B << C;
 B rbox B [label="Assure the plugin reference is valid or throw exception and abort."];
 
 #phase separation
@@ -41,21 +41,21 @@ B => C [label="From here plugin is a\nvalid Plugin instance."];
 C => D;
 D => E;
 E rbox E [label="Add plugin ref to the general list of plugins of the CPU"];
-D <= E;
+D << E;
+C << D;
 
 #phase separation
 --- [label="Detail for Registering OnPinChange & OnClock Methods on Figure 2.", linecolor="indigo", textcolor="indigo"];
 
 #Transicions Phase
-D note E [label="\nMore details on\nFigure 2.\n", url="\ref PluginLoadingSequenceFig2", textbgcolor="#7FFF7F"];
+C note E [label="\nMore details on\nFigure 2.\n", url="\ref PluginLoadingSequenceFig2", textbgcolor="#7FFF7F"];
 
 #phase separation
 --- [label="After registering OnPinChange & OnClock Methods.", linecolor="indigo", textcolor="indigo"];
 
 #Transicions Phase
-C <= D;
-B <= C;
-A <= B;
+B << C;
+A << B;
 
 #phase separation
 --- [label="End: Plugin ready to running.", linecolor="indigo", textcolor="indigo"];

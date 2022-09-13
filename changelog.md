@@ -1,6 +1,15 @@
 # Change Log
 
-## Commit  CogView, SpinView and MemoryView optimizations.
+## Commit  CogView appareance enhanced.
+
+- Changes on [`CogView.cs`](Gear/GUI/CogView.cs):
+  -  The appareance of the current executting line (program cursor) now is selectable program setting. Can be bold text, a rectangle frame around the text line, or both.
+- Gear Emulator window starts now with a size of 1024x768, to help to standarize documentation images.
+- Updated [`.gitignore`](.gitignore) : added more visual studio and vscode definitions.
+- Updated secuence diagrams files: Changed extension `.mcsgen` to more standard `.msc`. Changed path of documentation files to `Doc/sorce/`. Modified doxygen documentation accordlingly.
+
+
+## Commit [1e6cd95](https://github.com/davispuh/gear-emu/commit/1e6cd954e20fa62b6cabe3f20a12f50883e5c27b) CogView, SpinView and MemoryView optimizations.
 
 - Refactored code to improve performance, using double buffering on CogView, SpinView and MemoryView.
   - Refactored drawing logic to be time efficient.
@@ -9,14 +18,15 @@
   - When cog is running in PASM native mode, the hovering message now explains more, giving details if origin or destination fields are used by the instruction, if them are using a inmmediate value, or a pointer to a memory and its value.
   - When following program cursor, the panel is completely white, else grey. This simplification allowed to accelerate of drawing, by removing variables and operations.
   - The spin interpreted details are drawn like a separated panel. The stack now have a header, showing its length, and have a level number.
-  - The default start value of display decoded program values as hexadecimal, now is a program setting.
+  - The default start value of display decoded program values as hexadecimal or decimal, now is a program setting.
 - Using Parallel proccesing to improve performance:
   - Initially fill the array of color brushes used to paint each byte of SPIN map (32KB), using Parallel.ForEach with automatic partitioner. Also, generate icons for each type of node of tree view in a separate thread. Both changed in [`SpinView.cs`](Gear/GUI/SpinView.cs).
 - Added methods to determine the length of SPIN instruction, advancing the memory accordlingly on [`InstructionDisassembler.cs`](Gear/EmulationCore/InstructionDisassembler.cs) and [`MemorySegment.cs`](Gear/Propeller/MemorySegment.cs). Also added methods to get binary text representation of PASM instruction.
 - Corrected reset values on TV & VGA Plugins.
 
 
-## Commit [1a8a849](1a8a849566821726fc4823ad1106560573dd2a03) Minor changes previous to CogView optimizations.
+## Commit [1a8a849](https://github.com/davispuh/gear-emu/commit/1a8a849566821726fc4823ad1106560573dd2a03) Minor changes previous to CogView optimizations.
+
 - Some name changing on methods and local variables on [`InstructionDisassembler.cs`](Gear/EmulationCore/InstructionDisassembler.cs) and [`Emulator.cs`](Gear/GUI/Emulator.cs).
 - Changed some potential localized strings to inmutables on [`AboutGear.cs`](Gear/GUI/AboutGear.cs), [`InstructionDisassembler.cs`](Gear/EmulationCore/InstructionDisassembler.cs), [`InterpretedCog.cs`](Gear/EmulationCore/InterpretedCog.cs).
 - Added custom debugger text for `Gear.Propeller.DirectMemory` and `Gear.GUI.CogView` classes.
@@ -24,6 +34,7 @@
 
 
 ## Commit [eea6143](https://github.com/davispuh/gear-emu/commit/eea614356ee6e2351758d5efae1e10bde5cf431a) Reset image on TV & VGA Plugins 2nd part.
+
 - Corrected plugin files added.
 
 
@@ -35,7 +46,7 @@
 - Added Parallax Propeller as vector images: `.svg` files.
 
 
-## Release Version [22.08.01](https://github.com/davispuh/gear-emu/releases/tag/v22.08.01) Commit [9648f0f](9648f0f935cd94dd8d08c084d61eb1bc191d5406) Release v22.08.01, Commit [27093c2](27093c2e2c820a221bc8e7e7bc0725b8c1ccec8a) Merge commit '195e7f5' new version v22.08.01, Commit [2fdeb0a](https://github.com/davispuh/gear-emu/commit/2fdeb0a92fbca6f2ef6a63d2b57f41c9e47be276) Code cleanup UI on CogView.
+## Release Version [22.08.01](https://github.com/davispuh/gear-emu/releases/tag/v22.08.01) Commit [9648f0f](https://github.com/davispuh/gear-emu/commit/9648f0f935cd94dd8d08c084d61eb1bc191d5406) Release v22.08.01, Commit [27093c2](https://github.com/davispuh/gear-emu/commit/27093c2e2c820a221bc8e7e7bc0725b8c1ccec8a) Merge commit '195e7f5' new version v22.08.01, Commit [2fdeb0a](https://github.com/davispuh/gear-emu/commit/2fdeb0a92fbca6f2ef6a63d2b57f41c9e47be276) Code cleanup UI on CogView.
 
 - Changed in Cog View UI:
   - Separated and ordered in two different toolstips: buttons to perform actions, and labels to show information.

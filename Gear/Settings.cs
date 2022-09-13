@@ -115,5 +115,9 @@ namespace Gear.Properties
         /// @property ValuesShownAsHex
         /// @brief Values shown as hexadecimals as default initial setting on Cog View.
         /// @version v22.09.01 - Added as a User property of the program.
+
+        /// @propert PCHighlightedType
+        /// @brief Type of Highlight for line now executing.
+        /// @version v22.09.01 - Added as a User property of the program.
     }
 }

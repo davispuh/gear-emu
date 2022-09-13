@@ -115,11 +115,13 @@ namespace Gear.GUI
         /// @version v20.08.01 - Added.
         private bool SeparatedFileExist { get; set; }
 
-        /// @brief Return last plugin successfully loaded o saved.
-        /// @details Useful to remember last plugin directory.
+        /// <summary>Return last plugin successfully loaded o saved.</summary>
+        /// <remarks>In order this property could be bind with the
+        /// corresponding property setting, it must be public.</remarks>
         /// @note Include full path and name to the file.
         /// @version v22.06.02 - Modified visibility to enable data binding
         /// to program properties.
+        // ReSharper disable once MemberCanBePrivate.Global
         public string LastPlugin{ get; set; }
 
         /// @brief Complete Name for plugin, including path, for presentation purposes.
@@ -153,8 +155,11 @@ namespace Gear.GUI
         }
 
         /// <summary>Property to establish tabulator size for code editor.</summary>
+        /// <remarks>In order this property could be bind with the
+        /// corresponding property setting, it must be public.</remarks>
         /// @version v22.06.02 - Added as property to establish data binding
         /// to program properties and reformat editor text with new values.
+        // ReSharper disable once MemberCanBePrivate.Global
         public uint TabSize
         {
             get => _tabSize;
@@ -169,8 +174,11 @@ namespace Gear.GUI
 
         /// <summary>Property to set flag to embed the code of a plugin into XML,
         /// or to have it on a separated file.</summary>
+        /// <remarks>In order this property could be bind with the
+        /// corresponding property setting, it must be public.</remarks>
         /// @version v22.06.02 - Added as property to establish data binding
         /// to program properties.
+        // ReSharper disable once MemberCanBePrivate.Global
         public bool EmbeddedCode
         {
             get => _embeddedCode;
@@ -208,14 +216,17 @@ namespace Gear.GUI
             SeparatedFileExist = false;
             //bonded properties
             TabSize = Properties.Settings.Default.TabSize;
-            DataBindings.Add(new Binding("TabSize", Properties.Settings.Default,
-                "TabSize", false, DataSourceUpdateMode.OnPropertyChanged));
+            DataBindings.Add(new Binding("TabSize",
+                Properties.Settings.Default, "TabSize",
+                false, DataSourceUpdateMode.OnPropertyChanged));
             LastPlugin = Properties.Settings.Default.LastPlugin;
-            DataBindings.Add(new Binding("LastPlugin", Properties.Settings.Default,
-                "LastPlugin", false, DataSourceUpdateMode.OnPropertyChanged));
+            DataBindings.Add(new Binding("LastPlugin",
+                Properties.Settings.Default, "LastPlugin",
+                false, DataSourceUpdateMode.OnPropertyChanged));
             EmbeddedCode = Properties.Settings.Default.EmbeddedCode;
-            DataBindings.Add(new Binding("EmbeddedCode", Properties.Settings.Default,
-                "EmbeddedCode", false, DataSourceUpdateMode.OnPropertyChanged));
+            DataBindings.Add(new Binding("EmbeddedCode",
+                Properties.Settings.Default, "EmbeddedCode",
+                false, DataSourceUpdateMode.OnPropertyChanged));
             // setting default font
             defaultFont = new Font(FontFamily.GenericMonospace, 10, FontStyle.Regular);
             fontBold = new Font(defaultFont, FontStyle.Bold);
@@ -574,9 +585,8 @@ namespace Gear.GUI
         /// <summary>Add error details on screen list.</summary>
         /// <param name="compilerError">CompilerError object.</param>
         /// <exception cref="ArgumentNullException"></exception>
-        /// @version v22.06.01 - Added specific exception and changed
-        /// parameter name to clarify its meaning.
-        public void EnumErrors(CompilerError compilerError)
+        /// @version v22.09.01 - Changed access from `public`.
+        private void EnumErrors(CompilerError compilerError)
         {
             if (compilerError == null)
                 throw new ArgumentNullException(nameof(compilerError));

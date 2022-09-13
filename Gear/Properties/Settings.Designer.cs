@@ -11,20 +11,20 @@
 using System.ComponentModel;
 
 namespace Gear.Properties {
-    
-    
+
+
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.10.0.0")]
     public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
-        
+
         public static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
-        
+
         public static Settings Default {
             get {
                 return defaultInstance;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("5E-05")]
@@ -39,7 +39,7 @@ namespace Gear.Properties {
                 this["LastTickMarkGrid"] = value;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0.0001")]
@@ -54,7 +54,7 @@ namespace Gear.Properties {
                 this["LastTimeFrame"] = value;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("s")]
@@ -69,12 +69,12 @@ namespace Gear.Properties {
                 this["LogicViewTimeUnit"] = value;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
         [CategoryAttribute("Plugin Editor")]
-        [DescriptionAttribute("Flag to embed the C# code of the plugin into XML file, or to " + 
+        [DescriptionAttribute("Flag to embed the C# code of the plugin into XML file, or to " +
             "create in a separated .CS file.")]
         [DisplayNameAttribute("Embedded code?")]
         public bool EmbeddedCode {
@@ -85,7 +85,7 @@ namespace Gear.Properties {
                 this["EmbeddedCode"] = value;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute(".\\Plugins\\")]
@@ -100,7 +100,7 @@ namespace Gear.Properties {
                 this["LastPlugin"] = value;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("4")]
@@ -115,7 +115,7 @@ namespace Gear.Properties {
                 this["TabSize"] = value;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("ParallaxSpin")]
@@ -130,7 +130,7 @@ namespace Gear.Properties {
                 this["FreqFormat"] = value;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("s")]
@@ -145,7 +145,7 @@ namespace Gear.Properties {
                 this["HubTimeUnit"] = value;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
@@ -160,7 +160,7 @@ namespace Gear.Properties {
                 this["LastBinary"] = value;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("1024")]
@@ -175,7 +175,7 @@ namespace Gear.Properties {
                 this["UpdateEachSteps"] = value;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
@@ -190,11 +190,11 @@ namespace Gear.Properties {
                 this["UseAnimations"] = value;
             }
         }
-        
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        [CategoryAttribute("Propeller Emulator")]
+        [CategoryAttribute("Cog View")]
         [DescriptionAttribute("Decoded program values are shown as hexadecimals in Cog View.")]
         [DisplayNameAttribute("Values shown as hexadecimals")]
         public bool ValuesShownAsHex {
@@ -203,6 +203,21 @@ namespace Gear.Properties {
             }
             set {
                 this["ValuesShownAsHex"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("BoldAndFrame")]
+        [CategoryAttribute("Cog View")]
+        [DescriptionAttribute("Type of Highlight for line now executing.")]
+        [DisplayNameAttribute("Type of Highlight for PC line")]
+        public global::Gear.GUI.CogView.HighlightedTypeEnum PCHighlightedType {
+            get {
+                return ((Gear.GUI.CogView.HighlightedTypeEnum)(this["PCHighlightedType"]));
+            }
+            set {
+                this["PCHighlightedType"] = value;
             }
         }
     }

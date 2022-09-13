@@ -54,7 +54,6 @@ namespace Gear.GUI
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CogView));
             this.decodedPanel = new System.Windows.Forms.Panel();
             this.positionScroll = new System.Windows.Forms.VScrollBar();
             this.actionsToolStrip = new System.Windows.Forms.ToolStrip();
@@ -115,7 +114,6 @@ namespace Gear.GUI
             this.positionScroll.Location = new System.Drawing.Point(548, 50);
             this.positionScroll.Name = "positionScroll";
             this.positionScroll.Size = new System.Drawing.Size(17, 396);
-            this.positionScroll.SmallChange = 1;
             this.positionScroll.TabIndex = 2;
             this.positionScroll.TabStop = true;
             this.positionScroll.Scroll += new System.Windows.Forms.ScrollEventHandler(this.PositionScroll_Scroll);
@@ -141,7 +139,6 @@ namespace Gear.GUI
             //
             this.memoryViewButton.CheckOnClick = true;
             this.memoryViewButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.memoryViewButton.Image = ((System.Drawing.Image)(resources.GetObject("memoryViewButton.Image")));
             this.memoryViewButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.memoryViewButton.Name = "memoryViewButton";
             this.memoryViewButton.Size = new System.Drawing.Size(88, 22);
@@ -154,7 +151,6 @@ namespace Gear.GUI
             this.followPCButton.CheckOnClick = true;
             this.followPCButton.CheckState = System.Windows.Forms.CheckState.Checked;
             this.followPCButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.followPCButton.Image = ((System.Drawing.Image)(resources.GetObject("followPCButton.Image")));
             this.followPCButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.followPCButton.Name = "followPCButton";
             this.followPCButton.Size = new System.Drawing.Size(64, 22);
@@ -203,7 +199,6 @@ namespace Gear.GUI
             this.OpCodeSize.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.longOpcodes,
             this.shortOpcodes});
-            this.OpCodeSize.Image = ((System.Drawing.Image)(resources.GetObject("OpCodeSize.Image")));
             this.OpCodeSize.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.OpCodeSize.Name = "OpCodeSize";
             this.OpCodeSize.Size = new System.Drawing.Size(101, 22);
@@ -249,6 +244,7 @@ namespace Gear.GUI
             this.breakNone.AutoToolTip = true;
             this.breakNone.Checked = true;
             this.breakNone.CheckOnClick = true;
+            this.breakNone.CheckState = System.Windows.Forms.CheckState.Checked;
             this.breakNone.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.breakNone.Name = "breakNone";
             this.breakNone.Size = new System.Drawing.Size(134, 22);
