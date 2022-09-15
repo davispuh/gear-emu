@@ -41,9 +41,10 @@ using System.Xml;
 
 namespace Gear.GUI
 {
-    /// @brief View class for PropellerCPU emulator instance.
-    /// @details This class implements a view over a propeller emulator, with interface to control
-    /// the chip, like start, go through steps, reset or reload.
+    /// <summary>View class for PropellerCPU emulator instance.</summary>
+    /// <remarks>This class implements a view over a propeller emulator, with
+    /// interface to control the chip, like start, go through steps, reset
+    /// or reload.</remarks>
     /// @version v22.06.01 - Added custom debugger text.
     [DefaultProperty("Name"), DebuggerDisplay("{TextForDebugger,nq}")]
     public partial class Emulator : Form
@@ -71,15 +72,15 @@ namespace Gear.GUI
         /// @version v22.06.01 - Added.
         private readonly TabManager _docsManager;
 
-        /// @brief Stopwatch to periodically rerun a step of the emulation
+        /// <summary>Stopwatch to periodically rerun a step of the emulation</summary>
         /// @version v22.06.01 - Name changed to follow naming conventions.
         private readonly Timer _runTimer;
 
-        /// @brief Get if emulator is in running state.
+        /// <summary>Get if emulator is in running state.</summary>
         /// @version v20.10.01 - Added.
         private bool IsRunningState => _runTimer.Enabled;
 
-        /// @brief Get the last binary opened.
+        /// <summary>Get the last binary opened.</summary>
         /// @version v22.06.01 - Modified to support debugging info.
         public string LastBinary
         {
@@ -87,26 +88,29 @@ namespace Gear.GUI
             private set
             {
                 _lastBinary = value;
-                _binaryNameOnly = Path.GetFileName(Path.GetFileNameWithoutExtension(_lastBinary));
+                _binaryNameOnly = Path.GetFileName(
+                    Path.GetFileNameWithoutExtension(_lastBinary));
             }
         }
 
-        /// <summary>Returns a summary text of this class, to be used in debugger view.</summary>
+        /// <summary>Returns a summary text of this class, to be used in
+        /// debugger view.</summary>
         /// @version v22.06.01 - Added to provide debugging info.
         private string TextForDebugger =>
             $"{{{GetType().FullName}, Binary: {_binaryNameOnly}, Inst:" +
             $" {(_cpuHost == null ? "[none yet]" : _cpuHost.InstanceNumber.ToString("D2"))} }}";
 
-        /// @brief Text of the base %Form.
-        /// @version v22.06.01 - Added to prevent warning 'Virtual member call in constructor'.
+        /// <summary>Text of the base %Form.</summary>
+        /// @version v22.06.01 - Added to prevent warning 'Virtual member call
+        /// in constructor'.
         public sealed override string Text
         {
             get => base.Text;
             set => base.Text = $"Propeller: {value}";
         }
 
-        /// @brief Default Constructor.
-        /// @param sourceFileName Binary program loaded (path & name)
+        /// <summary>Default Constructor.</summary>
+        /// <param name="sourceFileName">Binary program loaded (path & name)</param>
         /// @version v22.06.01 Maintain tabs order: Added criteria for documents tab name generation for system plugins.
         /// @todo [Enhancement] Remove run timer and replace with a new runner in a different thread.
         public Emulator(string sourceFileName)
@@ -140,8 +144,8 @@ namespace Gear.GUI
             UpdateStepInterval();
         }
 
-        /// @brief Update value of system properties inside of
-        /// contained controls.
+        /// <summary>Update value of system properties inside of
+        /// contained controls.</summary>
         /// @version v22.07.01 - Removed SpinView control updating on
         /// Frequency format change, because of use of data binding on it.
         public void UpdateVarValue(string variableName)
@@ -192,7 +196,7 @@ namespace Gear.GUI
             }
         }
 
-        /// @brief Update step interval from default value.
+        /// <summary>Update step interval from default value.</summary>
         /// @version v20.09.01 - Added.
         private void UpdateStepInterval()
         {
@@ -229,10 +233,11 @@ namespace Gear.GUI
             closeButton.Enabled = newPlugin.IsClosable;
         }
 
-        /// @brief Delete a plugin from a propeller chip instance.
-        /// @details Delete a plugin from the actives plugins of the propeller instance,
-        /// effectively stopping the plugin. Remove also from pins and clock watch list.
-        /// @param plugin Instance of a Gear.PluginSupport.PluginCommon class to be detached.
+        /// <summary>Delete a plugin from a propeller chip instance.</summary>
+        /// <remarks>Delete a plugin from the actives plugins of the propeller instance,
+        /// effectively stopping the plugin. Remove also from pins and clock watch list.</remarks>
+        /// <param name="plugin">Instance of a Gear.PluginSupport.PluginCommon
+        /// class to be detached.</param>
         /// @version v15.03.26 - Added.
         private void DetachPlugin(PluginBase plugin)
         {
@@ -244,14 +249,14 @@ namespace Gear.GUI
             }
         }
 
-        /// @brief Run the emulator updating the screen between a number of steps.
-        /// @details The program property "UpdateEachSteps" gives the number of steps before
+        /// <summary>Run the emulator updating the screen between a number of steps.</summary>
+        /// <remarks>The program property "UpdateEachSteps" gives the number of steps before
         /// screen repaint.
         ///
         /// Adjusting this number in configuration (like increasing the number) enable to obtain
-        /// faster execution at expense of less screen responsiveness.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
+        /// faster execution at expense of less screen responsiveness.</remarks>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v22.06.01 - Fixed problem of enable/disable buttons get incoherent when the emulator arrives to a breakpoint.
         private void RunEmulatorStep(object sender, EventArgs e)
         {
@@ -265,8 +270,8 @@ namespace Gear.GUI
             RepaintViews(false);
         }
 
-        /// @brief Update Text and Images of buttons involved on running and
-        /// stop state of emulator.
+        /// <summary>Update Text and Images of buttons involved on running and
+        /// stop state of emulator.</summary>
         /// @version v22.04.02 - Incorporated step Instruction and step Clock
         /// buttons to be controlled.
         private void UpdateRunningButtons()
@@ -297,8 +302,9 @@ namespace Gear.GUI
         }
 
         /// <summary>Load a binary image from file.</summary>
-        /// <remarks>Generate a new instance of a <c>PropellerCPU</c> and load
+        /// <remarks>Generate a new instance of a `PropellerCPU` and load
         /// the program from the binary.</remarks>
+        /// <param name="fileName"></param>
         /// @version v22.06.01 - Parameter name changed to follow naming
         /// conventions and removed screen updating from here, to caller method.
         public bool OpenFile(string fileName)
@@ -332,17 +338,18 @@ namespace Gear.GUI
             }
         }
 
-        /// @brief Load a plugin from XML file.
-        /// @details Try to open the XML definition for the plugin from the
+        /// <summary>Load a plugin from XML file.</summary>
+        /// <remarks>Try to open the XML definition for the plugin from the
         /// file name given as parameter. Then extract information from the XML
         /// (class name, auxiliary references and source code to compile),
         /// trying to compile the C# source code (based on
         /// Gear.PluginSupport.PluginBase class) and returning the new class
         /// instance. If the compilation fails, then it opens the plugin editor
-        /// to show errors and source code.
-        /// @param fileName Name and path to the XML plugin file to open
-        /// @returns Reference to the new plugin instance (on success) or
-        /// NULL (on fail).
+        /// to show errors and source code.</remarks>
+        /// <param name="fileName">Name and path to the XML plugin file to
+        /// open.</param>
+        /// <returns>Reference to the new plugin instance (on success) or
+        /// NULL (on fail).</returns>
         /// @version v22.06.01 - Changed method name to clarify its meaning,
         /// changed method visibility, parameter name and local variable names
         /// changed to follow naming conventions. Added dialog to inform to
@@ -463,9 +470,9 @@ namespace Gear.GUI
             }
         }
 
-        /// @brief Select binary propeller image to load.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
+        /// <summary>Select binary propeller image to load.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v22.06.02 - Corrected error if no file name was selected
         /// on dialog, but pressed open button. Also changed local variable
         /// name to clarify its meaning.
@@ -493,10 +500,11 @@ namespace Gear.GUI
             }
         }
 
-        /// @brief Event to reload the whole %Propeller program from binary file.
-        /// @details It also reset the %Propeller Chip and all the plugins.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
+        /// <summary>Event to reload the whole %Propeller program from binary
+        /// file.</summary>
+        /// <remarks>It also reset the %Propeller Chip and all the plugins.</remarks>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v20.10.01 - UpdateRunningButtons.
         private void ReloadBinary_Click(object sender, EventArgs e)
         {
@@ -558,9 +566,9 @@ namespace Gear.GUI
             hubView.DataChanged(force);
         }
 
-        /// @brief Event to reset the whole %Propeller Chip.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
+        /// <summary>Event to reset the whole %Propeller Chip.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v20.10.01 - Update running buttons.
         private void ResetEmulator_Click(object sender, EventArgs e)
         {
@@ -569,9 +577,9 @@ namespace Gear.GUI
             RepaintViews(true);
         }
 
-        /// @brief Send the active tab to a floating window.
-        /// @param sender Reference to the object where this event was called.
-        /// @param e Class with the event details.
+        /// <summary>Send the active tab to a floating window.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v22.06.01 - Refactored to maintain tabs ordered.
         private void FloatActiveTab_Click(object sender, EventArgs e)
         {
@@ -602,9 +610,9 @@ namespace Gear.GUI
             _docsManager.FloatingTabsQty = _floatControls.Count;
         }
 
-        /// @brief Un-float the control, opening in a new tab.
-        /// @param control Control object to move.
-        /// @throws ArgumentNullException
+        /// <summary>Un-float the control, opening in a new tab.</summary>
+        /// <param name="control">Control object to move.</param>
+        /// <exception cref="ArgumentNullException"></exception>
         /// @version v22.06.01 - Changed method name from `Unfloat` and
         /// refactored to maintain documents tabs order.
         public void UnFloatCtrl(Control control)
@@ -620,9 +628,9 @@ namespace Gear.GUI
             _docsManager.FloatingTabsQty = _floatControls.Count;
         }
 
-        /// @brief Send the active tab to pin panel.
-        /// @param sender Reference to the object where this event was called.
-        /// @param e Class with the event details.
+        /// <summary>Send the active tab to pin panel.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v22.08.01 - Corrected error on restore in wrong position
         /// a unpinned tab when other where selected to pinned.
         private void PinActiveTab_Click(object sender, EventArgs e)
@@ -656,9 +664,9 @@ namespace Gear.GUI
             DocumentsTab_Click(this, EventArgs.Empty);
         }
 
-        /// @brief Unpin a view, attaching to a tab.
-        /// @param sender Reference to the object where this event was called.
-        /// @param e Class with the event details.
+        /// <summary>Unpin a view, attaching to a tab.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v22.06.01 - Refactored to maintain documents tabs order.
         private void UnpinButton_Click(object sender, EventArgs e)
         {
@@ -674,9 +682,9 @@ namespace Gear.GUI
             _docsManager.TabPinnedQty--;
         }
 
-        /// @brief Event to run the emulator freely.
-        /// @param sender Reference to the object where this event was called.
-        /// @param e Class with the event details.
+        /// <summary>Event to run the emulator freely.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v20.10.01 - UpdateRunningButtons.
         private void RunEmulator_Click(object sender, EventArgs e)
         {
@@ -684,9 +692,9 @@ namespace Gear.GUI
             UpdateRunningButtons();
         }
 
-        /// @brief Stop the emulation.
-        /// @param sender Reference to the object where this event was called.
-        /// @param e Class with the event details.
+        /// <summary>Stop the emulation.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v20.10.01 - UpdateRunningButtons.
         private void StopEmulator_Click(object sender, EventArgs e)
         {
@@ -695,9 +703,10 @@ namespace Gear.GUI
             RepaintViews(false); //added the repaint, to refresh the views
         }
 
-        /// @brief Run one clock tick of the active cog, stopping after executed.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
+        /// <summary>Run one clock tick of the active cog, stopping after
+        /// executed.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v22.04.02 - Corrected method name to clarify its meaning.
         private void StepClock_Click(object sender, EventArgs e)
         {
@@ -706,15 +715,17 @@ namespace Gear.GUI
             RepaintViews(false);
         }
 
-        /// @brief Event to run one instruction in emulator, stopping after executed.
-        /// @details Only makes sense to run a step  if a cog is selected.
-        /// @param sender Reference to the object where this event was called.
-        /// @param e Class with the event details.
+        /// <summary>Event to run one instruction in emulator, stopping after
+        /// executed.</summary>
+        /// <remarks>Only makes sense to run a step  if a cog is selected.</remarks>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v22.08.01 - Using new property on CogView to simplify logic.
         /// @todo Review visibility of step button when a CogView is not active
         private void StepInstruction_Click(object sender, EventArgs e)
         {
-            Control control = documentsTab.SelectedTab?.GetNextControl(documentsTab.SelectedTab, true);
+            Control control = documentsTab.SelectedTab?.GetNextControl(
+                documentsTab.SelectedTab, true);
             switch (control)
             {
                 case null:
@@ -729,9 +740,10 @@ namespace Gear.GUI
             RepaintViews(false);
         }
 
-        /// @brief Make a stop on the emulation, when a breakpoint is requested by a plugin.
-        /// @details This method would be called when a plugin want to stop, for example
-        /// when a breakpoint condition is satisfied.
+        /// <summary>Make a stop on the emulation, when a breakpoint is
+        /// requested by a plugin.</summary>
+        /// <remarks>This method would be called when a plugin want to stop,
+        /// for example when a breakpoint condition is satisfied.</remarks>
         /// @version v20.10.01 - UpdateRunningButtons.
         public void BreakPoint()
         {
@@ -740,10 +752,10 @@ namespace Gear.GUI
             RepaintViews(false);
         }
 
-        /// @brief Try to open a plugin, compiling it and attaching to the active
-        /// emulator instance.
-        /// @param sender Reference to the object where this event was called.
-        /// @param e Class with the event details.
+        /// <summary>Try to open a plugin, compiling it and attaching to the active
+        /// emulator instance.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v22.06.02 - Corrected error if no file name was selected
         /// on dialog, but pressed open button. Also changed local variable
         /// name to clarify its meaning.
@@ -767,17 +779,17 @@ namespace Gear.GUI
                 AttachPlugin(newPlugin, TabManager.OnlyRepetitionNumberedFromOne);
         }
 
-        /// @brief Event when the Emulator windows begin to close.
-        /// @param sender Reference to the object where this event was called.
-        /// @param e Class with the event details.
+        /// <summary>Event when the Emulator windows begin to close.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         private void Emulator_FormClosing(object sender, FormClosingEventArgs e)
         {
             _cpuHost.OnClose(sender, e);
         }
 
-        /// @brief Event when emulator goes out of focus.
-        /// @param sender Reference to the object where this event was called.
-        /// @param e Class with the event details.
+        /// <summary>Event when emulator goes out of focus.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v22.06.01 - Modified to support conditional painting.
         private void OnDeactivate(object sender, EventArgs e)
         {
@@ -786,11 +798,12 @@ namespace Gear.GUI
             hubView.RequestFullOnNextRepaint();
         }
 
-        /// @brief Close the plugin window and terminate the plugin instance.
-        /// @details Not only close the tab window, also detach the plugin
-        /// from the PropellerCPU what uses it.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
+        /// <summary>Close the plugin window and terminate the plugin
+        /// instance.</summary>
+        /// <remarks>Not only close the tab window, also detach the plugin
+        /// from the PropellerCPU what uses it.</remarks>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v22.06.01 - Refactored to maintain tabs order: remove
         /// tab associated to plugin from documents tabs.
         private void CloseActiveTab_Click(object sender, EventArgs e)
@@ -850,9 +863,10 @@ namespace Gear.GUI
                     closeButton.Enabled = false;
         }
 
-        /// @brief Process key press to manage the run state of emulator.
-        /// @param sender Reference to the object where this event was called.
-        /// @param e Class with the event details.
+        /// <summary>Process key press to manage the run state of
+        /// emulator.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e"> KeyPress event data arguments.</param>
         /// @version v22.06.01 - Refactored to improve logic.
         /// @todo [enhance:] More feedback: Add feedback of hot key ignored.
         private void DocumentsTab_KeyPress(object sender, KeyPressEventArgs e)
@@ -891,9 +905,9 @@ namespace Gear.GUI
             }
         }
 
-        /// @brief Refresh form's Icon.
-        /// @param sender Reference to the object where this event was called.
-        /// @param e Class with the event details.
+        /// <summary>Refresh form's Icon.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v20.10.01 - Added.
         private void Emulator_Load(object sender, EventArgs e)
         {

@@ -40,37 +40,42 @@ using System.Xml.Schema;
 
 namespace Gear.GUI
 {
-    /// @brief %Form to edit or create GEAR plugins.
+    /// <summary>%Form to edit or create GEAR plugins.</summary>
     public partial class PluginEditor : Form
     {
-        /// @brief Flag if the plugin definition has changed.
-        /// @details To determine changes, it includes not only the C# code,
-        /// but also class name and reference list.
+        /// <summary>Flag if the plugin definition has changed.</summary>
+        /// <remarks>To determine changes, it includes not only the C# code,
+        /// but also class name and reference list.</remarks>
         /// @version v22.06.01 - Name changed to follow naming conventions.
         private bool _codeChanged;
-        /// @brief Enable or not change detection event.
+
+        /// <summary>Enable or not change detection event.</summary>
         /// @version v22.06.01 - Name changed to follow naming conventions.
         private bool _changeDetectEnabled;
 
-        /// @brief Regex to looking for class name inside the code of plugin.
+        /// <summary>Regex to looking for class name inside the code of
+        /// plugin.</summary>
         /// @version v15.03.26 - Added.
         private static readonly Regex ClassNameExpressionRegex = new Regex(
             @"\bclass\s+" +
             @"(?<classname>[@]?[_]*[A-Z|a-z|0-9]+[A-Z|a-z|0-9|_]*)" +
             @"\s*\:\s*PluginBase\b",
             RegexOptions.Compiled);
-        /// @brief Regex for syntax highlight.
+
+        /// <summary>Regex for syntax highlight.</summary>
         /// @version v15.03.26 - Added.
         private static readonly Regex LineExpressionRegex = new Regex(
             @"\n",
             RegexOptions.Compiled);
-        /// @brief Regex for parse token in lines for syntax highlight.
+
+        /// <summary>Regex for parse token in lines for syntax
+        /// highlight.</summary>
         /// @version v22.06.01 - Name changed to follow naming conventions.
         private readonly Regex _codeLineRegex = new Regex(
             @"([ \t{}();:])",
             RegexOptions.Compiled);
 
-        /// @brief keywords to highlight in editor code
+        /// <summary>keywords to highlight in editor code</summary>
         /// @version v22.06.01 - Name changed to follow naming conventions.
         private static readonly HashSet<string> Keywords = new HashSet<string>
         {
@@ -96,7 +101,7 @@ namespace Gear.GUI
         /// to program properties.
         private uint _tabSize;
 
-        /// @brief Tabulation array for editor.
+        /// <summary>Tabulation array for editor.</summary>
         /// @version v22.06.01 - Name changed to follow naming conventions.
         private readonly int[] _tabs = new int[32];
 
@@ -111,7 +116,7 @@ namespace Gear.GUI
         /// @version v22.06.02 - Added.
         private string _pluginFileName;
 
-        /// @brief Detection of separated file for code.
+        /// <summary>Detection of separated file for code.</summary>
         /// @version v20.08.01 - Added.
         private bool SeparatedFileExist { get; set; }
 
@@ -124,7 +129,8 @@ namespace Gear.GUI
         // ReSharper disable once MemberCanBePrivate.Global
         public string LastPlugin{ get; set; }
 
-        /// @brief Complete Name for plugin, including path, for presentation purposes.
+        /// <summary>Complete Name for plugin, including path, for
+        /// presentation purposes.</summary>
         /// @version v15.03.26 - Added.
         private string PluginFileName
         {
@@ -140,7 +146,7 @@ namespace Gear.GUI
             }
         }
 
-        /// @brief Attribute for changed plugin detection.
+        /// <summary>Attribute for changed plugin detection.</summary>
         /// @version v22.04.02 - Changed to private property.
         private bool CodeChanged
         {
@@ -199,11 +205,11 @@ namespace Gear.GUI
             set => base.Font = value;
         }
 
-        /// @brief Default constructor.
-        /// @details Initialize the class, defines columns for error grid, setting changes
-        /// detection, and trying to load the default template for plugin.
-        /// @param loadDefaultTemplate Indicate to load default template (=true) or
-        /// no template at all(=false).
+        /// <summary>Default constructor.</summary>
+        /// <remarks>Initialize the class, defines columns for error grid, setting changes
+        /// detection, and trying to load the default template for plugin.</remarks>
+        /// <param name="loadDefaultTemplate">Indicate to load default
+        /// template (=true) or no template at all(=false).</param>
         /// @version v22.06.02 - Added data bindings of program settings
         /// `EmbeddedCode`, `TabSize`, `LastPlugin` and `UseAnimations` properties.
         public PluginEditor(bool loadDefaultTemplate)
@@ -257,7 +263,7 @@ namespace Gear.GUI
             progressHighlight.Visible = false;
         }
 
-        /// @brief Update tab positions, considering default tab size.
+        /// <summary>Update tab positions, considering default tab size.</summary>
         /// @version v22.06.02 - Changed method name to clarify its meaning,
         /// modified to use new property TabSize, changed method visibility,
         /// and separate logic of reformat in new method
@@ -302,8 +308,9 @@ namespace Gear.GUI
                 codeEditorView.SelectionTabs = _tabs;
         }
 
-        /// @brief Shows or hide the error grid.
-        /// @param enable Enable (=true) or disable (=False) the error grid.
+        /// <summary>Shows or hide the error grid.</summary>
+        /// <param name="enable">Enable (=true) or disable (=False) the error
+        /// grid.</param>
         public void ShowErrorGrid(bool enable)
         {
             if (enable)
@@ -312,19 +319,23 @@ namespace Gear.GUI
                 errorListView.Hide();
         }
 
-        /// @brief Update titles of window and metadata, considering modified state.
-        /// @details Considering name of the plugin and showing modified state,
-        /// to tell the user if need to save.
+        /// <summary>Update titles of window and metadata, considering
+        /// modified state.</summary>
+        /// <remarks>Considering name of the plugin and showing modified state,
+        /// to tell the user if need to save.</remarks>
         /// @version v22.06.01 - Using string interpolation.
         private void UpdateTitles()
         {
             Text = $"Plugin Editor: {PluginFileName}{(CodeChanged ? " *" : string.Empty)}";
         }
 
-        /// <summary>Load a plugin from File in Plugin Editor, updating the screen.</summary>
+        /// <summary>Load a plugin from File in Plugin Editor, updating the
+        /// screen.</summary>
         /// <param name="fileName">Name of the file to open.</param>
-        /// <param name="displayErrors">Flag to show errors in the error grid.</param>
-        /// <returns>Success on load the file on the editor (=true) or fail (=false).</returns>
+        /// <param name="displayErrors">Flag to show errors in the error
+        /// grid.</param>
+        /// <returns>Success on load the file on the editor (=true) or
+        /// fail (=false).</returns>
         /// @version v22.06.02 - Modified method name to clarify its meaning,
         /// and modified to use new EmbeddedCode property.
         public bool OpenPluginFromFile(string fileName, bool displayErrors)
@@ -443,9 +454,9 @@ namespace Gear.GUI
             }
         }
 
-        /// @brief Show message on DTD validation error.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
+        /// <summary>Show message on DTD validation error.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Validation event data arguments.</param>
         /// @version v22.06.01 - Using string interpolation.
         private static void DTDValidationErrHandler(object sender, ValidationEventArgs e)
         {
@@ -453,6 +464,7 @@ namespace Gear.GUI
         }
 
         /// <summary>Save a XML file with the plugin information.</summary>
+        /// <param name="fileName">Name of the file to save.</param>
         /// @version v22.06.02 - Modified to use new EmbeddedCode property and
         /// changed method visibility.
         private void SavePluginToFile(string fileName)
@@ -515,10 +527,11 @@ namespace Gear.GUI
             CodeChanged = false;
         }
 
-        /// @brief Method to compile C# source code to check errors on it.
-        /// @details Actually, call a C# compiler to determine errors, using references.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
+        /// <summary>Method to compile C# source code to check errors on it.</summary>
+        /// <remarks>Actually, call a C# compiler to determine errors,
+        /// using references.</remarks>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v22.06.01 - Using string interpolation.
         private void CheckSource_Click(object sender, EventArgs e)
         {
@@ -597,11 +610,11 @@ namespace Gear.GUI
             errorListView.Items.Add(item);
         }
 
-        /// @brief Show a dialog to load a file with plugin information.
-        /// @details This method checks if the previous plugin data was
-        /// modified and not saved.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
+        /// <summary>Show a dialog to load a file with plugin information.</summary>
+        /// <remarks>This method checks if the previous plugin data was
+        /// modified and not saved.</remarks>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v22.06.02 - Corrected errors if no file name was selected
         /// on dialog, but pressed open button, and to show dialog to save
         /// before lose changes in all circumstances.
@@ -640,10 +653,10 @@ namespace Gear.GUI
             Properties.Settings.Default.Save();
         }
 
-        /// @brief Show dialog to save a plugin information into file, using
-        /// GEAR plugin format.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
+        /// <summary>Show dialog to save a plugin information into file, using
+        /// GEAR plugin format.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         private void SaveButton_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrEmpty(_pluginFileName))
@@ -652,9 +665,10 @@ namespace Gear.GUI
                 SaveAsButton_Click(sender, e);
         }
 
-        /// @brief Show dialog to save a plugin information into file, using GEAR plugin format.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
+        /// <summary>Show dialog to save a plugin information into file,
+        /// using GEAR plugin format.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         private void SaveAsButton_Click(object sender, EventArgs e)
         {
             SaveFileDialog dialog = new SaveFileDialog
@@ -681,7 +695,8 @@ namespace Gear.GUI
         }
 
         /// <summary>Add a reference from the <c>ReferenceName</c> text box.</summary>
-        /// <remarks>Also update change state for the plugin module, marking as changed.</remarks>
+        /// <remarks>Also update change state for the plugin module, marking
+        /// as changed.</remarks>
         /// <param name="sender">Reference to object where event was raised.</param>
         /// <param name="e">Event data arguments.</param>
         private void AddReferenceButton_Click(object sender, EventArgs e)
@@ -693,11 +708,11 @@ namespace Gear.GUI
             CodeChanged = true;
         }
 
-        /// @brief Remove the selected reference of the list.
-        /// @details Also update change state for the plugin module, marking
-        /// as changed.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
+        /// <summary>Remove the selected reference of the list.</summary>
+        /// <remarks>Also update change state for the plugin module, marking
+        /// as changed.</remarks>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         private void RemoveReferenceButton_Click(object sender, EventArgs e)
         {
             if (referencesList.SelectedIndex == -1)
@@ -706,9 +721,10 @@ namespace Gear.GUI
             CodeChanged = true;
         }
 
-        /// @brief Position the cursor in code window, corresponding to selected error row.
-        /// @param sender Object who called this on event.
-        /// @param e EventArgs class with a list of argument to the event call.
+        /// <summary>Position the cursor in code window, corresponding
+        /// to selected error row.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         private void ErrorView_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (errorListView.SelectedIndices.Count < 1)
@@ -733,9 +749,9 @@ namespace Gear.GUI
             catch (FormatException) { } //on errors do nothing
         }
 
-        /// @brief Check syntax on the C# source code.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
+        /// <summary>Check syntax on the C# source code.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v14.07.03 - Added.
         private void SyntaxButton_Click(object sender, EventArgs e)
         {
@@ -768,11 +784,11 @@ namespace Gear.GUI
             _changeDetectEnabled = true; //restore change detection
         }
 
-        /// @brief Auxiliary method to check syntax.
-        /// @details Examines line by line, parsing reserved C# words.
-        /// @param line Text line from the source code.
-        /// @param[in,out] commentMultiline Flag to indicate if it is on comment mode
-        /// between multi lines (=true) or normal mode (=false).
+        /// <summary>Auxiliary method to check syntax.</summary>
+        /// <remarks>Examines line by line, parsing reserved C# words.</remarks>
+        /// <param name="line">Text line from the source code.</param>
+        /// <param name="commentMultiline">Flag to indicate if it is on comment mode
+        /// between multi lines (=true) or normal mode (=false).</param>
         /// @version v22.06.01 - Changed from recursive to iterative.
         private void ParseLine(string line, ref bool commentMultiline)
         {
@@ -878,10 +894,11 @@ namespace Gear.GUI
             }
         }
 
-        /// @brief Update change state for code text box.
-        /// @details It marks as changed, to prevent not averted loses at closure of the window.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
+        /// <summary>Update change state for code text box.</summary>
+        /// <remarks>It marks as changed, to prevent not averted loses at
+        /// closure of the window.</remarks>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v15.03.26 - Added.
         private void CodeEditorView_TextChanged(object sender, EventArgs e)
         {
@@ -889,11 +906,13 @@ namespace Gear.GUI
                 CodeChanged = true;
         }
 
-        /// @brief Detect the plugin class name from the code text given as parameter.
-        /// @param code Text of the source code of plugin to look for the class
-        /// name declaration.
-        /// @param[out] match Name of the plugin class found. If not, it will be null.
-        /// @returns If a match had found =True, else =False.
+        /// <summary>Detect the plugin class name from the code text given as
+        /// parameter.</summary>
+        /// <param name="code">Text of the source code of plugin to look for
+        /// the class name declaration.</param>
+        /// <param name="match">Name of the plugin class found. If not,
+        /// it will be null.</param>
+        /// <returns>If a match had found =True, else =False.</returns>
         /// @version v22.06.01 - Changed to static access and refactored.
         private static bool DetectClassName(string code, out string match)
         {
@@ -910,12 +929,12 @@ namespace Gear.GUI
             return true;
         }
 
-        /// @brief Event handler for closing plugin window.
-        /// @details If code, references or class name have changed and them
+        /// <summary>Event handler for closing plugin window.</summary>
+        /// <remarks>If code, references or class name have changed and them
         /// are not saved, a dialog is presented to the user to proceed or
-        /// abort the closing.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
+        /// abort the closing.</remarks>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v15.03.26 - Added.
         private void PluginEditor_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -940,9 +959,9 @@ namespace Gear.GUI
             return confirm == DialogResult.OK;
         }
 
-        /// @brief Toggle the button state, updating the name & tooltip text.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
+        /// <summary>Toggle the button state, updating the name & tooltip text.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v22.06.02 - Modified to use new EmbeddedCode property and
         /// changed method visibility.
         private void EmbeddedCode_Click(object sender, EventArgs e)
@@ -950,7 +969,7 @@ namespace Gear.GUI
             EmbeddedCode = !EmbeddedCode;
         }
 
-        /// @brief Update the name & tooltip text depending on state.
+        /// <summary>Update the name & tooltip text depending on state.</summary>
         /// @version v22.06.02 - modified to use new name of Embedded code button.
         private void UpdateTextEmbeddedCodeButton()
         {
@@ -968,9 +987,9 @@ namespace Gear.GUI
             }
         }
 
-        /// @brief On visible property changed, perform layout on tool strip.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
+        /// <summary>On visible property changed, perform layout on tool strip.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v20.08.01 - Added.
         private void ProgressHighlight_VisibleChanged(object sender, EventArgs e)
         {
@@ -978,9 +997,9 @@ namespace Gear.GUI
             toolStripMain.Refresh();
         }
 
-        /// @brief Refresh form's Icon
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
+        /// <summary>Refresh form's Icon.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v20.10.01 - Added.
         private void PluginEditor_Load(object sender, EventArgs e)
         {

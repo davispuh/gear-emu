@@ -31,49 +31,51 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Forms;
 
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable ForCanBeConvertedToForeach
 // ReSharper disable StringLiteralTypo
 // ReSharper disable InvalidXmlDocComment
 // ReSharper disable InconsistentNaming
 
-/// @brief Core of the emulation for %Propeller (model objects).
+/// <summary>Core of the emulation for %Propeller (model objects).</summary>
 namespace Gear.EmulationCore
 {
-    /// @brief Identifiers for hub operations.
+    /// <summary>Identifiers for hub operations.</summary>
     /// @version v22.05.04 - Refactored enum codes to be clearer and to
     /// follow naming conventions.
     public enum HubOperationCodes : byte
     {
-        /// @brief Setting the clock.
+        /// <summary>Setting the clock.</summary>
         ClkSet = 0,
-        /// @brief Getting the %Cog ID.
+        /// <summary>Getting the %Cog ID.</summary>
         CogId = 1,
-        /// @brief Start or restart a %Cog by ID or next available.
+        /// <summary>Start or restart a %Cog by ID or next available.</summary>
         CogInit = 2,
-        /// @brief Stop %Cog by its ID.
+        /// <summary>Stop %Cog by its ID.</summary>
         CogStop = 3,
-        /// @brief Check out new semaphore and get its ID.
+        /// <summary>Check out new semaphore and get its ID.</summary>
         LockNew = 4,
-        /// @brief Return semaphore back to semaphore pool, releasing it for future
-        /// LOCKNEW requests.
+        /// <summary>Return semaphore back to semaphore pool, releasing it for
+        /// future LOCKNEW requests.</summary>
         LockReturn = 5,
-        /// @brief Set semaphore to true and get its previous state.
+        /// <summary>Set semaphore to true and get its previous state.</summary>
         LockSet = 6,
-        /// @brief Clear semaphore to false and get its previous state.
+        /// <summary>Clear semaphore to false and get its previous state.</summary>
         LockClear = 7
     }
 
-    /// @brief Possible pin states for P1 Chip.
+    /// <summary>Possible pin states for P1 Chip.</summary>
     public enum PinState : byte
     {
-        /// @brief Pin Floating.
+        /// <summary>Pin Floating.</summary>
         FLOATING = 4,
-        /// @brief Output Low (0V)
+        /// <summary>Output Low (0V).</summary>
         OUTPUT_LO = 2,
-        /// @brief Output Hi (3.3V)
+        /// <summary>Output Hi (3.3V).</summary>
         OUTPUT_HI = 3,
-        /// @brief Input Low (0V)
+        /// <summary>Input Low (0V).</summary>
         INPUT_LO = 0,
-        /// @brief Input Hi (3.3V)
+        /// <summary>Input Hi (3.3V).</summary>
         INPUT_HI = 1,
     }
 
@@ -140,11 +142,12 @@ namespace Gear.EmulationCore
         /// @version v22.06.01 - Added.
         public int InstanceNumber { get; }
 
-        /// @brief Array of cogs in the CPU.
+        /// <summary>Array of cogs in the CPU.</summary>
         private readonly Cog[] _cogs;
-        /// @brief Number of cogs Running in the CPU.
-        /// @details Helpful to detect when all the cogs are stopped so you can
-        /// stop the emulator.
+
+        /// <summary>Number of cogs Running in the CPU.</summary>
+        /// <remarks>Helpful to detect when all the cogs are stopped so you can
+        /// stop the emulator.</remarks>
         /// @version v22.05.04 - Name changed to follow naming conventions.
         private uint _cogsRunning;
 
@@ -156,6 +159,7 @@ namespace Gear.EmulationCore
         /// interpreted program.</summary>
         /// @version v22.05.04 - Name changed to follow naming conventions.
         private readonly bool[] _locksAvailable;
+
         /// <summary>Locking state of a requested lock.</summary>
         /// @version v22.05.04 - Name changed to follow naming conventions.
         private readonly bool[] _locksState;
@@ -163,6 +167,7 @@ namespace Gear.EmulationCore
         /// <summary></summary>
         /// @version v22.05.04 - Name changed to follow naming conventions.
         private readonly ClockSource[] _clockSources;
+
         /// <summary></summary>
         /// @version v22.05.04 - Name changed to follow naming conventions.
         private readonly SystemXtal _coreClockSource;
@@ -170,12 +175,15 @@ namespace Gear.EmulationCore
         /// <summary>Pins driven by a plugin, system or user types.</summary>
         /// @version v22.05.04 - Name changed to clarify.
         private ulong _pinsDriven;
+
         /// <summary>Pins that aren't used, electrically floating.</summary>
         /// @version v22.05.04 - Name changed to follow naming conventions.
         private ulong _pinsFloating;
+
         /// <summary>Indicator flag if any pin has changed.</summary>
         /// @version v22.06.02 - Name changed to clarify its meaning.
         private bool _anyPinChanged;
+
         /// <summary>Array coding the state of each pin.</summary>
         /// Mainly used to expose to plugins the pin state of CPU.
         /// @version v22.05.04 - Name changed to follow naming conventions.
@@ -188,45 +196,55 @@ namespace Gear.EmulationCore
         /// <summary>Remember original Clock mode, used to reset the CPU.</summary>
         /// @version v22.05.04 - Added.
         private byte _originalClockMode;
+
         /// <summary>Frequency of external crystal</summary>
         /// @version v22.05.04 - Name changed to follow naming conventions.
         private uint _xtalFreq;
+
         /// <summary>Frequency of CPU Core.</summary>
         /// @version v22.05.04 - Name changed to follow naming conventions.
         private uint _coreFreq;
 
-        /// @brief Reference to the emulator instance running this CPU.
+        /// <summary>Reference to the emulator instance running this CPU.</summary>
         /// @version v22.05.04 - Name changed to follow naming conventions.
         private readonly Emulator _emulator;
 
-        /// @brief List of Handlers for clock ticks on plugins.
+        /// <summary>List of Handlers for clock ticks on plugins.</summary>
         /// @version v22.05.04 - Name changed to follow naming conventions.
         private readonly List<PluginBase> _tickHandlers;
-        /// @brief List of Handlers for Pin changes on plugins.
+
+        /// <summary>List of Handlers for Pin changes on plugins.</summary>
         /// @version v22.05.04 - Name changed to follow naming conventions.
         private readonly List<PluginBase> _pinHandlers;
-        /// @brief List of active PlugIns (include system ones, like cog views, etc).
+
+        /// <summary>List of active PlugIns (include system ones, like cog
+        /// views, etc).</summary>
         /// @version v22.05.04 - Name changed to follow naming conventions.
         private readonly List<PluginBase> _plugIns;
 
-        /// <summary>Event to launch when subscribed properties are changed.</summary>
-        /// @version v22.05.04 - Added to implement interface INotifyPropertyChanged.
+        /// <summary>Event to launch when subscribed properties are
+        /// changed.</summary>
+        /// @version v22.05.04 - Added to implement interface
+        /// INotifyPropertyChanged.
         public event PropertyChangedEventHandler PropertyChanged;
 
-        /// @brief Emulation Time in seconds.
+        /// <summary>Emulation Time in seconds.</summary>
         /// @version v22.05.04 - Blended property with former internal member
         /// Time, to a auto value with private setter.
         public double EmulatorTime { get; private set; }
+
         /// <summary>System Counter in ticks units.</summary>
         /// @version v22.05.04 - Blended property with former internal member
         /// SystemCounter, to a auto value with private setter.
         public uint Counter { get; private set; }
+
         /// <summary></summary>
         /// @version v22.05.04 - Blended property with former internal member
         /// RingPosition, to a auto value with private setter.
         public uint RingPosition { get; private set; }
 
         #region Registers
+
         /// <summary>Property to return only register of <c>DIRA</c> pins
         /// (<c>P31..P0</c>).</summary>
         /// @version v22.05.04 - Property name changed to clarify meaning of it.
@@ -293,9 +311,9 @@ namespace Gear.EmulationCore
             }
         }
 
-        /// @brief Property to return complete register of <c>DIR</c> pins
-        /// (<c>P63..P0</c>).
-        /// @details Only take Pin use of ACTIVES cogs, making OR between them.
+        /// <summary>Property to return complete register of <c>DIR</c> pins
+        /// (<c>P63..P0</c>).</summary>
+        /// <remarks>Only take Pin use of ACTIVES cogs, making OR between them.</remarks>
         /// @version v22.05.04 - Property name changed to clarify meaning of it.
         /// @todo Parallelism [complex:low, cycles:8] point in loop of_cogs[].RegisterDIR
         public ulong RegisterDIR
@@ -310,9 +328,9 @@ namespace Gear.EmulationCore
             }
         }
 
-        /// @brief Property to return complete register of <c>IN</c> pins
-        /// (<c>P63..P0</c>).
-        /// @details Only take Pin use of ACTIVES cogs.
+        /// <summary>Property to return complete register of <c>IN</c> pins
+        /// (<c>P63..P0</c>).</summary>
+        /// <remarks>Only take Pin use of ACTIVES cogs.</remarks>
         /// @version v22.05.04 - Property name changed to clarify meaning of it.
         /// @todo Parallelism [complex:low, cycles:8] point in loop _cogs[].RegisterOUT
         public ulong RegisterIN
@@ -328,9 +346,9 @@ namespace Gear.EmulationCore
             }
         }
 
-        /// @brief Property to return complete register of <c>OUT</c> pins
-        /// (<c>P63..P0</c>).
-        /// @details Only take Pin use of ACTIVES cogs, making OR between them.
+        /// <summary>Property to return complete register of <c>OUT</c> pins
+        /// (<c>P63..P0</c>).</summary>
+        /// <remarks>Only take Pin use of ACTIVES cogs, making OR between them.</remarks>
         /// @version v22.05.04 - Property name changed to clarify meaning of it.
         /// @todo Parallelism [complex:low, cycles:8] point in loop _cogs[].RegisterOUT
         public ulong RegisterOUT
@@ -479,6 +497,11 @@ namespace Gear.EmulationCore
         /// <summary>Default Constructor.</summary>
         /// <param name="emulator">Reference to the Gear.GUI.Emulator instance
         /// controlling this PropellerCPU.</param>
+        /// <exception cref="ArrayTypeMismatchException"></exception>
+        /// <exception cref="RankException">Origin matrix is multidimensional.</exception>
+        /// <exception cref="InvalidCastException">At least one element of
+        /// origin <see cref="Array" /> class can not be converted to
+        /// destination array type.</exception>
         /// @version v22.06.01 - Support added for instance numbering.
         public PropellerCPU(Emulator emulator)
         {
@@ -511,20 +534,20 @@ namespace Gear.EmulationCore
         /// @version v22.06.01 - Added to support instance numbering.
         ~PropellerCPU() => _instances--;
 
-        /// @brief Set a breakpoint at this CPU, showing that in the emulator
-        /// where this runs.
+        /// <summary>Set a breakpoint at this CPU, showing that in the emulator
+        /// where this runs.</summary>
         public void BreakPoint()
         {
             _emulator.BreakPoint();
         }
 
-        /// @brief Validate binary length and copy its contents to %Propeller
-        /// chip memory.
-        /// @param program Byte stream to file.
-        /// @throw ArgumentNullException If parameter array for program is null.
-        /// @throw BinarySizeException If binary file size is zero.
-        /// @throw BinarySizeException If binary file size is bigger than physical
-        /// memory of P1.
+        /// <summary>Validate binary length and copy its contents to %Propeller
+        /// chip memory.</summary>
+        /// <param name="program">Byte stream to file.</param>
+        /// <exception cref="ArgumentNullException">If parameter array for
+        /// program is null.</exception>
+        /// <exception cref="BinarySizeException">If binary file size is zero
+        /// or is bigger than physical memory of P1.</exception>
         /// @issue{20} Detect binary size bigger than physical memory of CPU.
         /// @version v20.09.02 - Added.
         /// @todo [possible bug] Analyze initial decoded clock modes. Why do we need separated logic on Initialize()?
@@ -580,9 +603,9 @@ namespace Gear.EmulationCore
             handler?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        /// @brief Return a reference to the cog.
-        /// @param cogId Cog number to get.
-        /// @returns Return the reference to the cog.
+        /// <summary>Return a reference to the cog.</summary>
+        /// <param name="cogId">Cog number to get.</param>
+        /// <returns>Return the reference to the cog.</returns>
         public Cog GetCog(int cogId)
         {
             return cogId < 0 || cogId >= _cogs.Length ?
@@ -616,10 +639,10 @@ namespace Gear.EmulationCore
                 (PLLGroup)_clockSources[cogId];
         }
 
-        /// @brief Include a plugin in active plugin list of propeller instance.
-        /// @details It see if the plugin exist already to insert or not.
-        /// @param plugin Compiled plugin reference to include.
-        /// @throws ArgumentNullException If parameter plugin is null.
+        /// <summary>Include a plugin in active plugin list of propeller instance.</summary>
+        /// <remarks>It see if the plugin exist already to insert or not.</remarks>
+        /// <param name="plugin">Compiled plugin reference to include.</param>
+        /// <exception cref="ArgumentNullException">If parameter plugin is null.</exception>
         /// @version v22.05.04 - Added exception.
         public void IncludePlugin(PluginBase plugin)
         {
@@ -629,12 +652,13 @@ namespace Gear.EmulationCore
                 _plugIns.Add(plugin);
         }
 
-        /// @brief Remove a plugin from the active plugin list of propeller instance
-        /// @details Only if the plugin exists on the list, this method removes from it.
+        /// <summary>Remove a plugin from the active plugin list of propeller
+        /// instance.</summary>
+        /// <remarks>Only if the plugin exists on the list, this method removes from it.
         /// Before detach, the `OnClose()` method of plugin is invoked, to do
-        /// housekeeping, for example to clear pins managed by the plugin.
-        /// @param plugin Compiled plugin reference to remove.
-        /// @throws ArgumentNullException If parameter plugin is null.
+        /// housekeeping, for example to clear pins managed by the plugin.</remarks>
+        /// <param name="plugin">Compiled plugin reference to remove.</param>
+        /// <exception cref="ArgumentNullException">If parameter plugin is null.</exception>
         /// @version v22.05.04 - Added exception.
         public void RemovePlugin(PluginBase plugin)
         {
@@ -648,10 +672,10 @@ namespace Gear.EmulationCore
             _plugIns.Remove(plugin);
         }
 
-        /// @brief Add a plugin to be notified on clock ticks.
-        /// @details It see if the plugin exist already to insert or not.
-        /// @param plugin Compiled plugin reference to include.
-        /// @throws ArgumentNullException If parameter plugin is null.
+        /// <summary>Add a plugin to be notified on clock ticks.</summary>
+        /// <remarks>It see if the plugin exist already to insert or not.</remarks>
+        /// <param name="plugin">Compiled plugin reference to include.</param>
+        /// <exception cref="ArgumentNullException">If parameter plugin is null.</exception>
         public void NotifyOnClock(PluginBase plugin)
         {
             if (plugin == null)
@@ -660,10 +684,11 @@ namespace Gear.EmulationCore
                 _tickHandlers.Add(plugin);
         }
 
-        /// @brief Remove a plugin from the clock notify list.
-        /// @details Only if the plugin exists on the list, this method removes from it.
-        /// @param plugin Compiled plugin reference to remove.
-        /// @throws ArgumentNullException If parameter plugin is null.
+        /// <summary>Remove a plugin from the clock notify list.</summary>
+        /// <remarks>Only if the plugin exists on the list, this method
+        /// removes from it.</remarks>
+        /// <param name="plugin">Compiled plugin reference to remove.</param>
+        /// <exception cref="ArgumentNullException">If parameter plugin is null.</exception>
         /// @version v22.05.04 - Added exception.
         public void RemoveOnClock(PluginBase plugin)
         {
@@ -673,10 +698,10 @@ namespace Gear.EmulationCore
                 _tickHandlers.Remove(plugin);
         }
 
-        /// @brief Add a plugin to be notified on pin changes.
-        /// @details It see if the plugin exist already to insert or not.
-        /// @param plugin Compiled plugin reference to include.
-        /// @throws ArgumentNullException If parameter plugin is null.
+        /// <summary>Add a plugin to be notified on pin changes.</summary>
+        /// <remarks>It see if the plugin exist already to insert or not.</remarks>
+        /// <param name="plugin">Compiled plugin reference to include.</param>
+        /// <exception cref="ArgumentNullException">If parameter plugin is null.</exception>
         /// @version v22.05.04 - Added exception.
         public void NotifyOnPins(PluginBase plugin)
         {
@@ -686,10 +711,11 @@ namespace Gear.EmulationCore
                 _pinHandlers.Add(plugin);
         }
 
-        /// @brief Remove a plugin from the pin changed notify list.
-        /// @details Only if the plugin exists on the list, this method removes from it.
-        /// @param plugin Compiled plugin reference to remove.
-        /// @throws ArgumentNullException If parameter plugin is null.
+        /// <summary>Remove a plugin from the pin changed notify list.</summary>
+        /// <remarks>Only if the plugin exists on the list, this method
+        /// removes from it.</remarks>
+        /// <param name="plugin">Compiled plugin reference to remove.</param>
+        /// <exception cref="ArgumentNullException">If parameter plugin is null.</exception>
         /// @version v22.05.04 - Added exception.
         public void RemoveOnPins(PluginBase plugin)
         {
@@ -699,9 +725,9 @@ namespace Gear.EmulationCore
                 _pinHandlers.Remove(plugin);
         }
 
-        /// @brief Reset the propeller CPU to initial state.
-        /// @details Release cog instances, clock sources, clear locks
-        /// and pins, and reset plugins.
+        /// <summary>Reset the propeller CPU to initial state.</summary>
+        /// <remarks>Release cog instances, clock sources, clear locks
+        /// and pins, and reset plugins.</remarks>
         /// @version v22.05.03 - Added new required parameter cog number to
         /// new Interpreted cog.
         public void Reset()
@@ -740,8 +766,8 @@ namespace Gear.EmulationCore
             _cogsRunning = 1;
         }
 
-        /// @brief Stop a cog of the P1 Chip.
-        /// @param cogId Cog number to stop.
+        /// <summary>Stop a cog of the P1 Chip.</summary>
+        /// <param name="cogId">Cog number to stop.</param>
         public void Stop(int cogId)
         {
             if (cogId < 0 | cogId >= TotalCogs)
@@ -753,10 +779,11 @@ namespace Gear.EmulationCore
             _clockSources[cogId] = null;
         }
 
-        /// @brief Advance one clock step.
-        /// @details Inside it calls the OnClock() method for each plugin as clock advances. Also
-        /// update the pins, by effect of calling each cog and source of clocks.
-        /// @returns Success of all cog status (=true), or if some fail (=false).
+        /// <summary>Advance one clock step.</summary>
+        /// <remarks>Inside it calls the OnClock() method for each plugin as
+        /// clock advances. Also update the pins, by effect of calling each cog
+        /// and source of clocks.</remarks>
+        /// <returns>Success of all cog status (=true), or if some fail (=false).</returns>
         /// @todo Parallelism [complex:low, cycles:8] point in loop of _clockSources[]
         /// @todo Parallelism [complex:high, cycles:up to 8] point in loop of cog.Step()
         /// @todo Parallelism [complex:medium, cycles:varies] point in loop of Plugin.OnClock()
@@ -825,10 +852,10 @@ namespace Gear.EmulationCore
             return result;
         }
 
-        /// @brief Update pin information seeking changes.
-        /// @details Consider changes in registers DIRA and DIRB, and also
+        /// <summary>Update pin information seeking changes.</summary>
+        /// <remarks>Consider changes in registers DIRA and DIRB, and also
         /// generated in plugins.
-        /// Inside it calls the OnPinChange() method for each plugin.
+        /// Inside it calls the OnPinChange() method for each plugin.</remarks>
         /// @todo Parallelism [complex:low, cycles:64] point in loop _pinStates[]
         /// @todo Parallelism [complex:low, cycles:low-many] point in loop plugin.OnPinChange()
         public void PinChanged()
@@ -902,9 +929,9 @@ namespace Gear.EmulationCore
             _locksAvailable[number & 0x7] = true;
         }
 
-        /// @brief Get a new lock, marking it as not free from the available
-        /// pool.
-        /// @returns Lock ID of the new lock created.
+        /// <summary>Get a new lock, marking it as not free from the available
+        /// pool.</summary>
+        /// <returns>Lock ID of the new lock created.</returns>
         public uint NewLock()
         {
             for (uint i = 0; i < _locksAvailable.Length; i++)
@@ -916,15 +943,18 @@ namespace Gear.EmulationCore
             return 0xFFFFFFFF;
         }
 
-        /// @brief Execute the requested hub operation.
-        /// @details This method is called from a cog to do the operations
-        /// related to all the CPU.
-        /// @param callerCog Reference to the caller Cog of this method.
-        /// @param operation Hub operation to execute.
-        /// @param argument Parameter given to the op-code (destination field in PASM).
-        /// @param[in,out] carryFlag Carry flag that could be affected by the operation.
-        /// @param[in,out] zeroFlag Zero flag that could be affected by the operation.
-        /// @returns Value depending on operation.
+        /// <summary>Execute the requested hub operation.</summary>
+        /// <remarks>This method is called from a cog to do the operations
+        /// related to all the CPU.</remarks>
+        /// <param name="callerCog">Reference to the caller Cog of this method.</param>
+        /// <param name="operation">Hub operation to execute.</param>
+        /// <param name="argument">Parameter given to the op-code (destination
+        /// field in PASM).</param>
+        /// <param name="carryFlag">Carry flag that could be affected by the
+        /// operation.</param>
+        /// <param name="zeroFlag">Zero flag that could be affected by the
+        /// operation.</param>
+        /// <returns>Value depending on operation.</returns>
         /// @version v22.05.04 - Changed name of method to clarify its meaning,
         /// added new required parameter cog number to new cogs created, using
         /// new property Cog.CogNum and changed parameter names to clarify
@@ -1045,8 +1075,8 @@ namespace Gear.EmulationCore
 
 
         /// <summary>Notify all the plugins about the closing event.</summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Form closing event data arguments.</param>
         // @version 15.03.26 - Added.
         public void OnClose(object sender, FormClosingEventArgs e)
         {

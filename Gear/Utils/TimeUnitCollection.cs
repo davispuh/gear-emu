@@ -30,15 +30,15 @@ using System.Linq;
 
 namespace Gear.Utils
 {
-    /// @brief Time units Collection.
+    /// <summary>Time units Collection.</summary>
     [Serializable]
     public class TimeUnitCollection : Collection<TimeUnitsEnum>, IEquatable<TimeUnitCollection>
     {
-        /// @brief Default constructor.
+        /// <summary>Default constructor.</summary>
         public TimeUnitCollection() { }
 
-        /// @brief Constructor with a list interface compliant class. Each
-        /// value is unique and the list are sorted by enum value.
+        /// <summary>Constructor with a list interface compliant class. Each
+        /// value is unique and the list are sorted by enum value.</summary>
         /// @param values Time unit enumeration values.
         public TimeUnitCollection(IList<TimeUnitsEnum> values) : base(values)
         {
@@ -49,8 +49,8 @@ namespace Gear.Utils
                 base.Add(item);
         }
 
-        /// @brief Add the item if it isn't already in the list, maintaining
-        /// it ordered by TimeUnitsEnum value.
+        /// <summary>Add the item if it isn't already in the list, maintaining
+        /// it ordered by TimeUnitsEnum value.</summary>
         /// @param newItem Item to add to collection.
         public new void Add(TimeUnitsEnum newItem)
         {
@@ -84,10 +84,10 @@ namespace Gear.Utils
             }
         }
 
-        /// @brief Equality operator
+        /// <summary>Equality operator.</summary>
         /// @param other Other object to compare.
-        /// @returns If both are the same object or have the same
-        /// items (=true), else (=false).
+        /// <returns>If both are the same object or have the same
+        /// items (=true), else (=false).</returns>
         public bool Equals(TimeUnitCollection other)
         {
             if (other == null)
@@ -104,9 +104,9 @@ namespace Gear.Utils
 
     }
 
-    /// @brief Converter class for TimeUnitCollection.
-    /// @details This is necessary to expose the TimeUnitCollection on design
-    /// time in HubView.
+    /// <summary>Converter class for TimeUnitCollection.</summary>
+    /// <remarks>This is necessary to expose the TimeUnitCollection on design
+    /// time in HubView.</remarks>
     public class TimeUnitCollectionConverter : TypeConverter
     {
         /// <summary></summary>

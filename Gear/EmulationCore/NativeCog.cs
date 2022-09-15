@@ -26,7 +26,7 @@ using Gear.Propeller;
 namespace Gear.EmulationCore
 {
 
-    /// @brief Derived class from Cog, to emulate running PASM code.
+    /// <summary>Derived class from Cog, to emulate running PASM code.</summary>
     public partial class NativeCog : Cog
     {
         // Decode properties
@@ -79,11 +79,11 @@ namespace Gear.EmulationCore
         /// <summary>Carry Flag</summary>
         /// @version v22.05.04 - Property generated from private member.
         public bool CarryFlag { get; private set; }
-        /// @brief Zero Flag
+        /// <summary>Zero Flag</summary>
         /// @version v22.05.04 - Property generated from private member.
         public bool ZeroFlag { get; private set; }
 
-        /// @brief Default constructor for a %Cog running in PASM mode.
+        /// <summary>Default constructor for a %Cog running in PASM mode.</summary>
         /// @param cpuHost PropellerCPU where this cog resides.
         /// @param cogNum Cog number from PropellerCPU.
         /// @param programAddress Start of program to load from main memory.
@@ -100,9 +100,10 @@ namespace Gear.EmulationCore
             ZeroFlag = false;
         }
 
-        /// @brief Determine what effect will be executed after this operation.
-        /// @details The possibles are Write Result, Zero flag or Carry flag,
-        /// or mix between them.
+        /// <summary>Determine what effect will be executed after this
+        /// operation.</summary>
+        /// <remarks>The possibles are Write Result, Zero flag or Carry flag,
+        /// or mix between them.</remarks>
         private void WriteBackResult()
         {
             if (WriteResult)
@@ -114,7 +115,7 @@ namespace Gear.EmulationCore
             State = CogRunState.StateExecute;
         }
 
-        /// @brief Setup the cog to a initial state after boot it.
+        /// <summary>Setup the cog to a initial state after boot it.</summary>
         /// @version v22.05.04 - Changed visibility of method.
         private protected override void Boot()
         {
@@ -126,7 +127,7 @@ namespace Gear.EmulationCore
             Operation = ReadLong(0);
         }
 
-        /// @brief Request to hub the solicited operation.
+        /// <summary>Request to hub the solicited operation.</summary>
         /// @version v22.05.04 - Method name changed to clarify meaning of it.
         public override void RequestHubOperation()
         {
@@ -174,9 +175,9 @@ namespace Gear.EmulationCore
             base.RequestHubOperation();
         }
 
-        /// @brief Execute a PASM instruction in this cog.
-        /// @returns TRUE if it is the opportunity to trigger a breakpoint,
-        /// or FALSE if not.
+        /// <summary>Execute a PASM instruction in this cog.</summary>
+        /// <returns>TRUE if it is the opportunity to trigger a breakpoint,
+        /// or FALSE if not.</returns>
         /// @pullreq{18} Correct video frame load timing, added video break, fix tab refresh.
         /// @version v22.05.04 - Invert sense of return value
         /// on ConditionCompare(), to be intuitive.

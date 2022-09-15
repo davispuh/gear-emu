@@ -26,23 +26,28 @@ using System;
 using System.IO;
 using System.Windows.Forms;
 
-/// @brief Contains the definitions of %GUI objects (controlling objects).
+// ReSharper disable InvalidXmlDocComment
+
+/// <summary>Contains the definitions of %GUI objects (controlling
+/// objects).</summary>
 namespace Gear.GUI
 {
-    /// @brief Implements the graphical Desktop to the emulator, plugin editor and
-    /// related windows.
+    /// <summary>Implements the graphical Desktop to the emulator, plugin
+    /// editor and related windows.</summary>
     public partial class GearDesktop : Form
     {
-        /// @brief Default constructor.
+        /// <summary>Default constructor.</summary>
         public GearDesktop()
         {
             InitializeComponent();
         }
 
-        /// @brief Load a new emulator from file.
-        /// @details Load an binary image into a new emulator, from user
+        /// <summary>Load a new emulator from file.</summary>
+        /// <remarks>Load an binary image into a new emulator, from user
         /// selected file, remembering last binary directory, independently
-        /// from last plugin directory.
+        /// from last plugin directory.</remarks>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v22.06.02 - Corrected error if no file name was selected
         /// on dialog, but pressed open button. Also changed local variable
         /// name to clarify its meaning.
@@ -50,9 +55,9 @@ namespace Gear.GUI
         {
             using (OpenFileDialog dialog = new OpenFileDialog
                    {
-                       Filter = "Propeller Runtime Image (*.binary;*.eeprom)|*.binary;" +
-                                "*.eeprom|All Files (*.*)|*.*",
-                       Title = "Open Propeller Binary..."
+                       Filter = @"Propeller Runtime Image (*.binary;*.eeprom)|*.binary;" +
+                                @"*.eeprom|All Files (*.*)|*.*",
+                       Title = @"Open Propeller Binary..."
                    })
             {
                 //retrieve last binary location
@@ -78,37 +83,49 @@ namespace Gear.GUI
             }
         }
 
-        /// @brief Close the application.
+        /// <summary>Close the application.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         private void ExitToolsStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }
 
-        /// @brief Arrange the emulator windows in cascade layout.
+        /// <summary>Arrange the emulator windows in cascade layout.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         private void CascadeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LayoutMdi(MdiLayout.Cascade);
         }
 
-        /// @brief Arrange the emulator windows in Vertical Tiles.
+        /// <summary>Arrange the emulator windows in Vertical Tiles.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         private void TileVerticalToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LayoutMdi(MdiLayout.TileVertical);
         }
 
-        /// @brief Arrange the emulator windows in Horizontal Tiles.
+        /// <summary>Arrange the emulator windows in Horizontal Tiles.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         private void TileHorizontalToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LayoutMdi(MdiLayout.TileHorizontal);
         }
 
-        /// @brief Arrange the emulator windows in icons layout.
+        /// <summary>Arrange the emulator windows in icons layout.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         private void ArrangeIconsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LayoutMdi(MdiLayout.ArrangeIcons);
         }
 
-        /// @brief Close all the Emulators windows.
+        /// <summary>Close all the Emulators windows.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         private void CloseAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
             foreach (Form childForm in MdiChildren)
@@ -117,18 +134,20 @@ namespace Gear.GUI
             }
         }
 
-        /// @brief Show the details about the GEAR Emulator.
+        /// <summary>Show the details about the GEAR Emulator.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         private void AboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AboutGear about = new AboutGear();
             about.ShowDialog(this);
         }
 
-        /// @brief Load plugin editor from file.
-        /// @details Load a plugin definition into a new editor window, from user selected file,
-        /// remembering independently from last binary directory.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
+        /// <summary>Load plugin editor from file.</summary>
+        /// <remarks>Load a plugin definition into a new editor window, from user selected file,
+        /// remembering independently from last binary directory.</remarks>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v22.06.02 - Corrected error if no file name was selected
         /// on dialog, but pressed open button and modified local variables
         /// name to clarify its meaning.
@@ -136,8 +155,8 @@ namespace Gear.GUI
         {
             OpenFileDialog dialog = new OpenFileDialog
             {
-                Filter = "Gear plug-in component (*.xml)|*.xml|All Files (*.*)|*.*",
-                Title = "Open Gear Plug-in..."
+                Filter = @"Gear plug-in component (*.xml)|*.xml|All Files (*.*)|*.*",
+                Title = @"Open Gear Plug-in..."
             };
             if (!string.IsNullOrEmpty(Properties.Settings.Default.LastPlugin))
                 dialog.InitialDirectory =
@@ -148,28 +167,29 @@ namespace Gear.GUI
                 return;
             PluginEditor pluginEditor = new PluginEditor(false);
 
-            if (pluginEditor.OpenPluginFromFile(dialog.FileName, false))
-            {
-                //show plugin editor loaded with selected one
-                pluginEditor.MdiParent = this;
-                pluginEditor.Show();
-            }
+            if (!pluginEditor.OpenPluginFromFile(dialog.FileName, false))
+                return;
+            //show plugin editor loaded with selected one
+            pluginEditor.MdiParent = this;
+            pluginEditor.Show();
         }
 
-        /// @brief Load plugin editor from file.
-        /// @details Load a plugin definition into a new editor window, from user selected file,
-        /// remembering independently from last binary directory.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
+        /// <summary>Load plugin editor from file.</summary>
+        /// <remarks>Load a plugin definition into a new editor window, from
+        /// user selected file, remembering independently from last binary
+        /// directory.</remarks>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v20.09.03 - Added.
         private void EditPluginToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenPluginButton_Click(sender, e);
         }
 
-        /// @brief Open a window with the plugin editor to create a new plugin.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
+        /// <summary>Open a window with the plugin editor to create a new
+        /// plugin.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v22.06.02 - Modified local variable name to clarify
         /// its meaning.
         private void NewPluginButton_Click(object sender, EventArgs e)
@@ -182,18 +202,19 @@ namespace Gear.GUI
             pluginEditor.Show();
         }
 
-        /// @brief Open a window with the plugin editor to create a new plugin.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
+        /// <summary>Open a window with the plugin editor to create a new
+        /// plugin.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v20.09.03 - Added.
         private void NewPluginToolStripMenuItem_Click(object sender, EventArgs e)
         {
             NewPluginButton_Click(sender, e);
         }
 
-        /// @brief Open Gear properties editor.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
+        /// <summary>Open Gear properties editor.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v20.10.01 - Edited to manage only one instance of
         /// AppPropertiesEditor.
         private void OptionsButton_Click(object sender, EventArgs e)
@@ -217,9 +238,9 @@ namespace Gear.GUI
             }
         }
 
-        /// @brief Open Gear properties editor
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
+        /// <summary>Open Gear properties editor.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v20.05.00 - Added.
         private void OptionsToolStripMenuItem_Click(object sender, EventArgs e)
         {

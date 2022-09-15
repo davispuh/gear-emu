@@ -25,7 +25,7 @@
 
 namespace Gear.EmulationCore
 {
-    /// @brief provides the logic to drive a %PLL clock signal.
+    /// <summary>provides the logic to drive a %PLL clock signal.</summary>
     public class PLL
     {
         // --- PLL Output settings ---

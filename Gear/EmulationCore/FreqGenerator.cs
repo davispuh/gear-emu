@@ -29,7 +29,7 @@ using Gear.Propeller;
 
 namespace Gear.EmulationCore
 {
-    /// @brief Counter modes of operation.
+    /// <summary>Counter modes of operation.</summary>
     /// @remark Source: Table 6 - Counter Modes (CTRMODE Field Values), %Propeller
     /// P8X32A Datasheet V1.4.0.
     /// @version v14.7.3 - Missing logic modes implemented (LOGIC_NEVER ... LOGIC_ALWAYS)
@@ -108,7 +108,7 @@ namespace Gear.EmulationCore
         LOGIC_ALWAYS = 0b11111
     }
 
-    /// @brief Frequency Generator Circuit emulation
+    /// <summary>Frequency Generator Circuit emulation.</summary>
     public class FreqGenerator
     {
         /// <summary>Reference to the PropellerCPU instance where this

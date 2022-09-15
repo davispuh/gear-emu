@@ -20,7 +20,9 @@
  * --------------------------------------------------------------------------------
  */
 
-/// @brief %Propeller P1 Definitions.
+// ReSharper disable InvalidXmlDocComment
+
+/// <summary>%Propeller P1 Definitions.</summary>
 namespace Gear.Propeller
 {
     /// <summary>%Register base class.</summary>

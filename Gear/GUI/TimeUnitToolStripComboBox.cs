@@ -29,16 +29,16 @@ using System.Windows.Forms;
 
 namespace Gear.GUI
 {
-    /// @brief ToolStripCombobox specialization for time unit management.
+    /// <summary>ToolStripCombobox specialization for time unit management.</summary>
     /// @version v20.09.01 - Added.
     public partial class TimeUnitToolStripComboBox : ToolStripComboBox, Utils.ITimeUnitMgmt
     {
-        /// @brief Time Units Management Instance.
+        /// <summary>Time Units Management Instance.</summary>
         /// @version v22.06.01 - Changed name and visibility of member.
         private readonly TimeUnitMgmt _manager;
 
-        /// @brief Excluded time units.
-        /// @details Implements ITimeUnitMgmt interface.
+        /// <summary>Excluded time units.</summary>
+        /// <remarks>Implements ITimeUnitMgmt interface.</remarks>
         /// @version v22.06.01 - Changed designer category to default.
         [Category("Default"), Description("Excluded Time Units for this control."),
          DisplayName("Excluded Time Units"), Browsable(true),
@@ -49,8 +49,8 @@ namespace Gear.GUI
             set => _manager.ExcludedUnits = value;
         }
 
-        /// @brief Base unit used to transform multiply factors values.
-        /// @details Implements ITimeUnitMgmt interface.
+        /// <summary>Base unit used to transform multiply factors values.</summary>
+        /// <remarks>Implements ITimeUnitMgmt interface.</remarks>
         /// @version v22.06.01 - Changed designer category to default.
         [Category("Default"), Description("Base Unit of Time for this control."),
          DisplayName("Base Time Unit"), Browsable(true)]
@@ -60,8 +60,8 @@ namespace Gear.GUI
             set => _manager.BaseUnit = value;
         }
 
-        /// @brief Time unit selected on this combobox.
-        /// @details Implements ITimeUnitMgmt interface.
+        /// <summary>Time unit selected on this combobox.</summary>
+        /// <remarks>Implements ITimeUnitMgmt interface.</remarks>
         /// @version v22.06.01 - Changed designer category to default.
         [Category("Default"), Description("Initial selected unit of time for this control."),
          DisplayName("Selected Time Unit"), Browsable(true)]
@@ -71,44 +71,48 @@ namespace Gear.GUI
             set => _manager.TimeUnitSelected = value;
         }
 
-        /// @brief Factor value of selected index of combo box.
-        /// @details Implements ITimeUnitMgmt interface.
+        /// <summary>Factor value of selected index of combo box.</summary>
+        /// <remarks>Implements ITimeUnitMgmt interface.</remarks>
         [Browsable(false)]
         public double FactorSelected => _manager.FactorSelected;
 
-        /// @brief
-        /// @details Implements ITimeUnitMgmt interface.
+        /// <summary>TRUE if factor should be multiplied, FALSE if it should
+        /// be divided.</summary>
+        /// <remarks>Implements ITimeUnitMgmt interface.</remarks>
         [Browsable(false)]
         public bool IsMultiplyFactor => _manager.IsMultiplyFactor;
 
-        /// @brief Default constructor.
+        /// <summary>Default constructor.</summary>
         public TimeUnitToolStripComboBox()
         {
             _manager = new TimeUnitMgmt(ComboBox);
             InitializeComponent();
         }
 
-        /// @brief Synchronize values dependent of excludedUnits.
+        /// <summary>Synchronize values dependent of excludedUnits.</summary>
         public void SyncValues() => _manager.SyncValues();
 
-        /// @brief Select the next valid value, rolling over if it is necessary.
-        /// @details Implements ITimeUnitMgmt interface.
+        /// <summary>Select the next valid value, rolling over if it is
+        /// necessary.</summary>
+        /// <remarks>Implements ITimeUnitMgmt interface.</remarks>
         public void SelectNext() => _manager.SelectNext();
 
-        /// @brief Select the previous valid value, rolling over if it is necessary.
-        /// @details Implements ITimeUnitMgmt interface.
+        /// <summary>Select the previous valid value, rolling over if it is
+        /// necessary.</summary>
+        /// <remarks>Implements ITimeUnitMgmt interface.</remarks>
         public void SelectPrev() => _manager.SelectPrev();
 
-        /// @brief Assign the list of TextFormats methods to corresponding enum values.
-        /// @details Implements ITimeUnitMgmt interface.
+        /// <summary>Assign the list of TextFormats methods to corresponding
+        /// enum values.</summary>
+        /// <remarks>Implements ITimeUnitMgmt interface.</remarks>
         /// @param assignments List of assignments.
         public void AssignTextFormats(DelegatesPerTimeUnitsList assignments) =>
             _manager.AssignTextFormats(assignments);
 
-        /// @brief Get formatted text for the value.
-        /// @details Implements ITimeUnitMgmt interface.
+        /// <summary>Get formatted text for the value.</summary>
+        /// <remarks>Implements ITimeUnitMgmt interface.</remarks>
         /// @param val Value to convert to text.
-        /// @return Formatted text of the value.
+        /// <returns>Formatted text of the value.</returns>
         public string GetFormattedText(double val) =>
             _manager.GetFormattedText(val);
     }

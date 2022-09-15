@@ -30,7 +30,7 @@ using System.Windows.Forms;
 
 namespace Gear.GUI
 {
-    /// @brief Main memory viewer.
+    /// <summary>Main memory viewer.</summary>
     public partial class MemoryView : PluginSupport.PluginBase
     {
         /// <summary></summary>

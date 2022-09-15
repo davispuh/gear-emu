@@ -428,10 +428,10 @@ namespace Gear.GUI
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripLabel classNameLabel;
 
-        /// @brief Default font for editor code.
+        /// <summary>Default font for editor code.</summary>
         /// @version v14.07.03 - Added.
         private readonly Font defaultFont;
-        /// @brief Bold font for editor code.
+        /// <summary>Bold font for editor code.</summary>
         /// @version v15.03.26 - Added.
         private readonly Font fontBold;
     }

@@ -31,18 +31,19 @@ using System.Windows.Forms;
 
 namespace Gear.GUI.LogicProbe
 {
-    /// @brief Logical pin waveform viewer
+    /// <summary>Logical pin waveform viewer.</summary>
     public partial class LogicView : PluginSupport.PluginBase
     {
         /// <summary></summary>
         /// @version v.22.06.01 - Added.
         private const int LeftMargin = 64;
-        /// @brief Current Culture to modify its Number format.
+
+        /// <summary>Current Culture to modify its Number format.</summary>
         /// @version v20.09.01 - Added.
         private readonly CultureInfo _currentCultureMod =
             (CultureInfo)CultureInfo.CurrentCulture.Clone();
 
-        /// <summary></summary>
+        /// <summary>Mono spaced font for plain text.</summary>
         private readonly Font _monoFont;
         /// <summary></summary>
         private Bitmap _backBuffer;
@@ -50,7 +51,8 @@ namespace Gear.GUI.LogicProbe
         /// <summary></summary>
         private readonly List<LogicRow> _pins = new List<LogicRow>();
         /// <summary></summary>
-        private readonly LogicDigital[] _digitalPins = new LogicDigital[PropellerCPU.TotalPins];
+        private readonly LogicDigital[] _digitalPins =
+            new LogicDigital[PropellerCPU.TotalPins];
         /// <summary></summary>
         private double _timeScale;
         /// <summary></summary>
@@ -65,19 +67,17 @@ namespace Gear.GUI.LogicProbe
         /// <summary></summary>
         public override bool IsUserPlugin => false;
 
-        /// @brief Default Constructor.
+        /// <summary>Default Constructor.</summary>
         /// @param chip CPU to reference the view.
         /// @todo Parallelism [complex:low, cycles:64] point in loops of logicView._digitalPins[]
         /// @todo Parallelism [complex:low, cycles:typ32 ]point in loops of logicView._pins[]
         public LogicView(PropellerCPU chip) : base(chip)
         {
             InitializeComponent();
-
-            _monoFont = new Font(FontFamily.GenericMonospace, 10) ?? Font;
-
+            _monoFont = new Font(FontFamily.GenericMonospace, 10);
             toolStripCmbBoxUnit.SyncValues();
             //Assign delegates for formatting text of timeUnitSelector
-            var textFormats = new DelegatesPerTimeUnitsList(
+            DelegatesPerTimeUnitsList textFormats = new DelegatesPerTimeUnitsList(
                 toolStripCmbBoxUnit.ExcludedUnits,
                 new SortedList<TimeUnitsEnum, FormatToTextDelegate>()
                 {
@@ -88,36 +88,34 @@ namespace Gear.GUI.LogicProbe
                 }
             );
             toolStripCmbBoxUnit.AssignTextFormats(textFormats);
-
             //retrieve the default settings for grid
             UpdateLastTimeFrame();
             UpdateLastTickMarkGrid();
             UpdateTimeUnit();
             //Set text for timeFrame & tickMark text boxes, using time unit.
             UpdateFrameAndTickText();
-
             for (int i = 0; i < PropellerCPU.TotalPins; i++)  //TODO Parallelism [complex:low, cycles:64] point in loop _digitalPins[]
                 _digitalPins[i] = new LogicDigital(i);
-
             for (int i = 0; i < PropellerCPU.PhysicalPins; i++)  //TODO Parallelism [complex:low, cycles:typ32] point in loop _pins[]
                 _pins.Add(_digitalPins[i]);
         }
 
-        /// @brief Update the value of TimeScale from default setting.
+        /// <summary>Update the value of TimeScale from default setting.</summary>
         /// @version v20.09.01 - Added.
         public void UpdateLastTimeFrame()
         {
             _timeScale = Properties.Settings.Default.LastTimeFrame;
         }
 
-        /// @brief Update the value of Marker from default setting.
+        /// <summary>Update the value of Marker from default setting.</summary>
         /// @version v20.09.01 - Added.
         public void UpdateLastTickMarkGrid()
         {
             _marker = Properties.Settings.Default.LastTickMarkGrid;
         }
 
-        /// @brief Update the time unit for logic view from default setting.
+        /// <summary>Update the time unit for logic view from default
+        /// setting.</summary>
         /// @version v20.09.01 - Added.
         public void UpdateTimeUnit()
         {
@@ -125,7 +123,7 @@ namespace Gear.GUI.LogicProbe
                 Properties.Settings.Default.LogicViewTimeUnit;
         }
 
-        /// @brief Update UI values for TimeScale and Marker using Format.
+        /// <summary>Update UI values for TimeScale and Marker using Format.</summary>
         /// @version v20.09.01 - Added.
         public void UpdateFrameAndTickText()
         {
@@ -135,11 +133,11 @@ namespace Gear.GUI.LogicProbe
             tickMarkBox.Invalidate();
         }
 
-        /// @brief Format the value to string, for all time units.
-        /// @details Implements Gear.Utils.FormatToTextDelegate delegate.
+        /// <summary>Format the value to string, for all time units.</summary>
+        /// <remarks>Implements Gear.Utils.FormatToTextDelegate delegate.</remarks>
         /// @param unit Time unit to use.
         /// @param val Value to format to string.
-        /// @returns The formatted text.
+        /// <returns>The formatted text.</returns>
         /// @version v20.09.01 - Added.
         private string StandardTimeFormatText(TimeUnitsEnum unit, double val)
         {
@@ -158,7 +156,7 @@ namespace Gear.GUI.LogicProbe
             Chip.NotifyOnPins(this);
         }
 
-        /// @brief Clean samples of LogicRow
+        /// <summary>Clean samples of LogicRow.</summary>
         /// @todo Parallelism [complex:low, cycles:64] point in loop of logicView._digitalPins[]
         public override void OnReset()
         {
@@ -166,7 +164,7 @@ namespace Gear.GUI.LogicProbe
                 _digitalPins[i].Reset();
         }
 
-        /// @brief Save the last used settings of the grid view before close.
+        /// <summary>Save the last used settings of the grid view before close.</summary>
         /// @version v22.03.02 - Bugfix to save TimeUnitSelected with the other
         /// properties in logic view.
         public override void OnClose()
@@ -397,12 +395,14 @@ namespace Gear.GUI.LogicProbe
                 {
                     if (s.Contains(".."))
                     {
-                        string[] range = s.Split(new char[] { '.' },
+                        string[] range = s.Split(new[] { '.' },
                             StringSplitOptions.RemoveEmptyEntries);
                         if (range.Length < 2)
                         {
-                            MessageBox.Show("Invalid range value", "Pin value Problem",
-                                MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                            MessageBox.Show(@"Invalid range value",
+                                @"Pin value Problem",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Exclamation);
                         }
                         int start = Convert.ToUInt16(range[0]);
                         int end = Convert.ToUInt16(range[1]);
@@ -421,18 +421,18 @@ namespace Gear.GUI.LogicProbe
             }
             catch (FormatException)
             {
-                MessageBox.Show($"Value needs to be a valid number between 0 and {PropellerCPU.TotalPins - 1}.",
-                        "Pin value Problem", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBox.Show($@"Value needs to be a valid number between 0 and {PropellerCPU.TotalPins - 1}.",
+                        @"Pin value Problem", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
             catch (IndexOutOfRangeException)
             {
-                MessageBox.Show($"You must specify a pin between 0 and {PropellerCPU.TotalPins - 1}",
-                    "Pin value Problem", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBox.Show($@"You must specify a pin between 0 and {PropellerCPU.TotalPins - 1}",
+                    @"Pin value Problem", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
             catch (OverflowException)
             {
-                MessageBox.Show($"You must specify a pin between 0 and {PropellerCPU.TotalPins - 1}",
-                    "Pin value Problem", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBox.Show($@"You must specify a pin between 0 and {PropellerCPU.TotalPins - 1}",
+                    @"Pin value Problem", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
             Repaint(true);
         }
@@ -452,12 +452,14 @@ namespace Gear.GUI.LogicProbe
                 {
                     if (numberStr.Contains(".."))
                     {
-                        string[] range = numberStr.Split(new char[] { '.' },
+                        string[] range = numberStr.Split(new[] { '.' },
                             StringSplitOptions.RemoveEmptyEntries);
                         if (range.Length < 2)
                         {
-                            MessageBox.Show("Invalid range value", "Pin value Problem",
-                                MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                            MessageBox.Show(@"Invalid range value",
+                                @"Pin value Problem",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Exclamation);
                         }
                         int start = Convert.ToUInt16(range[0]);
                         int end = Convert.ToUInt16(range[1]);
@@ -477,20 +479,20 @@ namespace Gear.GUI.LogicProbe
                 catch (FormatException)
                 {
                     MessageBox.Show(
-                        $"Pin Value needs to be a valid number between 0 and {PropellerCPU.TotalPins - 1}.",
-                        "Pin value Problem", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        $@"Pin Value needs to be a valid number between 0 and {PropellerCPU.TotalPins - 1}.",
+                        @"Pin value Problem", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     return;
                 }
                 catch (IndexOutOfRangeException)
                 {
-                    MessageBox.Show($"You must specify a pin between 0 and {PropellerCPU.TotalPins - 1}",
-                        "Pin value Problem", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    MessageBox.Show($@"You must specify a pin between 0 and {PropellerCPU.TotalPins - 1}",
+                        @"Pin value Problem", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     return;
                 }
                 catch (OverflowException)
                 {
-                    MessageBox.Show($"You must specify a pin between 0 and {PropellerCPU.TotalPins - 1}",
-                        "Pin value Problem", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    MessageBox.Show($@"You must specify a pin between 0 and {PropellerCPU.TotalPins - 1}",
+                        @"Pin value Problem", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     return;
                 }
             }
@@ -499,9 +501,9 @@ namespace Gear.GUI.LogicProbe
             Repaint(true);
         }
 
-        /// @brief Change the time unit, remembering the user setting.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
+        /// <summary>Change the time unit, remembering the user setting.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v22.03.02 - Bugfix to save TimeUnitSelected with the other
         /// properties in logic view.
         private void ToolStripCmbBoxUnit_SelectedIndexChanged(object sender, EventArgs e)
@@ -510,9 +512,9 @@ namespace Gear.GUI.LogicProbe
                 UpdateFrameAndTickText();
         }
 
-        /// @brief When the value is changed, enable Update button.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
+        /// <summary>When the value is changed, enable Update button.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         private void TimeFrameBox_ModifiedChanged(object sender, EventArgs e)
         {
             if (updateGridButton.Enabled)
@@ -521,9 +523,9 @@ namespace Gear.GUI.LogicProbe
             updateGridButton.Checked = true;
         }
 
-        /// @brief When the value is changed, enable Update button.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
+        /// <summary>When the value is changed, enable Update button.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         private void TickMarkBox_ModifiedChanged(object sender, EventArgs e)
         {
             if (updateGridButton.Enabled)

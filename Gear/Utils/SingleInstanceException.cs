@@ -22,10 +22,11 @@
  */
 
 using System;
+using System.Runtime.Serialization;
 
 namespace Gear.Utils
 {
-    /// @brief Single instance helper exception class.
+    /// <summary>Single instance helper exception class.</summary>
     /// @version v20.10.01 - Added exception class to control a single
     /// instance form.
     [Serializable]
@@ -34,29 +35,30 @@ namespace Gear.Utils
         /// <summary>Default constructor.</summary>
         public SingleInstanceException() { }
 
-        /// <summary>
-        /// Constructor with a message.
-        /// </summary>
+        /// <summary>Constructor with a message.</summary>
         /// <param name="message">Message string.</param>
         public SingleInstanceException(string message) :
             base(message)
         { }
 
-        /// <summary>
-        /// Constructor with a message and an inner exception.
-        /// </summary>
+        /// <summary>Constructor with a message and an inner exception.</summary>
         /// <param name="message">Message string.</param>
         /// <param name="innerException">Inner exception which throw this one.</param>
         public SingleInstanceException(string message, Exception innerException) :
             base(message, innerException)
         { }
 
-        /// <summary>
-        /// Constructor in a serialization context.
-        /// </summary>
+        /// <summary>Constructor in a serialization context.</summary>
         /// <param name="serializationInfo"></param>
         /// <param name="streamingContext"></param>
-        protected SingleInstanceException(System.Runtime.Serialization.SerializationInfo serializationInfo, System.Runtime.Serialization.StreamingContext streamingContext) :
+        /// <exception cref="ArgumentNullException">Parameter
+        /// <paramref name="serializationInfo" /> is <see langword="null" />.
+        /// </exception>
+        /// <exception cref="SerializationException">Class name is
+        /// <see langword="null" /> or <see cref="P:System.Exception.HResult" />
+        /// is zero (0).</exception>
+        protected SingleInstanceException(SerializationInfo serializationInfo,
+            StreamingContext streamingContext) :
             base(serializationInfo, streamingContext)
         { }
     }

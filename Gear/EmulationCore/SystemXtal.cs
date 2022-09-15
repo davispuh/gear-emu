@@ -23,7 +23,7 @@
 
 namespace Gear.EmulationCore
 {
-    /// @brief Provides a clock source for the propeller CPU.
+    /// <summary>Provides a clock source for the propeller CPU.</summary>
     public class SystemXtal : ClockSource
     {
         /// <summary></summary>

@@ -30,7 +30,7 @@ using System.Windows.Forms;
 
 namespace Gear.GUI
 {
-    /// @brief Rotating gear hub view object.
+    /// <summary>Rotating gear hub view object.</summary>
     public partial class RingMeter : UserControl
     {
         /// <summary>Number of tooth for gear representation.</summary>

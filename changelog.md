@@ -1,9 +1,13 @@
 # Change Log
 
-## Commit  CogView appareance enhanced.
+## Commit  Doxygen documentation upgrade part 1
+- Doxygen documentation upgrade: changed to xml style for many tags (summary, remarks, returns).
+
+
+## Release Version [22.09.01](https://github.com/davispuh/gear-emu/releases/tag/v22.09.01) Commit [87d906d](https://github.com/davispuh/gear-emu/commit/87d906d768e60c0cfd7189269b665579459072c6) CogView appareance enhanced.
 
 - Changes on [`CogView.cs`](Gear/GUI/CogView.cs):
-  -  The appareance of the current executting line (program cursor) now is selectable program setting. Can be bold text, a rectangle frame around the text line, or both.
+  -  The appareance of the current executting line (program cursor) now is selectable program setting. Can be bold text, a frame around the text line, or both.
 - Gear Emulator window starts now with a size of 1024x768, to help to standarize documentation images.
 - Updated [`.gitignore`](.gitignore) : added more visual studio and vscode definitions.
 - Updated secuence diagrams files: Changed extension `.mcsgen` to more standard `.msc`. Changed path of documentation files to `Doc/sorce/`. Modified doxygen documentation accordlingly.

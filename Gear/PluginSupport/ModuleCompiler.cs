@@ -34,18 +34,20 @@ namespace Gear.PluginSupport
     /// <param name="compErr"></param>
     public delegate void ErrorEnumProc(CompilerError compErr);
 
-    /// @brief Compile a PluginBase Module, keeping the errors if they appears.
+    /// <summary>Compile a PluginBase Module, keeping the errors if they
+    /// appears.</summary>
     public static class ModuleCompiler
     {
-        /// @brief Error list generated when compiling a dynamic plugin.
+        /// <summary>Error list generated when compiling a dynamic plugin.</summary>
         /// @version v22.06.02 - Changed member name to clarify its meaning.
         private static CompilerErrorCollection _errorList;
 
-        /// @brief Enumerate errors from the compiling process.
+        /// <summary>Enumerate errors from the compiling process.</summary>
         /// @param proc Method to invoke for each error.
-        /// @throws InvalidOperationException If the collection of compiler
-        /// errors is null.
-        /// @throws ArgumentNullException If delegate <c>proc</c> is null.
+        /// <exception cref="InvalidOperationException">If the collection of
+        /// compiler errors is null.</exception>
+        /// <exception cref="ArgumentNullException">If delegate <c>proc</c>
+        /// is null.</exception>
         /// @version v22.06.02 - Local variable name changed to clarify
         /// its meaning.
         public static void EnumerateErrors(ErrorEnumProc proc)
@@ -60,19 +62,23 @@ namespace Gear.PluginSupport
                 proc(errorItem);
         }
 
-        /// @brief Dynamic compiling & loading for a plugin.
-        /// @details Try to dynamically compile a className for the plugin, based on supplied C# code
-        /// and other C# modules referenced. If the compiling fails, it gives a list of errors,
-        /// intended to be showed in the plugin view.
+        /// <summary>Dynamic compiling & loading for a plugin.</summary>
+        /// <remarks>Try to dynamically compile a className for the plugin,
+        /// based on supplied C# code and other C# modules referenced. If the
+        /// compiling fails, it gives a list of errors, intended to be showed
+        /// in the plugin view.</remarks>
         /// @param code C# Source code based on PluginBase class, to implement your plugin.
         /// @param className Class name of the plugin.
         /// @param references String array with auxiliary references used by your plugin.
         /// See notes for defaults used.
         /// @param cpuHost Reference to a PropellerCPU of this instance, to be passed as a
         /// parameter to the constructor of the new plugin class instance.
-        /// @returns New Plugin class instance compiled (on success), or NULL (on fail).
-        /// @throws ArgumentNullException If parameter references is null.
-        /// @note There are some references already added, so you don't need to include on your plugins:
+        /// <returns>New Plugin class instance compiled (on success),
+        /// or NULL (on fail).</returns>
+        /// <exception cref="ArgumentNullException">If parameter references is
+        /// null.</exception>
+        /// @note There are some references already added, so you don't need
+        /// to include on your plugins:
         /// @li `using System;` @li `using System.Data;` @li `using System.Drawing;`
         /// @li `using System.Windows.Forms;` @li `using System.Xml;`
         /// @version v22.05.02 - Changes as throw exception, changed parameter and

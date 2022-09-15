@@ -29,38 +29,41 @@ using System.Windows.Forms;
 
 namespace Gear.GUI
 {
-    /// @brief Remember and restore displayed position and insert
-    /// point (aka caret in MS documentation) for a RichTextBox.
-    /// @details Based on code from https://stackoverflow.com/a/20746931/10200101
+    /// <summary>Remember and restore displayed position and insert
+    /// point (aka caret in MS documentation) for a RichTextBox.</summary>
+    /// <remarks>Based on code from https://stackoverflow.com/a/20746931/10200101 </remarks>
     public class RememberRTBoxPosition
     {
-        /// @brief Object reference.
+        /// <summary>Object reference.</summary>
         private readonly RichTextBox _obj;
 
-        /// @brief Store first displayed character.
+        /// <summary>Store first displayed character.</summary>
         private int _start;
 
-        /// @brief Store last displayed character.
+        /// <summary>Store last displayed character.</summary>
         private int _end;
 
-        /// @brief Store cursor position.
+        /// <summary>Store cursor position.</summary>
         private int _cursorPosition;
 
-        /// @brief Store cursor length.
+        /// <summary>Store cursor length.</summary>
         private int _cursorLength;
 
-        /// @brief Default constructor, remembers current position of
-        /// text displayed and selection.
-        /// @param textBox RichTextBox object to remember and restore state.
-        /// @throws ArgumentNullException
+        /// <summary>Default constructor, remembers current position of
+        /// text displayed and selection.</summary>
+        /// <param name="textBox">RichTextBox object to remember and
+        /// restore state.</param>
+        /// <exception cref="ArgumentNullException"></exception>
         public RememberRTBoxPosition(RichTextBox textBox)
         {
             _obj = textBox ?? throw new ArgumentNullException(nameof(textBox));
             RememberNewPosition();
         }
 
-        /// @brief Remember position of text displayed and current selection.
-        public void RememberNewPosition()
+        /// <summary>Remember position of text displayed and current
+        /// selection.</summary>
+        /// @version v22.09.xx - Changed visibility from `public`.
+        private void RememberNewPosition()
         {
             // Get first and last displayed character
             _start = _obj.GetCharIndexFromPosition(new Point(0, 0));
@@ -71,8 +74,8 @@ namespace Gear.GUI
             _cursorLength = _obj.SelectionLength;
         }
 
-        /// @brief Restore position of text displayed and last properties
-        /// of selection.
+        /// <summary>Restore position of text displayed and last properties
+        /// of selection.</summary>
         public void RestorePosition()
         {
             // Scroll to the last character and then to the first + line width
@@ -82,7 +85,6 @@ namespace Gear.GUI
             _obj.SelectionStart =
                 _start + _obj.Lines[_obj.GetLineFromCharIndex(_start)].Length + 1;
             _obj.ScrollToCaret();
-
             // Finally, set cursor to original position
             _obj.SelectionStart = _cursorPosition;
             _obj.SelectionLength = _cursorLength;

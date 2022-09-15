@@ -354,8 +354,8 @@ namespace Gear.EmulationCore
             ZeroResult = DataResult == 0;
         }
 
-        /// @brief Execute instruction MOV: Set a register to a value.
-        /// @details Effects: Set D to S
+        /// <summary>Execute instruction MOV: Set a register to a value.</summary>
+        /// <remarks>Effects: Set D to S.</remarks>
         private void InstructionMOV()
         {
             DataResult = SourceValue;
@@ -363,8 +363,9 @@ namespace Gear.EmulationCore
             CarryResult = (SourceValue & 0x80000000) != 0;
         }
 
-        /// @brief Execute instruction MOVS: Set a register's source field to a value.
-        /// @details Effects: Insert S[8..0] into D[8..0]
+        /// <summary>Execute instruction MOVS: Set a register's source field
+        /// to a value.</summary>
+        /// <remarks>Effects: Insert S[8..0] into D[8..0]</remarks>
         /// @todo [Legacy] InstructionMOVS - Find out what carry REALLY does in hardware.
         private void InstructionMOVS()
         {
@@ -374,8 +375,9 @@ namespace Gear.EmulationCore
             CarryResult = CarryFlag;
         }
 
-        /// @brief Execute instruction MOVD: Set a register's destination field to a value.
-        /// @details Effects: Insert S[8..0] into D[17..9]
+        /// <summary>Execute instruction MOVD: Set a register's destination
+        /// field to a value.</summary>
+        /// <remarks>Effects: Insert S[8..0] into D[17..9]</remarks>
         /// @todo [Legacy] InstructionMOVD - Find out what carry REALLY does in hardware.
         private void InstructionMOVD()
         {
@@ -385,9 +387,9 @@ namespace Gear.EmulationCore
             CarryResult = CarryFlag;
         }
 
-        /// @brief Execute instruction MOVI: Set a register's instruction and effects fields
-        /// to a value.
-        /// @details Effects: Insert S[8..0] into D[31..23]
+        /// <summary>Execute instruction MOVI: Set a register's instruction
+        /// and effects fields to a value.</summary>
+        /// <remarks>Effects: Insert S[8..0] into D[31..23]</remarks>
         /// @todo [Legacy] InstructionMOVI - Find out what carry REALLY does in hardware.
         private void InstructionMOVI()
         {
@@ -397,9 +399,10 @@ namespace Gear.EmulationCore
             CarryResult = CarryFlag;
         }
 
-        /// @brief Execute instruction JMPRET: Jump to address with intention to "return"
-        /// to another address.
-        /// @details Effects: Insert ProgramCursor+1 into D[8..0] and set ProgramCursor to S[8..0].
+        /// <summary>Execute instruction JMPRET: Jump to address with
+        /// intention to "return" to another address.</summary>
+        /// <remarks>Effects: Insert ProgramCursor+1 into D[8..0] and set
+        /// ProgramCursor to S[8..0].</remarks>
         /// @version v22.05.03 - Using constant Cog.MaskCogMemory.
         private void InstructionJMPRET()
         {

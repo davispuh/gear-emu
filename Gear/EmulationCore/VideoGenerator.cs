@@ -25,19 +25,23 @@
 
 namespace Gear.EmulationCore
 {
-    /// @brief Video mode Field.
-    /// @details The 2-bit video mode selects the type and orientation of video output.
+    /// <summary>Video mode Field.</summary>
+    /// <remarks>The 2-bit video mode selects the type and orientation of
+    /// video output.
     ///
-    /// Source: Table 8 - The Video Mode Field, %Propeller P8X32A Datasheet V1.4.0.
+    /// Source: Table 8 - The Video Mode Field, %Propeller P8X32A Datasheet
+    /// V1.4.0.</remarks>
     public enum VideoMode
     {
         /// <summary>Disabled, no video generated.</summary>
         Disabled = 0x00000000,
         /// <summary>VGA mode; 8-bit parallel output on VPins 7:0</summary>
         VgaMode = 0x20000000,
-        /// <summary>Composite Mode 1; broadcast on VPins 7:4, base band on VPins 3:0</summary>
+        /// <summary>Composite Mode 1; broadcast on VPins 7:4, base band on
+        /// VPins 3:0</summary>
         Composite1 = 0x40000000,
-        /// <summary>Composite Mode 2; base band on VPins 7:4, broadcast on VPins 3:0</summary>
+        /// <summary>Composite Mode 2; base band on VPins 7:4, broadcast on
+        /// VPins 3:0</summary>
         Composite2 = 0x60000000
     }
 
@@ -50,7 +54,7 @@ namespace Gear.EmulationCore
         FourColor = 0x10000000
     }
 
-    /// @brief Video Generator Circuit emulation.
+    /// <summary>Video Generator Circuit emulation.</summary>
     public class VideoGenerator
     {
         /// <summary></summary>

@@ -27,7 +27,7 @@ using System.Drawing;
 
 namespace Gear.GUI.LogicProbe
 {
-    /// @brief Provides a analog channel for LogicView.
+    /// <summary>Provides a analog channel for LogicView.</summary>
     public class LogicAnalog : LogicRow
     {
         /// <summary></summary>
@@ -72,7 +72,7 @@ namespace Gear.GUI.LogicProbe
         /// <summary></summary>
         public override void Click() { }
 
-        /// @brief Clear samples when reset is needed.
+        /// <summary>Clear samples when reset is needed.</summary>
         /// @todo Parallelism [complex:low, cycles:_channels.Length ~low] point in loop of LogicAnalog._channels[]
         public override void Reset()
         {

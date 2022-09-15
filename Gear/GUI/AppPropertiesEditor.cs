@@ -31,7 +31,7 @@ using System.Windows.Forms;
 
 namespace Gear.GUI
 {
-    /// @brief Form to edit program properties.
+    /// <summary>Form to edit program properties.</summary>
     /// @version v15.03.26 - Added.
     public partial class AppPropertiesEditor : Form
     {
@@ -40,11 +40,11 @@ namespace Gear.GUI
         private static int _instanceNumber = 0;
 
         /// <summary>Default constructor.</summary>
-        /// <summary>References:
+        /// <remarks>References:
         ///   - PropertyGrid Control tutorial - https://msdn.microsoft.com/en-us/library/aa302326.aspx
         /// also in https://msdn.microsoft.com/en-us/library/aa302334.aspx
         /// and https://www.codeproject.com/Articles/22717/Using-PropertyGrid
-        /// </summary>
+        /// </remarks>
         /// <exception cref="SingleInstanceException">If an intent to open a
         /// new instance of the same class.</exception>
         /// @version v20.10.01 - Manage only one instance of AppPropertiesEditor.
@@ -57,7 +57,7 @@ namespace Gear.GUI
             _instanceNumber++;
         }
 
-        /// @brief Close the window, updating the related values in each form.
+        /// <summary>Close the window, updating the related values in each form.</summary>
         /// @param sender Sender object to this event.
         /// @param e Event arguments to this event.
         private void OKButton_Click(object sender, EventArgs e)
@@ -80,7 +80,7 @@ namespace Gear.GUI
             GearPropertyGrid.Refresh();
         }
 
-        /// @brief Reset the property to its default value.
+        /// <summary>Reset the property to its default value.</summary>
         /// @param sender Sender object to this event.
         /// @param e Event arguments to this event.
         private void ResetButton_Click(object sender, EventArgs e)
@@ -110,8 +110,8 @@ namespace Gear.GUI
             GearPropertyGrid.Refresh();
         }
 
-        /// @brief Event when a property had changed its value, used to update
-        /// copies of the property values used in other forms.
+        /// <summary>Event when a property had changed its value, used to update
+        /// copies of the property values used in other forms.</summary>
         /// @param s Sender object to this event.
         /// @param e Arguments to this event, including the old value.
         /// @version v22.06.02 - Removes updating of `TabSize`, `LastPlugin`
@@ -139,7 +139,7 @@ namespace Gear.GUI
             }
         }
 
-        /// @brief Manage event of closed window.
+        /// <summary>Manage event of closed window.</summary>
         /// @param sender Reference to object where event was raised.
         /// @param e Form closed event data arguments.
         /// @version v20.10.01 - Added to manage only one instance of
@@ -149,7 +149,7 @@ namespace Gear.GUI
             _instanceNumber--;
         }
 
-        /// @brief Refresh form's Icon
+        /// <summary>Refresh form's Icon.</summary>
         /// @param sender Reference to object where event was raised.
         /// @param e Event data arguments.
         /// @version v20.10.01 - Added.

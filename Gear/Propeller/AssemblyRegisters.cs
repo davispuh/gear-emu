@@ -30,12 +30,12 @@ using System.Collections.ObjectModel;
 
 namespace Gear.Propeller
 {
-    /// @brief Registers of a Propeller Cog.
+    /// <summary>Registers of a Propeller Cog.</summary>
     public partial class Assembly
     {
-        /// @brief %Cog RAM Special Purpose Registers.
-        /// @details Source: Table 15 - %Cog RAM Special Purpose Registers,
-        /// <c>%Propeller P8X32A Datasheet V1.4.0</c>.
+        /// <summary>%Cog RAM Special Purpose Registers.</summary>
+        /// <remarks>Source: Table 15 - %Cog RAM Special Purpose Registers,
+        /// <c>%Propeller P8X32A Datasheet V1.4.0</c>.</remarks>
         /// @version v15.03.26 - added NONE to enum, to follow best practices
         /// and do not have an illegal value when is instantiated.
         public enum RegisterAddress : uint
@@ -83,9 +83,9 @@ namespace Gear.Propeller
         /// <summary></summary>
         public const int RegisterBaseAddress = 0x1F0;
 
-        /// @brief Declaration of P1 PASM %Cog RAM Special Purpose Registers.
-        /// @details Specify the write and read status of special registers
-        /// of cog RAM.
+        /// <summary>Declaration of P1 PASM %Cog RAM Special Purpose Registers.</summary>
+        /// <remarks>Specify the write and read status of special registers
+        /// of cog RAM.</remarks>
         ///
         /// Source: Table 15 - %Cog RAM Special Purpose Registers,
         /// <c>%Propeller P8X32A Datasheet V1.4.0</c>.

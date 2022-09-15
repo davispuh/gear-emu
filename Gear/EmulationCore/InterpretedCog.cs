@@ -29,7 +29,7 @@ using System.Collections.Generic;
 
 namespace Gear.EmulationCore
 {
-    /// @brief Derived class from Cog, to emulate running SPIN code.
+    /// <summary>Derived class from Cog, to emulate running SPIN code.</summary>
     public class InterpretedCog : Cog
     {
         /// <summary>Definition of how many cycles takes to boot.</summary>
@@ -39,8 +39,8 @@ namespace Gear.EmulationCore
 
         // Interpreter Specific Values
 
-        /// @brief Flag for determining if a <c>COGINIT</c> statement is
-        /// loading an interpreter.
+        /// <summary>Flag for determining if a <c>COGINIT</c> statement is
+        /// loading an interpreter.</summary>
         /// @version v22.05.04 - Name changed to follow naming conventions.
         private bool _interpreterFlag;
         /// <summary></summary>
@@ -56,7 +56,7 @@ namespace Gear.EmulationCore
         /// @version v22.05.04 - Name changed to follow naming conventions.
         private uint _colorsValue;
 
-        /// @brief Internal stack, used for storing return call stuff.
+        /// <summary>Internal stack, used for storing return call stuff.</summary>
         private readonly Stack<uint> _callStack;
 
         /// <summary>Flag of using port A or B.</summary>
@@ -92,7 +92,7 @@ namespace Gear.EmulationCore
             _callStack = new Stack<uint>();
         }
 
-        /// @brief Insert a LONG into stack.
+        /// <summary>Insert a LONG into stack.</summary>
         /// @param value LONG value.
         /// @version v22.05.04 - Changed visibility to private method.
         private void PushStack(uint value)
@@ -101,8 +101,8 @@ namespace Gear.EmulationCore
             StackFrame += 4;
         }
 
-        /// @brief Retrieve a LONG from stack.
-        /// @return LONG value.
+        /// <summary>Retrieve a LONG from stack.</summary>
+        /// <returns>LONG value.</returns>
         /// @version v22.05.04 - Changed visibility to private method.
         private uint PopStack()
         {
@@ -110,7 +110,7 @@ namespace Gear.EmulationCore
             return CpuHost.DirectReadLong(StackFrame);
         }
 
-        /// @brief Insert a WORD into stack.
+        /// <summary>Insert a WORD into stack.</summary>
         /// @param value WORD value.
         private void PushStackWord(ushort value)
         {
@@ -118,8 +118,8 @@ namespace Gear.EmulationCore
             StackFrame += 2;
         }
 
-        /// @brief Retrieve a WORD from stack.
-        /// @return WORD value.
+        /// <summary>Retrieve a WORD from stack.</summary>
+        /// <returns>WORD value.</returns>
         private ushort PopStackWord()
         {
             StackFrame -= 2;
@@ -207,9 +207,9 @@ namespace Gear.EmulationCore
             return CpuHost.ExecuteHubOperation(this, (uint)HubOperationCodes.CogInit, code, ref carryFlag, ref zeroFlag);
         }
 
-        /// @brief Execute a SPIN bytecode instruction in this cog.
-        /// @returns TRUE if it is the opportunity to trigger a breakpoint,
-        /// or FALSE if not.
+        /// <summary>Execute a SPIN bytecode instruction in this cog.</summary>
+        /// <returns>TRUE if it is the opportunity to trigger a breakpoint,
+        /// or FALSE if not.</returns>
         /// @pullreq{18} Correct video frame load timing, added video break,
         /// fix tab refresh.
         /// @issue{23} Inaccuracy in Spin literal decoding.
@@ -938,7 +938,7 @@ namespace Gear.EmulationCore
                 PushStack(value);
         }
 
-        /// @brief Execute bytecode operation from cog memory.
+        /// <summary>Execute bytecode operation from cog memory.</summary>
         /// @param mask
         /// @param lowestBit
         /// @version v22.05.04 - Parameter name changed to follow naming
@@ -986,11 +986,12 @@ namespace Gear.EmulationCore
         // --------------------------------------------------------------------
 
 
-        /// @brief Execute a bytecode operation from math group.
+        /// <summary>Execute a bytecode operation from math group.</summary>
         /// @param operation Operation code to execute, from range: <c>0xE0..0xFF</c>.
-        /// @param swapValues Must swap values from stack (=true ), or maintain order (=false).
+        /// @param swapValues Must swap values from stack (=true ), or maintain
+        /// order (=false).
         /// @param initial Initial value.
-        /// @return Result from math operation.
+        /// <returns>Result from math operation.</returns>
         /// @version v22.05.04 - Parameter name changed to follow naming
         /// conventions.
         private uint BaseMathOp(byte operation, bool swapValues, uint initial)
@@ -1564,7 +1565,7 @@ namespace Gear.EmulationCore
         // --------------------------------------------------------------------
 
 
-        /// @brief Execute a bytecode operation from memory group.
+        /// <summary>Execute a bytecode operation from memory group.</summary>
         /// @param operation Operation code to execute, from range: <c>0x80..0xDF</c>.
         /// @version v22.05.04 - Changed parameter name to clarify meaning
         /// of it also changed local variable names to follow naming
@@ -1783,7 +1784,7 @@ namespace Gear.EmulationCore
         // --------------------------------------------------------------------
 
 
-        /// @brief Execute a bytecode operation from variable group.
+        /// <summary>Execute a bytecode operation from variable group.</summary>
         /// @param operation Operation code to execute, from range: <c>0x40..0x7F</c>.
         /// @version v22.05.04 - Changed parameter name to clarify meaning
         /// of it also changed local variable names to follow naming
@@ -1946,10 +1947,10 @@ namespace Gear.EmulationCore
             return operation;
         }
 
-        /// @brief Execute bytecode operation for a additional bytecode that
-        /// follows a USING bytecode.
+        /// <summary>Execute bytecode operation for a additional bytecode that
+        /// follows a USING bytecode.</summary>
         /// @param originalValue Initial value of MEM, OBJ, VAR or LOC.
-        /// @return Stored value from operation.
+        /// <returns>Stored value from operation.</returns>
         /// @issue{24} reversed assignment ops.
         /// @version v22.05.04 - Changed local variable name to clarify
         /// meaning of it.
@@ -1996,12 +1997,12 @@ namespace Gear.EmulationCore
                         if (end < start)
                         {
                             if (--value >= end)
-                                ProgramCursor += (uint)branch;
+                                ProgramCursor += branch;
                         }
                         else
                         {
                             if (++value <= end)
-                                ProgramCursor += (uint)branch;
+                                ProgramCursor += branch;
                         }
                         stored = result = (uint)value;
                     }
@@ -2017,7 +2018,7 @@ namespace Gear.EmulationCore
                             (start, end) = (end, start);  // swap values
                         value += step;
                         if (value >= start && value <= end)
-                            ProgramCursor += (uint)branch;
+                            ProgramCursor += branch;
                         stored = result = (uint)value;
                     }
                         break;

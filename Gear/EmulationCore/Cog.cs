@@ -127,16 +127,17 @@ namespace Gear.EmulationCore
         /// @version v22.05.04 - Transformed to a property.
         public int CogNum { get; }
 
-        /// @brief The actual position where the program is executing in this cog.
+        /// <summary>The actual position where the program is executing in
+        /// this cog.</summary>
         /// @version v22.05.03 - Changed to a property with auto value and
         /// protected visibility, from private member (PC).
         public uint ProgramCursor { get; private protected set; }
 
-        /// @brief Break Point position in the program running in this cog.
+        /// <summary>Break Point position in the program running in this cog.</summary>
         /// @version v22.05.03 - Changed to a property with auto value.
         public int BreakPointCogCursor { get; set; }
 
-        /// @brief Number of cycles to wait for the current state.
+        /// <summary>Number of cycles to wait for the current state.</summary>
         /// @version v22.08.01 - Changed to private protected access.
         private protected int StateCount { get; set; }
 
@@ -149,10 +150,10 @@ namespace Gear.EmulationCore
         /// @version v22.08.01 - Changed to private access.
         private FrameState FrameBreak { get; set; }
 
-        /// @brief Property to return complete register of <c>OUT</c> pins
-        /// (<c>P63..P0</c>).
-        /// @details Analyze all sources of pin changes in the cog: <c>OUTA</c>,
-        /// <c>OUTB</c>, the two counters and the video generator of this cog.
+        /// <summary>Property to return complete register of <c>OUT</c> pins
+        /// (<c>P63..P0</c>).</summary>
+        /// <remarks>Analyze all sources of pin changes in the cog: <c>OUTA</c>,
+        /// <c>OUTB</c>, the two counters and the video generator of this cog.</remarks>
         /// @version v22.05.03 - Property name changed to clarify meaning of it.
         public ulong RegisterOUT =>
             _cogMemory[(int)Assembly.RegisterAddress.OUTA] |
@@ -162,11 +163,11 @@ namespace Gear.EmulationCore
             _freqBGenerator.Output |
             _videoGenerator.Output;
 
-        /// @brief Property to return only register of <c>OUTA</c> pins
-        /// (<c>P31..P0</c>).
-        /// @details Analyze all sources of pin changes in the cog for <c>OUTA</c>,
+        /// <summary>Property to return only register of <c>OUTA</c> pins
+        /// (<c>P31..P0</c>).</summary>
+        /// <remarks>Analyze all sources of pin changes in the cog for <c>OUTA</c>,
         /// pins (<c>P31..P0</c>): the two counters and the video generator
-        /// of this cog.
+        /// of this cog.</remarks>
         /// @version v22.05.03 - Property name changed to clarify meaning of it.
         public uint RegisterOUTA =>
             _cogMemory[(int)Assembly.RegisterAddress.OUTA] |
@@ -174,11 +175,11 @@ namespace Gear.EmulationCore
             (uint)_freqBGenerator.Output |
             (uint)_videoGenerator.Output;
 
-        /// @brief Property to return only register of <c>OUTB</c> pins
-        /// (<c>P63..P32</c>).
-        /// @details Analyze all sources of pin changes in the cog for <c>OUTB</c>
+        /// <summary>Property to return only register of <c>OUTB</c> pins
+        /// (<c>P63..P32</c>).</summary>
+        /// <remarks>Analyze all sources of pin changes in the cog for <c>OUTB</c>
         /// pins (<c>P63..P32</c>): the two counters and the video generator
-        /// of this cog.
+        /// of this cog.</remarks>
         /// @version v22.05.03 - Property name changed to clarify meaning of it.
         public uint RegisterOUTB =>
             (uint)((_freqAGenerator.Output |
@@ -186,8 +187,8 @@ namespace Gear.EmulationCore
                     _videoGenerator.Output) >> 32) |
             _cogMemory[(int)Assembly.RegisterAddress.OUTB];
 
-        /// @brief Property to return complete register of <c>DIR</c> pin
-        /// (<c>P63..P0</c>).
+        /// <summary>Property to return complete register of <c>DIR</c> pin
+        /// (<c>P63..P0</c>).</summary>
         /// @version v22.05.03 - Property name changed to clarify meaning of it.
         public ulong RegisterDIR =>
             //Bugfix DIRB must be shifted on 64 bits long
@@ -232,7 +233,7 @@ namespace Gear.EmulationCore
             }
         }
 
-        /// @brief Show a string with human readable state of a cog.
+        /// <summary>Show a string with human readable state of a cog.</summary>
         /// @version v22.08.01 - Corrected text for waiting video.
         public string CogStateString
         {
@@ -335,7 +336,7 @@ namespace Gear.EmulationCore
             SetClock(frequency);
         }
 
-        /// @brief Set video frame condition on which to break
+        /// <summary>Set video frame condition on which to break.</summary>
         /// @version v22.05.03 - Converted to Set method from Property.
         public void SetVideoBreak(FrameState newState) =>
             FrameBreak = newState;
@@ -553,8 +554,9 @@ namespace Gear.EmulationCore
             }
         }
 
-        /// @brief Execute a instruction in this cog.
-        /// @returns TRUE if it is time to trigger a breakpoint, or FALSE if not.
+        /// <summary>Execute a instruction in this cog.</summary>
+        /// <returns>TRUE if it is time to trigger a breakpoint, or FALSE
+        /// if not.</returns>
         public abstract bool DoInstruction();
 
         /// <summary>Setup the cog to a initial state after boot it.</summary>

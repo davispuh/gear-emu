@@ -25,14 +25,14 @@ using Gear.GUI;
 using System;
 using System.Windows.Forms;
 
-/// @brief Main namespace for %GEAR %Emulator.
+/// <summary>Main namespace for %GEAR %Emulator.</summary>
 namespace Gear
 {
-    /// @brief Main emulator application.
+    /// <summary>Main emulator application.</summary>
     /// @version v22.05.01 - Corrected visibility to internal.
     internal static class GearProgram
     {
-        /// @brief The main entry point for the application.
+        /// <summary>The main entry point for the application.</summary>
         /// @version v22.05.01 - Corrected visibility to private.
         [STAThread]
         private static void Main()

@@ -31,7 +31,7 @@ using System.Windows.Forms;
 
 namespace Gear.GUI
 {
-    /// @brief Simple highlighted bit viewer.
+    /// <summary>Simple highlighted bit viewer.</summary>
     [DefaultProperty("Name"), DebuggerDisplay("{TextForDebugger,nq}")]
     public partial class BitView : UserControl, IRequestRepaintable
     {
@@ -216,7 +216,7 @@ namespace Gear.GUI
             $"{{{GetType().FullName}, Name: {Name}, BitWidth: " +
             $"{_bitWidth:D}, FullRedraws: {_fullRedrawRequested} }}";
 
-        /// @brief Default constructor.
+        /// <summary>Default constructor.</summary>
         /// @version v22.06.01 - Modified to accelerate the drawing of control
         /// on screen, support editable background and foreground colors in
         /// Designer mode, and to set minimum size.

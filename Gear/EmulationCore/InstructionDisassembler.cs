@@ -27,8 +27,8 @@ using System.ComponentModel;
 
 namespace Gear.EmulationCore
 {
-    /// @brief Provides methods to decode and create equivalent text of a
-    /// PASM operation.
+    /// <summary>Provides methods to decode and create equivalent text of a
+    /// PASM operation.</summary>
     public static class InstructionDisassembler
     {
         /// <summary>Translate PASM OpCodes to text.</summary>
@@ -307,6 +307,7 @@ namespace Gear.EmulationCore
         /// <param name="memorySegment">SPIN bytecode value(s), contained in a
         /// memory range.</param>
         /// <returns>Byte quantity.</returns>
+        /// <exception cref="InvalidEnumArgumentException"></exception>
         /// @version v22.09.01 - Added.
         public static int InterpretedInstructionLength(
             Propeller.MemorySegment memorySegment)

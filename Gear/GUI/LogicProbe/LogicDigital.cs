@@ -27,7 +27,7 @@ using System.Drawing;
 
 namespace Gear.GUI.LogicProbe
 {
-    /// @brief Provides a Digital logic channel for LogicView.
+    /// <summary>Provides a Digital logic channel for LogicView.</summary>
     public class LogicDigital : LogicRow
     {
         /// <summary>Maximum samples to be saved in each channel.</summary>
@@ -62,7 +62,7 @@ namespace Gear.GUI.LogicProbe
         public override string Name =>
             $"P{_pinNumber}";
 
-        /// @brief Default Constructor.
+        /// <summary>Default Constructor.</summary>
         /// @param pin Pin number to represent.
         public LogicDigital(int pin)
         {
@@ -76,7 +76,7 @@ namespace Gear.GUI.LogicProbe
         /// <summary></summary>
         public override void Click() { }
 
-        /// @brief Clear samples when reset is needed.
+        /// <summary>Clear samples when reset is needed.</summary>
         public sealed override void Reset()
         {
             _time[0] = 0.0;

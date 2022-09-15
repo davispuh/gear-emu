@@ -88,7 +88,8 @@ namespace Gear.GUI
         /// @version v22.09.01 - Added
         private readonly int _stackMargin;
 
-        /// <summary></summary>
+        /// <summary>Real width of client panel control, without the
+        /// details pane width.</summary>
         /// @version v22.09.01 - Added
         private int _decodedEffectiveWidth;
 
@@ -129,13 +130,14 @@ namespace Gear.GUI
         /// <summary>State of Video break point.</summary>
         private FrameState _breakVideo;
 
-        /// @brief Title of the tab window.
+        /// <summary>Title of the tab window.</summary>
         public override string Title => $"Cog {_hostId}";
 
-        /// @brief Attribute to allow the window to be closed (default) or not (like cog windows).
+        /// <summary>Attribute to allow the window to be closed (default)
+        /// or not (like cog windows).</summary>
         public override bool IsClosable => false;
 
-        /// @brief Identify a plugin as user (=true) or system (=false).
+        /// <summary>Identify a plugin as user (=true) or system (=false).</summary>
         /// @version V15.03.26 - Added.
         public override bool IsUserPlugin => false;
 

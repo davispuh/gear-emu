@@ -25,7 +25,7 @@ using System.Drawing;
 
 namespace Gear.GUI.LogicProbe
 {
-    /// @brief Abstract base class for a LogicView channel.
+    /// <summary>Abstract base class for a LogicView channel.</summary>
     public abstract class LogicRow
     {
         /// <summary>Name of channel.</summary>

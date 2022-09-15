@@ -25,10 +25,10 @@ using System.Collections.Generic;
 
 namespace Gear.Utils
 {
-    /// @brief List of TimeUnitsEnum with related TimeUnitsEnumExtension.
+    /// <summary>List of TimeUnitsEnum with related TimeUnitsEnumExtension.</summary>
     public class TimeUnitsList : SortedList<TimeUnitsEnum, TimeUnitsEnumExtension>
     {
-        /// @brief Default constructor.
+        /// <summary>Default constructor.</summary>
         public TimeUnitsList() { }
 
         /// <summary>Constructor with excluded units.</summary>
@@ -49,8 +49,8 @@ namespace Gear.Utils
                         Add(val, new TimeUnitsEnumExtension(val));
         }
 
-        /// @brief Returns a array of names of each element on list.
-        /// @return Array of names of each element on list.
+        /// <summary>Returns a array of names of each element on list.</summary>
+        /// <returns>Array of names of each element on list.</returns>
         public string[] GetNames()
         {
             int len = Count;
@@ -61,10 +61,11 @@ namespace Gear.Utils
             return retVal;
         }
 
-        /// @brief Assign the list of TextFormats methods to corresponding enum values.
+        /// <summary>Assign the list of TextFormats methods to corresponding
+        /// enum values.</summary>
         /// @param assignments List of assignments.
-        /// @throws ArgumentNullException
-        /// @throws KeyNotFoundException
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="KeyNotFoundException"></exception>
         public void AssignTextFormats(DelegatesPerTimeUnitsList assignments)
         {
             if (assignments == null)
@@ -79,11 +80,11 @@ namespace Gear.Utils
                 }
         }
 
-        /// @brief Determine if a text format method had been assigned to
-        /// the key.
+        /// <summary>Determine if a text format method had been assigned to
+        /// the key.</summary>
         /// @param key Time unit to inquire.
-        /// @return If a valid delegate method is assigned (=true); if it is
-        /// null reference or the key isn't in the list (=false).
+        /// <returns>If a valid delegate method is assigned (=true); if it is
+        /// null reference or the key isn't in the list (=false).</returns>
         public bool HaveAssignedTextFormat(TimeUnitsEnum key)
         {
             if (TryGetValue(key, out TimeUnitsEnumExtension enumExtension))
@@ -91,9 +92,9 @@ namespace Gear.Utils
             return false;
         }
 
-    } //end class TimeUnitsList
+    }
 
-    /// @brief List of format text delegates assigned to each time unit.
+    /// <summary>List of format text delegates assigned to each time unit.</summary>
     public class DelegatesPerTimeUnitsList :
         SortedList<TimeUnitsEnum, FormatToTextDelegate>
     {
@@ -114,11 +115,11 @@ namespace Gear.Utils
                 AddOrReplace(pair.Key, pair.Value);
         }
 
-        /// @brief Add or replace the delegate member method associated with
-        /// the time unit.
+        /// <summary>Add or replace the delegate member method associated with
+        /// the time unit.</summary>
         /// @param value Time unit.
         /// @param delegate Method to format text for this time unit.
-        /// @throws ArgumentOutOfRangeException
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         private void AddOrReplace(TimeUnitsEnum value,
             FormatToTextDelegate @delegate)
         {
@@ -144,8 +145,8 @@ namespace Gear.Utils
             }
         }
 
-        /// @brief Inherited Add method, marked as obsolete, to force
-        /// to use AddOrReplace(.) method.
+        /// <summary>Inherited Add method, marked as obsolete, to force
+        /// to use AddOrReplace(.) method.</summary>
         /// @param value Time unit.
         /// @param delegate Method to format text for this time unit.
         [Obsolete("Use AddOrReplace(.) method instead", error: true)]

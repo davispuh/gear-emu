@@ -42,7 +42,7 @@ using System.Windows.Forms;
 
 namespace Gear.GUI
 {
-    /// @brief Spin object viewer.
+    /// <summary>Spin object viewer.
     public partial class SpinView : PluginSupport.PluginBase
     {
         /// <summary>Indicates the different type of byte alignment for the
@@ -119,7 +119,7 @@ namespace Gear.GUI
         private static readonly ComponentResourceManager Resources =
             new ComponentResourceManager(typeof(SpinView));
 
-        /// @brief Current Culture to modify its Number format.
+        /// <summary>Current Culture to modify its Number format.
         /// @version v22.07.01 - Name changed to follow naming conventions.
         private readonly CultureInfo _currentCultureMod;
 
@@ -503,10 +503,10 @@ namespace Gear.GUI
             Repaint(false);
         }
 
-        /// @brief Format a frequency value to string, considering the value
-        /// of FreqFormatValue.
-        /// @param value Value to format to string.
-        /// @returns The text formatted.
+        /// <summary>Format a frequency value to string, considering the value
+        /// of FreqFormatValue.</summary>
+        /// <param name="value">Value to format to string.</param>
+        /// <returns>The formatted text.</returns>
         /// @version v22.07.01 - Modified parameter name.
         private string FreqFormatText(uint value)
         {

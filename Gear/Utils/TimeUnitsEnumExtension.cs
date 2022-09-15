@@ -32,7 +32,7 @@ using System.Reflection;
 
 namespace Gear.Utils
 {
-    /// @brief Managed Time units enumeration expansion.
+    /// <summary>Managed Time units enumeration expansion.</summary>
     [Serializable]
     public enum TimeUnitsEnum : byte
     {
@@ -50,49 +50,49 @@ namespace Gear.Utils
         min_s
     }
 
-    /// @brief Delegate to Format text a numeric value considering its
-    /// associated time unit value.
+    /// <summary>Delegate to Format text a numeric value considering its
+    /// associated time unit value.</summary>
     public delegate string FormatToTextDelegate(TimeUnitsEnum unit, double val);
 
-    /// @brief Expanded time unit Enumeration class.
+    /// <summary>Expanded time unit Enumeration class.</summary>
     [Serializable]
     public class TimeUnitsEnumExtension : IComparable
     {
-        /// @brief Time Unit value.
+        /// <summary>Time Unit value.</summary>
         public readonly TimeUnitsEnum Id;
 
-        /// @brief Name to display property.
-        /// @return Name to display.
+        /// <summary>Name to display property.</summary>
+        /// <returns>Name to display.</returns>
         public string Name =>
             Id != TimeUnitsEnum.min_s ?
                 Id.ToString() :
                 "m:s";
 
-        /// @brief External defined method to format to text a value using
-        /// time unit support.
+        /// <summary>External defined method to format to text a value using
+        /// time unit support.</summary>
         public FormatToTextDelegate FormatToTextDel { get; set; }
 
-        /// @brief Factor of this time unit. If this is defined to multiply
-        /// or divide, is given by IsMultiplyFactor property.
-        /// @return Number factor.
+        /// <summary>Factor of this time unit. If this is defined to multiply
+        /// or divide, is given by IsMultiplyFactor property.</summary>
+        /// <returns>Number factor.</returns>
         public double Factor =>
             GetFactor(Id);
 
-        /// @brief Determine if Factor has to multiplied, or divided.
-        /// @return If Factor has to multiply (=true), or divide (=false).
+        /// <summary>Determine if Factor has to multiplied, or divided.</summary>
+        /// <returns>If Factor has to multiply (=true), or divide (=false).</returns>
         public bool IsMultiplyFactor =>
             Id != TimeUnitsEnum.min_s;
 
-        /// @brief Default constructor.
+        /// <summary>Default constructor.</summary>
         /// @param id Time unit with extended attributes.
         public TimeUnitsEnumExtension(TimeUnitsEnum id)
         {
             Id = id;
         }
 
-        /// @brief Get the factor associated to the unit.
+        /// <summary>Get the factor associated to the unit.</summary>
         /// @param unit The time unit.
-        /// @return Factor.
+        /// <returns>Factor.</returns>
         /// <exception cref="InvalidEnumArgumentException"></exception>
         public static double GetFactor(TimeUnitsEnum unit)
         {
@@ -126,12 +126,12 @@ namespace Gear.Utils
             return unit != TimeUnitsEnum.min_s;
         }
 
-        /// @brief Factor referenced to base unit, to transform between
-        /// TimeUnitsEnum values.
+        /// <summary>Factor referenced to base unit, to transform between
+        /// TimeUnitsEnum values.</summary>
         /// @param unitToTransform Time unit to transform.
         /// @param isMultiplyFactor
         /// @param baseUnit Base time unit.
-        /// @return Multiply factor relative to base unit.
+        /// <returns>Multiply factor relative to base unit.</returns>
         public static double TransformUnitsFactor(TimeUnitsEnum unitToTransform,
             out bool isMultiplyFactor,
             TimeUnitsEnum baseUnit)
@@ -153,6 +153,7 @@ namespace Gear.Utils
         /// <summary></summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
+        /// <exception cref="InvalidCastException"></exception>
         public static IEnumerable<T> GetAll<T>() where T : TimeUnitsEnumExtension
         {
             var fields = typeof(T).GetFields(BindingFlags.Public |
@@ -180,16 +181,17 @@ namespace Gear.Utils
             return Tuple.Create(Id, Name).GetHashCode();
         }
 
-        /// @brief Comparison between current instance and the parameter object.
-        /// @details Implements IComparable interface.
+        /// <summary>Comparison between current instance and the parameter object.</summary>
+        /// <remarks>Implements IComparable interface.</remarks>
         /// @param obj Other object to compare.
-        /// @return Comparison result, this instance precedes the other (< 0), both are
-        /// in the same position (= 0), or the other instance precedes this (> 0).
+        /// <returns>Comparison result, this instance precedes the other
+        /// (&lt; 0), both are in the same position (= 0), or the other instance
+        /// precedes this (> 0).</returns>
         public int CompareTo(object obj) =>
             Id.CompareTo(((TimeUnitsEnumExtension)obj).Id);
 
         /// <summary></summary>
-        /// @details Implements IComparable interface.
+        /// <remarks>Implements IComparable interface.</remarks>
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>
@@ -201,7 +203,7 @@ namespace Gear.Utils
         }
 
         /// <summary></summary>
-        /// @details Implements IComparable interface.
+        /// <remarks>Implements IComparable interface.</remarks>
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>
@@ -211,7 +213,7 @@ namespace Gear.Utils
         }
 
         /// <summary></summary>
-        /// @details Implements IComparable interface.
+        /// <remarks>Implements IComparable interface.</remarks>
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>
@@ -223,7 +225,7 @@ namespace Gear.Utils
         }
 
         /// <summary></summary>
-        /// @details Implements IComparable interface.
+        /// <remarks>Implements IComparable interface.</remarks>
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>
@@ -233,7 +235,7 @@ namespace Gear.Utils
         }
 
         /// <summary></summary>
-        /// @details Implements IComparable interface.
+        /// <remarks>Implements IComparable interface.</remarks>
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>
@@ -243,7 +245,7 @@ namespace Gear.Utils
         }
 
         /// <summary></summary>
-        /// @details Implements IComparable interface.
+        /// <remarks>Implements IComparable interface.</remarks>
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>

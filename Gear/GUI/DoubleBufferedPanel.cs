@@ -24,14 +24,10 @@ using System.Windows.Forms;
 
 namespace Gear.GUI
 {
-    /// <summary>
-    ///
-    /// </summary>
+    /// <summary></summary>
     public sealed class DoubleBufferedPanel : Panel
     {
-        /// <summary>
-        ///
-        /// </summary>
+        /// <summary></summary>
         public DoubleBufferedPanel()
         {
             DoubleBuffered = true;

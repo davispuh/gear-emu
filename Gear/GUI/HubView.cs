@@ -35,28 +35,28 @@ using System.Windows.Forms;
 
 namespace Gear.GUI
 {
-    /// @brief %GUI Control to show Hub status
+    /// <summary>%GUI Control to show Hub status</summary>
     /// @version v22.06.01 - Added custom debugger text.
     [DefaultProperty("Name"), DebuggerDisplay("{TextForDebugger,nq}")]
     public partial class HubView : UserControl
     {
-        /// @brief Reference to propeller cpu instance.
+        /// <summary>Reference to propeller cpu instance.</summary>
         private PropellerCPU _cpuHost;
 
-        /// @brief Current Culture to modify its Number format.
+        /// <summary>Current Culture to modify its Number format.</summary>
         /// @version v20.09.01 - Added.
         private readonly CultureInfo _currentCultureMod =
             (CultureInfo)CultureInfo.CurrentCulture.Clone();
 
-        /// @brief Storage for frequency format.
+        /// <summary>Storage for frequency format.</summary>
         /// @version v20.09.01 - Added.
         private NumberFormatEnum _reqFormatValue;
 
-        /// <summary></summary>
+        /// <summary>List of repainteable objects.</summary>
         /// @version v22.06.01 - Added to implement conditional painting.
         private readonly List<IRequestRepaintable> _repaintableList;
 
-        /// @brief Frequency format to be displayed.
+        /// <summary>Frequency format to be displayed.</summary>
         /// @version v22.04.02 - Check to update only on changes.
         private NumberFormatEnum FreqFormatValue
         {
@@ -71,16 +71,17 @@ namespace Gear.GUI
             }
         }
 
-        /// @brief Time format to be displayed.
+        /// <summary>Time format to be displayed.</summary>
         /// @version v20.09.01 - Added.
         public TimeUnitsEnum TimeUnit { get; set; }
 
-        /// <summary>Returns a summary text of this class, to be used in debugger view.</summary>
+        /// <summary>Returns a summary text of this class, to be used in
+        /// debugger view.</summary>
         /// @version v22.06.01 - Added to provide debugging info.
         private string TextForDebugger =>
             $"{{{GetType().FullName}, Id: {(_cpuHost == null ? "[none yet]" : _cpuHost.InstanceNumber.ToString("D2"))} }}";
 
-        /// @brief Default constructor
+        /// <summary>Default constructor</summary>
         /// @issue{30} Linux-Mono: Version 22.06.02 crashes directly after
         /// loading a binary.
         /// @version v22.06.03 - Hotfix for issue #30.
@@ -188,7 +189,7 @@ namespace Gear.GUI
                     coreFrequencyLabel.Text = FreqFormatText(cpu.CoreFrequency);
         }
 
-        /// @brief Update the value of FreqFormat from default setting.
+        /// <summary>Update the value of FreqFormat from default setting.</summary>
         /// @version v20.09.01 - Added.
         public void UpdateFreqFormat()
         {
@@ -204,7 +205,7 @@ namespace Gear.GUI
             timeUnitSelector.TimeUnitSelected = TimeUnit;
         }
 
-        /// @brief Update Counter and Frequency labels with Monospace font.
+        /// <summary>Update Counter and Frequency labels with Monospace font.</summary>
         /// @version v20.09.01 - Added.
         public void SetFontSpecialLabels()
         {
@@ -217,9 +218,9 @@ namespace Gear.GUI
             elapsedTimeLabel.Font = monoFont;
         }
 
-        /// @brief Update screen data on event.
-        /// @param force TRUE to request full painting, FALSE to paint only
-        /// differences.
+        /// <summary>Update screen data on event.</summary>
+        /// <param name="force">TRUE to request full painting, FALSE to paint
+        /// only differences.</param>
         /// @version v22.06.01 - Modified signature to implement conditional
         /// painting.
         /// @todo Analyze bottleneck on DataChanged()
@@ -248,7 +249,8 @@ namespace Gear.GUI
         }
 
         /// <summary>Update Counter label with current format and value.</summary>
-        /// @version v22.05.04 - Added by the splitting of old %UpdateCounterFreqTexts() method.
+        /// @version v22.05.04 - Added by the splitting of old
+        /// %UpdateCounterFreqTexts() method.
         public void UpdateCounterText()
         {
             if (_cpuHost == null)
@@ -256,8 +258,9 @@ namespace Gear.GUI
             systemCounterLabel.Text = FreqFormatText(_cpuHost.Counter);
         }
 
-        /// @brief Update Frequency labels with current format and values.
-        /// @version v22.05.04 - Added by the splitting of old %UpdateCounterFreqTexts() method.
+        /// <summary>Update Frequency labels with current format and values.</summary>
+        /// @version v22.05.04 - Added by the splitting of old
+        /// %UpdateCounterFreqTexts() method.
         /// @todo Analyze bottleneck here
         public void UpdateFrequenciesTexts()
         {
@@ -267,7 +270,7 @@ namespace Gear.GUI
             xtalFrequencyLabel.Text = FreqFormatText(_cpuHost.XtalFrequency);
         }
 
-        /// @brief Update Time labels with current format and unit.
+        /// <summary>Update Time labels with current format and unit.</summary>
         /// @version v20.09.01 - Added.
         public void UpdateTimeText()
         {
@@ -276,22 +279,22 @@ namespace Gear.GUI
                     timeUnitSelector.GetFormattedText(_cpuHost.EmulatorTime);
         }
 
-        /// @brief Format the value to string, considering the value
-        ///  of FreqFormatValue.
-        /// @param val Value to format to string.
-        /// @returns The text formatted.
+        /// <summary>Format the value to string, considering the value
+        ///  of FreqFormatValue.</summary>
+        /// <param name="val">Value to format to string.</param>
+        /// <returns>The formatted text.</returns>
         /// @version v20.09.01 - Added.
         private string FreqFormatText(uint val)
         {
             return string.Format(_currentCultureMod, "{0,17:#,##0}", val);
         }
 
-        /// @brief Format the value to string, for all time units except
-        ///  Minutes (TimeUnitsEnum.min_s).
-        /// @details Implements Gear.Utils.FormatToTextDelegate delegate.
-        /// @param unit Time unit to use.
-        /// @param val Value to format to string.
-        /// @returns The formatted text.
+        /// <summary>Format the value to string, for all time units except
+        ///  Minutes (TimeUnitsEnum.min_s).</summary>
+        /// <remarks>Implements Gear.Utils.FormatToTextDelegate delegate.</remarks>
+        /// <param name="unit">Time unit to use.</param>
+        /// <param name="val">Value to format to string.</param>
+        /// <returns>The formatted text.</returns>
         /// @version v20.09.01 - Added.
         private string StandardTimeFormatText(TimeUnitsEnum unit, double val)
         {
@@ -304,11 +307,12 @@ namespace Gear.GUI
             return string.Format(_currentCultureMod, numFormat, value);
         }
 
-        /// @brief Format the value to string, only for Minutes (TimeUnitsEnum.min_s).
-        /// @details Implements Gear.Utils.FormatToTextDelegate delegate.
-        /// @param unit Time unit to use.
-        /// @param val Value to format to string.
-        /// @returns The formatted text.
+        /// <summary>Format the value to string, only for Minutes
+        /// (TimeUnitsEnum.min_s).</summary>
+        /// <remarks>Implements Gear.Utils.FormatToTextDelegate delegate.</remarks>
+        /// <param name="unit">Time unit to use.</param>
+        /// <param name="val">Value to format to string.</param>
+        /// <returns>The formatted text.</returns>
         /// @version v20.09.01 - Added.
         private string MinutesTimeFormatText(TimeUnitsEnum unit, double val)
         {
@@ -324,8 +328,7 @@ namespace Gear.GUI
                         val % (1.0 / timeUnitSelector.FactorSelected));
         }
 
-        /// @brief Update frequency labels tool tips.
-        /// @param val Format to use for frequency labels.
+        /// <summary>Update frequency labels tool tips.</summary>
         /// @version v22.04.02 - Changed to string interpolation.
         private void UpdateFreqToolTips()
         {
@@ -335,9 +338,10 @@ namespace Gear.GUI
             toolTip1.SetToolTip(coreFrequencyLabel, "Core Frequency" + txt);
         }
 
-        /// @brief Change the frequencies labels format, remembering the user setting.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
+        /// <summary>Change the frequencies labels format, remembering the
+        /// user setting.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v20.09.01 - Added.
         private void FrequencyLabels_Click(object sender, EventArgs e)
         {
@@ -353,9 +357,9 @@ namespace Gear.GUI
             Properties.Settings.Default.Save();
         }
 
-        /// @brief Change the time unit, remembering the user setting.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Event data arguments.
+        /// <summary>Change the time unit, remembering the user setting.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Event data arguments.</param>
         /// @version v20.09.01 - Added.
         private void TimeUnitSelector_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -369,9 +373,9 @@ namespace Gear.GUI
             }
         }
 
-        /// @brief Change the time unit, remembering the user setting.
-        /// @param sender Reference to object where event was raised.
-        /// @param e Mouse event data arguments.
+        /// <summary>Change the time unit, remembering the user setting.</summary>
+        /// <param name="sender">Reference to object where event was raised.</param>
+        /// <param name="e">Mouse event data arguments.</param>
         /// @version v20.09.01 - Added.
         private void ElapsedTime_MouseClick(object sender, MouseEventArgs e)
         {

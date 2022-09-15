@@ -26,7 +26,7 @@ using System.Windows.Forms;
 
 namespace Gear.GUI
 {
-    /// @brief Window container for a floated plugin.
+    /// <summary>Window container for a floated plugin.</summary>
     public partial class FloatedWindow : Form
     {
         /// <summary>Reference to Emulator form.</summary>

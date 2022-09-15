@@ -33,53 +33,54 @@ using System.Windows.Forms;
 namespace Gear.Utils
 {
 
-    /// @brief Interface for Time Unit Management.
+    /// <summary>Interface for Time Unit Management.</summary>
     public interface ITimeUnitMgmt
     {
-        /// @brief Excluded time units.
+        /// <summary>Excluded time units.</summary>
         TimeUnitCollection ExcludedUnits { get; set; }
 
-        /// @brief Base unit used to transform multiply factors values.
+        /// <summary>Base unit used to transform multiply factors values.</summary>
         TimeUnitsEnum BaseUnit { get; set; }
 
-        /// @brief Time unit selected on this combobox.
+        /// <summary>Time unit selected on this combobox.</summary>
         TimeUnitsEnum TimeUnitSelected { get; set; }
 
-        /// @brief Factor of the time unit selected on this combobox.
+        /// <summary>Factor of the time unit selected on this combobox.</summary>
         double FactorSelected { get; }
 
-        /// @brief Determine if Factor has to multiplied, or divided.
+        /// <summary>Determine if Factor has to multiplied, or divided.</summary>
         bool IsMultiplyFactor { get; }
 
-        /// @brief Synchronize values dependent of excludedUnits
+        /// <summary>Synchronize values dependent of excludedUnits.</summary>
         void SyncValues();
 
-        /// @brief Select the next value of enabled values of ComboBox.
+        /// <summary>Select the next value of enabled values of ComboBox.</summary>
         void SelectNext();
 
-        /// @brief Select the previous value of enabled values of ComboBox.
+        /// <summary>Select the previous value of enabled values of
+        /// ComboBox.</summary>
         void SelectPrev();
 
-        /// @brief Assign the list of TextFormats methods to corresponding
-        /// enum values.
+        /// <summary>Assign the list of TextFormats methods to corresponding
+        /// enum values.</summary>
         void AssignTextFormats(DelegatesPerTimeUnitsList assignments);
 
-        /// @brief Get the formatted text representation of parameter,
-        /// using the assigned delegate method.
+        /// <summary>Get the formatted text representation of parameter,
+        /// using the assigned delegate method.</summary>
         ///@version v22.06.01 - Method name changed to correct misspelling.
         string GetFormattedText(double val);
     }
 
-    /// @brief Management of Time Units.
+    /// <summary>Management of Time Units.</summary>
     public class TimeUnitMgmt : ITimeUnitMgmt
     {
-        /// @brief Reference to callback of ComboBox.
+        /// <summary>Reference to callback of ComboBox.</summary>
         private readonly ComboBox _owner;
 
-        /// @brief Internal member for excluded time units.
+        /// <summary>Internal member for excluded time units.</summary>
         private TimeUnitCollection _excludedUnits;
 
-        /// @brief Excluded time units.
+        /// <summary>Excluded time units.</summary>
         /// @version v22.06.01 - Changed designer category to default.
         [Category("Default"), Description("Excluded Time Units for this control."),
          DisplayName("Excluded Time Units"), Browsable(true),
@@ -102,17 +103,17 @@ namespace Gear.Utils
             }
         }
 
-        /// @brief Enabled values extension list.
+        /// <summary>Enabled values extension list.</summary>
         public TimeUnitsList EnabledValuesList { get; private set; } =
             new TimeUnitsList();
 
-        /// @brief Base unit used to transform multiply factors values.
+        /// <summary>Base unit used to transform multiply factors values.</summary>
         /// @version v22.06.01 - Changed designer category to default.
         [Category("Default"), Description("Base Unit of Time for this control."),
          DisplayName("Base Time Unit"), Browsable(true)]
         public TimeUnitsEnum BaseUnit { get; set; } = TimeUnitsEnum.None;
 
-        /// @brief Time unit selected on this combobox.
+        /// <summary>Time unit selected on this combobox.</summary>
         /// @version v22.06.01 - Changed designer category to default.
         [Category("Default"), Description("Initial selected unit of time for this control."),
          DisplayName("Selected Time Unit"), Browsable(true)]
@@ -125,20 +126,20 @@ namespace Gear.Utils
             set => _owner.SelectedIndex = EnabledValuesList.IndexOfKey(value);
         }
 
-        /// @brief Factor of the time unit selected on this combobox.
-        /// @return Number factor.
+        /// <summary>Factor of the time unit selected on this combobox.</summary>
+        /// <returns>Number factor.</returns>
         public double FactorSelected =>
             _owner.SelectedIndex >= 0 && EnabledValuesList.Count > 0 ?
                 EnabledValuesList.Values[_owner.SelectedIndex].Factor :
                 0.0;
 
-        /// @brief Determine if Factor has to multiplied, or divided.
-        /// @return If Factor has to multiply (=true), or divide (=false).
+        /// <summary>Determine if Factor has to multiplied, or divided.</summary>
+        /// <returns>If Factor has to multiply (=true), or divide (=false).</returns>
         public bool IsMultiplyFactor =>
             _owner.SelectedIndex < 0 || EnabledValuesList.Count <= 0 ||
             EnabledValuesList.Values[_owner.SelectedIndex].IsMultiplyFactor;
 
-        /// @brief Default constructor
+        /// <summary>Default constructor.</summary>
         /// @param baseObj ComboBox for callback.
         /// @exception ArgumentNullException Thrown if baseObj is null.
         public TimeUnitMgmt(ComboBox baseObj)
@@ -148,8 +149,8 @@ namespace Gear.Utils
             TimeUnitSelected = EnabledValuesList.Keys.FirstOrDefault();
         }
 
-        /// @brief Synchronize values dependent of excludedUnits:
-        /// EnabledValuesList and comboBox list values.
+        /// <summary>Synchronize values dependent of excludedUnits:
+        /// EnabledValuesList and comboBox list values.</summary>
         public void SyncValues()
         {
             EnabledValuesList = new TimeUnitsList(_excludedUnits);
@@ -157,8 +158,8 @@ namespace Gear.Utils
             _owner.Items.AddRange(EnabledValuesList.GetNames());
         }
 
-        /// @brief Select the next value of enabled values of ComboBox. If it
-        /// is the last one, starts from the beginning.
+        /// <summary>Select the next value of enabled values of ComboBox. If it
+        /// is the last one, starts from the beginning.</summary>
         public void SelectNext()
         {
             if (_owner.SelectedIndex == -1)
@@ -169,8 +170,8 @@ namespace Gear.Utils
                 0;
         }
 
-        /// @brief Select the previous value of enabled values of ComboBox. If it
-        /// is the first one, starts from the end.
+        /// <summary>Select the previous value of enabled values of ComboBox. If it
+        /// is the first one, starts from the end.</summary>
         public void SelectPrev()
         {
             if (_owner.SelectedIndex == -1)
@@ -181,20 +182,21 @@ namespace Gear.Utils
                 EnabledValuesList.Count - 1;
         }
 
-        /// @brief Assign the list of TextFormats methods to corresponding
-        /// enum values.
+        /// <summary>Assign the list of TextFormats methods to corresponding
+        /// enum values.</summary>
         /// @param assignments List of assignments.
         public void AssignTextFormats(DelegatesPerTimeUnitsList assignments)
         {
             EnabledValuesList.AssignTextFormats(assignments);
         }
 
-        /// @brief Get the formatted text representation of parameter,
-        /// using the assigned delegate method.
+        /// <summary>Get the formatted text representation of parameter,
+        /// using the assigned delegate method.</summary>
         /// @param val Numeric value to format.
-        /// @return Formatted text.
-        /// @throws KeyNotFoundException If selected time unit is not on
-        /// enabled values list or Delegate method not set for TimeUnitsEnum.
+        /// <returns>Formatted text.</returns>
+        /// <exception cref="KeyNotFoundException">If selected time unit is
+        /// not on enabled values list or Delegate method not set for
+        /// TimeUnitsEnum.</exception>
         public string GetFormattedText(double val)
         {
             TimeUnitsEnum sel = TimeUnitSelected;

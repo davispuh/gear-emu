@@ -26,7 +26,7 @@ using System.Windows.Forms;
 
 namespace Gear.GUI
 {
-    /// @brief About form for %Gear %Emulator.
+    /// <summary>About form for %Gear %Emulator.</summary>
     public partial class AboutGear : Form
     {
         /// <summary>Property to get/set the Form text.</summary>
