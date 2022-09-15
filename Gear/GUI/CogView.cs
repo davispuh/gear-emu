@@ -397,7 +397,7 @@ namespace Gear.GUI
             if (cog.ProgramCursor == memoryPos &&
                 (HighlightedType & HighlightedTypeEnum.OnlyFrame) ==
                 HighlightedTypeEnum.OnlyFrame)
-                BufferGraphics.DrawRectangle(Pens.Black,
+                BufferGraphics.DrawRectangle(SystemPens.Highlight,
                     0, line * _lineHeight,
                     decodedPanel.ClientSize.Width - 1,
                     _lineHeight);
@@ -491,8 +491,8 @@ namespace Gear.GUI
             if (cog.ProgramCursor == memoryPos &&
                 (HighlightedType & HighlightedTypeEnum.OnlyFrame) ==
                 HighlightedTypeEnum.OnlyFrame)
-                BufferGraphics.DrawRectangle(Pens.Black,
-                    0, line * _lineHeight, _decodedEffectiveWidth,
+                BufferGraphics.DrawRectangle(SystemPens.Highlight,
+                    0, line * _lineHeight, _decodedEffectiveWidth - 1,
                     _lineHeight);
             //print text line
             BufferGraphics.DrawString(
@@ -591,8 +591,8 @@ namespace Gear.GUI
             if (cog.ProgramCursor == memoryPos &&
                 (HighlightedType & HighlightedTypeEnum.OnlyFrame) ==
                 HighlightedTypeEnum.OnlyFrame)
-                BufferGraphics.DrawRectangle(Pens.Black,
-                    0, line * _lineHeight, _decodedEffectiveWidth,
+                BufferGraphics.DrawRectangle(SystemPens.Highlight,
+                    0, line * _lineHeight, _decodedEffectiveWidth - 1,
                     _lineHeight);
             //print text line
             BufferGraphics.DrawString(
@@ -616,7 +616,7 @@ namespace Gear.GUI
                 decodedPanel.ClientSize.Width - _stackMargin - 1, 0,
                 _stackMargin + 1, decodedPanel.ClientSize.Height);
             //side separation line
-            BufferGraphics.DrawLine(Pens.Black,
+            BufferGraphics.DrawLine(SystemPens.ActiveBorder,
                 decodedPanel.ClientSize.Width - _stackMargin - 1, 0,
                 decodedPanel.ClientSize.Width - _stackMargin - 1, decodedPanel.ClientSize.Height);
             Brush standardBrush = SystemBrushes.ControlText;

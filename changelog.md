@@ -1,6 +1,10 @@
 # Change Log
 
-## Commit  Doxygen documentation upgrade part 1
+## Commit  CogView graphics upgrade
+- CogView graphics upgrade: use system highlight color for current executting line (program cursor).
+
+
+## Commit [bbee325](https://github.com/davispuh/gear-emu/commit/bbee3250208aee3cfe894de27bbfac8e3961d2d1) Doxygen documentation upgrade part 1
 - Doxygen documentation upgrade: changed to xml style for many tags (summary, remarks, returns).
 
 
