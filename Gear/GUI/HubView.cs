@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Globalization;
 using System.Linq;
@@ -338,8 +339,9 @@ namespace Gear.GUI
             toolTip1.SetToolTip(coreFrequencyLabel, "Core Frequency" + txt);
         }
 
-        /// <summary>Change the frequencies labels format, remembering the
-        /// user setting.</summary>
+        /// <summary>Event handler to manage a mouse click on
+        /// any of frequency labels.</summary>
+        /// <remarks>Change the time unit, remembering the user setting.</remarks>
         /// <param name="sender">Reference to object where event was raised.</param>
         /// <param name="e">Event data arguments.</param>
         /// @version v20.09.01 - Added.
@@ -357,7 +359,9 @@ namespace Gear.GUI
             Properties.Settings.Default.Save();
         }
 
-        /// <summary>Change the time unit, remembering the user setting.</summary>
+        /// <summary>Event handler to manage a change on selected index of
+        /// timeUnitSelector.</summary>
+        /// <remarks>Change the time unit, remembering the user setting.</remarks>
         /// <param name="sender">Reference to object where event was raised.</param>
         /// <param name="e">Event data arguments.</param>
         /// @version v20.09.01 - Added.
@@ -373,7 +377,9 @@ namespace Gear.GUI
             }
         }
 
-        /// <summary>Change the time unit, remembering the user setting.</summary>
+        /// <summary>Event handler to manage a mouse click on
+        /// elapsedTimeLabel.</summary>
+        /// <remarks>Change the time unit, remembering the user setting.</remarks>
         /// <param name="sender">Reference to object where event was raised.</param>
         /// <param name="e">Mouse event data arguments.</param>
         /// @version v20.09.01 - Added.
@@ -390,7 +396,7 @@ namespace Gear.GUI
             }
         }
 
-        /// <summary></summary>
+        /// <summary>Event handler to manage changes on control size.</summary>
         /// <param name="sender">Reference to object where event was raised.</param>
         /// <param name="e">Event data arguments.</param>
         /// @version v22.06.01 - Added to implement conditional painting.
@@ -403,7 +409,7 @@ namespace Gear.GUI
                     repaintable.RequestFullOnNextRepaint();
         }
 
-        /// <summary></summary>
+        /// <summary>Event handler to manage changes on control visibility.</summary>
         /// <param name="sender">Reference to object where event was raised.</param>
         /// <param name="e">Event data arguments.</param>
         /// @version v22.06.01 - Added to implement conditional painting.
@@ -414,7 +420,7 @@ namespace Gear.GUI
             RequestFullOnNextRepaint();
         }
 
-        /// <summary></summary>
+        /// <summary>Event handler to paint HubView control.</summary>
         /// <param name="e">Paint event data arguments.</param>
         /// @version v22.06.02 - Modified to font aliasing style for text of
         /// the control.
@@ -422,7 +428,10 @@ namespace Gear.GUI
         {
             if (DesignMode)
                 RequestFullOnNextRepaint();
+            //graphical settings to apply
+            e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
             e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+            e.Graphics.CompositingQuality = CompositingQuality.AssumeLinear;
             base.OnPaint(e);
         }
     }

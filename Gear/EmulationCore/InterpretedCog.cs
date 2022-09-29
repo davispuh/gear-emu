@@ -147,7 +147,7 @@ namespace Gear.EmulationCore
             CpuHost.DirectWriteLong(initFrame - 4, 0x0);
         }
 
-        /// <summary></summary>
+        /// <summary>Initialize Cog values.</summary>
         /// <returns></returns>
         /// @version v22.05.04 - Changed local variable names to follow naming
         /// conventions or to clarify meaning of it.
@@ -885,7 +885,7 @@ namespace Gear.EmulationCore
         // End extra documentation for Method public override bool DoInstruction()
         // --------------------------------------------------------------------
 
-        /// <summary></summary>
+        /// <summary>Get Video data.</summary>
         /// <param name="colors"></param>
         /// <param name="pixels"></param>
         /// @pullreq{18} Method added.

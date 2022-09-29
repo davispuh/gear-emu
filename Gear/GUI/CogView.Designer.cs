@@ -244,7 +244,6 @@ namespace Gear.GUI
             this.breakNone.AutoToolTip = true;
             this.breakNone.Checked = true;
             this.breakNone.CheckOnClick = true;
-            this.breakNone.CheckState = System.Windows.Forms.CheckState.Checked;
             this.breakNone.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.breakNone.Name = "breakNone";
             this.breakNone.Size = new System.Drawing.Size(134, 22);

@@ -21,16 +21,16 @@
  * --------------------------------------------------------------------------------
  */
 
-#undef USE_MAINGRAPHICS
-
 using Gear.EmulationCore;
 using Gear.Utils;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.Globalization;
 using System.Linq;
@@ -42,7 +42,7 @@ using System.Windows.Forms;
 
 namespace Gear.GUI
 {
-    /// <summary>Spin object viewer.
+    /// <summary>Spin object viewer.</summary>
     public partial class SpinView : PluginSupport.PluginBase
     {
         /// <summary>Indicates the different type of byte alignment for the
@@ -58,13 +58,39 @@ namespace Gear.GUI
             Word = 16
         }
 
+        /// <summary>Styles to draw headers.</summary>
+        /// <remarks>The values can be combined because is a flag
+        /// enumeration.</remarks>
+        /// @version v22.09.02 - Added.
+        [Flags]
+        public enum HeaderStyleEnum : byte
+        {
+            /// <summary>Draw only top header.</summary>
+            OnlyTop = 1,
+            /// <summary>Draw only bottom header.</summary>
+            OnlyBottom = 2,
+            /// <summary>Draw both headers.</summary>
+            TopAndBottom = 3
+        }
+
+        /// <summary>Sections of drawing areas.</summary>
+        /// @version v22.09.02 - Added
+        private enum SectionEnum : byte
+        {
+            /// <summary>Top header.</summary>
+            TopHeader = 0,
+            /// <summary>Bottom header.</summary>
+            BottomHeader,
+            /// <summary>Address column.</summary>
+            AddressColumn,
+            /// <summary>Memory data.</summary>
+            MemoryData
+        }
+
         /// <summary>Indicates the different type of nodes of the Spin map.</summary>
-        /// @version v22.07.01 - Added.
+        /// @version v22.09.02 - Delete `Begin` enum value.
         private enum NodeTypeEnum : byte
         {
-            /// <summary>Begin of enumeration, with the same value as the second.</summary>
-            /// <remarks>Used to start a `for` loop.</remarks>
-            Begin = 0,
             /// <summary>Spin header section.</summary>
             SpinHeader = 0,
             /// <summary>Object start node.</summary>
@@ -92,18 +118,9 @@ namespace Gear.GUI
             End
         }
 
-        /// <summary>Array for colorize every memory position according
-        /// to map location.</summary>
-        /// @version v22.07.01 - Name changed to follow naming conventions.
-        /// Changed declaring location from `SpinView.Designer.cs` to here, to
-        /// better documentation.
-        private readonly Brush[] _memoryColorBrush;
-
-        ///<summary>Mono spaced font for memory map.</summary>
-        /// @version v22.07.01 - Name changed to follow naming conventions.
-        /// Changed declaring location from `SpinView.Designer.cs` to here, to
-        /// better documentation.
-        private readonly Font _monoSpace;
+        /// <summary>How many memory values will show in a line.</summary>
+        /// @version v22.09.02 - Added.
+        const int ValuesQtyToShow = 16;
 
         /// <summary>List of Colors to paint each byte of memory.</summary>
         /// @version v22.07.01 - Added.
@@ -119,19 +136,48 @@ namespace Gear.GUI
         private static readonly ComponentResourceManager Resources =
             new ComponentResourceManager(typeof(SpinView));
 
-        /// <summary>Current Culture to modify its Number format.
+        /// <summary>Array for colorize every memory position according
+        /// to map location.</summary>
+        /// @version v22.07.01 - Name changed to follow naming conventions.
+        /// Changed declaring location from `SpinView.Designer.cs` to here, to
+        /// better documentation.
+        private readonly Brush[] _memoryColorBrush;
+
+        ///<summary>Mono spaced font for memory map.</summary>
+        /// @version v22.07.01 - Name changed to follow naming conventions.
+        /// Changed declaring location from `SpinView.Designer.cs` to here, to
+        /// better documentation.
+        private readonly Font _monoFont;
+
+        /// <summary>Width and height of memory data on Mono font.</summary>
+        /// @version v22.09.02 - Added
+        private readonly Size _dataFontSize;
+
+        /// <summary>Width and height of address for memory on Mono font.</summary>
+        /// @version v22.09.02 - Added
+        private readonly Size _addressFontSize;
+
+        /// <summary>Current Culture to modify its Number format.</summary>
         /// @version v22.07.01 - Name changed to follow naming conventions.
         private readonly CultureInfo _currentCultureMod;
 
-        /// <summary>Backing field for buffer to draw the memory lines.</summary>
-        /// @version v22.09.01 - Changed to enable parallel drawing.
-        private ThreadLocal<BufferedGraphics> _backBuffer =
-            new ThreadLocal<BufferedGraphics>();
+        /// <summary>Section drawing manager instance.</summary>
+        /// @version v22.09.02 - Added
+        private readonly DrawingSectionManager<SectionEnum> _sectionManager;
 
+        /// <summary>Buffer graphic context.</summary>
+        /// @version v22.09.02 - Added
+        private readonly BufferedGraphicsContext _bufferedGraphicsContext =
+            new BufferedGraphicsContext();
+/*
         /// <summary>Backing field for Graphic style to draw text on buffer.</summary>
         /// @version v22.09.01 - Changed to enable parallel drawing.
         private ThreadLocal<Graphics> _bufferGraphics =
-            new ThreadLocal<Graphics>();
+            new ThreadLocal<Graphics>(true);
+*/
+        /// <summary>Backing field for Graphic style to draw text on buffer.</summary>
+        /// @version v22.09.01 - Changed to enable parallel drawing.
+        private Graphics _bufferGraphics;
 
         /// <summary>Image for Icon on tree view for each node.</summary>
         /// @version v22.07.01 - Added.
@@ -146,6 +192,10 @@ namespace Gear.GUI
         /// been done or not.</summary>
         /// @version v22.07.01 - Added.
         private bool _colorDecodeDone;
+
+        /// <summary>Baking field to HeaderStyle property.</summary>
+        /// @version v22.09.02 - Added.
+        private HeaderStyleEnum _headerStyle;
 
         /// <summary>Current byte alignment for the Spin map.</summary>
         /// @version v22.07.01 - Added.
@@ -162,51 +212,70 @@ namespace Gear.GUI
         public override bool IsUserPlugin => false;
 
         /// <summary>Double buffer property to draw on it.</summary>
-        /// @version v22.09.01 - Modified to implement only getter, using
-        /// double buffer in a independent way for each cog and supporting
-        /// parallel drawing.
-        private BufferedGraphics BackBuffer
+        /// @version v22.09.02 - Modified
+        private BufferedGraphics BackBuffer { get; set; }
+
+/*
+        /// <summary>Graphic style property to draw text and graphics
+        /// on buffer.</summary>
+        /// <remarks>Used to set the font aliasing style for text of the
+        /// control.</remarks>
+        /// @version v22.09.02 - Modified
+        private Graphics BufferGraphics
         {
             get
             {
-                if (_backBuffer.Value != null)
-                    return _backBuffer.Value;
-                if (memoryView == null)
+                Graphics localCopyGraphics = null;
+                bool lockTaken = false;
+                try
+                {
+                    Monitor.Enter(_bufferedGraphicsContext, ref lockTaken);
+                    if (_bufferGraphics.Value == null)
+                        _bufferGraphics.Value = GraphicsGenerator(memoryView);
+                    localCopyGraphics = _bufferGraphics.Value;
+                    if (_bufferGraphics.IsValueCreated)
+                    {
+                        int setSize = _bufferGraphics.Values.Count;
+                        if (setSize > 1)
+                            for (int i = 0; i < setSize - 1; i++)
+                            for (int j = i + 1; j < setSize; j++)
+                                Debug.Assert(_bufferGraphics.Values[i] != _bufferGraphics.Values[j], $"Buffers are the same:\nFirst: {i:D} - {_bufferGraphics.Values[i]}\nSecond: {j:D} - {_bufferGraphics.Values[j]}");
+                    }
+                }
+                catch (ArgumentNullException e)
+                {
+                    MessageBox.Show(
+                        e.Message,
+                        $@"Error assigning Graphics in {nameof(BufferGraphics)}",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return null;
-                BufferedGraphicsContext currentContext = new BufferedGraphicsContext();
-                _backBuffer.Value = currentContext.Allocate(
-                    memoryView.CreateGraphics(),
-                    memoryView.DisplayRectangle);
-                return _backBuffer.Value;
+                }
+                catch (ArgumentException)
+                {
+                    return null;
+                }
+                finally
+                {
+                    if (lockTaken)
+                        Monitor.Exit(_bufferedGraphicsContext);
+                }
+                return localCopyGraphics;
             }
         }
+*/
 
         /// <summary>Graphic style property to draw text and graphics
         /// on buffer.</summary>
         /// <remarks>Used to set the font aliasing style for text of the
         /// control.</remarks>
-        /// @version v22.09.01 - Modified to implement only getter and
-        /// supporting parallel drawing.
-        private Graphics BufferGraphics
-        {
-            get
-            {
-                if (_bufferGraphics.Value != null)
-                    return _bufferGraphics.Value;
-                if (BackBuffer == null)
-                    return null;
-                _bufferGraphics.Value = BackBuffer.Graphics;
-                _bufferGraphics.Value.SmoothingMode =
-                    SmoothingMode.HighQuality;
-                _bufferGraphics.Value.TextRenderingHint =
-                    TextRenderingHint.ClearTypeGridFit;
-                return _bufferGraphics.Value;
-            }
-        }
+        /// @version v22.09.02 - Modified
+        private Graphics BufferGraphics =>
+            _bufferGraphics;
 
         /// <summary>Frequency format to be displayed.</summary>
         /// <remarks>Used to establish data binding to program properties.
-        /// Needs to be public to binding works.</remarks>
+        /// Needs to be public and have getter and setter to binding
+        /// works.</remarks>
         /// @version v22.07.01 - Added.
         // ReSharper disable once MemberCanBePrivate.Global
         public NumberFormatEnum FreqFormatValue
@@ -221,6 +290,25 @@ namespace Gear.GUI
                     NumberFormatEnumExtension.GetFormatInfo(_reqFormatValue);
                 _colorDecodeDone = false;
                 UpdateSystemFreq();
+            }
+        }
+
+        /// <summary>Style to draw headers.</summary>
+        /// <remarks>Used to establish data binding to program properties.
+        /// Needs to be public and have getter and setter to binding
+        /// works.</remarks>
+        /// @version v22.09.02 - Added.
+        // ReSharper disable once MemberCanBePrivate.Global
+        public HeaderStyleEnum HeaderStyle
+        {
+            get => _headerStyle;
+            set
+            {
+                if (_headerStyle == value)
+                    return;
+                _headerStyle = value;
+                _sectionManager?.Reset();
+                memoryView.Invalidate();
             }
         }
 
@@ -274,12 +362,18 @@ namespace Gear.GUI
         public SpinView(PropellerCPU chip) : base(chip)
         {
             //init objects
-            _currentCultureMod = (CultureInfo)CultureInfo.CurrentCulture.Clone();
-            _monoSpace = new Font(FontFamily.GenericMonospace, 8);
             _memoryColorBrush = new Brush[PropellerCPU.TotalRAM];
+            _monoFont = new Font(FontFamily.GenericMonospace, 8);
+            _dataFontSize = TextRenderer.MeasureText("00", _monoFont);
+            _addressFontSize = TextRenderer.MeasureText("$0000:", _monoFont);
+            _currentCultureMod = (CultureInfo)CultureInfo.CurrentCulture.Clone();
+            _sectionManager = new DrawingSectionManager<SectionEnum>(
+                CalculateRectangleOfSection, SectionEnum.TopHeader,
+                SectionEnum.MemoryData);
             // ReSharper disable once ExceptionNotDocumented
             _frameIcon = (Image)Resources.GetObject("FrameIcon");
             InitializeComponent();
+            ResetBufferGraphics();
             //this goes here, because it isn't accepted on Designer!
             PositionScrollBar.Maximum = PropellerCPU.TotalRAM - 1;
             ByteAlignment = AlignmentEnum.Word;
@@ -288,12 +382,27 @@ namespace Gear.GUI
             DataBindings.Add(new Binding("FreqFormatValue",
                 Properties.Settings.Default, "FreqFormat",
                 false, DataSourceUpdateMode.OnPropertyChanged));
-            //generate icons for each node type on a separated async task
-            Task.Factory.StartNew( () =>
+            HeaderStyle = Properties.Settings.Default.HeaderToDraw;
+            DataBindings.Add(new Binding("HeaderStyle",
+                Properties.Settings.Default, "HeaderToDraw",
+                false, DataSourceUpdateMode.OnPropertyChanged));
+            //generate icons for each node type
+            bool rollOver = false;
+            for (NodeTypeEnum nodeType = 0;
+                 nodeType < NodeTypeEnum.End && !rollOver;
+                 nodeType = nodeType.EnumNext(out rollOver))
             {
-                for (NodeTypeEnum idx = NodeTypeEnum.Begin; idx < NodeTypeEnum.End; idx++)
-                    imageListForTreeView.Images.AddStrip(GenerateIconForNode(idx));
-            });
+                try
+                {
+                    Image image = GenerateIconForNode(nodeType);
+                    imageListForTreeView.Images.AddStrip(image);
+                }
+                catch (InvalidOperationException e)
+                {
+                    MessageBox.Show(this, e.Message, $@"Icon generation failed on '{nodeType}'.",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
             //fill values to format memory background
             // ReSharper disable once ExceptionNotDocumented
             Parallel.ForEach(Partitioner.Create(0, _memoryColorBrush.Length),
@@ -317,14 +426,114 @@ namespace Gear.GUI
             Analyze();
         }
 
+        /// <summary>Generate a new Graphics based on control object.</summary>
+        /// <param name="control">Graphical object to be acceded by this
+        /// Graphics object.</param>
+        /// <exception cref="ArgumentNullException">If <paramref name="control"/>
+        /// is <see langword="null"/>.</exception>
+        /// <returns></returns>
+        /// @version v22.09.02 - Added.
+        private Graphics GraphicsGenerator(Control control)
+        {
+            if (control == null)
+            {
+                string msg = $"Argument null given as parameter {nameof(control)} in method {nameof(GraphicsGenerator)}({typeof(Control)})";
+                throw new ArgumentNullException(nameof(control), msg);
+            }
+            Graphics graphics = control.CreateGraphics();
+            //graphical settings to apply
+            graphics.SmoothingMode = SmoothingMode.HighQuality;
+            graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+            graphics.CompositingQuality = CompositingQuality.AssumeLinear;
+            return graphics;
+        }
+
+/*
+        /// <summary></summary>
+        /// <param name="sectionType"></param>
+        /// <returns></returns>
+        /// @version v22.09.02 - Added.
+        private Graphics GetGraphics(SectionEnum sectionType)
+        {
+            if (!_sectionGraphics.ContainsKey(sectionType) ||
+                _sectionGraphics[sectionType] == null)
+            {
+                Graphics graphics = memoryView.CreateGraphics();
+                //graphical settings
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+                _sectionGraphics[sectionType] = graphics;
+                //select area to draw
+                if (!_sectionRectangles.TryGetValue(sectionType, out Rectangle selectedRectangle))
+                {
+                    MessageBox.Show(this,
+                        $@"Not found rectangle location for {sectionType}.",
+                        @"Error Drawing memory header",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return null;
+                }
+                _sectionRectangles[sectionType] = selectedRectangle;
+                //select/create buffered graphics
+                if (_sectionBufferedGraphics.ContainsKey(sectionType))
+                    return graphics;
+                bool lockTaken = false;
+                try
+                {
+                    Monitor.Enter(_bufferedGraphicsContext, ref lockTaken);
+                    _sectionBufferedGraphics[sectionType] =
+                        _bufferedGraphicsContext.Allocate(graphics,
+                            selectedRectangle);
+                }
+                finally
+                {
+                    if (lockTaken)
+                        Monitor.Exit(_bufferedGraphicsContext);
+                }
+                return graphics;
+            }
+            return _sectionGraphics[sectionType];
+        }
+*/
+
+/*
         /// <summary>Invalidate graphics underlying for double buffer of main
         /// panel.</summary>
-        /// @version v22.09.01 - Added as method from former setter of
-        /// BackBuffer property.
+        /// @version v22.09.02 - Changed
         private void ResetBufferGraphics()
         {
-            _backBuffer.Value = null;
-            _bufferGraphics.Value = null;
+            bool lockTaken = false;
+            try
+            {
+                Monitor.Enter(_bufferedGraphicsContext, ref lockTaken);
+                _bufferGraphics.Value = GraphicsGenerator(memoryView);
+                BackBuffer = _bufferedGraphicsContext.Allocate(
+                    GraphicsGenerator(memoryView),
+                    memoryView.DisplayRectangle);
+            }
+            catch (ArgumentNullException e)
+            {
+                MessageBox.Show(
+                    e.Message,
+                    $@"Error Resetting Graphics Buffer in {nameof(ResetBufferGraphics)}",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                if (lockTaken)
+                    Monitor.Exit(_bufferedGraphicsContext);
+            }
+        }
+*/
+
+        /// <summary>Regenerate graphics access with double buffer of main
+        /// panel.</summary>
+        /// @version v22.09.02 - Changed to use GraphicsGenerator() method.
+        private void ResetBufferGraphics()
+        {
+            BackBuffer = _bufferedGraphicsContext.Allocate(
+                GraphicsGenerator(memoryView),
+                memoryView.DisplayRectangle);
+            _bufferGraphics = BackBuffer.Graphics;
         }
 
         /// <summary>Generate image for icon of tree view.</summary>
@@ -334,13 +543,78 @@ namespace Gear.GUI
         private Image GenerateIconForNode(NodeTypeEnum nodeType)
         {
             //only margin on top
-            Image generated = new Bitmap(_frameIcon.Width, _frameIcon.Height + 1);
+            Image generated =
+                new Bitmap(_frameIcon.Width, _frameIcon.Height + 1,
+                    PixelFormat.Format32bppArgb);
             Graphics graph = Graphics.FromImage(generated);
+            graph.SmoothingMode = SmoothingMode.HighQuality;
+            graph.CompositingQuality = CompositingQuality.AssumeLinear;
+            //background color by type
             graph.FillRectangle(BrushesList[nodeType], 0, 1,
                 _frameIcon.Width, _frameIcon.Height + 1);
+            //create transparent lower margin
             graph.DrawLine(Pens.Transparent, 0, 0, _frameIcon.Width, 0);
+            //overwrite icon image with translucent pixels (hole to fill
+            //with background color)
             graph.DrawImage(_frameIcon, 0, 1);
             return generated;
+        }
+
+        /// <summary>Calculate the number of lines that fits on memory
+        /// panel.</summary>
+        /// <returns>Number of lines.</returns>
+        /// @version v22.09.02 - Added.
+        private int GetLinesOfMemoryPanel() =>
+            memoryView.ClientSize.Height / _dataFontSize.Height;
+
+        /// <summary>Method to calculate rectangle area for each drawing
+        /// section.</summary>
+        /// <param name="section">Drawing section enum value.</param>
+        /// <returns>Rectangle with coordinates delimiting the related
+        /// drawing area.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        /// @version v22.09.02 - Added.
+        private Rectangle CalculateRectangleOfSection(SectionEnum section)
+        {
+            int totalLines = GetLinesOfMemoryPanel();
+            bool haveTopHeader = HeaderStyle.HasFlag(HeaderStyleEnum.OnlyTop);
+            bool haveBottomHeader = HeaderStyle.HasFlag(HeaderStyleEnum.OnlyBottom);
+            switch (section)
+            {
+                case SectionEnum.TopHeader:
+                    return haveTopHeader ?
+                        new Rectangle(0, 0,
+                            _addressFontSize.Width + _dataFontSize.Width * ValuesQtyToShow,
+                            _dataFontSize.Height) :
+                        Rectangle.Empty;
+                case SectionEnum.BottomHeader:
+                    return haveBottomHeader ?
+                        new Rectangle(0,
+                            (totalLines - 1) * _dataFontSize.Height,
+                            _addressFontSize.Width + _dataFontSize.Width * ValuesQtyToShow,
+                            _dataFontSize.Height) :
+                        Rectangle.Empty;
+                case SectionEnum.AddressColumn:
+                    return new Rectangle(0,
+                        haveTopHeader ? _addressFontSize.Height : 0,
+                        _addressFontSize.Width,
+                        _addressFontSize.Height *
+                        (totalLines - (haveBottomHeader ? 1 : 0)
+                                    - (haveTopHeader ? 1 : 0)));
+                case SectionEnum.MemoryData:
+                    return new Rectangle(
+                        _addressFontSize.Width,
+                        haveTopHeader ? _addressFontSize.Height : 0,
+                        _dataFontSize.Width * ValuesQtyToShow,
+                        _addressFontSize.Height *
+                        (totalLines - (haveBottomHeader ? 1 : 0)
+                                    - (haveTopHeader ? 1 : 0)));
+                default:
+                {
+                    string msg = $"Value {section} not supported on {typeof(SectionEnum).FullName} enum.";
+                        throw new ArgumentOutOfRangeException(nameof(section), section, msg);
+                }
+            }
         }
 
         /// <summary>Set quantity advance on Scroll Bar according to
@@ -500,7 +774,7 @@ namespace Gear.GUI
                 objectTreeView.ResumeLayout(true);
                 _colorDecodeDone = true;
             }
-            Repaint(false);
+            memoryView.Invalidate(true);
         }
 
         /// <summary>Format a frequency value to string, considering the value
@@ -692,52 +966,177 @@ namespace Gear.GUI
                 _memoryColorBrush[i] = BrushesList[NodeTypeEnum.FunctionBody];
         }
 
+        /// <summary>Draw memory header, top or bottom.</summary>
+        /// <param name="memoryPos">Initial address, to print shifts from it.</param>
+        /// <param name="isTopHeader">TRUE to draw top header, FALSE to draw
+        ///     bottom header.</param>
+        /// @version v22.09.02 - Added.
+        private void DrawMemoryHeader(int memoryPos, bool isTopHeader)
+        {
+            SectionEnum currentSection =
+                isTopHeader ? SectionEnum.TopHeader : SectionEnum.BottomHeader;
+            Rectangle headerRectangle = _sectionManager.GetRectangle(currentSection);
+            if (headerRectangle.IsEmpty)
+                return;
+            Brush brush = SystemBrushes.ControlText;
+            //fill with background color
+            BufferGraphics.FillRectangle(
+                SystemBrushes.ControlLight, headerRectangle);
+            //draw address text
+            // ReSharper disable once StringLiteralTypo
+            BufferGraphics.DrawString(@" Addr:", _monoFont,
+                brush, 2, headerRectangle.Y);
+            //loop for each shift value
+            for (int x = 0, shift = memoryPos % ValuesQtyToShow, dx = _addressFontSize.Width;
+                 x < ValuesQtyToShow;
+                 x++, shift = (shift + 1) % ValuesQtyToShow, dx += _dataFontSize.Width)
+                BufferGraphics.DrawString($"+{shift:X1}", _monoFont,
+                    brush, dx, headerRectangle.Y);
+        }
+
+        /// <summary>Draw address column.</summary>
+        /// <param name="memoryPos">Initial address, to print start address
+        /// for each row.</param>
+        /// @version v22.09.02 - Added.
+        private void DrawAddressColumn(int memoryPos)
+        {
+            Rectangle rectangle =
+                _sectionManager.GetRectangle(SectionEnum.AddressColumn);
+            if (rectangle.IsEmpty)
+                return;
+            Brush brush = SystemBrushes.ControlText;
+            int endY = rectangle.Y + rectangle.Height;
+            //fill entire column space
+            BufferGraphics.FillRectangle(Brushes.White, rectangle);
+            // Draw each row
+            for (int posY = rectangle.Y, idx = memoryPos;
+                 posY < endY;
+                 posY += _addressFontSize.Height, idx += ValuesQtyToShow)
+                BufferGraphics.DrawString($"${idx:X4}:", _monoFont,
+                    brush, 2, posY);
+        }
+
+        /// <summary>Draw memory data.</summary>
+        /// <param name="memoryPos">Initial address, to print memory values
+        /// from it.</param>
+        /// @version v22.09.02 - Added.
+        private void DrawMemoryData(int memoryPos)
+        {
+            Rectangle rectangle =
+                _sectionManager.GetRectangle(SectionEnum.MemoryData);
+            if (rectangle.IsEmpty)
+                return;
+            Brush brush = SystemBrushes.ControlText;
+            int endX = rectangle.X + rectangle.Width;
+            int endY = rectangle.Y + rectangle.Height;
+            //loop for lines
+            for (int posY = rectangle.Y, idx = memoryPos;
+                 posY < endY;
+                 posY += _dataFontSize.Height)
+            {
+                // Draw one line of data
+                for (int posX = rectangle.X;
+                     posX < endX;
+                     posX += _dataFontSize.Width, idx++)
+                {
+                    if (_memoryColorBrush[idx] != null)
+                        BufferGraphics.FillRectangle(_memoryColorBrush[idx],
+                            posX, posY, _dataFontSize.Width,
+                            _dataFontSize.Height);
+                    BufferGraphics.DrawString(
+                        Chip.DirectReadByte((uint)idx).ToString("X2"),
+                        _monoFont, brush, posX, posY);
+                }
+            }
+        }
+
         /// <summary>Event to repaint the plugin screen (if used).</summary>
         /// <param name="force">Flag to indicate the intention to force the
         /// repaint.</param>
-        /// @version v22.09.01 - Modified to avoid boxing a byte when printing
+        /// @version v22.09.02 - Modified to avoid boxing a byte when printing
         /// memory values.
         public override void Repaint(bool force)
         {
             if (Chip == null)
                 return;
-            const int bytesToShow = 16;
-            const int mask = bytesToShow - 1;
+            if (BufferGraphics == null)
+                return;
+            int memoryPos = PositionScrollBar.Value;
+            int totalLines = Math.Min(
+                GetLinesOfMemoryPanel(),
+                PropellerCPU.TotalRAM - memoryPos);
+            bool topHeaderRequested = HeaderStyle.HasFlag(HeaderStyleEnum.OnlyTop);
+            bool bottomHeaderRequested = HeaderStyle.HasFlag(HeaderStyleEnum.OnlyBottom);
+            //fill the panel area
             BufferGraphics.Clear(SystemColors.Control);
-            Size dataSize = TextRenderer.MeasureText("00", _monoSpace);
-            Size addressSize = TextRenderer.MeasureText("$0000:", _monoSpace);
-            //draw the header
-            BufferGraphics.FillRectangle(SystemBrushes.ControlLight, 0, 0,
-                addressSize.Width + dataSize.Width * 16, dataSize.Height);
-            BufferGraphics.DrawString(@" Addr:", _monoSpace,
-                SystemBrushes.ControlText, 2, 0);
-            for (int x = 0, shift = PositionScrollBar.Value & mask, dx = addressSize.Width;
-                 x < bytesToShow;
-                 x++, shift = (shift + 1) & mask, dx += dataSize.Width)
-                BufferGraphics.DrawString($"+{shift:X1}", _monoSpace,
-                    SystemBrushes.ControlText, dx, 0);
-            //draw all other lines
-            for (int y = PositionScrollBar.Value, dy = dataSize.Height;
-                 y < PropellerCPU.TotalRAM && dy < memoryView.ClientRectangle.Height;
-                 dy += dataSize.Height)
-            {
-                // Draw the address
-                BufferGraphics.FillRectangle(Brushes.White, new Rectangle(0, dy, addressSize.Width, dataSize.Height));
-                BufferGraphics.DrawString($"${y:X4}:", _monoSpace, SystemBrushes.ControlText, 2, dy);
-                // Draw the line of data
-                for (int x = 0, dx = addressSize.Width;
-                     y < PropellerCPU.TotalRAM && x < bytesToShow;
-                     x++, dx += dataSize.Width, y++)
+            if (totalLines <=
+                (topHeaderRequested ? 1 : 0) + (bottomHeaderRequested ? 1 : 0))
+                return;
+/*
+             Parallel.Invoke(
+                //draw the headers
+                () =>
                 {
-                    if (_memoryColorBrush[y] != null)
-                        BufferGraphics.FillRectangle(_memoryColorBrush[y],
-                            new Rectangle(dx, dy, dataSize.Width,
-                                dataSize.Height));
-                    BufferGraphics.DrawString(
-                        Chip.DirectReadByte((uint)y).ToString("X2"),
-                        _monoSpace, SystemBrushes.ControlText, dx, dy);
-                }
+                    if (topHeaderRequested)
+                        DrawMemoryHeader(memoryPos, isTopHeader: true);
+                },
+                () =>
+                {
+                    if (bottomHeaderRequested)
+                        DrawMemoryHeader(memoryPos, isTopHeader: false);
+                },
+                //draw address column
+                () =>
+                {
+                    DrawAddressColumn(memoryPos);
+                },
+                () =>
+                {
+                    DrawMemoryData(memoryPos);
+                });
+*/
+/*
+             Parallel.Invoke(
+                //draw the headers
+                () =>
+                {
+                    if (topHeaderRequested)
+                    {
+                        DrawMemoryHeader(memoryPos, isTopHeader: true);
+                    }
+                    if (bottomHeaderRequested)
+                    {
+                        DrawMemoryHeader(memoryPos, isTopHeader: false);
+                    }
+                    //draw address column
+                    DrawAddressColumn(memoryPos);
+                },
+                () =>
+                {
+                    DrawMemoryData(memoryPos);
+                });
+*/
+            if (topHeaderRequested)
+                DrawMemoryHeader(memoryPos, isTopHeader: true);
+            if (bottomHeaderRequested)
+                DrawMemoryHeader(memoryPos, isTopHeader: false);
+            //draw address column
+            DrawAddressColumn(memoryPos);
+            //draw memory data
+            DrawMemoryData(memoryPos);
+/*
+            bool lockTaken = false;
+            try
+            {
+                Monitor.Enter(_bufferedGraphicsContext, ref lockTaken);
+                BackBuffer.Render();
             }
+            finally
+            {
+                if (lockTaken)
+                    Monitor.Exit(_bufferedGraphicsContext);
+            }
+*/
             BackBuffer.Render();
         }
 
@@ -748,6 +1147,7 @@ namespace Gear.GUI
         /// logic of analyze the Spin packet code.
         private void AnalyzeButton_Click(object sender, EventArgs e)
         {
+            _colorDecodeDone = false;
             Analyze();
         }
 
@@ -768,8 +1168,11 @@ namespace Gear.GUI
         /// @version v22.07.01 - Method name changed to clarify its meaning.
         private void MemoryView_SizeChange(object sender, EventArgs e)
         {
-            if (memoryView.Width > 0 && memoryView.Height > 0)
+            if (memoryView.ClientSize.Width > 0 && memoryView.ClientSize.Height > 0)
+            {
                 ResetBufferGraphics();
+                _sectionManager.Reset();
+            }
             memoryView.Invalidate(true);
         }
 

@@ -122,7 +122,8 @@ namespace Gear.GUI
             //to get the underlying property
             PropertyDescriptor prop = e.ChangedItem.PropertyDescriptor;
             if (prop is null || prop.IsReadOnly ||
-                e.ChangedItem.GridItemType != GridItemType.Property || ParentForm == null)
+                e.ChangedItem.GridItemType != GridItemType.Property ||
+                ParentForm == null)
                 return;
             switch (prop.Name)
             {

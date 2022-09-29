@@ -1,6 +1,19 @@
 # Change Log
 
-## Commit  CogView graphics upgrade
+## Commit  CogView graphics upgrade completed
+- Release Version v22.09.02.
+- Refactored Spin memory view completed:
+  - Improved redraw of memory data, with faster drawing of headers, address column, and main memory values itself.
+  - Added a new program setting for drawing top and bottom headers.
+  - Added [`GUI/DrawingSectionManager.cs`](Gear/GUI/DrawingSectionManager.cs) and [`Utils/EnumTraverseExtension.cs`](Gear/Utils/EnumTraverseExtension.cs) to help to ordered drawing of every section.
+- Improved graphics render quality of text and graphics elements on custom controls: `CogView`, `MemoryView`, `SpinView`, `HubView` and `CogView`. Marginal impact on performance, by improvements in drawing algorithms on each control.
+- Added Icon suport for floating windows.
+- Cleaned code for double-buffering on `CogView`, `MemoryView`, `SpinView`.
+- Removed unused referenced assembly: `PresentationFramework`. Prevent not found dependencies error when open GEAR project on MonoDevelop.
+- Added documentation on some empty description methods.
+
+
+## Commit [4e679f0](https://github.com/davispuh/gear-emu/commit/4e679f0ff6db07844dd59e68d910b4650307bfcf) CogView graphics upgrade
 - CogView graphics upgrade: use system highlight color for current executting line (program cursor).
 
 
@@ -11,7 +24,7 @@
 ## Release Version [22.09.01](https://github.com/davispuh/gear-emu/releases/tag/v22.09.01) Commit [87d906d](https://github.com/davispuh/gear-emu/commit/87d906d768e60c0cfd7189269b665579459072c6) CogView appareance enhanced.
 
 - Changes on [`CogView.cs`](Gear/GUI/CogView.cs):
-  -  The appareance of the current executting line (program cursor) now is selectable program setting. Can be bold text, a frame around the text line, or both.
+  - The appareance of the current executting line (program cursor) now is selectable program setting. Can be bold text, a frame around the text line, or both.
 - Gear Emulator window starts now with a size of 1024x768, to help to standarize documentation images.
 - Updated [`.gitignore`](.gitignore) : added more visual studio and vscode definitions.
 - Updated secuence diagrams files: Changed extension `.mcsgen` to more standard `.msc`. Changed path of documentation files to `Doc/sorce/`. Modified doxygen documentation accordlingly.
@@ -78,7 +91,7 @@
 
 ## Release Version [22.07.01](https://github.com/davispuh/gear-emu/releases/tag/v22.07.01) Commit [195e7f5](https://github.com/davispuh/gear-emu/commit/195e7f5f026ba47fc45d92d6561b28361912164d) Update version data, Merge commit 'f2647ca' [b3b4bda](https://github.com/davispuh/gear-emu/commit/b3b4bda7c58ec3f334f97f3e0b848b5047b3ef43) & Commit [9a615fb](https://github.com/davispuh/gear-emu/commit/9a615fb9dad6453cecadbd2236b8fdb5847da62b) Code cleanup UI on SpinView.
 
-- Changed constant name `PropellerCPU.MaxRAMAddress` to `PropellerCPU.MaxMemoryAddress`, to clarify it refers to top of ROM, not RAM. Affects [`PropellerCPU.cs`](Gear/EmulationCore/PropellerCPU.cs), [`CogView.cs`](Gear/GUI/CogView.cs), [`InterpretedCog.cs`](Gear/EmulationCore/InterpretedCog.cs), [`MemoryManager.cs`](Gear/Propeller/MemoryManager.cs), [`SpinView.cs`](Gear/GUI/SpinView.cs).
+- Changed constant name `PropellerCPU.MaxRAMAddress` to `PropellerCPU.MaxMemoryAddress`, to clarify it refers to top of ROM, not RAM. Affects [`PropellerCPU.cs`](Gear/EmulationCore/PropellerCPU.cs), [`CogView.cs`](Gear/GUI/CogView.cs), [`InterpretedCog.cs`](Gear/EmulationCore/InterpretedCog.cs), `MemoryManager.cs`, [`SpinView.cs`](Gear/GUI/SpinView.cs).
 - Code cleanup and refactoring in [`SpinView.cs`](Gear/GUI/SpinView.cs) and in some parts of [`Emulator.cs`](Gear/GUI/Emulator.cs).
   - Improved visualization of Spin objects in map, with more details and different colors. Added three alignment modes on map: none, at Byte, or at Word, with a new tool strip selector with icons.
   - Refactored naming and visibility of members, parameters and local variables in classes, methods and enums.
@@ -146,7 +159,7 @@
 
 ## Commit [999845e](https://github.com/davispuh/gear-emu/commit/999845e1dff9fc77d1a64c6ef178255d35d3c0b6) Code cleanup UI LogicView & TimeUnit
 
-- Code cleanup in files: [`LogicView.cs`](Gear/GUI/LogicProbe/LogicView.cs), [`LogicView.Designer.cs`](Gear/GUI/LogicProbe/LogicView.Designer.cs), [`LogicView.resx`](Gear/GUI/LogicProbe/LogicView.resx), [`LogicRow.cs`](Gear/GUI/LogicProbe/LogicRow.cs), [`LogicAnalog.cs`](Gear/GUI/LogicProbe/LogicAnalog.cs), [`LogicDigital.cs`](Gear/GUI/LogicProbe/LogicDigital.cs), [`TimeUnitComboBox.cs`](Gear/GUI/TimeUnitComboBox.cs), [`TimeUnitToolStripComboBox.cs`](Gear/GUI/TimeUnitToolStripComboBox.cs), [`TimeUnitToolStripComboBox.Designer.cs`](Gear/GUI/TimeUnitToolStripComboBox.Designer.cs), [`TimeUnitsList.cs`](Gear/Utils/TimeUnitsList.cs), [`TimeUnitCollection.cs`](Gear/Utils/TimeUnitCollection.cs), [`TimeUnitMgmt.cs`](Gear/Utils/TimeUnitMgmt.cs), [`TimeUnitsEnumExtension.cs`](Gear/Utils/TimeUnitsEnumExtension.cs), [`NumberFormatEnumExtension.cs`](Gear/Utils/NumberFormatEnumExtension.cs), [`RememberRTBoxPosition.cs`](Gear/Utils/RememberRTBoxPosition.cs).
+- Code cleanup in files: [`LogicView.cs`](Gear/GUI/LogicProbe/LogicView.cs), [`LogicView.Designer.cs`](Gear/GUI/LogicProbe/LogicView.Designer.cs), [`LogicView.resx`](Gear/GUI/LogicProbe/LogicView.resx), [`LogicRow.cs`](Gear/GUI/LogicProbe/LogicRow.cs), [`LogicAnalog.cs`](Gear/GUI/LogicProbe/LogicAnalog.cs), [`LogicDigital.cs`](Gear/GUI/LogicProbe/LogicDigital.cs), [`TimeUnitComboBox.cs`](Gear/GUI/TimeUnitComboBox.cs), [`TimeUnitToolStripComboBox.cs`](Gear/GUI/TimeUnitToolStripComboBox.cs), [`TimeUnitToolStripComboBox.Designer.cs`](Gear/GUI/TimeUnitToolStripComboBox.Designer.cs), [`TimeUnitsList.cs`](Gear/Utils/TimeUnitsList.cs), [`TimeUnitCollection.cs`](Gear/Utils/TimeUnitCollection.cs), [`TimeUnitMgmt.cs`](Gear/Utils/TimeUnitMgmt.cs), [`TimeUnitsEnumExtension.cs`](Gear/Utils/TimeUnitsEnumExtension.cs), [`NumberFormatEnumExtension.cs`](Gear/Utils/NumberFormatEnumExtension.cs), `RememberRTBoxPosition.cs`.
   - Refactored naming and visibility of members, parameters and local variables in classes, methods and enums.
   - Added legacy TODO tags in Doxygen documentation, and also identify paralellism points with complexity.
   - Added XML & Doxygen comments in files.
@@ -192,7 +205,7 @@
 
 ## Release Version [22.05.03](https://github.com/davispuh/gear-emu/releases/tag/v22.05.03) and Commit [3dc6dad](https://github.com/davispuh/gear-emu/commit/3dc6dadf57879b979c5d78a0b773871b7d1b33a2) Refactored EmulationCore.Cog, Code cleanup 6
 
-- Code cleanup in files: specially [`Cog.cs`](Gear/EmulationCore/Cog.cs) and [`Disassembler/Assembly.cs`](Gear/Disassembler/Assembly.cs), [`Propeller/Assembly.cs`](Gear/Propeller/Assembly.cs), [`AssemblyInstructions.cs`](Gear/Propeller/AssemblyInstructions.cs), [`DataUnpacker.cs`](Gear/Disassembler/DataUnpacker.cs), [`InstructionDisassembler.cs`](Gear/EmulationCore/InstructionDisassembler.cs), [`NativeCogInstructions.cs`](Gear/EmulationCore/NativeCogInstructions.cs), [`Disassembler/Spin.cs`](Gear/Disassembler/Spin.cs).
+- Code cleanup in files: specially [`Cog.cs`](Gear/EmulationCore/Cog.cs) and [`Disassembler/Assembly.cs`](Gear/Disassembler/Assembly.cs), [`Propeller/Assembly.cs`](Gear/Propeller/Assembly.cs), [`AssemblyInstructions.cs`](Gear/Propeller/AssemblyInstructions.cs), `DataUnpacker.cs`, [`InstructionDisassembler.cs`](Gear/EmulationCore/InstructionDisassembler.cs), [`NativeCogInstructions.cs`](Gear/EmulationCore/NativeCogInstructions.cs), [`Disassembler/Spin.cs`](Gear/Disassembler/Spin.cs).
   - Refactored naming and visibility of members, parameters and local variables in classes, methods and enums.
   - Added XML & Doxygen comments in files.
   - Unification of references to a PropellerCPU, using the same name convention: CpuHost. Files [`Cog.cs`](Gear/EmulationCore/Cog.cs), [`InterpretedCog.cs`](Gear/EmulationCore/InterpretedCog.cs), [`NativeCog.cs`](Gear/EmulationCore/NativeCog.cs), [`VideoGenerator.cs`](Gear/EmulationCore/VideoGenerator.cs).
@@ -213,7 +226,7 @@
 
 ## Release Version [22.05.01](https://github.com/davispuh/gear-emu/releases/tag/v22.05.01) and Commit [56ce3b6](https://github.com/davispuh/gear-emu/commit/56ce3b6c126d3cfb75f107a906dbe8d754e97422) Code cleanup 4
 
-- Code cleanup in files: [`Propeller/Assembly.cs`](Gear/Propeller/Assembly.cs), [`AssemblyConditions.cs`](Gear/Propeller/AssemblyConditions.cs), [`AssemblyInstructions.cs`](Gear/Propeller/AssemblyInstructions.cs), [`AssemblyRegisters.cs`](Gear/Propeller/AssemblyRegisters.cs), [`MemoryManager.cs`](Gear/Propeller/MemoryManager.cs), [`Propeller.cs`](Gear/Propeller/Propeller.cs), [`GearProgram.cs`](Gear/GearProgram.cs).
+- Code cleanup in files: [`Propeller/Assembly.cs`](Gear/Propeller/Assembly.cs), [`AssemblyConditions.cs`](Gear/Propeller/AssemblyConditions.cs), [`AssemblyInstructions.cs`](Gear/Propeller/AssemblyInstructions.cs), [`AssemblyRegisters.cs`](Gear/Propeller/AssemblyRegisters.cs), `MemoryManager.cs`, [`Propeller.cs`](Gear/Propeller/Propeller.cs), [`GearProgram.cs`](Gear/GearProgram.cs).
   - Refactored naming and visibility of members, parameters and local variables in classes, methods and enums.
   - Added XML & Doxygen comments in files.
 - Fix security warning CA2105: 'Array fields should not be read only', adopting ReadOnlyCollection static object as storage in files [`AssemblyConditions.cs`](Gear/Propeller/AssemblyConditions.cs), [`AssemblyInstructions.cs`](Gear/Propeller/AssemblyInstructions.cs) & [`AssemblyRegisters.cs`](Gear/Propeller/AssemblyRegisters.cs).
@@ -435,7 +448,7 @@
     * [EmulationCore/PropellerCPU.cs](Gear/EmulationCore/PropellerCPU.cs) - for `PropellerCPU` class changed ancestor to `Propeller.DirectMemory` and consequences, spelling errors. Now it compiles well.
     * [EmulationCore/Cog.cs](Gear/EmulationCore/Cog.cs) - changed references of `CogSpecialAddress` to `Assembly.RegisterAddress`, and references of `CogConditionCodes` to `Assembly.ConditionCodes`, using the definitions of [Propeller/AssemblyRegisters.cs](Gear/Propeller/AssemblyRegisters.cs) and [Propeller/Conditions.cs](https://github.com/davispuh/gear-emu/blob/789b325cf9421fa42f6dc905e1c8ecf496ede4b4/Gear/Propeller/Conditions.cs). Also deleted obsolete definitions of enum `CogSpecialAddress` and `CogConditionCodes`. Corrected spelling errors.
     * [Propeller/AssemblyRegisters.cs](Gear/Propeller/AssemblyRegisters.cs) - Added comments from old code in [EmulationCore/Cog.cs](Gear/EmulationCore/Cog.cs), principally by adding the correction for `PAR` register (allowing writes) in PASM.
-    * [GUI/SpinView.cs](Gear/GUI/SpinView.cs) - Changed invocations of methods `Propeller.ReadYYY()` and `Propeller.WriteYYY()` to `Propeller.DirectReadYYY()` and `Propeller.DirectWriteYYY()`, following the changes in [Propeller/MemoryManager.cs](Gear/Propeller/MemoryManager.cs).
+    * [GUI/SpinView.cs](Gear/GUI/SpinView.cs) - Changed invocations of methods `Propeller.ReadYYY()` and `Propeller.WriteYYY()` to `Propeller.DirectReadYYY()` and `Propeller.DirectWriteYYY()`, following the changes in Propeller/MemoryManager.cs.
 
 
     ## Commit [2eb7f4e](https://github.com/davispuh/gear-emu/commit/2eb7f4eacc3f56de3d77a32d96e57b308e7c1288) - Merge Correction 1

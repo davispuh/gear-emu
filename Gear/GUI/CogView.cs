@@ -93,7 +93,7 @@ namespace Gear.GUI
         /// @version v22.09.01 - Added
         private int _decodedEffectiveWidth;
 
-        /// <summary></summary>
+        /// <summary>Buffer graphic context.</summary>
         /// @version v22.09.01 - Added
         private readonly BufferedGraphicsContext _bufferedGraphicsContext =
             new BufferedGraphicsContext();
@@ -115,6 +115,10 @@ namespace Gear.GUI
         /// true concept of it.
         private uint _oldMemoryPosHovered;
 
+        /// <summary>Backing field for HighlightedType property.</summary>
+        /// @version v22.09.02 - Added.
+        private HighlightedTypeEnum _highlightedType;
+
         /// <summary>Backing field for state of buttons, related to running
         /// state and cog mode (Interpreted/PASM).</summary>
         /// @version v22.08.01 - Added.
@@ -123,6 +127,7 @@ namespace Gear.GUI
         /// <summary>Backing field for Flag to display decoded program values
         /// as Hexadecimal, or Decimal.</summary>
         private bool _displayAsHexadecimal;
+
         /// <summary>Flag to display short decoded SPIN operations, or
         /// long ones.</summary>
         private bool _useShortOpCodes;
@@ -174,10 +179,20 @@ namespace Gear.GUI
         /// <remarks>In order this property could be bind with the
         /// corresponding property setting, it must be public and must have a
         /// setter.</remarks>
-        /// @version v22.09.01 - Added.
+        /// @version v22.09.02 - Modified to allow updating screen when the
+        /// property changes.
         // ReSharper disable once MemberCanBePrivate.Global
-        // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
-        public HighlightedTypeEnum HighlightedType { get; set; }
+        public HighlightedTypeEnum HighlightedType
+        {
+            get => _highlightedType;
+            set
+            {
+                if (_highlightedType == value)
+                    return;
+                _highlightedType = value;
+                decodedPanel?.Invalidate();
+            }
+        }
 
         /// <summary>Flag to display decoded program values
         /// as Hexadecimal, or Decimal.</summary>
@@ -233,21 +248,38 @@ namespace Gear.GUI
             positionScroll.Enabled = !followPCButton.Checked;
         }
 
-        /// <summary>Assign double buffering and graphic style to decoded
+        /// <summary>Generate a new Graphics based on control object.</summary>
+        /// <param name="control">Graphical object to be acceded by this
+        /// Graphics object.</param>
+        /// <exception cref="ArgumentNullException">If <paramref name="control"/>
+        /// is <see langword="null"/>.</exception>
+        /// <returns></returns>
+        /// @version v22.09.02 - Added.
+        private Graphics GraphicsGenerator(Control control)
+        {
+            if (control == null)
+            {
+                string msg = $"Argument null given as parameter {nameof(control)} in method {nameof(GraphicsGenerator)}({typeof(Control)})";
+                throw new ArgumentNullException(nameof(control), msg);
+            }
+            Graphics graphics = control.CreateGraphics();
+            //graphical settings to apply
+            graphics.SmoothingMode = SmoothingMode.HighQuality;
+            graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+            graphics.CompositingQuality = CompositingQuality.AssumeLinear;
+            return graphics;
+        }
+
+        /// <summary>Regenerate graphics access with double buffer of main
         /// panel.</summary>
-        /// <remarks>Used to set the font aliasing style for text of the
-        /// control.</remarks>
-        /// @version v22.09.01 - Added as method from former setter of
-        /// BackBuffer property.
+        /// @version v22.09.02 - Changed to use method GraphicsGenerator()
+        /// method.
         private void ResetBufferGraphics()
         {
             BackBuffer = _bufferedGraphicsContext.Allocate(
-                decodedPanel.CreateGraphics(),
+                GraphicsGenerator(decodedPanel),
                 decodedPanel.DisplayRectangle);
             BufferGraphics = BackBuffer.Graphics;
-            BufferGraphics.SmoothingMode = SmoothingMode.HighQuality;
-            BufferGraphics.TextRenderingHint =
-                TextRenderingHint.ClearTypeGridFit;
         }
 
         /// <summary>Check if required length is met for a array variable,
@@ -339,7 +371,8 @@ namespace Gear.GUI
                 @"Units: Dec";
         }
 
-        /// <summary>Calculate the number of lines that fits on decoded panel.</summary>
+        /// <summary>Calculate the number of lines that fits on decoded
+        /// panel.</summary>
         /// <returns>Number of lines.</returns>
         /// @version v22.09.01 - Added.
         private int GetLinesOfDecodedPanel() =>
@@ -796,7 +829,6 @@ namespace Gear.GUI
         /// @version v22.09.01 - Changed method name to clarify its meaning..
         private void DecodedPanel_Paint(object sender, PaintEventArgs e)
         {
-            //positionScroll.Refresh();
             Repaint(false);
         }
 
@@ -850,7 +882,7 @@ namespace Gear.GUI
             _oldMemoryPosHovered = memoryAddress;
         }
 
-        /// <summary></summary>
+        /// <summary>Event handler to manage a mouse down event.</summary>
         /// <param name="sender">Reference to object where event was raised.</param>
         /// <param name="e">Mouse event data arguments.</param>
         /// @version v22.09.01 - Changed local variable name to clarify the

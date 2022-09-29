@@ -30,7 +30,7 @@ namespace Gear.EmulationCore
         /// <summary>How much time (in seconds) left until to tick.</summary>
         public abstract double TimeUntilClock { get; }
 
-        /// <summary></summary>
+        /// <summary>Time to advance to.</summary>
         /// <param name="time"></param>
         public abstract void AdvanceClock(double time);
     }

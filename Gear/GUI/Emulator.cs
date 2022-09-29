@@ -854,13 +854,15 @@ namespace Gear.GUI
             if (selectedTab == null)
                 return;
             foreach (Control control in selectedTab.Controls)
+            {
                 if (control is PluginBase pluginControl)
                 {
                     closeButton.Enabled = pluginControl.IsClosable;
-                    pluginControl.Repaint(false);
                 }
                 else
                     closeButton.Enabled = false;
+                control.Invalidate();
+            }
         }
 
         /// <summary>Process key press to manage the run state of

@@ -39,7 +39,8 @@ namespace Gear.GUI
         {
             if (disposing && (components != null))
             {
-                _monoSpace.Dispose();
+                _monoFont.Dispose();
+                _bufferedGraphicsContext.Dispose();
                 components.Dispose();
             }
             base.Dispose(disposing);

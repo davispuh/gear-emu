@@ -58,8 +58,10 @@ namespace Gear.GUI
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(610, 496);
             this.DoubleBuffered = true;
+            this.Icon = global::Gear.Properties.Resources.Icon_Plugin;
             this.Name = "FloatedWindow";
             this.Text = "FloatedWindow";
+            this.Load += new System.EventHandler(this.FloatedWindow_Load);
             this.ResumeLayout(false);
 
         }

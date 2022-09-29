@@ -125,5 +125,9 @@ namespace Gear.Properties
         /// @propert PCHighlightedType
         /// <summary>Type of Highlight for line now executing.</summary>
         /// @version v22.09.01 - Added as a User property of the program.
+
+        /// @propert HeaderToDraw
+        /// <summary>Header style to draw on memory panel of SPIN map.</summary>
+        /// @version v22.09.02 - Added as a User property of the program.
     }
 }
