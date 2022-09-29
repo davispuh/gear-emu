@@ -77,21 +77,38 @@ namespace Gear.GUI
         /// <summary>Register the events to be notified to this plugin.</summary>
         public override void PresentChip() { }
 
-        /// <summary>Assign double buffering and graphic style to decoded
+        /// <summary>Generate a new Graphics based on control object.</summary>
+        /// <param name="control">Graphical object to be acceded by this
+        /// Graphics object.</param>
+        /// <exception cref="ArgumentNullException">If <paramref name="control"/>
+        /// is <see langword="null"/>.</exception>
+        /// <returns></returns>
+        /// @version v22.09.02 - Added.
+        private Graphics GraphicsGenerator(Control control)
+        {
+            if (control == null)
+            {
+                string msg = $"Argument null given as parameter {nameof(control)} in method {nameof(GraphicsGenerator)}({typeof(Control)})";
+                throw new ArgumentNullException(nameof(control), msg);
+            }
+            Graphics graphics = control.CreateGraphics();
+            //graphical settings to apply
+            graphics.SmoothingMode = SmoothingMode.HighQuality;
+            graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+            graphics.CompositingQuality = CompositingQuality.AssumeLinear;
+            return graphics;
+        }
+
+        /// <summary>Regenerate graphics access with double buffer of main
         /// panel.</summary>
-        /// <remarks>Used to set the font aliasing style for text of the
-        /// control.</remarks>
-        /// @version v22.09.01 - Added as method from former setter of
-        /// BackBuffer property.
+        /// @version v22.09.02 - Changed to use method GraphicsGenerator()
+        /// method.
         private void ResetBufferGraphics()
         {
             BackBuffer = _bufferedGraphicsContext.Allocate(
-                memoryPanel.CreateGraphics(),
+                GraphicsGenerator(memoryPanel),
                 memoryPanel.DisplayRectangle);
             BufferGraphics = BackBuffer.Graphics;
-            BufferGraphics.SmoothingMode = SmoothingMode.HighQuality;
-            BufferGraphics.TextRenderingHint =
-                TextRenderingHint.ClearTypeGridFit;
         }
 
         /// <summary>Event to repaint the plugin screen (if used).</summary>

@@ -22,6 +22,7 @@
  */
 
 using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Gear.GUI
@@ -56,5 +57,16 @@ namespace Gear.GUI
             _control = null;
             base.OnClosed(e);
         }
+
+        /// <summary>Refresh form's Icon.</summary>
+        /// @param sender Reference to object where event was raised.
+        /// @param e Event data arguments.
+        /// @version v22.09.02 - Added.
+        private void FloatedWindow_Load(object sender, EventArgs e)
+        {
+            //workaround of bug on MDI Form (https://stackoverflow.com/a/6701490/10200101)
+            Icon = Icon.Clone() as Icon;
+        }
+
     }
 }

@@ -24,6 +24,7 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -169,8 +170,10 @@ namespace Gear.GUI
         /// of this control, and set the font aliasing style for text.
         protected override void OnPaint(PaintEventArgs e)
         {
-            //use font aliasing style
+            //graphical settings to apply
+            e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
             e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+            e.Graphics.CompositingQuality = CompositingQuality.AssumeLinear;
             base.OnPaint(e);
             int oddShift = _ringPosition % 2 == 0 ?
                 0 :

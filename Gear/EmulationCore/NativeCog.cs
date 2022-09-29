@@ -602,7 +602,7 @@ namespace Gear.EmulationCore
             return ProgramCursor != BreakPointCogCursor;
         }
 
-        /// <summary></summary>
+        /// <summary>Get Video data.</summary>
         /// <param name="colors"></param>
         /// <param name="pixels"></param>
         /// @pullreq{18} Correct video frame load timing, added video break, fix tab refresh.

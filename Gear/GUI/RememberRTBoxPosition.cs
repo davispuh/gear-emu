@@ -62,7 +62,7 @@ namespace Gear.GUI
 
         /// <summary>Remember position of text displayed and current
         /// selection.</summary>
-        /// @version v22.09.xx - Changed visibility from `public`.
+        /// @version v22.09.02 - Changed visibility from `public`.
         private void RememberNewPosition()
         {
             // Get first and last displayed character

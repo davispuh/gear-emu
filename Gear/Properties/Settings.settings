@@ -41,5 +41,8 @@
     <Setting Name="PCHighlightedType" Type="Gear.GUI.CogView.HighlightedTypeEnum" Scope="User">
       <Value Profile="(Default)">BoldAndFrame</Value>
     </Setting>
+    <Setting Name="HeaderToDraw" Type="Gear.GUI.SpinView.HeaderStyleEnum" Scope="User">
+      <Value Profile="(Default)">TopAndBottom</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -563,7 +563,7 @@ namespace Gear.EmulationCore
         /// @version v22.05.04 - Changed visibility of method.
         private protected abstract void Boot();
 
-        /// <summary></summary>
+        /// <summary>Get Video data.</summary>
         /// <param name="colors"></param>
         /// <param name="pixels"></param>
         /// @pullreq{18} Method added.

@@ -23,5 +23,3 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<pendiente>", Scope = "member", Target = "~M:Gear.GUI.GearDesktop.OptionsButton_Click(System.Object,System.EventArgs)")]
 [assembly: SuppressMessage("Style", "IDE0044:Agregar modificador de solo lectura", Justification = "<pendiente>", Scope = "member", Target = "~F:Gear.GUI.CogView._interpretedLengthLines")]
 [assembly: SuppressMessage("Style", "IDE0060:Quitar el parámetro no utilizado", Justification = "<pendiente>", Scope = "member", Target = "~M:Gear.GUI.CogView.DisplayDecodedForInterpretedCog(System.Boolean,Gear.EmulationCore.InterpretedCog)")]
-[assembly: SuppressMessage("Style", "IDE0044:Agregar modificador de solo lectura", Justification = "<pendiente>", Scope = "member", Target = "~F:Gear.GUI.SpinView._backBuffer")]
-[assembly: SuppressMessage("Style", "IDE0044:Agregar modificador de solo lectura", Justification = "<pendiente>", Scope = "member", Target = "~F:Gear.GUI.SpinView._bufferGraphics")]

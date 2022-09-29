@@ -119,8 +119,8 @@ namespace Gear.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("ParallaxSpin")]
-        [CategoryAttribute("Hub View")]
-        [DescriptionAttribute("Format of counter and frequency labels in Hub view.")]
+        [CategoryAttribute("Propeller Emulator")]
+        [DescriptionAttribute("Format of counter and frequency labels in Gear Emulator.")]
         [DisplayNameAttribute("Frequency and Time format")]
         public global::Gear.Utils.NumberFormatEnum FreqFormat {
             get {
@@ -218,6 +218,21 @@ namespace Gear.Properties {
             }
             set {
                 this["PCHighlightedType"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("TopAndBottom")]
+        [CategoryAttribute("SPIN Map")]
+        [DescriptionAttribute("Header style to draw on memory panel.")]
+        [DisplayNameAttribute("Header style to draw")]
+        public global::Gear.GUI.SpinView.HeaderStyleEnum HeaderToDraw {
+            get {
+                return ((Gear.GUI.SpinView.HeaderStyleEnum)(this["HeaderToDraw"]));
+            }
+            set {
+                this["HeaderToDraw"] = value;
             }
         }
     }
