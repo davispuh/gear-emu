@@ -2,10 +2,11 @@
 
 ## Mono support
 
-Mono Project support is the main restriction to set the .Net Framework and C# version witch Gear Emulator is build on.
+Mono Project support is the main restriction to set the .Net Framework and C# version which Gear Emulator is built on.
 
 As Mono Project states in [Compatibility](https://www.mono-project.com/docs/about-mono/compatibility/), the support is:
-- .NET Framework 4.7
+
+- .NET Framework 4.7.2
 - C# language version 7.0
 - Windows Forms 2.0
 

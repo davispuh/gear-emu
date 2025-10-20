@@ -3,7 +3,7 @@ import struct
 #
 #  Operation Code Types
 #
-#  0: No Arguement
+#  0: No Argument
 #  1: Has a 'effect' code
 #  2: Has a signed offset
 #  3: Has a Packed literal
